@@ -1,0 +1,31 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "codegen": "kysely-codegen --dialect postgres"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "kysely": "^0.26.3",
+    "pg": "^8.11.3",
+    "socket.io": "^4.7.2",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.18",
+    "@types/pg": "^8.10.4",
+    "dotenv": "^16.3.1",
+    "kysely-codegen": "^0.10.1",
+    "nodemon": "^3.0.1",
+    "typescript": "^5.2.2",
+    "zod": "^3.22.4"
+  }
+}
