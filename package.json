@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
+    "build": "tsc",
     "codegen": "kysely-codegen --dialect postgres"
   },
   "keywords": [],
