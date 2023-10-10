@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
 app.use('/hello', (req, res) => {
-  res.send('hello ci cd self hosted')
+  res.send('Tes CI/CD one las time')
 })
 
 startSocket()
