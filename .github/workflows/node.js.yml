@@ -24,6 +24,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - run: yarn install
-      - run: yarn codegen:production
+      - run: npx kysely-codegen --dialect postgres "$DATABASE_URL"
       - run: yarn build
       - run: pm2 restart API
