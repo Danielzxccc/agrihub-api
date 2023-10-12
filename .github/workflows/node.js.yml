@@ -26,4 +26,4 @@ jobs:
       - run: yarn install
       - run: npx kysely-codegen --dialect postgres --url ${{ secrets.DATABASE_URL }}
       - run: yarn build
-      - run: pm2 restart dist/index.js
+      - run: pm2 restart dist/index.js --update-env
