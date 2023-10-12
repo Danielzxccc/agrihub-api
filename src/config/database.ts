@@ -2,7 +2,6 @@ import { Kysely, PostgresDialect } from 'kysely'
 import { DB } from 'kysely-codegen'
 import { Pool } from 'pg'
 import * as dotenv from 'dotenv'
-
 dotenv.config()
 
 export const db = new Kysely<DB>({
