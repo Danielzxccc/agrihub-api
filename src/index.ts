@@ -18,7 +18,9 @@ app.use(session(sessionConfig))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-app.get('/test new runner s', (req, res) => res.send('test workflow'))
+app.get('/test', (req, res) => {
+  res.send('test workflow')
+})
 app.use('/v1/api/auth', AuthRouter)
 
 const httpServer = createServer(app)
