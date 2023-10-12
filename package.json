@@ -8,7 +8,6 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "codegen": "kysely-codegen --dialect postgres",
-    "codegen:production": "kysely-codegen --dialect postgres `$DATABASE_URL`",
     "migrate": "ts-node src/scripts/migrate.ts"
   },
   "keywords": [],
