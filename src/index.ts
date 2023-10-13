@@ -8,6 +8,7 @@ import { sessionConfig } from './config/config'
 
 // routers
 import { AuthRouter } from './routers/AuthRouter'
+import { SessionRequest } from 'AuthType'
 
 dotenv.config()
 const app: Express = express()
@@ -18,9 +19,11 @@ app.use(session(sessionConfig))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-app.get('/test', (req, res) => {
-  res.send('test workflow')
+app.get('/test', (req: SessionRequest, res) => {
+  if (!req.session.user) return res.send('no no no')
+  res.send(req.session.user)
 })
+
 app.use('/v1/api/auth', AuthRouter)
 
 const httpServer = createServer(app)
