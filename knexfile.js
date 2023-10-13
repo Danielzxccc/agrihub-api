@@ -1,6 +1,6 @@
 require('dotenv').config()
 module.exports = {
-  production: {
+  development: {
     client: 'cockroachdb',
     connection: process.env.DATABASE_URL,
     migrations: {
