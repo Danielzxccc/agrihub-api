@@ -15,12 +15,11 @@ const upload = multer({
           : process.env.STORAGE_URL
       )
     },
+
     filename: function (req, file, cb) {
       cb(null, Math.random().toFixed(2) + path.extname(file.originalname))
     },
   }),
 })
-
-console.log(imageFolderPath)
 
 export default upload
