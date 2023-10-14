@@ -1,4 +1,4 @@
-import express, { Express, NextFunction, Request, Response } from 'express'
+import express, { Express } from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { startSocket } from './controllers/SocketController'
@@ -9,6 +9,7 @@ dotenv.config()
 
 // routers
 import { AuthRouter } from './routers/AuthRouter'
+import { ForumsRouter } from './routers/ForumsRouter'
 
 // middleware
 import { multerLimitter } from './middleware/UploadMiddleware'
@@ -24,7 +25,12 @@ app.use(express.json())
 // Error handling middleware for Multer size limit
 app.use(multerLimitter)
 
+app.get('/', (req, res) => {
+  res.send('hello world')
+})
+
 app.use('/v1/api/auth', AuthRouter)
+app.use('/v1/api/forums', ForumsRouter)
 
 const httpServer = createServer(app)
 const io = new Server(httpServer)
