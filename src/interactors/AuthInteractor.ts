@@ -29,9 +29,10 @@ export async function registerUser({
   firstname,
 }: NewUser) {
   try {
-    // find username if exists
-    const userResult = await Service.findUserByUsername(username)
-    const emailResult = await Service.findUserByEmail(email)
+    const [userResult, emailResult] = await Promise.all([
+      Service.findUserByUsername(username),
+      Service.findUserByEmail(email),
+    ])
 
     if (userResult) throw new HttpError('Username Already Exists', 400)
     if (emailResult) throw new HttpError('Email Already Exists', 400)
@@ -46,6 +47,7 @@ export async function registerUser({
     }
 
     const createdUser = await Service.createUser(userObject)
+    delete createdUser.password
     return createdUser
   } catch (error) {
     dbErrorHandler(error)
