@@ -6,6 +6,9 @@ dotenv.config()
 const imageFolderPath = path.join(__dirname, '../../', 'uploads')
 
 const upload = multer({
+  limits: {
+    fileSize: 1_000_000,
+  },
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
       cb(
@@ -15,7 +18,6 @@ const upload = multer({
           : process.env.STORAGE_URL
       )
     },
-
     filename: function (req, file, cb) {
       cb(null, Math.random().toFixed(2) + path.extname(file.originalname))
     },

@@ -1,4 +1,4 @@
-import { NewQuestion } from 'DBTypes'
+import { NewQuestion } from '../types/DBTypes'
 import dbErrorHandler from '../utils/dbErrorHandler'
 import * as Service from '../service/ForumsService'
 

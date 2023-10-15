@@ -3,7 +3,7 @@ import errorHandler from '../utils/httpErrorHandler'
 import * as Interactor from '../interactors/AuthInteractor'
 import * as Schema from '../schema/AuthSchema'
 import zParse from '../utils/zParse'
-import { SessionRequest } from 'AuthType'
+import { SessionRequest } from '../types/AuthType'
 
 export async function authenticateUser(req: SessionRequest, res: Response) {
   try {
