@@ -1,4 +1,4 @@
-import { User } from 'DBTypes'
+import { User } from '../types/DBTypes'
 import { Request } from 'express'
 import { Session } from 'express-session'
 
