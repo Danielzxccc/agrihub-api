@@ -1,4 +1,4 @@
-import { NewUser } from 'DBTypes'
+import { NewUser } from '../types/DBTypes'
 import * as Service from '../service/UserService'
 import HttpError from '../utils/HttpError'
 import dbErrorHandler from '../utils/dbErrorHandler'

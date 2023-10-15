@@ -2,6 +2,7 @@ import { Kysely, PostgresDialect } from 'kysely'
 import { DB } from 'kysely-codegen'
 import { Pool } from 'pg'
 import * as dotenv from 'dotenv'
+import log from '../utils/utils'
 dotenv.config()
 
 export const db = new Kysely<DB>({
@@ -10,10 +11,10 @@ export const db = new Kysely<DB>({
       connectionString: process.env.DATABASE_URL,
     }),
   }),
-  // log(event) {
-  //   if (event.level === 'query') {
-  //     console.log(event.query.sql)
-  //     console.log(event.query.parameters)
-  //   }
-  // },
+  log(event) {
+    if (event.level === 'query') {
+      log.info(event.query.sql)
+      log.info(event.query.parameters)
+    }
+  },
 })
