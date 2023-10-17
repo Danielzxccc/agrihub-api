@@ -30,3 +30,9 @@ export async function registerUser(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export function getCurrentUser(req: SessionRequest, res: Response) {
+  const user = req.session.user
+  delete user.password
+  res.status(200).json(user)
+}
