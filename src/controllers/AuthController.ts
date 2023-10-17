@@ -33,6 +33,8 @@ export async function registerUser(req: Request, res: Response) {
 
 export function getCurrentUser(req: SessionRequest, res: Response) {
   const user = req.session.user
+
+  if (!user) return res.status(400).json({ message: 'No Auth' })
   delete user.password
   res.status(200).json(user)
 }
