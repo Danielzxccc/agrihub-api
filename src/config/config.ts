@@ -21,3 +21,25 @@ export const sessionConfig = {
     maxAge: 1000 * 60 * 60 * 24,
   },
 }
+
+// hard coded for now
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'http://127.0.0.1:8080',
+  'https://agrihub-frontend-agrihub-web.vercel.app',
+]
+export const corsOptions = {
+  origin: (origin: any, callback: any) => {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by Cors'))
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+}
