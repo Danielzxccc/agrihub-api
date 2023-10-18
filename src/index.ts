@@ -3,14 +3,16 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { startSocket } from './controllers/SocketController'
 import session from 'express-session'
-import { sessionConfig } from './config/config'
+import { corsOptions, sessionConfig } from './config/config'
 import routes from './routes'
 import * as dotenv from 'dotenv'
+import cors from 'cors'
 import log from './utils/utils'
 dotenv.config()
 
 const app: Express = express()
 
+app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
