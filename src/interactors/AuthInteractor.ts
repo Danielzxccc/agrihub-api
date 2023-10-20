@@ -9,7 +9,7 @@ export async function authenticateUser(username: string, password: string) {
     const user = await Service.findUserByUsername(username)
 
     if (!user) {
-      throw new HttpError('Unauthorized', 400)
+      throw new HttpError('No user by that username', 400)
     }
 
     const compare = await bcrypt.compare(password, user.password)
