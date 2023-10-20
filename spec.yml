@@ -1,0 +1,151 @@
+openapi: 3.0.0
+info:
+  title: REST API Docs
+  version: 1.0.0
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      name: session
+      in: cookie
+  schemas:
+    UserAuthSchema:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          default: daniel1234
+        password:
+          type: string
+          default: qweR123$
+    UserRegisterSchema:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          default: dan1234
+        password:
+          type: string
+          default: qweR123$
+        email:
+          type: string
+          default: danprogcomms@gmail.com
+        firstname:
+          type: string
+          default: Daniel
+    UserAuthResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            username:
+              type: string
+            email:
+              type: string
+            firstname:
+              type: string
+    UserAuthorizedReponse:
+      type: object
+      properties:
+        error:
+          type: boolean
+          default: true
+        message:
+          type: string
+          default: Authorized
+        validationErrors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ZodValidationError"
+    ZodValidationError:
+      type: object
+      properties:
+        code:
+          type: string
+        expected:
+          type: string
+        received:
+          type: string
+        path:
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+security:
+  - sessionAuth: []
+paths:
+  /healthcheck:
+    get:
+      tags:
+        - Healthcheck
+      description: Responds if the app is up and running
+      responses:
+        "200":
+          description: App is up and running
+  /v1/api/auth/login:
+    post:
+      tags:
+        - User
+      summary: Authenticate a User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserAuthSchema"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAuthResponse"
+        "400":
+          description: Authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAuthorizedReponse"
+        "403":
+          description: Authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAuthorizedReponse"
+  /v1/api/auth/register:
+    post:
+      tags:
+        - User
+      summary: Register a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegisterSchema"
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAuthResponse"
+        "400":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAuthorizedReponse"
+tags: []

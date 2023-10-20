@@ -8,6 +8,7 @@ import routes from './routes'
 import * as dotenv from 'dotenv'
 import cors from 'cors'
 import log from './utils/utils'
+import swaggerDocs from './utils/swagger'
 dotenv.config()
 
 const app: Express = express()
@@ -25,6 +26,7 @@ httpServer.listen(3000, () => {
   log.info('Server is running on port 3000')
   startSocket()
   routes(app)
+  swaggerDocs(app)
 })
 
 export { io }
