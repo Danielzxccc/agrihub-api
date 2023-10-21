@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const CreateArticleSchema = z.object({
+export const ArticleSchema = z.object({
   body: z.object({
     userid: z
       .string({ required_error: 'username is required' })
