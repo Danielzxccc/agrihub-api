@@ -3,4 +3,4 @@ import express from 'express'
 
 export const ForumsRouter = express.Router()
 
-ForumsRouter.post('/create', ForumsController.createNewQuestion)
+ForumsRouter.post('/', ForumsController.createNewQuestion)
