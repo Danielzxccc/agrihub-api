@@ -1,6 +1,6 @@
-import { NewQuestion } from '../types/DBTypes'
-import dbErrorHandler from '../utils/dbErrorHandler'
-import * as Service from '../service/ForumsService'
+import { NewQuestion } from '../../types/DBTypes'
+import dbErrorHandler from '../../utils/dbErrorHandler'
+import * as Service from './ForumsService'
 
 export async function createNewQuestion(question: NewQuestion) {
   try {

@@ -1,9 +1,9 @@
-import errorHandler from '../utils/httpErrorHandler'
-import * as Interactor from '../interactors/ArticlesInteractor'
+import errorHandler from '../../utils/httpErrorHandler'
+import * as Interactor from './ArticlesInteractor'
 import { Request, Response } from 'express'
-import { SessionRequest } from '../types/AuthType'
-import zParse from '../utils/zParse'
-import * as Schema from '../schema/ArticlesSchema'
+import { SessionRequest } from '../../types/AuthType'
+import zParse from '../../utils/zParse'
+import * as Schema from '../../schema/ArticlesSchema'
 
 export async function createArticle(req: Request, res: Response) {
   try {

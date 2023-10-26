@@ -1,7 +1,7 @@
 import { Express, Request, Response } from 'express'
-import { AuthRouter } from './routers/AuthRouter'
-import { ForumsRouter } from './routers/ForumsRouter'
-import { ArticlesRouter } from './routers/ArticlesRouter'
+import { AuthRouter } from './modules/Auth/AuthRouter'
+import { ForumsRouter } from './modules/Forums/ForumsRouter'
+import { ArticlesRouter } from './modules/Articles/ArticlesRouter'
 import upload from './config/multer'
 import { multerLimitter } from './middleware/UploadMiddleware'
 

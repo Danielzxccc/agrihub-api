@@ -1,7 +1,7 @@
-import { NewUser } from '../types/DBTypes'
-import * as Service from '../service/UserService'
-import HttpError from '../utils/HttpError'
-import dbErrorHandler from '../utils/dbErrorHandler'
+import { NewUser } from '../../types/DBTypes'
+import * as Service from '../Users/UserService'
+import HttpError from '../../utils/HttpError'
+import dbErrorHandler from '../../utils/dbErrorHandler'
 import bcrypt from 'bcrypt'
 
 export async function authenticateUser(username: string, password: string) {

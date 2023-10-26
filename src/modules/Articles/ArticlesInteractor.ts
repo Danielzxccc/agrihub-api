@@ -1,7 +1,7 @@
-import { NewArticle, UpdateArticle } from '../types/DBTypes'
-import dbErrorHandler from '../utils/dbErrorHandler'
-import * as Service from '../service/ArticlesService'
-import HttpError from '../utils/HttpError'
+import { NewArticle, UpdateArticle } from '../../types/DBTypes'
+import dbErrorHandler from '../../utils/dbErrorHandler'
+import * as Service from './ArticlesService'
+import HttpError from '../../utils/HttpError'
 
 export async function createArticle(article: NewArticle) {
   try {
