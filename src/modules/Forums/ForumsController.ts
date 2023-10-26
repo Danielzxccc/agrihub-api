@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import errorHandler from '../utils/httpErrorHandler'
-import * as Interactor from '../interactors/ForumsInteractor'
+import errorHandler from '../../utils/httpErrorHandler'
+import * as Interactor from './ForumsInteractor'
 
 export async function createNewQuestion(req: Request, res: Response) {
   try {

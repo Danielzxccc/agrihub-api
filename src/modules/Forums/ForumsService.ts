@@ -1,5 +1,5 @@
-import { NewQuestion } from '../types/DBTypes'
-import { db } from '../config/database'
+import { NewQuestion } from '../../types/DBTypes'
+import { db } from '../../config/database'
 
 export async function createQuestion(
   question: NewQuestion

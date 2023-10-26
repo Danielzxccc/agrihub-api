@@ -1,5 +1,5 @@
-import { NewArticle, UpdateArticle, Article } from '../types/DBTypes'
-import { db } from '../config/database'
+import { NewArticle, UpdateArticle, Article } from '../../types/DBTypes'
+import { db } from '../../config/database'
 
 export async function createArticles(article: NewArticle): Promise<NewArticle> {
   return await db

@@ -1,5 +1,5 @@
-import { db } from '../config/database'
-import { NewUser, User } from '../types/DBTypes'
+import { db } from '../../config/database'
+import { NewUser, User } from '../../types/DBTypes'
 
 export async function findUserByUsername(username: string): Promise<User> {
   return await db

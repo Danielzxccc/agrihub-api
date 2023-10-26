@@ -1,4 +1,4 @@
-import { io } from '../index'
+import { io } from '../../index'
 
 export function startSocket() {
   io.on('connection', (socket) => {

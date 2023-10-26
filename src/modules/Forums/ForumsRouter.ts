@@ -1,4 +1,4 @@
-import * as ForumsController from '../controllers/ForumsController'
+import * as ForumsController from './ForumsController'
 import express from 'express'
 
 export const ForumsRouter = express.Router()
