@@ -3,11 +3,7 @@ import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
 
 export async function createNewQuestion(question: NewQuestion) {
-  try {
-    const newQuestion = await Service.createQuestion(question)
+  const newQuestion = await Service.createQuestion(question)
 
-    return newQuestion
-  } catch (error) {
-    dbErrorHandler(error)
-  }
+  return newQuestion
 }

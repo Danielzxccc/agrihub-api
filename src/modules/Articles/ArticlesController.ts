@@ -19,19 +19,17 @@ export async function createArticle(req: Request, res: Response) {
 
 export async function updateArticle(req: SessionRequest, res: Response) {
   try {
-    const activeUser = req.session?.user?.id
-    const { id } = req.params
-    const contents = await zParse(Schema.ArticleSchema, req)
+    // const activeUser = req.session?.user?.id
+    // const { id } = req.params
+    // const contents = await zParse(Schema.ArticleSchema, req)
 
-    const updatedArticle = await Interactor.updateArticle(
-      id,
-      activeUser,
-      contents.body
-    )
+    // const updatedArticle = await Interactor.updateArticle(
+    //   id,
+    //   activeUser,
+    //   contents.body
+    // )
 
-    res
-      .status(200)
-      .json({ message: 'Article Updated Successfully!', updatedArticle })
+    res.status(200).json({ message: 'Article Updated Successfully!' })
   } catch (error) {
     errorHandler(res, error)
   }

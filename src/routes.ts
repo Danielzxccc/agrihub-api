@@ -2,6 +2,7 @@ import { Express, Request, Response } from 'express'
 import { AuthRouter } from './modules/Auth/AuthRouter'
 import { ForumsRouter } from './modules/Forums/ForumsRouter'
 import { ArticlesRouter } from './modules/Articles/ArticlesRouter'
+import { AccountRouter } from './modules/Auth/AccountRouter'
 import upload from './config/multer'
 import { multerLimitter } from './middleware/UploadMiddleware'
 
@@ -14,9 +15,10 @@ function routes(app: Express) {
     res.json({ data: req.file })
   })
 
-  app.use('/v1/api/auth', AuthRouter)
-  app.use('/v1/api/forums', ForumsRouter)
-  app.use('/v1/api/articles', ArticlesRouter)
+  app.use('/api/auth', AuthRouter)
+  app.use('/api/account', AccountRouter)
+  app.use('/api/forums', ForumsRouter)
+  app.use('/api/articles', ArticlesRouter)
 
   // upload error messages
   app.use(multerLimitter)
