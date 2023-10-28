@@ -1,10 +1,26 @@
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL,
+    username TEXT,
     email TEXT NOT NULL,
-    firstname TEXT NOT NULL
+    password TEXT NOT NULL,
+    firstname TEXT,
+    lastname TEXT,
+    birthdate DATE,
+    present_address TEXT,
+    avatar TEXT,
+    zipcode TEXT,
+    district TEXT,
+    municipality TEXT,
+    verification_level INT,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (username, email)
 );
+
+CREATE INDEX email_index
+ON users (email);
+CREATE INDEX username_index
+ON users (username);
 
 CREATE TABLE forums(
     id SERIAL PRIMARY KEY,
@@ -14,7 +30,7 @@ CREATE TABLE forums(
     imagesrc TEXT,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userid) REFERENCES users(id)
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE articles(
@@ -27,10 +43,18 @@ CREATE TABLE articles(
     articleStatus TEXT DEFAULT 'pending',
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userid) REFERENCES users(id)
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX unique_email_index
-ON users (email);
-CREATE UNIQUE INDEX unique_username_index
-ON users (username);
+CREATE TABLE email_token(
+    id SERIAL PRIMARY KEY,
+    userid INT NOT NULL,
+    token TEXT NOT NULL,
+    expiresAt timestamp NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+)
+
+CREATE INDEX email_token_index
+ON email_token (token);
+
