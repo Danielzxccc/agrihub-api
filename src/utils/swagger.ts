@@ -3,7 +3,7 @@ import swaggerUi from 'swagger-ui-express'
 import YAML from 'yamljs'
 import log from './utils'
 
-const swaggerDocument = YAML.load('./spec.yml')
+const swaggerDocument = YAML.load('./spec/main.yml')
 
 function swaggerDocs(app: Express) {
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))

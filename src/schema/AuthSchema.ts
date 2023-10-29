@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const UserAuthSchema = z.object({
   body: z.object({
-    email: z.string(),
+    user: z.string(),
     password: z.string(),
   }),
 })
@@ -39,5 +39,11 @@ export const verifyLevelTwo = z.object({
   }),
 })
 
+export const SetupUsernameTags = z.object({
+  body: z.object({
+    username: z.string().min(4),
+    tags: z.string().array(),
+  }),
+})
 export type RegisterUser = z.infer<typeof UserRegisterSchema>
-export type VerifyLevelTwo = z.infer<typeof verifyLevelTwo>
+export type ProfileCompletion = z.infer<typeof verifyLevelTwo>
