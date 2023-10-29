@@ -1,7 +1,7 @@
 import express, { Express } from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import { startSocket } from './controllers/SocketController'
+import { startSocket } from './modules/Socket/SocketController'
 import session from 'express-session'
 import { corsOptions, sessionConfig } from './config/config'
 import routes from './routes'
