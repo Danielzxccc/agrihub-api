@@ -18,6 +18,6 @@ export async function sendMail(toEmail: string, token: string) {
     to: toEmail,
     subject: 'Your invoice',
     html: `
-    <h1>${token}</h1>`,
+    <a href="${process.env.HOST}/api/account/verify-email/${token}" target="_blank">Verify Here</a>`,
   })
 }

@@ -1,5 +1,5 @@
 import { Insertable, Selectable, Updateable } from 'kysely'
-import { Forums, Users, Articles, EmailToken } from 'kysely-codegen'
+import { Forums, Users, Articles, EmailToken, UserTags } from 'kysely-codegen'
 
 export type User = Selectable<Users>
 export type NewUser = Insertable<User>
@@ -13,3 +13,5 @@ export type UpdateQuestion = Updateable<Forums>
 export type Article = Selectable<Articles>
 export type NewArticle = Insertable<Articles>
 export type UpdateArticle = Updateable<Articles>
+
+export type UserTag = Insertable<UserTags>

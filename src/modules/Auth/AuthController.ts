@@ -8,8 +8,8 @@ import { SessionRequest } from '../../types/AuthType'
 export async function authenticateUser(req: SessionRequest, res: Response) {
   try {
     const credentials = await zParse(Schema.UserAuthSchema, req)
-    const { email, password } = credentials.body
-    const auth = await Interactor.authenticateUser(email, password)
+    const { user, password } = credentials.body
+    const auth = await Interactor.authenticateUser(user, password)
     req.session.userid = auth.id
     res.status(200).json({ message: 'User Authenticated', user: auth })
   } catch (error) {
@@ -51,11 +51,11 @@ export async function sendEmailVerification(
   }
 }
 
-export async function verifyAccountLevelOne(req: Request, res: Response) {
+export async function verifyEmail(req: Request, res: Response) {
   try {
     const token = await zParse(Schema.verifyLevelOne, req)
     // add data const here to pass in socket.io later
-    await Interactor.verifyAccountLevelOne(token.params.id)
+    await Interactor.verifyEmail(token.params.id)
 
     res.status(200).json({ message: 'Verified Successfully' })
   } catch (error) {
@@ -63,19 +63,28 @@ export async function verifyAccountLevelOne(req: Request, res: Response) {
   }
 }
 
-export async function verifyAccountLevelTwo(
-  req: SessionRequest,
-  res: Response
-) {
+export async function profileCompletion(req: SessionRequest, res: Response) {
   try {
     const id = req.session.userid
     const userInfo = await zParse(Schema.verifyLevelTwo, req)
 
-    const updatedUser = await Interactor.verifyAccountLevelTwo(id, userInfo)
+    const updatedUser = await Interactor.profileCompletion(id, userInfo)
 
     res
       .status(200)
       .json({ message: 'Verified Successfully', user: updatedUser })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+export async function setupUsernameAndTags(req: SessionRequest, res: Response) {
+  try {
+    const id = req.session.userid
+    const { body } = await zParse(Schema.SetupUsernameTags, req)
+
+    await Interactor.setupUsernameAndTags(id, body.username, body.tags)
+
+    res.status(200).json({ message: 'Success' })
   } catch (error) {
     errorHandler(res, error)
   }

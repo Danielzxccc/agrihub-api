@@ -1,15 +1,16 @@
 import * as Service from '../Users/UserService'
-import { findToken, generateToken } from './AuthService'
+import { deleteToken, findToken, generateToken } from './AuthService'
 import HttpError from '../../utils/HttpError'
 import bcrypt from 'bcrypt'
-import { RegisterUser, VerifyLevelTwo } from '../../schema/AuthSchema'
+import { ProfileCompletion, RegisterUser } from '../../schema/AuthSchema'
 import { sendMail } from '../../utils/email'
+import { createUserTags } from '../Tags/TagsService'
 
-export async function authenticateUser(email: string, password: string) {
-  const user = await Service.findUserByEmail(email)
+export async function authenticateUser(credentials: string, password: string) {
+  const user = await Service.findByEmailOrUsername(credentials)
 
   if (!user) {
-    throw new HttpError('No user by that email', 401)
+    throw new HttpError('No user by that email/user', 401)
   }
 
   const compare = await bcrypt.compare(password, user.password)
@@ -65,17 +66,16 @@ export async function sendEmailVerification(session: string): Promise<void> {
   if (verificationToken) await sendMail(user.email, verificationToken.token)
 }
 
-export async function verifyAccountLevelOne(token: string) {
+export async function verifyEmail(token: string) {
+  // check token expiration date
   const tokenFromDB = await findToken(token)
-  const user = await Service.findUser(tokenFromDB.userid)
-
   if (!tokenFromDB) throw new HttpError('Token Expired', 401)
+
+  const user = await Service.findUser(tokenFromDB.userid)
   if (!user) throw new HttpError("Can't find user", 404)
 
-  console.log(
-    new Date().toISOString(),
-    new Date(tokenFromDB.expiresat).toISOString()
-  )
+  // delete token before updating the verification level
+  await deleteToken(tokenFromDB.id)
 
   // update user verification level
   const updatedUser = await Service.updateUser(user.id, {
@@ -85,7 +85,7 @@ export async function verifyAccountLevelOne(token: string) {
   return updatedUser
 }
 
-export async function verifyAccountLevelTwo(id: string, user: VerifyLevelTwo) {
+export async function profileCompletion(id: string, user: ProfileCompletion) {
   const authenticatedUser = await Service.findUser(id)
 
   if (!authenticatedUser) throw new HttpError("Can't find user", 404)
@@ -96,8 +96,6 @@ export async function verifyAccountLevelTwo(id: string, user: VerifyLevelTwo) {
   } catch (error) {
     verification_level = 0
   }
-
-  console.log(authenticatedUser.verification_level, 'level')
 
   if (verification_level === 3) throw new HttpError('Already Verified', 400)
   if (verification_level <= 1) {
@@ -112,4 +110,27 @@ export async function verifyAccountLevelTwo(id: string, user: VerifyLevelTwo) {
   const updatedUser = await Service.updateUser(id, data)
 
   return updatedUser
+}
+
+export async function setupUsernameAndTags(
+  session: string,
+  username: string,
+  tags: Array<string>
+): Promise<void> {
+  const user = await Service.findUser(session)
+  if (!user) throw new HttpError('No Auth', 401)
+  const checkUsername = Service.findUserByUsername(username)
+  if (checkUsername) throw new HttpError('Username already exists', 400)
+
+  const usertags = tags.map((tag) => {
+    return {
+      userid: session,
+      tagid: tag,
+    }
+  })
+
+  // update user's username
+  await Service.updateUser(session, { username })
+  // create user tags
+  await createUserTags(usertags)
 }

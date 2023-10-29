@@ -21,3 +21,7 @@ export async function findToken(token: string) {
     .where('expiresat', '>=', sql`CURRENT_TIMESTAMP`)
     .executeTakeFirst()
 }
+
+export async function deleteToken(id: string) {
+  return await db.deleteFrom('email_token').where('id', '=', id).execute()
+}

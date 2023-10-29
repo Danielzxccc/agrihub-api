@@ -1,3 +1,4 @@
+import { sql } from 'kysely'
 import { db } from '../../config/database'
 import { NewUser, UpdateUser, User } from '../../types/DBTypes'
 
@@ -25,10 +26,18 @@ export async function findUserByEmail(email: string): Promise<User> {
     .executeTakeFirst()
 }
 
+export async function findByEmailOrUsername(user: string): Promise<User> {
+  return await db
+    .selectFrom('users')
+    .selectAll()
+    .where((eb) => eb.or([eb('username', '=', user), eb('email', '=', user)]))
+    .executeTakeFirst()
+}
+
 export async function updateUser(id: string, user: UpdateUser) {
   return await db
     .updateTable('users')
-    .set(user)
+    .set({ ...user, updatedat: sql`CURRENT_TIMESTAMP` })
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
