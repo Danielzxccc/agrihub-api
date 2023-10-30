@@ -6,7 +6,7 @@ export async function generateToken(userid: string) {
     .insertInto('email_token')
     .values({
       userid,
-      token: sql`gen_random_uuid()`,
+      token: sql`uuid_generate_v4()`,
       expiresat: sql`NOW() + INTERVAL '1 hours 30 minutes'`,
     })
     .returningAll()
