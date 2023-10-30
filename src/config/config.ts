@@ -18,14 +18,14 @@ export const sessionConfig: SessionOptions = {
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
-  proxy: process.env.NODE_ENV === 'production',
+  proxy: true,
   cookie: {
     domain:
       process.env.NODE_ENV === 'development' ? 'localhost' : process.env.DOMAIN,
     path: '/',
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    sameSite: false,
+    sameSite: 'none',
     secure: process.env.NODE_ENV === 'production',
   },
 }
