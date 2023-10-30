@@ -71,9 +71,10 @@ CREATE TABLE forums_comments(
 );
 
 CREATE TABLE forums_tags(
+    id SERIAL PRIMARY KEY,
     forumid INT REFERENCES forums(id),
     tagid INT REFERENCES tags(id),
-    PRIMARY KEY (forumid, tagid)
+    UNIQUE (forumid, tagid)
 );
 
 CREATE TABLE forums_ratings(
@@ -84,9 +85,8 @@ CREATE TABLE forums_ratings(
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (questionid) REFERENCES forums(id) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE articles(
     id SERIAL PRIMARY KEY,
@@ -108,8 +108,8 @@ CREATE TABLE email_token(
     token TEXT NOT NULL,
     expiresAt timestamp NOT NULL,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-)
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE INDEX email_token_index
 ON email_token (token);
