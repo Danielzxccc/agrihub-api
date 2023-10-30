@@ -29,9 +29,10 @@ CREATE TABLE tags (
 );
 
 CREATE TABLE user_tags (
+    id SERIAL PRIMARY KEY,
     userid INT REFERENCES users(id),
     tagid INT REFERENCES tags(id),
-    PRIMARY KEY (userid, tagid)
+    UNIQUE (userid, tagid)
 );
 
 -- forums/question

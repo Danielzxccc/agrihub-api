@@ -81,10 +81,15 @@ export async function setupUsernameAndTags(req: SessionRequest, res: Response) {
   try {
     const id = req.session.userid
     const { body } = await zParse(Schema.SetupUsernameTags, req)
+    console.log(body.tags, 'types')
+    const user = await Interactor.setupUsernameAndTags(
+      id,
+      body.username,
+      req.file.filename,
+      body.tags
+    )
 
-    await Interactor.setupUsernameAndTags(id, body.username, body.tags)
-
-    res.status(200).json({ message: 'Success' })
+    res.status(200).json({ message: 'Success', user })
   } catch (error) {
     errorHandler(res, error)
   }
