@@ -18,6 +18,7 @@ export const sessionConfig: SessionOptions = {
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
+  proxy: process.env.NODE_ENV === 'production',
   cookie: {
     domain:
       process.env.NODE_ENV === 'development' ? 'localhost' : process.env.DOMAIN,
@@ -25,6 +26,7 @@ export const sessionConfig: SessionOptions = {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
     sameSite: false,
+    secure: process.env.NODE_ENV === 'production',
   },
 }
 
