@@ -1,13 +1,18 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
+import moment from 'moment'
 
 export async function generateToken(userid: string) {
+  const generatedTimestamp = moment()
+    .add(30, 'minutes')
+    .format('YYYY-MM-DD HH:mm:ss.SSSSSS')
+
   return await db
     .insertInto('email_token')
     .values({
       userid,
-      token: sql`uuid_generate_v4()`,
-      expiresat: sql`NOW() + INTERVAL '1 hours 30 minutes'`,
+      token: sql`gen_random_uuid()`,
+      expiresat: generatedTimestamp,
     })
     .returningAll()
     .executeTakeFirst()

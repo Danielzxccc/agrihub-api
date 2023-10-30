@@ -105,7 +105,7 @@ CREATE TABLE articles(
 CREATE TABLE email_token(
     id SERIAL PRIMARY KEY,
     userid INT NOT NULL,
-    token TEXT NOT NULL,
+    token UUID NOT NULL,
     expiresAt timestamp NOT NULL,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
