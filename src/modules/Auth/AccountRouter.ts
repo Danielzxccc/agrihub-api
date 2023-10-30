@@ -1,3 +1,4 @@
+import upload from '../../config/multer'
 import * as AuthController from './AuthController'
 import express from 'express'
 
@@ -7,3 +8,8 @@ AccountRouter.post('/signup', AuthController.registerUser)
 AccountRouter.post('/send-verification', AuthController.sendEmailVerification)
 AccountRouter.get('/verify-email/:id', AuthController.verifyEmail)
 AccountRouter.post('/profile-completion', AuthController.profileCompletion)
+AccountRouter.post(
+  '/setup-profile',
+  upload.single('avatar'),
+  AuthController.setupUsernameAndTags
+)

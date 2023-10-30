@@ -5,6 +5,8 @@ import bcrypt from 'bcrypt'
 import { ProfileCompletion, RegisterUser } from '../../schema/AuthSchema'
 import { sendMail } from '../../utils/email'
 import { createUserTags } from '../Tags/TagsService'
+import { deleteFile } from '../../utils/file'
+import dbErrorHandler from '../../utils/dbErrorHandler'
 
 export async function authenticateUser(credentials: string, password: string) {
   const user = await Service.findByEmailOrUsername(credentials)
@@ -112,25 +114,54 @@ export async function profileCompletion(id: string, user: ProfileCompletion) {
   return updatedUser
 }
 
+// try catch to check if we need to delete old image to update the other one
 export async function setupUsernameAndTags(
   session: string,
   username: string,
+  avatar: string,
   tags: Array<string>
-): Promise<void> {
-  const user = await Service.findUser(session)
-  if (!user) throw new HttpError('No Auth', 401)
-  const checkUsername = Service.findUserByUsername(username)
-  if (checkUsername) throw new HttpError('Username already exists', 400)
+) {
+  try {
+    const user = await Service.findUser(session)
+    if (!user) throw new HttpError('No Auth', 401)
 
-  const usertags = tags.map((tag) => {
-    return {
-      userid: session,
-      tagid: tag,
+    let verificationLevel: number
+    try {
+      verificationLevel = parseInt(user.verification_level)
+    } catch (error) {
+      verificationLevel = 0
     }
-  })
+    if (verificationLevel !== 3) {
+      throw new HttpError('Setup your profile first', 400)
+    }
 
-  // update user's username
-  await Service.updateUser(session, { username })
-  // create user tags
-  await createUserTags(usertags)
+    if (user.avatar) {
+      deleteFile(user.avatar)
+    }
+
+    const checkUsername = await Service.findUserByUsername(username)
+    if (checkUsername) throw new HttpError('Username already exists', 400)
+
+    const usertags = tags.map((tag) => {
+      return {
+        userid: session,
+        tagid: String(tag),
+      }
+    })
+
+    // update user's username and avatar
+    const updatedUser = await Service.updateUser(session, {
+      username,
+      avatar,
+      verification_level: '4',
+    })
+    // create user tags
+    await createUserTags(usertags)
+
+    delete updatedUser.password
+    return updatedUser
+  } catch (error) {
+    dbErrorHandler(error)
+    deleteFile(avatar)
+  }
 }
