@@ -1,24 +1,30 @@
-// import RedisStore from 'connect-redis'
+import RedisStore from 'connect-redis'
 import * as dotenv from 'dotenv'
+import { SessionOptions } from 'express-session'
 dotenv.config()
-// import { createClient } from 'redis'
+import { createClient } from 'redis'
 
-// let redisClient = createClient({ url: process.env.REDIS_URL })
-// redisClient.connect().catch(console.error)
+let redisClient = createClient({ url: process.env.REDIS_URL })
+redisClient.connect().catch(console.error)
 
-// let redisStore = new RedisStore({
-//   client: redisClient,
-//   prefix: 'myapp:',
-// })
+let redisStore = new RedisStore({
+  client: redisClient,
+  prefix: 'myapp:',
+})
 
-export const sessionConfig = {
-  key: 'userId',
-  // store: redisStore,
+export const sessionConfig: SessionOptions = {
+  name: 'sessionToken',
+  store: redisStore,
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
   cookie: {
+    domain:
+      process.env.NODE_ENV === 'development' ? 'localhost' : process.env.DOMAIN,
+    path: '/',
     maxAge: 1000 * 60 * 60 * 24,
+    httpOnly: true,
+    sameSite: false,
   },
 }
 
@@ -43,5 +49,4 @@ export const corsOptions = {
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200,
 }
