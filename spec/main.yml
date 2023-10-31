@@ -205,6 +205,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerError"
+  /api/account/setup-profile:
+    post:
+      tags:
+        - "Account"
+      summary: "Setup username and tags"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAuthResponse"
+        "400":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
 
 # components
 components:
@@ -296,7 +326,18 @@ components:
           type: string
         avatar:
           type: string
-
+    UserProfile:
+      type: object
+      properties:
+        avatar:
+          type: string
+          format: binary
+        username:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
     UserAuthResponse:
       type: object
       properties:
