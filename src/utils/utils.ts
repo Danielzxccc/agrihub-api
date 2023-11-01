@@ -10,4 +10,8 @@ const log = logger({
   timestamp: () => `,"time":"${new Date().toISOString()}"`,
 })
 
+export function getVerificationLevel(level: string) {
+  return isNaN(parseInt(level)) ? 0 : parseInt(level)
+}
+
 export default log

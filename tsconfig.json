@@ -6,14 +6,11 @@
     "target": "es6",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"],
-      "types/*": ["src/types"]
+      "*": ["node_modules/*"]
     }
-  },
-  "include": ["./src/**/*"]
+  }
 }
