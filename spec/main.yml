@@ -205,6 +205,91 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerError"
+  /api/account/setup-profile:
+    post:
+      tags:
+        - "Account"
+      summary: "Setup username and tags"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAuthResponse"
+        "400":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+  /api/user/profile/{username}:
+    get:
+      tags:
+        - "User"
+      summary: "Search User"
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Search key'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "404":
+          description: Not Found Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+  /api/tags/search:
+    get:
+      tags:
+        - "Tags"
+      summary: "Search tags"
+      parameters:
+        - name: key
+          in: query
+          description: Search key'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TagsSchema"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
 
 # components
 components:
@@ -296,7 +381,27 @@ components:
           type: string
         avatar:
           type: string
-
+    UserProfile:
+      type: object
+      properties:
+        avatar:
+          type: string
+          format: binary
+        username:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+    TagsSchema:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          tag_name:
+            type: string
     UserAuthResponse:
       type: object
       properties:
@@ -312,7 +417,6 @@ components:
           default: true
         message:
           type: string
-          default: Authorized
         validationErrors:
           type: array
           items:

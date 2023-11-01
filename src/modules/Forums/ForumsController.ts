@@ -1,19 +1,24 @@
 import { Request, Response } from 'express'
 import errorHandler from '../../utils/httpErrorHandler'
 import * as Interactor from './ForumsInteractor'
+import * as Schema from '../../schema/ForumsSchema'
+import zParse from '../../utils/zParse'
+import { SessionRequest } from '../../types/AuthType'
 
-export async function createNewQuestion(req: Request, res: Response) {
+export async function createNewQuestion(req: SessionRequest, res: Response) {
   try {
-    // userid should be from the loggedin user
-    const { userid, title, question, imagesrc } = req.body
-    const newQuestion = await Interactor.createNewQuestion({
+    const userid = req.session.userid
+    const uploadedFiles = req.files as Express.Multer.File[]
+    const imagesrc = uploadedFiles.map((file) => file.filename)
+    const contents = await zParse(Schema.ForumsSchema, req)
+    const newQuestion = await Interactor.createNewQuestion(
       userid,
-      title,
-      question,
       imagesrc,
-    })
-
-    res.status(201).json(newQuestion)
+      contents.body
+    )
+    res
+      .status(201)
+      .json({ message: 'Question created successfully', newQuestion })
   } catch (error) {
     errorHandler(res, error)
   }
