@@ -7,7 +7,7 @@ function errorHandler(
   message?: string,
   status?: number
 ) {
-  console.log(error)
+  console.log(typeof error)
   if (error instanceof HttpError) {
     return res.status(error.httpCode || 500).json({
       error: true,
