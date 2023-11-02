@@ -23,3 +23,15 @@ export async function createNewQuestion(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function createNewAnswer(req: SessionRequest, res: Response) {
+  try {
+    const userid = req.session.userid
+    const { answer } = req.body
+    const forumid = req.params.id
+    const newAnswer = await Interactor.createNewAnswer(userid, forumid, answer)
+    res.status(201).json({ message: 'Answer created successfully', newAnswer })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

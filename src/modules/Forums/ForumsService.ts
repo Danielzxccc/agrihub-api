@@ -1,4 +1,4 @@
-import { NewQuestion } from '../../types/DBTypes'
+import { NewAnswer, NewQuestion } from '../../types/DBTypes'
 import { db } from '../../config/database'
 
 export async function createQuestion(
@@ -7,6 +7,14 @@ export async function createQuestion(
   return await db
     .insertInto('forums')
     .values(question)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function createAnswer(answerData: NewAnswer): Promise<NewAnswer> {
+  return await db
+    .insertInto('forums_answers')
+    .values(answerData)
     .returningAll()
     .executeTakeFirst()
 }

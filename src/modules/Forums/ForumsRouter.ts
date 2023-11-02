@@ -9,3 +9,5 @@ ForumsRouter.post(
   upload.array('imagesrc'),
   ForumsController.createNewQuestion
 )
+
+ForumsRouter.post('/create/answers/:id', ForumsController.createNewAnswer)
