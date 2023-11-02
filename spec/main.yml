@@ -290,6 +290,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerError"
+  /api/user/profile/{id}:
+    put:
+      tags:
+        - "User"
+      summary: Update user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserUpdateProfile"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TagsSchema"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
 
 # components
 components:
@@ -393,6 +430,35 @@ components:
           type: array
           items:
             type: string
+    UserUpdateProfile:
+      type: object
+      properties:
+        avatar:
+          type: string
+          format: binary
+        username:
+          type: string
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        present_address:
+          type: string
+        zipcode:
+          type: string
+        district:
+          type: string
+        municipality:
+          type: string
+        verification_level:
+          type: string
+        bio:
+          type: string
     TagsSchema:
       type: array
       items:
