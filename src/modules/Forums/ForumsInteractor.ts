@@ -39,3 +39,27 @@ export async function createNewAnswer(
 
   return newAnswer
 }
+
+export async function createNewComment(
+  userid: string,
+  answerid: string,
+  comment: string
+) {
+  const commentData = {
+    userid,
+    answerid,
+    comment,
+  }
+
+  // Check if the question exists
+  const questionExists = await Service.checkQuestionExists(answerid)
+
+  if (!questionExists) {
+    throw new HttpError('The question does not exist or was removed', 400)
+  }
+
+  // Call the Service to create the comment
+  const newComment = await Service.createComment(commentData)
+
+  return newComment
+}
