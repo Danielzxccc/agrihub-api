@@ -17,3 +17,49 @@ export async function createNewQuestion(
 
   return newQuestion
 }
+
+export async function createNewAnswer(
+  userid: string,
+  forumid: string,
+  answer: string
+) {
+  if (!userid) {
+    throw new HttpError('Session Expired', 401)
+  }
+
+  // container to represent data
+  const answerData = {
+    userid,
+    forumid,
+    answer,
+    isaccepted: false, // Default
+  }
+
+  const newAnswer = await Service.createAnswer(answerData)
+
+  return newAnswer
+}
+
+export async function createNewComment(
+  userid: string,
+  answerid: string,
+  comment: string
+) {
+  const commentData = {
+    userid,
+    answerid,
+    comment,
+  }
+
+  // Check if the question exists
+  const questionExists = await Service.checkQuestionExists(answerid)
+
+  if (!questionExists) {
+    throw new HttpError('The question does not exist or was removed', 400)
+  }
+
+  // Call the Service to create the comment
+  const newComment = await Service.createComment(commentData)
+
+  return newComment
+}
