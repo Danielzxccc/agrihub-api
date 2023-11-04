@@ -8,6 +8,7 @@ export const ForumsSchema = z.object({
     question: z
       .string({ required_error: 'Question is required' })
       .min(1, 'Question must not be empty'),
+    tags: z.array(z.string()).optional(),
   }),
 })
 
@@ -30,3 +31,5 @@ export const AnswersSchema = z.object({
       .min(1, 'Answer must not be empty'),
   }),
 })
+
+export type ForumsContent = z.infer<typeof ForumsSchema>
