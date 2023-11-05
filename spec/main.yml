@@ -33,7 +33,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserAuthResponse"
         "401":
-          description: Authorized
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -63,7 +63,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserSchema"
         "401":
-          description: Authorized
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -130,7 +130,7 @@ paths:
                   message:
                     type: string
         "401":
-          description: Authorized
+          description: Unauthorized
           content:
             application/json:
               schema:
