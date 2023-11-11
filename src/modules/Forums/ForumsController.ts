@@ -18,7 +18,8 @@ export async function listQuestions(req: SessionRequest, res: Response) {
     const questions = await Interactor.listQuestions(
       offset,
       searchKey,
-      filterKey
+      filterKey,
+      perPage
     )
     const totalPages = Math.ceil(Number(questions.total.count) / perPage)
     res.status(200).json({
@@ -27,6 +28,7 @@ export async function listQuestions(req: SessionRequest, res: Response) {
         page: pageNumber,
         per_page: 20,
         total_pages: totalPages,
+        total_items: questions.data.length,
         total_records: Number(questions.total.count),
       },
     })

@@ -7,10 +7,11 @@ import { ForumsContent } from './../../schema/ForumsSchema'
 export async function listQuestions(
   offset: number,
   searchKey: string,
-  filterKey: string
+  filterKey: string,
+  perpage: number
 ) {
   const [data, total] = await Promise.all([
-    Service.findQuestions(offset, searchKey, filterKey),
+    Service.findQuestions(offset, searchKey, filterKey, perpage),
     Service.getTotalCount(),
   ])
 

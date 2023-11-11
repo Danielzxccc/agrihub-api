@@ -1,10 +1,12 @@
 import { NewAnswer, NewComment, NewQuestion, Answer } from '../../types/DBTypes'
 import { db } from '../../config/database'
 import { jsonObjectFrom, jsonArrayFrom } from 'kysely/helpers/postgres'
+import { sql } from 'kysely'
 export async function findQuestions(
   offset: number,
   searchQuery: string,
-  filterKey: string
+  filterKey: string,
+  perpage: number
 ) {
   let query = db
     .selectFrom('forums')
@@ -34,23 +36,27 @@ export async function findQuestions(
       'forums.updatedat',
       fn.count<number>('forums_answers.id').as('answer_count'),
       fn.count<number>('forums_ratings.id').as('vote_count'),
+      fn.max('forums_answers.createdat').as('latest_answer_createdat'),
+      // fn.max<number>('')
     ])
     .groupBy([
       'forums.id',
       'forums.userid',
-      'forums_answers.createdat',
-      'forums_ratings.createdat',
+      'forums.createdat',
+      // 'forums_answers.id',
+      // 'forums_answers.forumid',
+      // 'forums_answers.id',
     ])
 
-  if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
+  if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'asc')
   if (filterKey === 'active')
-    query = query.orderBy('forums_answers.createdat', 'desc')
-  if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
+    query = query.orderBy('latest_answer_createdat', 'desc')
+  // if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
 
-  if (searchQuery.length)
-    query = query.where('forums.title', 'ilike', `${searchQuery}%`)
+  // if (searchQuery.length)
+  //   query = query.where('forums.title', 'ilike', `${searchQuery}%`)
 
-  return await query.limit(20).offset(offset).execute()
+  return await query.limit(perpage).offset(offset).execute()
 }
 
 export async function getTotalCount() {
