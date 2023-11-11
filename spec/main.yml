@@ -330,7 +330,7 @@ paths:
   /api/forums:
     get:
       tags:
-        - "Forums"
+        - Forums
       summary: Get Questions Data
       parameters:
         - in: query
@@ -360,6 +360,35 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/QuestionsResponse"
+        "400":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+    post:
+      tags:
+        - Forums
+      description: Create Questions
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/QuestionSchema"
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewQuestionSchema"
         "500":
           description: Server Error
           content:
@@ -553,6 +582,53 @@ components:
           type: string
         bio:
           type: string
+    QuestionSchema:
+      type: object
+      required:
+        - title
+        - question
+        - imagesrc
+      properties:
+        title:
+          type: string
+          description: The title of the forum entry
+        question:
+          type: string
+          description: The question in the forum entry
+        imagesrc:
+          type: array
+          items:
+            type: string
+            format: binary
+          description: One or more images associated with the forum
+    NewQuestionSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the new question
+        userid:
+          type: string
+          description: The user ID associated with the question
+        title:
+          type: string
+          description: The title of the new question
+        question:
+          type: string
+          description: The content of the new question
+        imagesrc:
+          type: array
+          items:
+            type: string
+          description: Array of image URLs associated with the question
+        createdat:
+          type: string
+          format: date-time
+          description: The timestamp when the question was created
+        updatedat:
+          type: string
+          format: date-time
+          description: The timestamp when the question was last updated
     TagsSchema:
       type: array
       items:
