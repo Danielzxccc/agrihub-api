@@ -396,11 +396,11 @@ components:
                 type: object
                 properties:
                   avatar:
-                    type: null # Adjust if it has a specific type
+                    type: string # Adjust if it has a specific type
                   id:
-                    type: integer
+                    type: string
                   username:
-                    type: null # Adjust if it has a specific type
+                    type: string # Adjust if it has a specific type
               tags:
                 type: array
                 items:
