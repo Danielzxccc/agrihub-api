@@ -17,19 +17,6 @@ export async function listQuestions(
   return { data, total }
 }
 
-export async function listQuestions(
-  offset: number,
-  searchKey: string,
-  filterKey: string
-) {
-  const [data, total] = await Promise.all([
-    Service.findQuestions(offset, searchKey, filterKey),
-    Service.getTotalCount(),
-  ])
-
-  return { data, total }
-}
-
 export async function createNewQuestion(
   userid: string,
   imagesrc: string[],
