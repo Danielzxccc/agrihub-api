@@ -360,6 +360,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/QuestionsResponse"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
 
 # components
 components:
