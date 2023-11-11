@@ -1,3 +1,6 @@
+
+-- add bio 
+-- add users
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
     username TEXT,
@@ -12,6 +15,7 @@ CREATE TABLE users(
     district TEXT,
     municipality TEXT,
     verification_level INT,
+    bio TEXT,
     role TEXT DEFAULT 'user',
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -23,8 +27,10 @@ ON users (email);
 CREATE INDEX username_index
 ON users (username);
 
+-- add details
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
+    details TEXT,
     tag_name TEXT
 );
 

@@ -1,5 +1,14 @@
 import { z } from 'zod'
 
+export const SearchForums = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('10'),
+    filter: z.string().optional().default('newest'),
+  }),
+})
+
 export const ForumsSchema = z.object({
   body: z.object({
     title: z

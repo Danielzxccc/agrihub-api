@@ -1,5 +1,64 @@
 import { NewAnswer, NewComment, NewQuestion, Answer } from '../../types/DBTypes'
 import { db } from '../../config/database'
+import { jsonObjectFrom, jsonArrayFrom } from 'kysely/helpers/postgres'
+export async function findQuestions(
+  offset: number,
+  searchQuery: string,
+  filterKey: string
+) {
+  let query = db
+    .selectFrom('forums')
+    .leftJoin('forums_answers', 'forums_answers.forumid', 'forums.id')
+    .leftJoin('forums_ratings', 'forums_ratings.questionid', 'forums.id')
+    .select(({ fn, eb }) => [
+      'forums.id',
+      jsonObjectFrom(
+        eb
+          .selectFrom('users')
+          .select(['avatar', 'username', 'id'])
+          .whereRef('forums.userid', '=', 'users.id')
+      ).as('user'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('forums_tags')
+          .leftJoin('tags', 'forums_tags.tagid', 'tags.id')
+          .select(['tags.tag_name as tag'])
+          .whereRef('forums_tags.forumid', '=', 'forums.id')
+          .groupBy(['forums_tags.id', 'forums_tags.forumid', 'tags.tag_name'])
+          .orderBy('forums_tags.id')
+      ).as('tags'),
+      'forums.title',
+      'forums.question',
+      'forums.imagesrc',
+      'forums.createdat',
+      'forums.updatedat',
+      fn.count<number>('forums_answers.id').as('answer_count'),
+      fn.count<number>('forums_ratings.id').as('vote_count'),
+    ])
+    .groupBy([
+      'forums.id',
+      'forums.userid',
+      'forums_answers.createdat',
+      'forums_ratings.createdat',
+    ])
+
+  if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
+  if (filterKey === 'active')
+    query = query.orderBy('forums_answers.createdat', 'desc')
+  if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
+
+  if (searchQuery.length)
+    query = query.where('forums.title', 'ilike', `${searchQuery}%`)
+
+  return await query.limit(20).offset(offset).execute()
+}
+
+export async function getTotalCount() {
+  return await db
+    .selectFrom('forums')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
 
 export async function createQuestion(
   question: NewQuestion,

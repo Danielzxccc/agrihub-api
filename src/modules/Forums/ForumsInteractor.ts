@@ -1,8 +1,21 @@
 import HttpError from '../../utils/HttpError'
-import { NewQuestion } from '../../types/DBTypes'
+import { NewQuestion, Question } from '../../types/DBTypes'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
 import { ForumsContent } from './../../schema/ForumsSchema'
+
+export async function listQuestions(
+  offset: number,
+  searchKey: string,
+  filterKey: string
+) {
+  const [data, total] = await Promise.all([
+    Service.findQuestions(offset, searchKey, filterKey),
+    Service.getTotalCount(),
+  ])
+
+  return { data, total }
+}
 
 export async function createNewQuestion(
   userid: string,
