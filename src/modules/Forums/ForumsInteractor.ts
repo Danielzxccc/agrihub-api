@@ -2,6 +2,20 @@ import HttpError from '../../utils/HttpError'
 import { NewQuestion, Question } from '../../types/DBTypes'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
+import { ForumsContent } from './../../schema/ForumsSchema'
+
+export async function listQuestions(
+  offset: number,
+  searchKey: string,
+  filterKey: string
+) {
+  const [data, total] = await Promise.all([
+    Service.findQuestions(offset, searchKey, filterKey),
+    Service.getTotalCount(),
+  ])
+
+  return { data, total }
+}
 
 export async function listQuestions(
   offset: number,
@@ -19,14 +33,14 @@ export async function listQuestions(
 export async function createNewQuestion(
   userid: string,
   imagesrc: string[],
-  question: NewQuestion
+  questions: ForumsContent
 ) {
   if (!userid) {
     throw new HttpError('Session Expired', 401)
   }
-
-  const content = { userid, imagesrc, ...question }
-  const newQuestion = await Service.createQuestion(content)
+  const { title, question, tags } = questions.body
+  const content = { userid, title, question, imagesrc }
+  const newQuestion = await Service.createQuestion(content, tags)
 
   return newQuestion
 }

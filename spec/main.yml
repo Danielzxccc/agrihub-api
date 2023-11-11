@@ -398,7 +398,7 @@ components:
                   avatar:
                     type: string # Adjust if it has a specific type
                   id:
-                    type: integer
+                    type: string
                   username:
                     type: string # Adjust if it has a specific type
               tags:

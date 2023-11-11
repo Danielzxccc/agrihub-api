@@ -39,12 +39,12 @@ export async function createNewQuestion(req: SessionRequest, res: Response) {
   try {
     const userid = req.session.userid
     const uploadedFiles = req.files as Express.Multer.File[]
-    const imagesrc = uploadedFiles.map((file) => file.filename)
+    const imagesrc = uploadedFiles?.map((file) => file.filename) || []
     const contents = await zParse(Schema.ForumsSchema, req)
     const newQuestion = await Interactor.createNewQuestion(
       userid,
       imagesrc,
-      contents.body
+      contents
     )
     res
       .status(201)
