@@ -8,6 +8,7 @@ function errorHandler(
   status?: number
 ) {
   console.log(typeof error)
+  console.log(error.stack, 'ERROR MESSAGE')
   if (error instanceof HttpError) {
     return res.status(error.httpCode || 500).json({
       error: true,
