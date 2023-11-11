@@ -327,6 +327,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerError"
+  /api/forums:
+    get:
+      tags:
+        - "Forums"
+      summary: Get Questions Data
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search term for forums (optional)
+        - in: query
+          name: page
+          schema:
+            type: string
+          description: Page number (optional)
+        - in: query
+          name: perpage
+          schema:
+            type: string
+          description: Number of items per page (optional, default 10)
+        - in: query
+          name: filter
+          schema:
+            type: string
+          description: Filter criteria (optional, default newest)
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionsResponse"
 
 # components
 components:
@@ -349,6 +382,61 @@ components:
         password:
           type: string
           default: qweR123$
+    QuestionsResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              user:
+                type: object
+                properties:
+                  avatar:
+                    type: null # Adjust if it has a specific type
+                  id:
+                    type: integer
+                  username:
+                    type: null # Adjust if it has a specific type
+              tags:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tag:
+                      type: string
+              title:
+                type: string
+              question:
+                type: string
+              imagesrc:
+                type: array
+                items:
+                  type: string
+              createdat:
+                type: string
+                format: date-time
+              updatedat:
+                type: string
+                format: date-time
+              answer_count:
+                type: string
+              vote_count:
+                type: string
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            per_page:
+              type: integer
+            total_pages:
+              type: integer
+            total_records:
+              type: integer
     UserRegisterSchema:
       type: object
       required:
