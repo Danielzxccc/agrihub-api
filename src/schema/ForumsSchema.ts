@@ -4,6 +4,67 @@ import { z } from 'zod'
  * @openapi
  * components:
  *   schemas:
+ *     QuestionsResponse:
+ *       type: object
+ *       properties:
+ *         questions:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               user:
+ *                 type: object
+ *                 properties:
+ *                   avatar:
+ *                     type: string
+ *                   id:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     tag:
+ *                       type: string
+ *               title:
+ *                 type: string
+ *               question:
+ *                 type: string
+ *               imagesrc:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               createdat:
+ *                 type: string
+ *                 format: date-time
+ *               updatedat:
+ *                 type: string
+ *                 format: date-time
+ *               answer_count:
+ *                 type: string
+ *               vote_count:
+ *                 type: string
+ *         pagination:
+ *           type: object
+ *           properties:
+ *             page:
+ *               type: integer
+ *             per_page:
+ *               type: integer
+ *             total_pages:
+ *               type: integer
+ *             total_records:
+ *               type: integer
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
  *     QuestionSchema:
  *       type: object
  *       required:

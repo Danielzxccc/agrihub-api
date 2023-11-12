@@ -39,7 +39,7 @@ export const ForumsRouter = express.Router()
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/NewQuestionSchema"
+ *               $ref: "#/components/schemas/QuestionsResponse"
  *       "400":
  *         description: Validation Error
  *         content:
