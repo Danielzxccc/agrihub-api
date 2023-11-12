@@ -22,7 +22,11 @@ import { z } from 'zod'
  *           items:
  *             type: string
  *             format: binary
- *           description: One or more images associated with the forum
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: One or more tags associated with the forum
  *
  *     NewQuestionSchema:
  *       type: object

@@ -39,7 +39,7 @@ export const ForumsRouter = express.Router()
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/QuestionsResponse"
+ *               $ref: "#/components/schemas/NewQuestionSchema"
  *       "400":
  *         description: Validation Error
  *         content:
@@ -71,6 +71,12 @@ export const ForumsRouter = express.Router()
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/NewQuestionSchema"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "500":
  *         description: Server Error
  *         content:
@@ -78,7 +84,6 @@ export const ForumsRouter = express.Router()
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
-
 ForumsRouter.get('/', ForumsController.listQuestions)
 
 ForumsRouter.post(
