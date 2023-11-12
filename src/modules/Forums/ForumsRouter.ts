@@ -32,6 +32,10 @@ export const ForumsRouter = express.Router()
  *         name: filter
  *         schema:
  *           type: string
+ *           enum:
+ *            - newest
+ *            - active
+ *            - trending
  *         description: Filter criteria (optional, default newest)
  *     responses:
  *       "200":
