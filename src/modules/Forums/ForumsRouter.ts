@@ -92,11 +92,13 @@ ForumsRouter.post(
   ForumsController.createNewQuestion
 )
 
+
 ForumsRouter.post(
   '/create/answers/:id',
   UserGuard(['user']),
   ForumsController.createNewAnswer
 )
+
 
 ForumsRouter.post(
   '/create/comments/:answerId',
