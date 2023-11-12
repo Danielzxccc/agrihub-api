@@ -84,7 +84,6 @@ export const ForumsRouter = express.Router()
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
-
 ForumsRouter.get('/', ForumsController.listQuestions)
 
 ForumsRouter.post(

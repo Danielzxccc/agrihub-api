@@ -48,7 +48,7 @@ export async function findQuestions(
       // 'forums_answers.id',
     ])
 
-  if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
+  if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'asc')
   if (filterKey === 'active')
     query = query.orderBy('latest_answer_createdat', 'desc')
   // if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
