@@ -1,5 +1,185 @@
 import { z } from 'zod'
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UserLoginSchema:
+ *       type: object
+ *       required:
+ *         - user
+ *         - password
+ *       properties:
+ *         user:
+ *           type: string
+ *           default: daniel1234
+ *         password:
+ *           type: string
+ *           default: qweR123$
+ *
+ *     UserRegisterSchema:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *         - confirmPassword
+ *       properties:
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *         confirmPassword:
+ *           type: string
+ *
+ *     UserCompletionSchema:
+ *       type: object
+ *       required:
+ *         - firstname
+ *         - lastname
+ *         - birthdate
+ *         - present_address
+ *         - zipcode
+ *         - district
+ *         - municipality
+ *       properties:
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         birthdate:
+ *           type: string
+ *         present_address:
+ *           type: string
+ *         zipcode:
+ *           type: string
+ *         district:
+ *           type: string
+ *         municipality:
+ *           type: string
+ *
+ *     UserSchema:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         birthdate:
+ *           type: string
+ *         present_address:
+ *           type: string
+ *         zipcode:
+ *           type: string
+ *         district:
+ *           type: string
+ *         municipality:
+ *           type: string
+ *         verification_level:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *
+ *     UserProfile:
+ *       type: object
+ *       properties:
+ *         avatar:
+ *           type: string
+ *           format: binary
+ *         username:
+ *           type: string
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *
+ *     UserUpdateProfile:
+ *       type: object
+ *       properties:
+ *         avatar:
+ *           type: string
+ *           format: binary
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         birthdate:
+ *           type: string
+ *           format: date
+ *         present_address:
+ *           type: string
+ *         zipcode:
+ *           type: string
+ *         district:
+ *           type: string
+ *         municipality:
+ *           type: string
+ *         verification_level:
+ *           type: string
+ *         bio:
+ *           type: string
+ *
+ *     UserAuthResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         user:
+ *           $ref: "#/components/schemas/UserSchema"
+ *
+ *     ZodValidationError:
+ *       type: object
+ *       properties:
+ *         code:
+ *           type: string
+ *         expected:
+ *           type: string
+ *         received:
+ *           type: string
+ *         path:
+ *           type: array
+ *           items:
+ *             type: string
+ *         message:
+ *           type: string
+ *
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: boolean
+ *           default: true
+ *         message:
+ *           type: string
+ *         validationErrors:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/ZodValidationError"
+ *
+ *     ServerError:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: boolean
+ *           default: true
+ *         message:
+ *           type: string
+ *           default: Server Error
+ */
+
 export const UserAuthSchema = z.object({
   body: z.object({
     user: z.string(),
