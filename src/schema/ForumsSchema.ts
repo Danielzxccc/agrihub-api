@@ -1,5 +1,133 @@
 import { z } from 'zod'
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     QuestionsResponse:
+ *       type: object
+ *       properties:
+ *         questions:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               user:
+ *                 type: object
+ *                 properties:
+ *                   avatar:
+ *                     type: string
+ *                   id:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     tag:
+ *                       type: string
+ *               title:
+ *                 type: string
+ *               question:
+ *                 type: string
+ *               imagesrc:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               createdat:
+ *                 type: string
+ *                 format: date-time
+ *               updatedat:
+ *                 type: string
+ *                 format: date-time
+ *               answer_count:
+ *                 type: string
+ *               vote_count:
+ *                 type: string
+ *         pagination:
+ *           type: object
+ *           properties:
+ *             page:
+ *               type: integer
+ *             per_page:
+ *               type: integer
+ *             total_pages:
+ *               type: integer
+ *             total_records:
+ *               type: integer
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     QuestionSchema:
+ *       type: object
+ *       required:
+ *         - title
+ *         - question
+ *         - imagesrc
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: The title of the forum entry
+ *         question:
+ *           type: string
+ *           description: The question in the forum entry
+ *         imagesrc:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: binary
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: One or more tags associated with the forum
+ *
+ *     NewQuestionSchema:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The unique identifier for the new question
+ *         userid:
+ *           type: string
+ *           description: The user ID associated with the question
+ *         title:
+ *           type: string
+ *           description: The title of the new question
+ *         question:
+ *           type: string
+ *           description: The content of the new question
+ *         imagesrc:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Array of image URLs associated with the question
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the question was created
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the question was last updated
+ */
+
+export const SearchForums = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z.string().optional().default('newest'),
+  }),
+})
+
 export const ForumsSchema = z.object({
   body: z.object({
     title: z
@@ -8,6 +136,7 @@ export const ForumsSchema = z.object({
     question: z
       .string({ required_error: 'Question is required' })
       .min(1, 'Question must not be empty'),
+    tags: z.array(z.string()).optional(),
   }),
 })
 
@@ -30,3 +159,5 @@ export const AnswersSchema = z.object({
       .min(1, 'Answer must not be empty'),
   }),
 })
+
+export type ForumsContent = z.infer<typeof ForumsSchema>
