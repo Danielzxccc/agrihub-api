@@ -14,7 +14,7 @@ let redisStore = new RedisStore({
 
 export const sessionConfig: SessionOptions = {
   name: 'sessionToken',
-  store: process.env.NODE_ENV === 'production' ? redisStore : null,
+  store: redisStore,
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
