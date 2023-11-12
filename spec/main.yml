@@ -290,6 +290,111 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerError"
+  /api/user/profile/{id}:
+    put:
+      tags:
+        - "User"
+      summary: Update user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserUpdateProfile"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TagsSchema"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+  /api/forums:
+    get:
+      tags:
+        - Forums
+      summary: Get Questions Data
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search term for forums (optional)
+        - in: query
+          name: page
+          schema:
+            type: string
+          description: Page number (optional)
+        - in: query
+          name: perpage
+          schema:
+            type: string
+          description: Number of items per page (optional, default 10)
+        - in: query
+          name: filter
+          schema:
+            type: string
+          description: Filter criteria (optional, default newest)
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionsResponse"
+        "400":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
+    post:
+      tags:
+        - Forums
+      description: Create Questions
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/QuestionSchema"
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewQuestionSchema"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerError"
 
 # components
 components:
@@ -312,6 +417,61 @@ components:
         password:
           type: string
           default: qweR123$
+    QuestionsResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              user:
+                type: object
+                properties:
+                  avatar:
+                    type: string # Adjust if it has a specific type
+                  id:
+                    type: string
+                  username:
+                    type: string # Adjust if it has a specific type
+              tags:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tag:
+                      type: string
+              title:
+                type: string
+              question:
+                type: string
+              imagesrc:
+                type: array
+                items:
+                  type: string
+              createdat:
+                type: string
+                format: date-time
+              updatedat:
+                type: string
+                format: date-time
+              answer_count:
+                type: string
+              vote_count:
+                type: string
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            per_page:
+              type: integer
+            total_pages:
+              type: integer
+            total_records:
+              type: integer
     UserRegisterSchema:
       type: object
       required:
@@ -393,6 +553,82 @@ components:
           type: array
           items:
             type: string
+    UserUpdateProfile:
+      type: object
+      properties:
+        avatar:
+          type: string
+          format: binary
+        username:
+          type: string
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        present_address:
+          type: string
+        zipcode:
+          type: string
+        district:
+          type: string
+        municipality:
+          type: string
+        verification_level:
+          type: string
+        bio:
+          type: string
+    QuestionSchema:
+      type: object
+      required:
+        - title
+        - question
+        - imagesrc
+      properties:
+        title:
+          type: string
+          description: The title of the forum entry
+        question:
+          type: string
+          description: The question in the forum entry
+        imagesrc:
+          type: array
+          items:
+            type: string
+            format: binary
+          description: One or more images associated with the forum
+    NewQuestionSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the new question
+        userid:
+          type: string
+          description: The user ID associated with the question
+        title:
+          type: string
+          description: The title of the new question
+        question:
+          type: string
+          description: The content of the new question
+        imagesrc:
+          type: array
+          items:
+            type: string
+          description: Array of image URLs associated with the question
+        createdat:
+          type: string
+          format: date-time
+          description: The timestamp when the question was created
+        updatedat:
+          type: string
+          format: date-time
+          description: The timestamp when the question was last updated
     TagsSchema:
       type: array
       items:

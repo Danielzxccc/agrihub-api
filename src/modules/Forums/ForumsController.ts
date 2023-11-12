@@ -5,6 +5,37 @@ import * as Schema from '../../schema/ForumsSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
 
+export async function listQuestions(req: SessionRequest, res: Response) {
+  try {
+    const { query } = await zParse(Schema.SearchForums, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const questions = await Interactor.listQuestions(
+      offset,
+      searchKey,
+      filterKey,
+      perPage
+    )
+    const totalPages = Math.ceil(Number(questions.total.count) / perPage)
+    res.status(200).json({
+      questions: questions.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(questions.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function createNewQuestion(req: SessionRequest, res: Response) {
   try {
     const userid = req.session.userid

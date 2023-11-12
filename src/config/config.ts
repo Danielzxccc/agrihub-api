@@ -1,6 +1,6 @@
 import RedisStore from 'connect-redis'
 import * as dotenv from 'dotenv'
-import { SessionOptions } from 'express-session'
+import { MemoryStore, SessionOptions } from 'express-session'
 dotenv.config()
 import { createClient } from 'redis'
 
@@ -14,7 +14,7 @@ let redisStore = new RedisStore({
 
 export const sessionConfig: SessionOptions = {
   name: 'sessionToken',
-  store: redisStore,
+  store: process.env.NODE_ENV === 'production' ? redisStore : null,
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,

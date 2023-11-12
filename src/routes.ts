@@ -19,7 +19,7 @@ function routes(app: Express) {
 
   app.use('/api/auth', AuthRouter)
   app.use('/api/account', AccountRouter)
-  app.use('/api/user/', UserRouter)
+  app.use('/api/user', UserRouter)
   app.use('/api/forums', ForumsRouter)
   app.use('/api/tags', TagsRouter)
   app.use('/api/articles', ArticlesRouter)
