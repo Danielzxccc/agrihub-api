@@ -4,6 +4,12 @@ import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
 import { ForumsContent } from './../../schema/ForumsSchema'
 
+export async function viewQuestion(id: string) {
+  const question = await Service.viewQuestion(id, 0)
+
+  return question
+}
+
 export async function listQuestions(
   offset: number,
   searchKey: string,

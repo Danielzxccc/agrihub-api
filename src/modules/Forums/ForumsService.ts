@@ -48,15 +48,84 @@ export async function findQuestions(
       // 'forums_answers.id',
     ])
 
-  if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'asc')
+  if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
   if (filterKey === 'active')
     query = query.orderBy('latest_answer_createdat', 'desc')
-  // if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
+  if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
 
   // if (searchQuery.length)
   //   query = query.where('forums.title', 'ilike', `${searchQuery}%`)
 
   return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function viewQuestion(id: string, offset: number) {
+  return await db
+    .selectFrom('forums')
+    .leftJoin('forums_answers', 'forums_answers.forumid', 'forums.id')
+    .leftJoin('forums_ratings', 'forums_ratings.questionid', 'forums.id')
+    .select(({ fn, eb }) => [
+      'forums.id',
+      jsonObjectFrom(
+        eb
+          .selectFrom('users')
+          .select(['avatar', 'username', 'id'])
+          .whereRef('forums.userid', '=', 'users.id')
+      ).as('user'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('forums_tags')
+          .leftJoin('tags', 'forums_tags.tagid', 'tags.id')
+          .select(['tags.tag_name as tag'])
+          .whereRef('forums_tags.forumid', '=', 'forums.id')
+          .groupBy(['forums_tags.id', 'forums_tags.forumid', 'tags.tag_name'])
+          .orderBy('forums_tags.id')
+      ).as('tags'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('forums_answers')
+          .select([
+            jsonObjectFrom(
+              eb
+                .selectFrom('users')
+                .select(['avatar', 'username', 'id'])
+                .whereRef('forums.userid', '=', 'users.id')
+            ).as('user'),
+            'forums_answers.id',
+            'forums_answers.answer',
+          ])
+          .whereRef('forums.id', '=', 'forums_answers.forumid')
+          .orderBy('forums_answers.createdat', 'desc')
+          .limit(10)
+          .offset(offset)
+      ).as('answers'),
+      'forums.title',
+      'forums.question',
+      'forums.imagesrc',
+      'forums.createdat',
+      'forums.updatedat',
+      fn.count<number>('forums_answers.id').as('answer_count'),
+      fn.count<number>('forums_ratings.id').as('vote_count'),
+      fn.max('forums_answers.createdat').as('latest_answer_createdat'),
+      // fn.max<number>('')
+    ])
+    .groupBy([
+      'forums.id',
+      'forums.userid',
+      'forums.createdat',
+      // 'forums_answers.id',
+      // 'forums_answers.forumid',
+      // 'forums_answers.id',
+    ])
+
+    .groupBy([
+      'forums.id',
+      'forums_ratings.id',
+      'forums.userid',
+      'forums_ratings.createdat',
+    ])
+    .where('forums.id', '=', id)
+    .executeTakeFirst()
 }
 
 export async function getTotalCount() {

@@ -7,6 +7,9 @@ import { SessionRequest } from '../../types/AuthType'
 
 export async function viewQuestion(req: SessionRequest, res: Response) {
   try {
+    const question = await Interactor.viewQuestion(req.params.id)
+
+    res.status(200).json(question)
   } catch (error) {
     errorHandler(res, error)
   }

@@ -47,6 +47,7 @@ CREATE TABLE forums(
     userid INT NOT NULL,
     title TEXT NOT NULL,
     question TEXT NOT NULL,
+    views INT DEFAULT 0,
     imagesrc TEXT[],
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,

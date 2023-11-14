@@ -90,6 +90,8 @@ export const ForumsRouter = express.Router()
  */
 ForumsRouter.get('/', ForumsController.listQuestions)
 
+ForumsRouter.get('/:id', ForumsController.viewQuestion)
+
 ForumsRouter.post(
   '/',
   upload.array('imagesrc'),
