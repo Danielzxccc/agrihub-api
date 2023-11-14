@@ -5,6 +5,13 @@ import * as Schema from '../../schema/ForumsSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
 
+export async function viewQuestion(req: SessionRequest, res: Response) {
+  try {
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function listQuestions(req: SessionRequest, res: Response) {
   try {
     const { query } = await zParse(Schema.SearchForums, req)
