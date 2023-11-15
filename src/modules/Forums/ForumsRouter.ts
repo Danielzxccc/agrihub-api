@@ -101,13 +101,6 @@ ForumsRouter.get('/:id', ForumsController.viewQuestion)
 
 ForumsRouter.post(
   '/',
-  rateLimiter({
-    endpoint: 'post/api/forums',
-    rate_limit: {
-      time: 60,
-      limit: 1,
-    },
-  }),
   upload.array('imagesrc'),
   ForumsController.createNewQuestion
 )
