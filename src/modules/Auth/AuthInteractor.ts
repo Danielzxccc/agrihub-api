@@ -8,7 +8,11 @@ import { createUserTags } from '../Tags/TagsService'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { getVerificationLevel } from '../../utils/utils'
-import { getObjectSignedUrl, uploadFile } from '../AWS-Bucket/UploadService'
+import {
+  getObjectSignedUrl,
+  getObjectUrl,
+  uploadFile,
+} from '../AWS-Bucket/UploadService'
 import fs from 'fs'
 
 export async function authenticateUser(credentials: string, password: string) {
@@ -58,7 +62,7 @@ export async function getCurrentUser(session: string) {
   if (!user) throw new HttpError('User not found', 401)
 
   delete user.password
-  return { ...user, avatar: await getObjectSignedUrl(user.avatar) }
+  return { ...user, avatar: getObjectUrl(user.avatar) }
 }
 
 export async function sendEmailVerification(session: string): Promise<void> {
@@ -168,7 +172,7 @@ export async function setupUsernameAndTags(
 
     // delete password object in response object
     delete updatedUser.password
-    return { ...updatedUser, avatar: await getObjectSignedUrl(fileKey) }
+    return { ...updatedUser, avatar: getObjectUrl(fileKey) }
   } catch (error) {
     deleteFile(image.filename)
     dbErrorHandler(error)
