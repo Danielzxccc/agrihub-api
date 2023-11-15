@@ -55,7 +55,8 @@ export async function createNewQuestion(req: SessionRequest, res: Response) {
     const newQuestion = await Interactor.createNewQuestion(
       userid,
       imagesrc,
-      contents
+      contents,
+      uploadedFiles
     )
     res
       .status(201)

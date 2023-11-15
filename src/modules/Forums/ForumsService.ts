@@ -53,8 +53,8 @@ export async function findQuestions(
     query = query.orderBy('latest_answer_createdat', 'desc')
   if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
 
-  // if (searchQuery.length)
-  //   query = query.where('forums.title', 'ilike', `${searchQuery}%`)
+  if (searchQuery.length)
+    query = query.where('forums.title', 'ilike', `${searchQuery}%`)
 
   return await query.limit(perpage).offset(offset).execute()
 }
@@ -89,10 +89,11 @@ export async function viewQuestion(id: string, offset: number) {
               eb
                 .selectFrom('users')
                 .select(['avatar', 'username', 'id'])
-                .whereRef('forums.userid', '=', 'users.id')
+                .whereRef('forums_answers.userid', '=', 'users.id')
             ).as('user'),
             'forums_answers.id',
             'forums_answers.answer',
+            'forums_answers.isaccepted',
           ])
           .whereRef('forums.id', '=', 'forums_answers.forumid')
           .orderBy('forums_answers.createdat', 'desc')
@@ -109,21 +110,7 @@ export async function viewQuestion(id: string, offset: number) {
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       // fn.max<number>('')
     ])
-    .groupBy([
-      'forums.id',
-      'forums.userid',
-      'forums.createdat',
-      // 'forums_answers.id',
-      // 'forums_answers.forumid',
-      // 'forums_answers.id',
-    ])
-
-    .groupBy([
-      'forums.id',
-      'forums_ratings.id',
-      'forums.userid',
-      'forums_ratings.createdat',
-    ])
+    .groupBy(['forums.id', 'forums.userid', 'forums.createdat'])
     .where('forums.id', '=', id)
     .executeTakeFirst()
 }
@@ -137,7 +124,7 @@ export async function getTotalCount() {
 
 export async function createQuestion(
   question: NewQuestion,
-  tagsId: string[]
+  tagsId: string[] | string
 ): Promise<NewQuestion> {
   const forumContent = await db.transaction().execute(async (trx) => {
     const forum = await trx

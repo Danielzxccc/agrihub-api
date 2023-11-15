@@ -1,4 +1,5 @@
 import upload from '../../config/multer'
+import { rateLimiter } from '../../middleware/RateLimitter'
 import { UserGuard } from '../AuthGuard/UserGuard'
 import * as ForumsController from './ForumsController'
 import express from 'express'
@@ -81,6 +82,12 @@ export const ForumsRouter = express.Router()
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "500":
  *         description: Server Error
  *         content:
@@ -94,6 +101,13 @@ ForumsRouter.get('/:id', ForumsController.viewQuestion)
 
 ForumsRouter.post(
   '/',
+  rateLimiter({
+    endpoint: 'post/api/forums',
+    rate_limit: {
+      time: 60,
+      limit: 1,
+    },
+  }),
   upload.array('imagesrc'),
   ForumsController.createNewQuestion
 )

@@ -136,7 +136,7 @@ export const ForumsSchema = z.object({
     question: z
       .string({ required_error: 'Question is required' })
       .min(1, 'Question must not be empty'),
-    tags: z.array(z.string()).optional(),
+    tags: z.union([z.array(z.string()), z.string()]).optional(),
   }),
 })
 
