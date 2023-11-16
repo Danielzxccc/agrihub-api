@@ -6,8 +6,20 @@ import { ForumsContent } from './../../schema/ForumsSchema'
 import { getObjectUrl, uploadFiles } from '../AWS-Bucket/UploadService'
 import { deleteFile } from '../../utils/file'
 
-export async function viewQuestion(id: string) {
-  const question = await Service.viewQuestion(id, 0)
+export async function viewQuestion(
+  id: string,
+  offset: number,
+  perPage: number
+) {
+  let questionId = Number(id)
+
+  if (isNaN(questionId)) throw new HttpError('Not a valid ID', 400)
+
+  const question = await Service.viewQuestion(id, offset, perPage)
+
+  if (!question) throw new HttpError('Question Not Found', 404)
+
+  question.user.avatar = getObjectUrl(question.user.avatar)
 
   return question
 }

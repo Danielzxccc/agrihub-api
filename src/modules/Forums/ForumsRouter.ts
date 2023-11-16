@@ -97,6 +97,29 @@ export const ForumsRouter = express.Router()
  */
 ForumsRouter.get('/', ForumsController.listQuestions)
 
+/**
+ * @openapi
+ * /api/forums/{id}:
+ *   get:
+ *     tags:
+ *       - "Forums"
+ *     summary: Get Question Details
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Question ID
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/QuestionViewSchema"
+ */
+
 ForumsRouter.get('/:id', ForumsController.viewQuestion)
 
 ForumsRouter.post(

@@ -12,7 +12,7 @@ dotenv.config()
 
 const bucketName = process.env.AWS_BUCKET_NAME
 
-const s3Client = new S3Client()
+const s3Client = new S3Client({ region: process.env.AWS_REGION })
 
 export function uploadFile(
   filePath: fs.ReadStream,

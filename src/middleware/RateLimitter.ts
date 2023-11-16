@@ -25,7 +25,7 @@ export function rateLimiter(rule: RateLimitterRule) {
     if (requests > rate_limit.limit) {
       return res.status(429).json({
         error: true,
-        message: 'too much requests',
+        message: 'too many requests',
       })
     }
     next()

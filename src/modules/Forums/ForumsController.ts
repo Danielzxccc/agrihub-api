@@ -7,7 +7,13 @@ import { SessionRequest } from '../../types/AuthType'
 
 export async function viewQuestion(req: SessionRequest, res: Response) {
   try {
-    const question = await Interactor.viewQuestion(req.params.id)
+    const { query, params } = await zParse(Schema.ViewQuestion, req)
+
+    const pageNumber = Number(query.page) || 1
+    const perPage = 10
+    const offset = (pageNumber - 1) * perPage
+
+    const question = await Interactor.viewQuestion(params.id, offset, perPage)
 
     res.status(200).json(question)
   } catch (error) {

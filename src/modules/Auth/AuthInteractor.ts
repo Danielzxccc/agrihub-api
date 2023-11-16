@@ -8,11 +8,7 @@ import { createUserTags } from '../Tags/TagsService'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { getVerificationLevel } from '../../utils/utils'
-import {
-  getObjectSignedUrl,
-  getObjectUrl,
-  uploadFile,
-} from '../AWS-Bucket/UploadService'
+import { getObjectUrl, uploadFile } from '../AWS-Bucket/UploadService'
 import fs from 'fs'
 
 export async function authenticateUser(credentials: string, password: string) {

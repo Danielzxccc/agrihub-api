@@ -59,7 +59,11 @@ export async function findQuestions(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function viewQuestion(id: string, offset: number) {
+export async function viewQuestion(
+  id: string,
+  offset: number,
+  perPage: number
+) {
   return await db
     .selectFrom('forums')
     .leftJoin('forums_answers', 'forums_answers.forumid', 'forums.id')
@@ -97,7 +101,7 @@ export async function viewQuestion(id: string, offset: number) {
           ])
           .whereRef('forums.id', '=', 'forums_answers.forumid')
           .orderBy('forums_answers.createdat', 'desc')
-          .limit(10)
+          .limit(perPage)
           .offset(offset)
       ).as('answers'),
       'forums.title',
