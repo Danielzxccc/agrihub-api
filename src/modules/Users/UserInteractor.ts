@@ -38,7 +38,7 @@ export async function updateUserProfile(
     delete updateUser.password
     return updateUser
   } catch (error) {
-    dbErrorHandler(error)
     deleteFile(avatar)
+    dbErrorHandler(error)
   }
 }

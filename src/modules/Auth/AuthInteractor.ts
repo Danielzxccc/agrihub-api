@@ -5,8 +5,11 @@ import bcrypt from 'bcrypt'
 import { ProfileCompletion, RegisterUser } from '../../schema/AuthSchema'
 import { sendMail } from '../../utils/email'
 import { createUserTags } from '../Tags/TagsService'
-import { deleteFile } from '../../utils/file'
+import { deleteFile, readFileAsStream } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
+import { getVerificationLevel } from '../../utils/utils'
+import { getObjectUrl, uploadFile } from '../AWS-Bucket/UploadService'
+import fs from 'fs'
 
 export async function authenticateUser(credentials: string, password: string) {
   const user = await Service.findByEmailOrUsername(credentials)
@@ -55,7 +58,7 @@ export async function getCurrentUser(session: string) {
   if (!user) throw new HttpError('User not found', 401)
 
   delete user.password
-  return user
+  return { ...user, avatar: getObjectUrl(user.avatar) }
 }
 
 export async function sendEmailVerification(session: string): Promise<void> {
@@ -118,29 +121,31 @@ export async function profileCompletion(id: string, user: ProfileCompletion) {
 export async function setupUsernameAndTags(
   session: string,
   username: string,
-  avatar: string,
+  image: Express.Multer.File,
   tags: Array<string>
 ) {
   try {
     const user = await Service.findUser(session)
     if (!user) throw new HttpError('No Auth', 401)
 
-    let verificationLevel: number
-    try {
-      verificationLevel = parseInt(user.verification_level)
-    } catch (error) {
-      verificationLevel = 0
+    let verificationLevel = getVerificationLevel(user.verification_level)
+
+    if (verificationLevel === 4) {
+      throw new HttpError('Already Verified', 400)
     }
+
     if (verificationLevel !== 3) {
       throw new HttpError('Setup your profile first', 400)
     }
 
-    if (user.avatar) {
-      deleteFile(user.avatar)
-    }
-
     const checkUsername = await Service.findUserByUsername(username)
     if (checkUsername) throw new HttpError('Username already exists', 400)
+
+    const fileKey = !user.avatar ? image.filename : user.avatar
+    console.log(fileKey, 'file to be uploaded')
+    // create file stream
+    const stream: fs.ReadStream = await readFileAsStream(image.path)
+    await uploadFile(stream, fileKey, image.mimetype)
 
     const usertags = tags.map((tag) => {
       return {
@@ -152,16 +157,20 @@ export async function setupUsernameAndTags(
     // update user's username and avatar
     const updatedUser = await Service.updateUser(session, {
       username,
-      avatar,
+      avatar: fileKey,
       verification_level: '4',
     })
     // create user tags
     await createUserTags(usertags)
 
+    // delete the file in local storage after updating the user
+    deleteFile(image.filename)
+
+    // delete password object in response object
     delete updatedUser.password
-    return updatedUser
+    return { ...updatedUser, avatar: getObjectUrl(fileKey) }
   } catch (error) {
+    deleteFile(image.filename)
     dbErrorHandler(error)
-    deleteFile(avatar)
   }
 }

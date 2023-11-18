@@ -38,6 +38,22 @@ export async function getCurrentUser(req: SessionRequest, res: Response) {
   }
 }
 
+export async function logout(req: SessionRequest, res: Response) {
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(500).send("Can't Logout: Internal Server Error")
+      } else {
+        // Clear the session cookie on the client side
+        res.clearCookie('sessionToken')
+        res.status(200).json({ message: 'Logout Successfully' })
+      }
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function sendEmailVerification(
   req: SessionRequest,
   res: Response
@@ -81,11 +97,12 @@ export async function setupUsernameAndTags(req: SessionRequest, res: Response) {
   try {
     const id = req.session.userid
     const { body } = await zParse(Schema.SetupUsernameTags, req)
-    console.log(body.tags, 'types')
+    const file = req.file
+
     const user = await Interactor.setupUsernameAndTags(
       id,
       body.username,
-      req.file.filename,
+      file,
       body.tags
     )
 

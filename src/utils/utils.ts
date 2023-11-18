@@ -1,5 +1,5 @@
 import logger from 'pino'
-
+import crypto from 'crypto'
 const log = logger({
   transport: {
     target: 'pino-pretty',
@@ -13,5 +13,8 @@ const log = logger({
 export function getVerificationLevel(level: string) {
   return isNaN(parseInt(level)) ? 0 : parseInt(level)
 }
+
+export const generateFileName = (bytes = 8) =>
+  crypto.randomBytes(bytes).toString('hex')
 
 export default log

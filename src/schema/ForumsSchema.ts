@@ -119,12 +119,151 @@ import { z } from 'zod'
  *           description: The timestamp when the question was last updated
  */
 
+/**
+ *
+ * @openapi
+ * components:
+ *   schemas:
+ *     QuestionViewSchema:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         user:
+ *           type: object
+ *           properties:
+ *             avatar:
+ *               type: string
+ *             id:
+ *               type: integer
+ *             username:
+ *               type: string
+ *           required:
+ *             - avatar
+ *             - id
+ *             - username
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               tag:
+ *                 type: string
+ *             required:
+ *               - tag
+ *         answers:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               answer:
+ *                 type: string
+ *               id:
+ *                 type: integer
+ *               isaccepted:
+ *                 type: boolean
+ *               user:
+ *                 type: object
+ *                 properties:
+ *                   avatar:
+ *                     type: string
+ *                   id:
+ *                     type: integer
+ *                   username:
+ *                     type: string
+ *                 required:
+ *                   - avatar
+ *                   - id
+ *                   - username
+ *             required:
+ *               - answer
+ *               - id
+ *               - isaccepted
+ *               - user
+ *         title:
+ *           type: string
+ *         question:
+ *           type: string
+ *         imagesrc:
+ *           type: array
+ *           items:
+ *             type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         answer_count:
+ *           type: string
+ *         vote_count:
+ *           type: string
+ *         latest_answer_createdat:
+ *           type: string
+ *           format: date-time
+ *       required:
+ *         - id
+ *         - user
+ *         - tags
+ *         - answers
+ *         - title
+ *         - question
+ *         - imagesrc
+ *         - createdat
+ *         - updatedat
+ *         - answer_count
+ *         - vote_count
+ *         - latest_answer_createdat
+ */
+
 export const SearchForums = z.object({
   query: z.object({
     search: z.string().optional().default(''),
     page: z.string().optional(),
     perpage: z.string().optional().default('20'),
     filter: z.string().optional().default('newest'),
+  }),
+})
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     VoteResponseSchema:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         vote:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *             questionid:
+ *               type: string
+ *             userid:
+ *               type: string
+ *             type:
+ *               type: string
+ *             createdat:
+ *               type: string
+ *             updatedat:
+ *               type: string
+ */
+export const VoteQuestion = z.object({
+  params: z.object({
+    id: z.string({ required_error: 'id is required' }),
+  }),
+  body: z.object({
+    type: z.union([z.literal('upvote'), z.literal('downvote')]),
+  }),
+})
+
+export const ViewQuestion = z.object({
+  query: z.object({
+    page: z.string().optional().default('1'),
+  }),
+  params: z.object({
+    id: z.string({ required_error: 'id is required' }),
   }),
 })
 
@@ -136,7 +275,7 @@ export const ForumsSchema = z.object({
     question: z
       .string({ required_error: 'Question is required' })
       .min(1, 'Question must not be empty'),
-    tags: z.array(z.string()).optional(),
+    tags: z.union([z.array(z.string()), z.string()]).optional(),
   }),
 })
 

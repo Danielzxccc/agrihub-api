@@ -72,3 +72,30 @@ AuthRouter.post('/login', AuthController.authenticateUser)
  *               $ref: "#/components/schemas/ServerError"
  */
 AuthRouter.get('/me', AuthController.getCurrentUser)
+
+/**
+ * @openapi
+ * /api/auth/logout:
+ *   delete:
+ *     tags:
+ *       - Auth
+ *     summary: Delete session token form
+ *     responses:
+ *       "200":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               message:
+ *               type: object
+ *               properties:
+ *                  message:
+ *                    type: string
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+AuthRouter.delete('/logout', AuthController.logout)

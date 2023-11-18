@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import * as dotenv from 'dotenv'
+import log from './utils'
 dotenv.config()
 
 function pathFolder(): string {
@@ -16,7 +17,13 @@ export function deleteFile(filename: string) {
       console.error(`Error deleting old image: ${err}`)
       // Handle the error appropriately (e.g., logging, sending a response, etc.)
     } else {
-      console.log('Old avatar deleted successfully')
+      log.info('file deleted successfully')
     }
   })
+}
+
+export async function readFileAsStream(
+  filePath: string
+): Promise<fs.ReadStream> {
+  return fs.createReadStream(filePath)
 }

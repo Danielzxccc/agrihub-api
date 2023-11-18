@@ -1,4 +1,5 @@
 import upload from '../../config/multer'
+import { rateLimiter } from '../../middleware/RateLimitter'
 import { UserGuard } from '../AuthGuard/UserGuard'
 import * as ForumsController from './ForumsController'
 import express from 'express'
@@ -81,6 +82,12 @@ export const ForumsRouter = express.Router()
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "500":
  *         description: Server Error
  *         content:
@@ -89,6 +96,78 @@ export const ForumsRouter = express.Router()
  *               $ref: "#/components/schemas/ServerError"
  */
 ForumsRouter.get('/', ForumsController.listQuestions)
+
+/**
+ * @openapi
+ * /api/forums/{id}:
+ *   get:
+ *     tags:
+ *       - "Forums"
+ *     summary: Get Question Details
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Question ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number (optional)
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/QuestionViewSchema"
+ */
+
+ForumsRouter.get('/:id', ForumsController.viewQuestion)
+
+/**
+ * @openapi
+ * /api/forums/vote/{id}:
+ *   parameters:
+ *     - name: id
+ *       in: path
+ *       required: true
+ *       schema:
+ *         type: string
+ *   post:
+ *     tags:
+ *       - "Forums"
+ *     summary: Upvote or Downvote Question
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum:
+ *                  - upvote
+ *                  - downvote
+ *             required:
+ *               - type
+ *     responses:
+ *       "200":
+ *         description: Successful vote
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/VoteResponseSchema"
+ */
+
+ForumsRouter.post(
+  '/vote/:id',
+  UserGuard(['user']),
+  ForumsController.voteQuestion
+)
 
 ForumsRouter.post(
   '/',

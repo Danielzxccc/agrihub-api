@@ -47,6 +47,7 @@ CREATE TABLE forums(
     userid INT NOT NULL,
     title TEXT NOT NULL,
     question TEXT NOT NULL,
+    views INT DEFAULT 0,
     imagesrc TEXT[],
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -91,7 +92,8 @@ CREATE TABLE forums_ratings(
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (questionid) REFERENCES forums(id) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (questionid, userid)
 );
 
 CREATE TABLE articles(

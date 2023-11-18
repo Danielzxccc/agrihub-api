@@ -7,10 +7,13 @@ export function multerLimitter(
   res: Response,
   next: NextFunction
 ) {
+  log.warn(err.message, 'ERROR FROM MULTER')
   if (err instanceof multer.MulterError) {
     // Multer error occurred (file size exceeded)
-    log.warn('File too big')
-    res.status(400).json({ error: err.message })
+    res.status(400).json({
+      error: true,
+      message: err.message,
+    })
   } else {
     next(err)
   }
