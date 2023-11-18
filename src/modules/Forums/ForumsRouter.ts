@@ -111,6 +111,11 @@ ForumsRouter.get('/', ForumsController.listQuestions)
  *         schema:
  *           type: string
  *         description: Question ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number (optional)
  *     responses:
  *       "200":
  *         description: Successful response
@@ -121,6 +126,48 @@ ForumsRouter.get('/', ForumsController.listQuestions)
  */
 
 ForumsRouter.get('/:id', ForumsController.viewQuestion)
+
+/**
+ * @openapi
+ * /api/forums/vote/{id}:
+ *   parameters:
+ *     - name: id
+ *       in: path
+ *       required: true
+ *       schema:
+ *         type: string
+ *   post:
+ *     tags:
+ *       - "Forums"
+ *     summary: Upvote or Downvote Question
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum:
+ *                  - upvote
+ *                  - downvote
+ *             required:
+ *               - type
+ *     responses:
+ *       "200":
+ *         description: Successful vote
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/VoteResponseSchema"
+ */
+
+ForumsRouter.post(
+  '/vote/:id',
+  UserGuard(['user']),
+  ForumsController.voteQuestion
+)
 
 ForumsRouter.post(
   '/',

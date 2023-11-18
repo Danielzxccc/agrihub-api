@@ -224,6 +224,39 @@ export const SearchForums = z.object({
     filter: z.string().optional().default('newest'),
   }),
 })
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     VoteResponseSchema:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         vote:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *             questionid:
+ *               type: string
+ *             userid:
+ *               type: string
+ *             type:
+ *               type: string
+ *             createdat:
+ *               type: string
+ *             updatedat:
+ *               type: string
+ */
+export const VoteQuestion = z.object({
+  params: z.object({
+    id: z.string({ required_error: 'id is required' }),
+  }),
+  body: z.object({
+    type: z.union([z.literal('upvote'), z.literal('downvote')]),
+  }),
+})
 
 export const ViewQuestion = z.object({
   query: z.object({

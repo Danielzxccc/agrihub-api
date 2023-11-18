@@ -5,12 +5,22 @@ import * as Service from './ForumsService'
 import { ForumsContent } from './../../schema/ForumsSchema'
 import { getObjectUrl, uploadFiles } from '../AWS-Bucket/UploadService'
 import { deleteFile } from '../../utils/file'
+import { viewsLimitter } from '../../middleware/ViewsLimitter'
 
 export async function viewQuestion(
   id: string,
   offset: number,
-  perPage: number
+  perPage: number,
+  ip: string,
+  user: string
 ) {
+  // view limitting logic
+  const isViewed = await viewsLimitter({ id, ip, user })
+
+  if (!isViewed) {
+    await Service.incrementViews(id)
+  }
+
   let questionId = Number(id)
 
   if (isNaN(questionId)) throw new HttpError('Not a valid ID', 400)
@@ -117,4 +127,18 @@ export async function createNewComment(
   const newComment = await Service.createComment(commentData)
 
   return newComment
+}
+
+export async function voteQuestion(
+  questionid: string,
+  userid: string,
+  vote: string
+) {
+  const question = await Service.findQuestionById(questionid)
+
+  if (!question) throw new HttpError('Question not found', 404)
+
+  const data = await Service.voteQuestion(questionid, userid, vote)
+
+  return data
 }

@@ -7,13 +7,21 @@ import { SessionRequest } from '../../types/AuthType'
 
 export async function viewQuestion(req: SessionRequest, res: Response) {
   try {
+    const ip = req.ip
+    const user = req.session.userid
     const { query, params } = await zParse(Schema.ViewQuestion, req)
 
     const pageNumber = Number(query.page) || 1
     const perPage = 10
     const offset = (pageNumber - 1) * perPage
 
-    const question = await Interactor.viewQuestion(params.id, offset, perPage)
+    const question = await Interactor.viewQuestion(
+      params.id,
+      offset,
+      perPage,
+      ip,
+      user
+    )
 
     res.status(200).json(question)
   } catch (error) {
@@ -67,6 +75,19 @@ export async function createNewQuestion(req: SessionRequest, res: Response) {
     res
       .status(201)
       .json({ message: 'Question created successfully', newQuestion })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function voteQuestion(req: SessionRequest, res: Response) {
+  try {
+    const userid = req.session.userid
+    const { params, body } = await zParse(Schema.VoteQuestion, req)
+
+    const vote = await Interactor.voteQuestion(params.id, userid, body.type)
+
+    res.status(200).json({ message: `${body.type} successfully`, vote })
   } catch (error) {
     errorHandler(res, error)
   }

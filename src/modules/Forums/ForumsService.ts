@@ -1,7 +1,22 @@
-import { NewAnswer, NewComment, NewQuestion, Answer } from '../../types/DBTypes'
+import {
+  NewAnswer,
+  NewComment,
+  NewQuestion,
+  Answer,
+  UpdateQuestion,
+} from '../../types/DBTypes'
 import { db } from '../../config/database'
 import { jsonObjectFrom, jsonArrayFrom } from 'kysely/helpers/postgres'
 import { sql } from 'kysely'
+
+export async function findQuestionById(questionid: string) {
+  return await db
+    .selectFrom('forums')
+    .selectAll()
+    .where('id', '=', questionid)
+    .executeTakeFirst()
+}
+
 export async function findQuestions(
   offset: number,
   searchQuery: string,
@@ -34,6 +49,7 @@ export async function findQuestions(
       'forums.imagesrc',
       'forums.createdat',
       'forums.updatedat',
+      'forums.views',
       fn.count<number>('forums_answers.id').as('answer_count'),
       fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
@@ -109,6 +125,7 @@ export async function viewQuestion(
       'forums.imagesrc',
       'forums.createdat',
       'forums.updatedat',
+      'forums.views',
       fn.count<number>('forums_answers.id').as('answer_count'),
       fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
@@ -181,3 +198,47 @@ export async function checkQuestionExists(answerId: string): Promise<Answer> {
     .where('id', '=', answerId)
     .executeTakeFirst()
 }
+
+export async function voteQuestion(
+  questionid: string,
+  userid: string,
+  vote: string
+) {
+  return await db
+    .insertInto('forums_ratings')
+    .values({
+      questionid,
+      userid,
+      type: vote,
+    })
+    .onConflict((oc) =>
+      oc
+        .column('questionid')
+        .column('userid')
+        .doUpdateSet({
+          type: vote,
+          createdat: sql`CURRENT_TIMESTAMP`,
+        })
+    )
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function incrementViews(id: string) {
+  return await db
+    .updateTable('forums')
+    .set((eb) => ({
+      views: eb('views', '+', '1'),
+    }))
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+// export async function findVoteByUserId(userid: string) {
+//   return await db
+//     .selectFrom('forums_ratings')
+//     .selectAll()
+//     .where('userid', '=', userid)
+//     .executeTakeFirst()
+// }
