@@ -14,21 +14,29 @@ export async function findTags(req: Request, res: Response) {
   }
 }
 
-export async function getNewForums(req: Request, res: Response) {
+export async function getTags(req: Request, res: Response) {
   try {
-    const offset = req.query.offset ? Number(req.query.offset) : 0
-    const newForums = await Interactor.getNewForums(offset)
-    res.status(200).json(newForums)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-}
+    const { query } = await zParse(Schema.SearchTags, req)
 
-export async function getPopularForums(req: Request, res: Response) {
-  try {
-    const popularForums = await Interactor.getPopularForums()
-    res.status(200).json(popularForums)
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const tags = await Interactor.getTags(offset, searchKey, filterKey, perPage)
+
+    const totalPages = Math.ceil(Number(tags.total.count) / perPage)
+    res.status(200).json({
+      tags: tags.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(tags.total.count),
+      },
+    })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    errorHandler(res, error)
   }
 }

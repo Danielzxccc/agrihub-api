@@ -17,31 +17,27 @@ export async function findTags(tag: string) {
   return await query.limit(5).execute()
 }
 
-export async function getNewForums(offset = 0, limit = 20) {
-  try {
-    const newForums = await db
-      .selectFrom('forums')
-      .selectAll()
-      //.orderBy('createdAt', 'desc')
-      .limit(limit)
-      .offset(offset)
-      .execute()
-
-    return newForums
-  } catch (error) {
-    throw new Error('Error fetching new forums: ' + error.message)
-  }
+export async function getTotalCount() {
+  return await db
+    .selectFrom('tags')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
 }
 
-export async function getPopularForums() {
-  try {
-    const popularForums = await db
-    let query = db.selectFrom('forums').selectAll().orderBy('upvotes', 'desc') //wala pa upvotes
+export async function getTags(
+  offset: number,
+  filterKey: string,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('tags')
+    .selectAll()
+    .leftJoin('forums_tags', 'forums_tags.tagid', 'tags.id')
+    .groupBy(['tags.id'])
+    .orderBy('tags.tag_name', 'asc')
 
-    return await query.limit(5).execute()
+  if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')
 
-    return popularForums
-  } catch (error) {
-    throw new Error('Error fetching popular forums: ' + error.message)
-  }
+  return await query.limit(perpage).offset(offset).execute()
 }

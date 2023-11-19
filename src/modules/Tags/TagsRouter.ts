@@ -33,5 +33,6 @@ export const TagsRouter = express.Router()
 
 TagsRouter.get('/search', TagsController.findTags)
 
-TagsRouter.get('/new', TagsController.getNewForums)
-TagsRouter.get('/popular', TagsController.getPopularForums)
+TagsRouter.get('/', TagsController.getTags)
+
+export default TagsRouter

@@ -190,8 +190,6 @@ export async function createComment(
     .returningAll()
     .executeTakeFirst()
 }
-<<<<<<< HEAD
-=======
 
 export async function checkQuestionExists(answerId: string): Promise<Answer> {
   return await db
@@ -244,4 +242,3 @@ export async function incrementViews(id: string) {
 //     .where('userid', '=', userid)
 //     .executeTakeFirst()
 // }
->>>>>>> 7519ef739a522c3a31e270917c127def1882ece2
