@@ -122,3 +122,16 @@ CREATE TABLE email_token(
 CREATE INDEX email_token_index
 ON email_token (token);
 
+
+CREATE TABLE reported_questions(
+    id SERIAL PRIMARY KEY,
+    reportedBy INT NOT NULL,
+    quesitonid INT NOT NULL,
+    report_type VARCHAR NOT NULL,
+    report_details TEXT,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (reportedBy) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (quesitonid) REFERENCES forums(id) ON DELETE CASCADE
+);
+
