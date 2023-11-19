@@ -1197,6 +1197,15 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/connect-pg-simple@^7.0.3":
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/@types/connect-pg-simple/-/connect-pg-simple-7.0.3.tgz#05b4bdbccbba333787b01730bacd202f15afa480"
+  integrity sha512-NGCy9WBlW2bw+J/QlLnFZ9WjoGs6tMo3LAut6mY4kK+XHzue//lpNVpAvYRpIwM969vBRAM2Re0izUvV6kt+NA==
+  dependencies:
+    "@types/express" "*"
+    "@types/express-session" "*"
+    "@types/pg" "*"
+
 "@types/connect@*":
   version "3.4.36"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.36.tgz#e511558c15a39cb29bd5357eebb57bd1459cd1ab"
@@ -1232,6 +1241,13 @@
     "@types/qs" "*"
     "@types/range-parser" "*"
     "@types/send" "*"
+
+"@types/express-session@*":
+  version "1.17.10"
+  resolved "https://registry.yarnpkg.com/@types/express-session/-/express-session-1.17.10.tgz#3a9394f1f314a4c657af3fb1cdb52f00fc207fd2"
+  integrity sha512-U32bC/s0ejXijw5MAzyaV4tuZopCh/K7fPoUDyNbsRXHvPSeymygYD1RFL99YOLhF5PNOkzswvOTRaVHdL1zMw==
+  dependencies:
+    "@types/express" "*"
 
 "@types/express-session@^1.17.8":
   version "1.17.8"
@@ -1300,6 +1316,15 @@
   integrity sha512-889Vq/77eEpidCwh52sVWpbnqQmIwL8yVBekNbrztVEaWKOCRH3Eq6hjIJh1jwsGDEAJEH0RR+YhpH9mfELLKA==
   dependencies:
     "@types/node" "*"
+
+"@types/pg@*":
+  version "8.10.9"
+  resolved "https://registry.yarnpkg.com/@types/pg/-/pg-8.10.9.tgz#d20bb948c6268c5bd847e2bf968f1194c5a2355a"
+  integrity sha512-UksbANNE/f8w0wOMxVKKIrLCbEMV+oM1uKejmwXr39olg4xqcfBDbXxObJAt6XxHbDa4XTKOlUEcEltXDX+XLQ==
+  dependencies:
+    "@types/node" "*"
+    pg-protocol "*"
+    pg-types "^4.0.1"
 
 "@types/pg@^8.10.4":
   version "8.10.4"
@@ -1664,6 +1689,13 @@ concat-stream@^1.5.2:
     inherits "^2.0.3"
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
+
+connect-pg-simple@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/connect-pg-simple/-/connect-pg-simple-9.0.1.tgz#98637ff17a5bfeaeef638093fcf484bc96fcbbf6"
+  integrity sha512-BuwWJH3K3aLpONkO9s12WhZ9ceMjIBxIJAh0JD9x4z1Y9nShmWqZvge5PG/+4j2cIOcguUoa2PSQ4HO/oTsrVg==
+  dependencies:
+    pg "^8.8.0"
 
 connect-redis@^7.1.0:
   version "7.1.0"
@@ -2613,7 +2645,7 @@ pg-types@^4.0.1:
     postgres-interval "^3.0.0"
     postgres-range "^1.1.1"
 
-pg@^8.11.3:
+pg@^8.11.3, pg@^8.8.0:
   version "8.11.3"
   resolved "https://registry.yarnpkg.com/pg/-/pg-8.11.3.tgz#d7db6e3fe268fcedd65b8e4599cda0b8b4bf76cb"
   integrity sha512-+9iuvG8QfaaUrrph+kpF24cXkH1YOOUeArRNYIxq1viYHZagBxrTno7cecY1Fa44tJeZvaoG+Djpkc3JwehN5g==

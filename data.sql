@@ -79,8 +79,8 @@ CREATE TABLE forums_comments(
 
 CREATE TABLE forums_tags(
     id SERIAL PRIMARY KEY,
-    forumid INT REFERENCES forums(id),
-    tagid INT REFERENCES tags(id),
+    forumid INT REFERENCES forums(id) ON DELETE CASCADE,
+    tagid INT REFERENCES tags(id) ON DELETE CASCADE,
     UNIQUE (forumid, tagid)
 );
 

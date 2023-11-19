@@ -45,7 +45,7 @@ export async function logout(req: SessionRequest, res: Response) {
         res.status(500).send("Can't Logout: Internal Server Error")
       } else {
         // Clear the session cookie on the client side
-        res.clearCookie('sessionToken')
+        res.clearCookie('connect.sid')
         res.status(200).json({ message: 'Logout Successfully' })
       }
     })
