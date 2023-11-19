@@ -1,20 +1,20 @@
-import RedisStore from 'connect-redis'
+import { SessionOptions } from 'express-session'
+import expressSession from 'express-session'
+import connectPgSimple from 'connect-pg-simple'
+import { Pool } from 'pg'
 import * as dotenv from 'dotenv'
-import { MemoryStore, SessionOptions } from 'express-session'
 dotenv.config()
-import { createClient } from 'redis'
 
-let redisClient = createClient({ url: process.env.REDIS_URL })
-redisClient.connect().catch(console.error)
-
-let redisStore = new RedisStore({
-  client: redisClient,
-  prefix: 'myapp:',
+const pgSession = connectPgSimple(expressSession)
+const pgPool = new Pool({
+  connectionString: process.env.DATABASE_URL,
 })
 
 export const sessionConfig: SessionOptions = {
-  name: 'sessionToken',
-  store: redisStore,
+  store: new pgSession({
+    pool: pgPool,
+    createTableIfMissing: true,
+  }),
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
@@ -23,7 +23,7 @@ export const sessionConfig: SessionOptions = {
     domain:
       process.env.NODE_ENV === 'development' ? 'localhost' : process.env.DOMAIN,
     path: '/',
-    maxAge: 1000 * 60 * 60 * 24,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: 'none',
     secure: process.env.NODE_ENV === 'production',

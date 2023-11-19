@@ -79,8 +79,8 @@ CREATE TABLE forums_comments(
 
 CREATE TABLE forums_tags(
     id SERIAL PRIMARY KEY,
-    forumid INT REFERENCES forums(id),
-    tagid INT REFERENCES tags(id),
+    forumid INT REFERENCES forums(id) ON DELETE CASCADE,
+    tagid INT REFERENCES tags(id) ON DELETE CASCADE,
     UNIQUE (forumid, tagid)
 );
 
@@ -121,4 +121,17 @@ CREATE TABLE email_token(
 
 CREATE INDEX email_token_index
 ON email_token (token);
+
+
+CREATE TABLE reported_questions(
+    id SERIAL PRIMARY KEY,
+    reportedBy INT NOT NULL,
+    quesitonid INT NOT NULL,
+    report_type VARCHAR NOT NULL,
+    report_details TEXT,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (reportedBy) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (quesitonid) REFERENCES forums(id) ON DELETE CASCADE
+);
 
