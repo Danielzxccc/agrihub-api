@@ -194,6 +194,8 @@ import { z } from 'zod'
  *         updatedat:
  *           type: string
  *           format: date-time
+ *         views:
+ *           type: string
  *         answer_count:
  *           type: string
  *         vote_count:
