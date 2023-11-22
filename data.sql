@@ -31,7 +31,9 @@ ON users (username);
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
     details TEXT,
-    tag_name TEXT
+    tag_name TEXT,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE user_tags (
@@ -135,3 +137,9 @@ CREATE TABLE reported_questions(
     FOREIGN KEY (quesitonid) REFERENCES forums(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS public.session (
+  sid varchar NOT NULL COLLATE "default",
+  sess json NOT NULL,
+  expire timestamp(6) NOT NULL,
+  CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
+);CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON public.session ("expire");
