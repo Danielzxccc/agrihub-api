@@ -7,6 +7,8 @@ import {
   UserTags,
   ForumsComments,
   ForumsAnswers,
+  Farms,
+  SubFarms,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -26,3 +28,11 @@ export type NewArticle = Insertable<Articles>
 export type UpdateArticle = Updateable<Articles>
 
 export type UserTag = Insertable<UserTags>
+
+// farms
+export type Farm = Selectable<Farms>
+export type NewFarm = Insertable<Farms>
+
+// subfarm
+export type SubFarm = Selectable<SubFarms>
+export type NewSubFarm = Insertable<SubFarms>

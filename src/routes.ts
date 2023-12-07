@@ -5,6 +5,7 @@ import { ArticlesRouter } from './modules/Articles/ArticlesRouter'
 import { AccountRouter } from './modules/Auth/AccountRouter'
 import { TagsRouter } from './modules/Tags/TagsRouter'
 import { UserRouter } from './modules/Users/UserRoutes'
+import { FarmRouter } from './modules/Farm/FarmRouter'
 import upload from './config/multer'
 import { multerLimitter } from './middleware/UploadMiddleware'
 import path from 'path'
@@ -34,6 +35,7 @@ function routes(app: Express) {
   })
 
   app.use('/api/auth', AuthRouter)
+  app.use('/api/farm', FarmRouter)
   app.use('/api/account', AccountRouter)
   app.use('/api/user', UserRouter)
   app.use('/api/forums', ForumsRouter)
