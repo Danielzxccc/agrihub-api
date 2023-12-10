@@ -73,7 +73,7 @@ export const NewCropReportSchema = z.object({
  *     FarmListResponse:
  *       type: object
  *       properties:
- *         questions:
+ *         farms:
  *           type: array
  *           items:
  *             $ref: "#/components/schemas/FarmData"
