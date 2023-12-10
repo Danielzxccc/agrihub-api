@@ -9,6 +9,8 @@ import {
   ForumsAnswers,
   Farms,
   SubFarms,
+  Crops,
+  CropReports,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -36,3 +38,12 @@ export type NewFarm = Insertable<Farms>
 // subfarm
 export type SubFarm = Selectable<SubFarms>
 export type NewSubFarm = Insertable<SubFarms>
+
+// crops
+export type Crop = Selectable<Crops>
+export type NewCrop = Insertable<Crop>
+export type UpdateCrop = Updateable<Crop>
+
+// crop reports
+export type CropReport = Selectable<CropReports>
+export type NewCropReport = Insertable<CropReports>

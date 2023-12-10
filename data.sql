@@ -36,6 +36,7 @@ CREATE TABLE farms(
     district TEXT NOT NULL,
     size INT,
     cover_photo TEXT,
+    avatar TEXT,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (farm_head, name),
@@ -54,9 +55,11 @@ CREATE TABLE sub_farms(
 );
 
 CREATE TABLE farm_members(
-    id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,   
     userid INT,
     farmid INT NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (farmid) REFERENCES sub_farms(id) ON DELETE CASCADE
 );
@@ -69,7 +72,11 @@ CREATE TABLE crops(
     seedling_season INT, -- 0 - 11,
     planting_season INT, -- 0 - 11,
     harvest_season INT, -- 0 - 11,
+    isyield BOOLEAN default 
     growth_span INT,
+    UNIQUE(name),
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE crop_reports(
@@ -85,9 +92,12 @@ CREATE TABLE crop_reports(
     date_planted DATE NOT NULL,
     expected_harvest DATE,
     date_harvested DATE,
+    image TEXT[],
     isHarvested BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (crops) REFERENCES crops 
-    FOREIGN KEY (farmid) REFERENCES farms(id) ON DELETE CASCADE,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (crop_id) REFERENCES crops 
+    FOREIGN KEY (farmid) REFERENCES sub_farms(id) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -104,6 +114,8 @@ CREATE TABLE pest_report(
     image text NOT NULL,
     summary TEXT NOT NULL,
     status pest_report_status NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
     FOREIGN KEY (crop_report_id) REFERENCES crop_reports(id) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -115,6 +127,8 @@ CREATE TABLE crop_problems (
     description TEXT NOT NULL,
     tags INT[] NOT NULL,
     image TEXT NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
     FOREIGN KEY (crop_report_id) REFERENCES crop_reports(id) ON DELETE CASCADE
 );
 

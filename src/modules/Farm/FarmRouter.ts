@@ -1,14 +1,30 @@
 import express from 'express'
 import * as FarmController from './FarmController'
 import upload from '../../config/multer'
+import { UserGuard } from '../AuthGuard/UserGuard'
 export const FarmRouter = express.Router()
 
 FarmRouter.get('/', FarmController.listFarms)
 FarmRouter.get('/:id', FarmController.viewFarm)
 // TODO: ADD USER AUTHORIZATION LATER
-FarmRouter.post('/', upload.single('cover_photo'), FarmController.registerFarm)
+FarmRouter.post('/', upload.single('avatar'), FarmController.registerFarm)
+// subfarm
 FarmRouter.post('/:farmid/:head', FarmController.registerSubFarm)
 
+// crops
+FarmRouter.post(
+  '/crop',
+  UserGuard(['user']),
+  upload.single('image'),
+  FarmController.createCrop
+)
+
+FarmRouter.post(
+  '/crop/report/:farmid/:userid',
+  UserGuard(['user']),
+  upload.single('image'),
+  FarmController.createCropReport
+)
 // CREATE
 /**
  * @openapi
@@ -82,6 +98,46 @@ FarmRouter.post('/:farmid/:head', FarmController.registerSubFarm)
  *               type: array
  *               items:
  *                 $ref: "#/components/schemas/FarmData"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/crop:
+ *   post:
+ *     summary: Create a new crop
+ *     tags:
+ *       - Farm
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/NewCropRequest"
+ *     responses:
+ *       "200":
+ *         description: Crop created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NewCropResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "400":
  *         description: Validation Error
  *         content:

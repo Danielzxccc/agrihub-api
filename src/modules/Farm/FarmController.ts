@@ -36,8 +36,8 @@ export async function registerFarm(req: Request, res: Response) {
   try {
     const { body } = await zParse(Schema.NewFarmSchema, req)
     // get uploaded file
-    const cover_photo = req.file.filename
-    const data = { ...body, cover_photo }
+    const avatar = req.file.filename
+    const data = { ...body, avatar }
     // insert data to database
     const newFarm = await Interactor.registerFarm(data, req.file)
     res.status(201).json({ message: 'registered successfully', data: newFarm })
@@ -51,11 +51,42 @@ export async function registerSubFarm(req: Request, res: Response) {
     const { body, params } = await zParse(Schema.NewSubFarmSchema, req)
     const { farmid, head } = params
 
-    const data = { ...body, farmid, farm_head: head }
-    const newSubFarm = await Interactor.registerSubFarm(data, farmid)
+    const newSubFarm = await Interactor.registerSubFarm(body, farmid, head)
     res
       .status(201)
       .json({ message: 'registered successfully', data: newSubFarm })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function createCrop(req: Request, res: Response) {
+  try {
+    const { body } = await zParse(Schema.NewCropSchema, req)
+
+    const data = { ...body, image: req.file.filename }
+    const newCrop = await Interactor.createCrop(data, req.file)
+
+    res
+      .status(201)
+      .json({ message: 'crop created successfully', data: newCrop })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function createCropReport(req: Request, res: Response) {
+  try {
+    const { body, params } = await zParse(Schema.NewCropReportSchema, req)
+    const { farmid, userid } = params
+
+    const data = { ...body, farmid, userid }
+
+    const newCropReport = await Interactor.createNewCropReport(data)
+    res.status(201).json({
+      message: 'Crop report successfully created',
+      data: newCropReport,
+    })
   } catch (error) {
     errorHandler(res, error)
   }

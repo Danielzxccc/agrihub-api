@@ -1,10 +1,25 @@
 import { jsonObjectFrom } from 'kysely/helpers/postgres'
 import { db } from '../../config/database'
-import { NewFarm, NewSubFarm } from '../../types/DBTypes'
+import {
+  Crop,
+  NewCrop,
+  NewCropReport,
+  NewFarm,
+  NewSubFarm,
+  UpdateCrop,
+} from '../../types/DBTypes'
+import { Crops } from 'kysely-codegen'
 
 export async function findFarm(id: string) {
   return await db
     .selectFrom('farms')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+export async function findSubFarm(id: string) {
+  return await db
+    .selectFrom('sub_farms')
     .selectAll()
     .where('id', '=', id)
     .executeTakeFirst()
@@ -60,6 +75,48 @@ export async function createSubFarm(subFarm: NewSubFarm) {
   return await db
     .insertInto('sub_farms')
     .values(subFarm)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+// crops
+export async function createCrop(crop: NewCrop) {
+  return await db
+    .insertInto('crops')
+    .values(crop)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findCrop(id: string) {
+  return await db.selectFrom('crops').selectAll().where('id', '=', id).execute()
+}
+
+export async function findCropByName(name: string) {
+  return await db
+    .selectFrom('crops')
+    .selectAll()
+    .where('name', '=', name)
+    .executeTakeFirst()
+}
+
+export async function listCrops(): Promise<Crop[]> {
+  return await db.selectFrom('crops').selectAll().execute()
+}
+
+export async function updateCrop(crop: UpdateCrop, id: string) {
+  return await db
+    .updateTable('crops')
+    .set(crop)
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function createCropReport(crop: NewCropReport) {
+  return await db
+    .insertInto('crop_reports')
+    .values(crop)
     .returningAll()
     .executeTakeFirst()
 }
