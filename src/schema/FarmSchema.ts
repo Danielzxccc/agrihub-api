@@ -300,45 +300,36 @@ export const NewCropReportSchema = z.object({
  *     NewCropReportRequest:
  *       type: object
  *       properties:
- *         body:
- *           type: object
- *           properties:
- *             crop_name:
- *               type: string
- *               description: The name of the crop
- *             crop_id:
- *               type: string
- *               description: The ID of the crop (required)
- *             planted_qty:
- *               type: string
- *               description: The quantity of crops planted (required)
- *             harvested_qty:
- *               type: string
- *               description: The quantity of crops harvested
- *             yield:
- *               type: string
- *               description: The yield of the crop
- *             withered_crops:
- *               type: string
- *               description: The quantity of withered crops
- *             date_planted:
- *               type: string
- *               description: The date when the crop was planted (required)
- *             expected_harvest:
- *               type: string
- *               description: The expected date of harvest (required)
- *             date_harvested:
- *               type: string
- *               description: The actual date of harvest (required)
- *             notes:
- *              type: string
- *           required:
- *             - crop_id
- *             - planted_qty
- *             - date_planted
- *             - expected_harvest
- *             - date_harvested
- *             - notes
+ *         crop_name:
+ *           type: string
+ *           description: The name of the crop
+ *         crop_id:
+ *           type: string
+ *           description: The ID of the crop (required)
+ *         planted_qty:
+ *           type: string
+ *           description: The quantity of crops planted (required)
+ *         harvested_qty:
+ *           type: string
+ *           description: The quantity of crops harvested
+ *         yield:
+ *           type: string
+ *           description: The yield of the crop
+ *         withered_crops:
+ *           type: string
+ *           description: The quantity of withered crops
+ *         date_planted:
+ *           type: string
+ *           description: The date when the crop was planted (required)
+ *         expected_harvest:
+ *           type: string
+ *           description: The expected date of harvest (required)
+ *         date_harvested:
+ *           type: string
+ *           description: The actual date of harvest (required)
+ *         notes:
+ *           type: string
+ *           description: Additional notes for the crop report (required)
  *
  *     NewCropReportResponse:
  *       type: object
@@ -388,6 +379,4 @@ export const NewCropReportSchema = z.object({
  *               type: string
  *               format: date-time
  *               description: The actual date of harvest
- *             notes:
- *               type: string
  */
