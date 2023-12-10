@@ -71,6 +71,12 @@ export async function registerSubFarm(
   return newSubFarm
 }
 
+export async function listCrops() {
+  const crops = await Service.findAllCrops()
+
+  return crops
+}
+
 export async function createCrop(crop: NewCrop, image: Express.Multer.File) {
   try {
     const foundCrop = await Service.findCropByName(crop.name)

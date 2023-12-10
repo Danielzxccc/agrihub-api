@@ -12,6 +12,8 @@ FarmRouter.post('/', upload.single('avatar'), FarmController.registerFarm)
 FarmRouter.post('/:farmid/:head', FarmController.registerSubFarm)
 
 // crops
+FarmRouter.get('/crop/find', FarmController.listCrops)
+
 FarmRouter.post(
   '/crop',
   UserGuard(['user']),
@@ -108,6 +110,24 @@ FarmRouter.post(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/crop/find:
+ *   get:
+ *     summary: Retrieve a list of crops
+ *     tags:
+ *       - Farm
+ *     responses:
+ *       "200":
+ *         description: List of crops
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/CropData"
  */
 
 /**

@@ -170,6 +170,48 @@ export const NewCropReportSchema = z.object({
  * @openapi
  * components:
  *   schemas:
+ *     CropData:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the crop
+ *         name:
+ *           type: string
+ *           description: The name of the crop
+ *         description:
+ *           type: string
+ *           description: A description of the crop
+ *         image:
+ *           type: string
+ *           description: The filename of the crop image
+ *         seedling_season:
+ *           type: string
+ *           description: The seedling season of the crop
+ *         planting_season:
+ *           type: string
+ *           description: The planting season of the crop
+ *         harvest_season:
+ *           type: string
+ *           description: The harvest season of the crop
+ *         isyield:
+ *           type: boolean
+ *           description: Indicates whether the crop yields
+ *         growth_span:
+ *           type: string
+ *           description: The growth span of the crop
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the crop was created
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the crop was last updated
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
  *     NewCropRequest:
  *       type: object
  *       properties:

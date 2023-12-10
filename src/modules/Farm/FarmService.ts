@@ -44,6 +44,10 @@ export async function listFarms(
   return await query.limit(perpage).offset(offset).execute()
 }
 
+export async function findAllCrops() {
+  return await db.selectFrom('crops').selectAll().execute()
+}
+
 export async function viewFarm(id: string) {
   return await db
     .selectFrom('farms')

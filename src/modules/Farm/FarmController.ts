@@ -70,6 +70,15 @@ export async function registerSubFarm(req: Request, res: Response) {
   }
 }
 
+export async function listCrops(req: Request, res: Response) {
+  try {
+    const data = await Interactor.listCrops()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function createCrop(req: Request, res: Response) {
   try {
     const { body } = await zParse(Schema.NewCropSchema, req)
