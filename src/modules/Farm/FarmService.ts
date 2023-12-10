@@ -17,6 +17,7 @@ export async function findFarm(id: string) {
     .where('id', '=', id)
     .executeTakeFirst()
 }
+
 export async function findSubFarm(id: string) {
   return await db
     .selectFrom('sub_farms')
@@ -25,6 +26,12 @@ export async function findSubFarm(id: string) {
     .executeTakeFirst()
 }
 
+export async function getTotalCount() {
+  return await db
+    .selectFrom('farms')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
 export async function listFarms(
   offset: number,
   searchQuery: string,

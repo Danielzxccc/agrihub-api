@@ -15,7 +15,17 @@ export async function listFarms(req: Request, res: Response) {
     const searchKey = String(query.search)
 
     const farms = await Interactor.listFarms(offset, searchKey, perPage)
-    res.status(200).json(farms)
+
+    const totalPages = Math.ceil(Number(farms.total.count) / perPage)
+    res.status(200).json({
+      questions: farms.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(farms.total.count),
+      },
+    })
   } catch (error) {
     errorHandler(res, error)
   }

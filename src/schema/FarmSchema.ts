@@ -70,9 +70,20 @@ export const NewCropReportSchema = z.object({
 })
 
 /**
- * @openapi
+ *  * @openapi
  * components:
  *   schemas:
+ *     FarmListResponse:
+ *       type: object
+ *       properties:
+ *         questions:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/FarmData"
+ *           description: List of farms
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *
  *     NewFarmRequest:
  *       type: object
  *       properties:
@@ -94,29 +105,6 @@ export const NewCropReportSchema = z.object({
  *         size:
  *           type: number
  *           description: The size of the farm (optional)
- *         cover_photo:
- *           type: string
- *           format: binary
- *           description: Binary data of the cover photo
- *         avatar:
- *           type: string
- *           format: binary
- *           description: Binary data of the avatar photo
- *       required:
- *         - name
- *         - location
- *         - description
- *         - farm_head
- *         - district
- *
- *     NewFarmResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *           description: A message indicating the success of the registration
- *         data:
- *           $ref: "#/components/schemas/FarmData"
  *
  *     FarmData:
  *       type: object
@@ -141,18 +129,37 @@ export const NewCropReportSchema = z.object({
  *           description: The district where the farm is located
  *         size:
  *           type: number
- *           description: The size of the farm (optional)
+ *           description: The size of the farm
  *         cover_photo:
  *           type: string
  *           description: The filename of the cover photo
  *         createdat:
  *           type: string
+ *           format: date-time
  *           description: The timestamp when the farm was created
  *         updatedat:
  *           type: string
+ *           format: date-time
  *           description: The timestamp when the farm was last updated
  *         avatar:
  *           type: string
+ *           description: The URL of the farm's avatar image
+ *
+ *     PaginationData:
+ *       type: object
+ *       properties:
+ *         page:
+ *           type: integer
+ *           description: The current page number
+ *         per_page:
+ *           type: integer
+ *           description: The number of records per page
+ *         total_pages:
+ *           type: integer
+ *           description: The total number of pages
+ *         total_records:
+ *           type: integer
+ *           description: The total number of records
  */
 
 /**

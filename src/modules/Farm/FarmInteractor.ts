@@ -17,12 +17,15 @@ export async function listFarms(
   searchQuery: string,
   perpage: number
 ) {
-  const farms = await Service.listFarms(offset, searchQuery, perpage)
+  const [farms, total] = await Promise.all([
+    Service.listFarms(offset, searchQuery, perpage),
+    Service.getTotalCount(),
+  ])
 
   for (let farm of farms) {
     farm.avatar = farm.avatar ? getObjectUrl(farm.avatar) : farm.avatar
   }
-  return farms
+  return { data: farms, total }
 }
 
 export async function viewFarm(id: string) {
