@@ -95,9 +95,7 @@ FarmRouter.post(
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: "#/components/schemas/FarmListResponse"
+ *               $ref: "#/components/schemas/FarmListResponse"
  *       "400":
  *         description: Validation Error
  *         content:
