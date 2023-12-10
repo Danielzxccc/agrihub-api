@@ -17,9 +17,6 @@ export const NewFarmSchema = z.object({
     district: z.string({ required_error: 'district is required' }),
     size: z.number().optional(),
   }),
-  file: z.object({
-    filename: z.string(),
-  }),
 })
 
 export const NewSubFarmSchema = z.object({
@@ -61,7 +58,7 @@ export const NewCropReportSchema = z.object({
     expected_harvest: z.string({
       required_error: 'expected_harvest is required',
     }),
-    date_harvested: z.string().optional(),
+    date_harvested: z.string({ required_error: 'date_harvested is required' }),
   }),
   params: z.object({
     farmid: z.string(),
@@ -83,7 +80,14 @@ export const NewCropReportSchema = z.object({
  *           description: List of farms
  *         pagination:
  *           $ref: "#/components/schemas/PaginationData"
- *
+ *     NewFarmResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A message indicating the success of the registration
+ *         data:
+ *           $ref: "#/components/schemas/FarmData"
  *     NewFarmRequest:
  *       type: object
  *       properties:
