@@ -59,6 +59,7 @@ export const NewCropReportSchema = z.object({
       required_error: 'expected_harvest is required',
     }),
     date_harvested: z.string({ required_error: 'date_harvested is required' }),
+    notes: z.string({ required_error: 'notes are required' }),
   }),
   params: z.object({
     farmid: z.string(),
@@ -290,4 +291,103 @@ export const NewCropReportSchema = z.object({
  *           type: string
  *           format: date-time
  *           description: The timestamp when the crop was last updated
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewCropReportRequest:
+ *       type: object
+ *       properties:
+ *         body:
+ *           type: object
+ *           properties:
+ *             crop_name:
+ *               type: string
+ *               description: The name of the crop
+ *             crop_id:
+ *               type: string
+ *               description: The ID of the crop (required)
+ *             planted_qty:
+ *               type: string
+ *               description: The quantity of crops planted (required)
+ *             harvested_qty:
+ *               type: string
+ *               description: The quantity of crops harvested
+ *             yield:
+ *               type: string
+ *               description: The yield of the crop
+ *             withered_crops:
+ *               type: string
+ *               description: The quantity of withered crops
+ *             date_planted:
+ *               type: string
+ *               description: The date when the crop was planted (required)
+ *             expected_harvest:
+ *               type: string
+ *               description: The expected date of harvest (required)
+ *             date_harvested:
+ *               type: string
+ *               description: The actual date of harvest (required)
+ *             notes:
+ *              type: string
+ *           required:
+ *             - crop_id
+ *             - planted_qty
+ *             - date_planted
+ *             - expected_harvest
+ *             - date_harvested
+ *             - notes
+ *
+ *     NewCropReportResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A message indicating the success of the crop report creation
+ *         data:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               description: The ID of the crop report
+ *             farmid:
+ *               type: string
+ *               description: The ID of the farm
+ *             userid:
+ *               type: string
+ *               description: The ID of the user
+ *             crop_name:
+ *               type: string
+ *               description: The name of the crop
+ *             crop_id:
+ *               type: string
+ *               description: The ID of the crop
+ *             planted_qty:
+ *               type: string
+ *               description: The quantity of crops planted
+ *             harvested_qty:
+ *               type: string
+ *               description: The quantity of crops harvested
+ *             yield:
+ *               type: string
+ *               description: The yield of the crop
+ *             withered_crops:
+ *               type: string
+ *               description: The quantity of withered crops
+ *             date_planted:
+ *               type: string
+ *               format: date-time
+ *               description: The date when the crop was planted
+ *             expected_harvest:
+ *               type: string
+ *               format: date-time
+ *               description: The expected date of harvest
+ *             date_harvested:
+ *               type: string
+ *               format: date-time
+ *               description: The actual date of harvest
+ *             notes:
+ *               type: string
  */

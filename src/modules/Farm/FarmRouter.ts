@@ -169,3 +169,38 @@ FarmRouter.post(
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
+
+/**
+ * @openapi
+ * /crop/report/{farmid}/{userid}:
+ *   post:
+ *     summary: Create a new crop report
+ *     tags:
+ *       - Crop
+ *     parameters:
+ *       - name: farmid
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the farm
+ *       - name: userid
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/NewCropReportRequest"
+ *     responses:
+ *       "200":
+ *         description: Crop report created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NewCropReportResponse"
+ */
