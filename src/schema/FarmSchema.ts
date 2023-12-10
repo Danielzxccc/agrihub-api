@@ -70,7 +70,7 @@ export const NewCropReportSchema = z.object({
 })
 
 /**
- *  * @openapi
+ * @openapi
  * components:
  *   schemas:
  *     FarmListResponse:
