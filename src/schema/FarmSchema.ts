@@ -15,7 +15,13 @@ export const NewFarmSchema = z.object({
     description: z.string({ required_error: 'description is required' }),
     farm_head: z.string({ required_error: 'farm_head is required' }),
     district: z.string({ required_error: 'district is required' }),
-    size: z.number().optional(),
+    size: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
+  }),
+  file: z.object({
+    filename: z.string({ required_error: 'avatar is required' }),
   }),
 })
 

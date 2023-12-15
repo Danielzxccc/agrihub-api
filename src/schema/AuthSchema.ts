@@ -88,6 +88,8 @@ import { z } from 'zod'
  *           type: string
  *         avatar:
  *           type: string
+ *         role:
+ *           type: string
  *
  *     UserProfile:
  *       type: object

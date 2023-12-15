@@ -58,7 +58,7 @@ export async function getCurrentUser(session: string) {
   if (!user) throw new HttpError('User not found', 401)
 
   delete user.password
-  return { ...user, avatar: getObjectUrl(user.avatar) }
+  return { ...user, avatar: user.avatar ? getObjectUrl(user.avatar) : null }
 }
 
 export async function sendEmailVerification(session: string): Promise<void> {
