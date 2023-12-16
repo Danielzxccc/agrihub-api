@@ -139,7 +139,7 @@ export async function setupUsernameAndTags(
     }
 
     const checkUsername = await Service.findUserByUsername(username)
-    if (checkUsername) throw new HttpError('Username already exists', 400)
+    if (checkUsername) throw new HttpError('Username already exists', 409)
 
     const fileKey = !user.avatar ? image.filename : user.avatar
     console.log(fileKey, 'file to be uploaded')
