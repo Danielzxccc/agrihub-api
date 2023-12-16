@@ -24,7 +24,9 @@ export async function getTags(req: Request, res: Response) {
     const searchKey = String(query.search)
     const filterKey = query.filter
 
-    const tags = await Interactor.getTags(offset, searchKey, filterKey, perPage)
+    console.log(filterKey, 'test fitler')
+
+    const tags = await Interactor.getTags(offset, filterKey, searchKey, perPage)
 
     const totalPages = Math.ceil(Number(tags.total.count) / perPage)
     res.status(200).json({

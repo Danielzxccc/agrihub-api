@@ -32,12 +32,23 @@ export async function getTags(
 ) {
   let query = db
     .selectFrom('tags')
-    .selectAll()
     .leftJoin('forums_tags', 'forums_tags.tagid', 'tags.id')
-    .groupBy(['tags.id'])
-    .orderBy('tags.tag_name', 'asc')
+    .select(({ fn }) => [
+      'tags.id',
+      'tag_name',
+      'details',
+      'createdat',
+      fn.count<number>('forums_tags.tagid').as('count'),
+    ])
+    .groupBy([
+      'tags.id',
+      'forums_tags.tagid',
+      'tags.tag_name',
+      'tags.createdat',
+    ])
 
   if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')
-
+  if (filterKey === 'popular') query = query.orderBy('count', 'desc')
+  if (filterKey === 'newest') query = query.orderBy('createdat', 'desc')
   return await query.limit(perpage).offset(offset).execute()
 }
