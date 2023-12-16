@@ -182,6 +182,12 @@ AccountRouter.post('/profile-completion', AuthController.profileCompletion)
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "409":
+ *         description: Username Already Exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "500":
  *         description: Server Error
  *         content:

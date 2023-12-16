@@ -21,7 +21,8 @@ export async function findQuestions(
   offset: number,
   searchQuery: string,
   filterKey: string,
-  perpage: number
+  perpage: number,
+  userid: string
 ) {
   let query = db
     .selectFrom('forums')
@@ -53,6 +54,13 @@ export async function findQuestions(
       fn.count<number>('forums_answers.id').as('answer_count'),
       fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
+      jsonObjectFrom(
+        eb
+          .selectFrom('forums_ratings')
+          .select(['type'])
+          .where('forums_ratings.userid', '=', userid)
+          .whereRef('forums.id', '=', 'forums_ratings.questionid')
+      ).as('vote'),
       // fn.max<number>('')
     ])
     .groupBy([

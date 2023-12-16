@@ -165,7 +165,7 @@ ForumsRouter.get('/:id', ForumsController.viewQuestion)
 
 ForumsRouter.post(
   '/vote/:id',
-  UserGuard(['user']),
+  UserGuard(['member']),
   ForumsController.voteQuestion
 )
 
@@ -177,12 +177,12 @@ ForumsRouter.post(
 
 ForumsRouter.post(
   '/create/answers/:id',
-  UserGuard(['user']),
+  UserGuard(['member']),
   ForumsController.createNewAnswer
 )
 
 ForumsRouter.post(
   '/create/comments/:answerId',
-  UserGuard(['user']),
+  UserGuard(['member']),
   ForumsController.createNewComment
 )

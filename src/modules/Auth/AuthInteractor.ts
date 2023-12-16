@@ -58,7 +58,7 @@ export async function getCurrentUser(session: string) {
   if (!user) throw new HttpError('User not found', 401)
 
   delete user.password
-  return { ...user, avatar: getObjectUrl(user.avatar) }
+  return { ...user, avatar: user.avatar ? getObjectUrl(user.avatar) : null }
 }
 
 export async function sendEmailVerification(session: string): Promise<void> {
@@ -139,7 +139,7 @@ export async function setupUsernameAndTags(
     }
 
     const checkUsername = await Service.findUserByUsername(username)
-    if (checkUsername) throw new HttpError('Username already exists', 400)
+    if (checkUsername) throw new HttpError('Username already exists', 409)
 
     const fileKey = !user.avatar ? image.filename : user.avatar
     console.log(fileKey, 'file to be uploaded')

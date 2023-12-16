@@ -13,6 +13,8 @@ import { z } from 'zod'
  *             type: string
  *           tag_name:
  *             type: string
+ *           details:
+ *             type: string
  */
 export const Tags = z.object({
   query: z.object({
