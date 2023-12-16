@@ -38,10 +38,11 @@ export async function listQuestions(
   offset: number,
   searchKey: string,
   filterKey: string,
-  perpage: number
+  perpage: number,
+  userid: string
 ) {
   const [data, total] = await Promise.all([
-    Service.findQuestions(offset, searchKey, filterKey, perpage),
+    Service.findQuestions(offset, searchKey, filterKey, perpage, userid),
     Service.getTotalCount(),
   ])
   for (let question of data) {

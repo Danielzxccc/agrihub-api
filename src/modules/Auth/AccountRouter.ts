@@ -177,7 +177,7 @@ AccountRouter.post('/profile-completion', AuthController.profileCompletion)
  *             schema:
  *               $ref: "#/components/schemas/UserAuthResponse"
  *       "400":
- *         description: Validation Error
+ *         description: Username Already Exists
  *         content:
  *           application/json:
  *             schema:

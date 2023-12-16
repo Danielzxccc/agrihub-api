@@ -48,6 +48,11 @@ import { z } from 'zod'
  *                 type: string
  *               vote_count:
  *                 type: string
+ *               vote:
+ *                 type: object
+ *                 properties:
+ *                   type:
+ *                     type: string
  *         pagination:
  *           type: object
  *           properties:
