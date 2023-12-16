@@ -32,3 +32,7 @@ export const TagsRouter = express.Router()
  */
 
 TagsRouter.get('/search', TagsController.findTags)
+
+TagsRouter.get('/', TagsController.getTags)
+
+export default TagsRouter
