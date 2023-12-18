@@ -51,7 +51,7 @@ export async function listQuestions(
       userid,
       profile
     ),
-    Service.getTotalCount(),
+    Service.getTotalCount(profile),
   ])
   for (let question of data) {
     question.user.avatar = question.user.avatar

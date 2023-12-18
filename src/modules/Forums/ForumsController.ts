@@ -52,7 +52,7 @@ export async function listQuestions(req: SessionRequest, res: Response) {
       questions: questions.data,
       pagination: {
         page: pageNumber,
-        per_page: 20,
+        per_page: perPage,
         total_pages: totalPages,
         total_records: Number(questions.total.count),
       },

@@ -146,11 +146,13 @@ export async function viewQuestion(
     .executeTakeFirst()
 }
 
-export async function getTotalCount() {
-  return await db
+export async function getTotalCount(id: string) {
+  let query = db
     .selectFrom('forums')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .executeTakeFirst()
+
+  if (id) query = query.where('forums.userid', '=', id)
+  return await query.executeTakeFirst()
 }
 
 export async function createQuestion(
