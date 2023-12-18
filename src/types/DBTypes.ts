@@ -3,6 +3,7 @@ import {
   Forums,
   Users,
   Articles,
+  CommunityEvents,
   EmailToken,
   UserTags,
   ForumsComments,
@@ -30,6 +31,11 @@ export type NewArticle = Insertable<Articles>
 export type UpdateArticle = Updateable<Articles>
 
 export type UserTag = Insertable<UserTags>
+
+//events
+export type Events = Selectable<CommunityEvents>
+export type NewEvent = Insertable<CommunityEvents>
+export type UpdateEvent = Updateable<CommunityEvents>
 
 // farms
 export type Farm = Selectable<Farms>
