@@ -59,6 +59,19 @@ import { z } from 'zod'
  *
  *     UserSchema:
  *       type: object
+ *       required:
+ *         - id
+ *         - username
+ *         - email
+ *         - firstname
+ *         - lastname
+ *         - district
+ *         - verification_level
+ *         - createdat
+ *         - updatedat
+ *         - avatar
+ *         - role
+ *         - bio
  *       properties:
  *         id:
  *           type: string
@@ -89,6 +102,8 @@ import { z } from 'zod'
  *         avatar:
  *           type: string
  *         role:
+ *           type: string
+ *         bio:
  *           type: string
  *
  *     UserProfile:
