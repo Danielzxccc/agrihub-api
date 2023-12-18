@@ -22,7 +22,8 @@ export async function findQuestions(
   searchQuery: string,
   filterKey: string,
   perpage: number,
-  userid: string
+  userid: string,
+  profile?: string
 ) {
   let query = db
     .selectFrom('forums')
@@ -72,6 +73,7 @@ export async function findQuestions(
       // 'forums_answers.id',
     ])
 
+  if (profile.length) query = query.where('forums.userid', '=', profile)
   if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
   if (filterKey === 'active')
     query = query.orderBy('latest_answer_createdat', 'desc')
@@ -144,11 +146,13 @@ export async function viewQuestion(
     .executeTakeFirst()
 }
 
-export async function getTotalCount() {
-  return await db
+export async function getTotalCount(id: string) {
+  let query = db
     .selectFrom('forums')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .executeTakeFirst()
+
+  if (id) query = query.where('forums.userid', '=', id)
+  return await query.executeTakeFirst()
 }
 
 export async function createQuestion(

@@ -44,14 +44,15 @@ export async function listQuestions(req: SessionRequest, res: Response) {
       searchKey,
       filterKey,
       perPage,
-      req.session.userid || '00'
+      req.session.userid || '00',
+      query.profile
     )
     const totalPages = Math.ceil(Number(questions.total.count) / perPage)
     res.status(200).json({
       questions: questions.data,
       pagination: {
         page: pageNumber,
-        per_page: 20,
+        per_page: perPage,
         total_pages: totalPages,
         total_records: Number(questions.total.count),
       },

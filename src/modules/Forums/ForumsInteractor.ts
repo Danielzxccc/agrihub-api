@@ -39,11 +39,19 @@ export async function listQuestions(
   searchKey: string,
   filterKey: string,
   perpage: number,
-  userid: string
+  userid: string,
+  profile?: string
 ) {
   const [data, total] = await Promise.all([
-    Service.findQuestions(offset, searchKey, filterKey, perpage, userid),
-    Service.getTotalCount(),
+    Service.findQuestions(
+      offset,
+      searchKey,
+      filterKey,
+      perpage,
+      userid,
+      profile
+    ),
+    Service.getTotalCount(profile),
   ])
   for (let question of data) {
     question.user.avatar = question.user.avatar

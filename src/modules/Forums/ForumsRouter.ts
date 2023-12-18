@@ -38,6 +38,11 @@ export const ForumsRouter = express.Router()
  *            - active
  *            - trending
  *         description: Filter criteria (optional, default newest)
+ *       - in: query
+ *         name: profile
+ *         schema:
+ *           type: string
+ *         description: profile query
  *     responses:
  *       "200":
  *         description: Success

@@ -229,6 +229,7 @@ export const SearchForums = z.object({
     page: z.string().optional(),
     perpage: z.string().optional().default('20'),
     filter: z.string().optional().default('newest'),
+    profile: z.string().optional().default(''),
   }),
 })
 /**
