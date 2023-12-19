@@ -173,6 +173,8 @@ import { z } from 'zod'
  *                         comment:
  *                           type: string
  *                           description: The comment text
+ *                         createdat:
+ *                           type: string
  *                         user:
  *                           type: object
  *                           properties:
@@ -197,6 +199,8 @@ import { z } from 'zod'
  *                   upvote_count:
  *                     type: integer
  *                     description: The count of upvotes for the answer
+ *                   createdat:
+ *                     type: string
  *                   user:
  *                     type: object
  *                     properties:
@@ -221,10 +225,10 @@ import { z } from 'zod'
  *                 type: string
  *               description: The array of image URLs associated with the question
  *             createdat:
- *               type: object
+ *               type: string
  *               description: The timestamp when the question was created
  *             updatedat:
- *               type: object
+ *               type: string
  *               description: The timestamp when the question was last updated
  *             views:
  *               type: string
@@ -235,12 +239,11 @@ import { z } from 'zod'
  *             vote_count:
  *               type: string
  *               description: The total count of votes for the question
- *             latest_answer_createdat:
- *               type: object
- *               description: The timestamp of the latest answer's creation
  *             vote:
- *               type: null
- *               description: The vote information (null in the provided example)
+ *               type: object
+ *               properties:
+ *                 type:
+ *                  type: string
  *         pagination:
  *           type: object
  *           properties:

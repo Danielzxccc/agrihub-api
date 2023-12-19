@@ -142,6 +142,7 @@ export async function viewQuestion(
             sql<string>`CAST(forums_answers.id AS TEXT)`.as('id'),
             'forums_answers.answer',
             'forums_answers.isaccepted',
+            'forums_answers.createdat',
             jsonObjectFrom(
               eb
                 .selectFrom('users')
@@ -172,6 +173,7 @@ export async function viewQuestion(
                       .whereRef('forums_answers.userid', '=', 'users.id')
                   ).as('user'),
                   'forums_comments.comment',
+                  'forums_comments.createdat',
                 ])
                 .whereRef('forums_answers.id', '=', 'forums_comments.answerid')
             ).as('comments'),
@@ -187,12 +189,12 @@ export async function viewQuestion(
       'forums.title',
       'forums.question',
       'forums.imagesrc',
-      'forums.createdat',
-      'forums.updatedat',
+      sql<string>`CAST(forums.createdat AS TEXT)`.as('createat'),
+      sql<string>`CAST(forums.updatedat AS TEXT)`.as('updatedat'),
       'forums.views',
       fn.count<number>('forums_answers.id').as('answer_count'),
       fn.count<number>('forums_ratings.id').as('vote_count'),
-      fn.max('forums_answers.createdat').as('latest_answer_createdat'),
+      // fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
           .selectFrom('forums_ratings')
