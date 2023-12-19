@@ -257,6 +257,24 @@ ON email_token (token);
 --     FOREIGN KEY (quesitonid) REFERENCES forums(id) ON DELETE CASCADE
 -- );
 
+
+CREATE TABLE community_events(
+    id SERIAL PRIMARY KEY,
+    userid INT NOT NULL,
+    event_name TEXT,
+    event_location TEXT,
+    event_date timestamp,
+    scope TEXT DEFAULT 'Private', --if private or public 
+    details TEXT, --description
+    imagesrc TEXT,
+    longitude DOUBLE PRECISION,
+    latitude DOUBLE PRECISION,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS public.session (
   sid varchar NOT NULL COLLATE "default",
   sess json NOT NULL,

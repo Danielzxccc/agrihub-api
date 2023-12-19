@@ -7,7 +7,7 @@ export const ListFarmSchema = z.object({
     perpage: z.string().optional().default('20'),
   }),
 })
-
+87
 export const NewFarmSchema = z.object({
   body: z.object({
     name: z.string({ required_error: 'name is required' }),

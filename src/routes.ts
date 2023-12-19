@@ -6,6 +6,7 @@ import { AccountRouter } from './modules/Auth/AccountRouter'
 import { TagsRouter } from './modules/Tags/TagsRouter'
 import { UserRouter } from './modules/Users/UserRoutes'
 import { FarmRouter } from './modules/Farm/FarmRouter'
+import { EventsRouter } from './modules/Events/EventsRouter'
 import upload from './config/multer'
 import { multerLimitter } from './middleware/UploadMiddleware'
 import path from 'path'
@@ -41,6 +42,7 @@ function routes(app: Express) {
   app.use('/api/forums', ForumsRouter)
   app.use('/api/tags', TagsRouter)
   app.use('/api/articles', ArticlesRouter)
+  app.use('/api/events', EventsRouter)
 
   // upload error messages
   app.use(multerLimitter)
