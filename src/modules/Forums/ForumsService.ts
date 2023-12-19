@@ -189,7 +189,7 @@ export async function viewQuestion(
       'forums.title',
       'forums.question',
       'forums.imagesrc',
-      sql<string>`CAST(forums.createdat AS TEXT)`.as('createat'),
+      sql<string>`CAST(forums.createdat AS TEXT)`.as('createdat'),
       sql<string>`CAST(forums.updatedat AS TEXT)`.as('updatedat'),
       'forums.views',
       fn.count<number>('forums_answers.id').as('answer_count'),
