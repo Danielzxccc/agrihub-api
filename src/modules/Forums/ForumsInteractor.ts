@@ -1,9 +1,13 @@
 import HttpError from '../../utils/HttpError'
-import { NewQuestion, Question } from '../../types/DBTypes'
+import { NewQuestion, NewVoteQuestion, Question } from '../../types/DBTypes'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
 import { ForumsContent } from './../../schema/ForumsSchema'
-import { getObjectUrl, uploadFiles } from '../AWS-Bucket/UploadService'
+import {
+  getObjectUrl,
+  replaceAvatarsWithUrls,
+  uploadFiles,
+} from '../AWS-Bucket/UploadService'
 import { deleteFile } from '../../utils/file'
 import { viewsLimitter } from '../../middleware/ViewsLimitter'
 
@@ -12,7 +16,8 @@ export async function viewQuestion(
   offset: number,
   perPage: number,
   ip: string,
-  user: string
+  user: string,
+  filter?: 'newest' | 'top'
 ) {
   // view limitting logic
   const isViewed = await viewsLimitter({ id, ip, user })
@@ -25,13 +30,16 @@ export async function viewQuestion(
 
   if (isNaN(questionId)) throw new HttpError('Not a valid ID', 400)
 
-  const question = await Service.viewQuestion(id, offset, perPage)
+  const [data, total] = await Promise.all([
+    Service.viewQuestion(id, offset, perPage, user, filter),
+    Service.getTotalAnswers(id),
+  ])
 
-  if (!question) throw new HttpError('Question Not Found', 404)
+  if (!data) throw new HttpError('Question Not Found', 404)
 
-  question.user.avatar = getObjectUrl(question.user.avatar)
+  const formattedQuestion = await replaceAvatarsWithUrls(data)
 
-  return question
+  return { data: formattedQuestion, total }
 }
 
 export async function listQuestions(
@@ -150,4 +158,14 @@ export async function voteQuestion(
   const data = await Service.voteQuestion(questionid, userid, vote)
 
   return data
+}
+
+export async function voteAnswer(
+  answerid: string,
+  userid: string,
+  vote: NewVoteQuestion
+) {
+  const data = { ...vote, answerid, userid }
+  const votedQuestion = await Service.voteAnswer(data)
+  return votedQuestion
 }

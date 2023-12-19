@@ -12,6 +12,7 @@ import {
   SubFarms,
   Crops,
   CropReports,
+  AnswerVotes,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -25,6 +26,8 @@ export type NewAnswer = Insertable<ForumsAnswers>
 export type NewComment = Insertable<ForumsComments>
 export type Answer = Selectable<ForumsAnswers>
 export type UpdateQuestion = Updateable<Forums>
+
+export type NewVoteQuestion = Insertable<AnswerVotes>
 
 export type Article = Selectable<Articles>
 export type NewArticle = Insertable<Articles>

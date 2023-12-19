@@ -125,102 +125,137 @@ import { z } from 'zod'
  */
 
 /**
- *
  * @openapi
  * components:
  *   schemas:
  *     QuestionViewSchema:
  *       type: object
  *       properties:
- *         id:
- *           type: string
- *         user:
+ *         question:
  *           type: object
  *           properties:
- *             avatar:
- *               type: string
  *             id:
- *               type: integer
- *             username:
  *               type: string
- *           required:
- *             - avatar
- *             - id
- *             - username
- *         tags:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               tag:
- *                 type: string
- *             required:
- *               - tag
- *         answers:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               answer:
- *                 type: string
- *               id:
- *                 type: integer
- *               isaccepted:
- *                 type: boolean
- *               user:
+ *               description: The ID of the question
+ *             user:
+ *               type: object
+ *               properties:
+ *                 avatar:
+ *                   type: string
+ *                   description: The URL of the user's avatar
+ *                 id:
+ *                   type: string
+ *                   description: The ID of the user
+ *                 username:
+ *                   type: string
+ *                   description: The username of the user
+ *             tags:
+ *               type: array
+ *               items:
  *                 type: object
  *                 properties:
- *                   avatar:
+ *                   tag:
  *                     type: string
+ *                     description: The tag associated with the question
+ *             answers:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   answer:
+ *                     type: string
+ *                     description: The answer text
+ *                   comments:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         comment:
+ *                           type: string
+ *                           description: The comment text
+ *                         user:
+ *                           type: object
+ *                           properties:
+ *                             avatar:
+ *                               type: string
+ *                               description: The URL of the user's avatar
+ *                             id:
+ *                               type: string
+ *                               description: The ID of the user
+ *                             username:
+ *                               type: string
+ *                               description: The username of the user
  *                   id:
- *                     type: integer
- *                   username:
  *                     type: string
- *                 required:
- *                   - avatar
- *                   - id
- *                   - username
- *             required:
- *               - answer
- *               - id
- *               - isaccepted
- *               - user
- *         title:
- *           type: string
- *         question:
- *           type: string
- *         imagesrc:
- *           type: array
- *           items:
- *             type: string
- *         createdat:
- *           type: string
- *           format: date-time
- *         updatedat:
- *           type: string
- *           format: date-time
- *         views:
- *           type: string
- *         answer_count:
- *           type: string
- *         vote_count:
- *           type: string
- *         latest_answer_createdat:
- *           type: string
- *           format: date-time
- *       required:
- *         - id
- *         - user
- *         - tags
- *         - answers
- *         - title
- *         - question
- *         - imagesrc
- *         - createdat
- *         - updatedat
- *         - answer_count
- *         - vote_count
- *         - latest_answer_createdat
+ *                     description: The ID of the answer
+ *                   isaccepted:
+ *                     type: boolean
+ *                     description: Indicates whether the answer is accepted
+ *                   total_vote_count:
+ *                     type: integer
+ *                     description: The total count of votes for the answer
+ *                   upvote_count:
+ *                     type: integer
+ *                     description: The count of upvotes for the answer
+ *                   user:
+ *                     type: object
+ *                     properties:
+ *                       avatar:
+ *                         type: string
+ *                         description: The URL of the user's avatar
+ *                       id:
+ *                         type: string
+ *                         description: The ID of the user
+ *                       username:
+ *                         type: string
+ *                         description: The username of the user
+ *             title:
+ *               type: string
+ *               description: The title of the question
+ *             question:
+ *               type: string
+ *               description: The HTML content of the question
+ *             imagesrc:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               description: The array of image URLs associated with the question
+ *             createdat:
+ *               type: object
+ *               description: The timestamp when the question was created
+ *             updatedat:
+ *               type: object
+ *               description: The timestamp when the question was last updated
+ *             views:
+ *               type: string
+ *               description: The number of views for the question
+ *             answer_count:
+ *               type: string
+ *               description: The count of answers for the question
+ *             vote_count:
+ *               type: string
+ *               description: The total count of votes for the question
+ *             latest_answer_createdat:
+ *               type: object
+ *               description: The timestamp of the latest answer's creation
+ *             vote:
+ *               type: null
+ *               description: The vote information (null in the provided example)
+ *         pagination:
+ *           type: object
+ *           properties:
+ *             page:
+ *               type: integer
+ *               description: The current page number
+ *             per_page:
+ *               type: integer
+ *               description: The number of records per page
+ *             total_pages:
+ *               type: integer
+ *               description: The total number of pages
+ *             total_records:
+ *               type: integer
+ *               description: The total number of records
  */
 
 export const SearchForums = z.object({
@@ -269,6 +304,7 @@ export const VoteQuestion = z.object({
 export const ViewQuestion = z.object({
   query: z.object({
     page: z.string().optional().default('1'),
+    filter: z.union([z.literal('newest'), z.literal('top')]).default('newest'),
   }),
   params: z.object({
     id: z.string({ required_error: 'id is required' }),
@@ -287,11 +323,53 @@ export const ForumsSchema = z.object({
   }),
 })
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommentsSchema:
+ *       type: object
+ *       properties:
+ *         comment:
+ *           type: string
+ *           minLength: 1
+ *           description: The comment text (required)
+ *
+ *     NewCommentResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A message indicating the success of the comment creation
+ *         newComment:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               description: The ID of the created comment
+ *             userid:
+ *               type: string
+ *               description: The ID of the user who posted the comment
+ *             answerid:
+ *               type: string
+ *               description: The ID of the answer to which the comment belongs
+ *             comment:
+ *               type: string
+ *               description: The comment text
+ *             createdat:
+ *               type: string
+ *               format: date-time
+ *               description: The timestamp when the comment was created
+ *             updatedat:
+ *               type: string
+ *               format: date-time
+ *               description: The timestamp when the comment was last updated
+ */
+
 export const CommentsSchema = z.object({
   params: z.object({
     answerId: z.string(),
   }),
-
   body: z.object({
     comment: z
       .string({ required_error: 'Comment is required' })
@@ -299,11 +377,134 @@ export const CommentsSchema = z.object({
   }),
 })
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AnswersSchema:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the created answer
+ *         userid:
+ *           type: string
+ *           description: The ID of the user who posted the answer
+ *         forumid:
+ *           type: string
+ *           description: The ID of the forum post
+ *         answer:
+ *           type: string
+ *           minLength: 1
+ *           description: The answer text
+ *         isaccepted:
+ *           type: boolean
+ *           description: Indicates whether the answer is accepted
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the answer was created
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the answer was last updated
+ *
+ *     NewAnswerResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A message indicating the success of the answer creation
+ *         newAnswer:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               description: The ID of the created answer
+ *             userid:
+ *               type: string
+ *               description: The ID of the user who posted the answer
+ *             forumid:
+ *               type: string
+ *               description: The ID of the forum post
+ *             answer:
+ *               type: string
+ *               description: The answer text
+ *             isaccepted:
+ *               type: boolean
+ *               description: Indicates whether the answer is accepted
+ *             createdat:
+ *               type: string
+ *               format: date-time
+ *               description: The timestamp when the answer was created
+ *             updatedat:
+ *               type: string
+ *               format: date-time
+ *               description: The timestamp when the answer was last updated
+ */
+
 export const AnswersSchema = z.object({
   body: z.object({
     answer: z
       .string({ required_error: 'Answer is required' })
       .min(1, 'Answer must not be empty'),
+  }),
+})
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     VoteAnswerSchema:
+ *       type: object
+ *       properties:
+ *         type:
+ *           type: string
+ *           enum:
+ *             - upvote
+ *             - downvote
+ *           description: The type of vote (required)
+ *
+ *     VoteAnswerSuccessResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A message indicating the success of the vote
+ *         data:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               description: The ID of the vote record
+ *             answerid:
+ *               type: string
+ *               description: The ID of the voted answer
+ *             userid:
+ *               type: string
+ *               description: The ID of the user who voted
+ *             type:
+ *               type: string
+ *               enum:
+ *                 - upvote
+ *                 - downvote
+ *               description: The type of vote
+ *             createdat:
+ *               type: string
+ *               format: date-time
+ *               description: The timestamp when the vote was created
+ *             updatedat:
+ *               type: string
+ *               format: date-time
+ *               description: The timestamp when the vote was last updated
+ */
+
+export const VoteAnswerSchema = z.object({
+  params: z.object({
+    id: z.string({ required_error: 'id is required' }),
+  }),
+  body: z.object({
+    type: z.union([z.literal('upvote'), z.literal('downvote')]),
   }),
 })
 

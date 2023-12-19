@@ -20,10 +20,19 @@ export async function viewQuestion(req: SessionRequest, res: Response) {
       offset,
       perPage,
       ip,
-      user
+      user,
+      query.filter
     )
-
-    res.status(200).json(question)
+    const totalPages = Math.ceil(Number(question.total.count) / perPage)
+    res.status(200).json({
+      question: question.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(question.total.count),
+      },
+    })
   } catch (error) {
     errorHandler(res, error)
   }
@@ -89,7 +98,7 @@ export async function voteQuestion(req: SessionRequest, res: Response) {
 
     const vote = await Interactor.voteQuestion(params.id, userid, body.type)
 
-    res.status(200).json({ message: `${body.type} successfully`, vote })
+    res.status(201).json({ message: `${body.type} successfully`, vote })
   } catch (error) {
     errorHandler(res, error)
   }
@@ -132,6 +141,19 @@ export async function createNewComment(req: SessionRequest, res: Response) {
     res
       .status(201)
       .json({ message: 'Comment created successfully', newComment })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function voteAnswer(req: SessionRequest, res: Response) {
+  try {
+    const userid = req.session.userid
+    const { body, params } = await zParse(Schema.VoteAnswerSchema, req)
+
+    const vote = await Interactor.voteAnswer(params.id, userid, body)
+
+    res.status(201).json({ message: 'Voted Answer Successfully', data: vote })
   } catch (error) {
     errorHandler(res, error)
   }

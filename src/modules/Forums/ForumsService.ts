@@ -4,10 +4,16 @@ import {
   NewQuestion,
   Answer,
   UpdateQuestion,
+  NewVoteQuestion,
 } from '../../types/DBTypes'
 import { db } from '../../config/database'
-import { jsonObjectFrom, jsonArrayFrom } from 'kysely/helpers/postgres'
+import {
+  jsonObjectFrom,
+  jsonArrayFrom,
+  jsonBuildObject,
+} from 'kysely/helpers/postgres'
 import { sql } from 'kysely'
+import { query } from 'express'
 
 export async function findQuestionById(questionid: string) {
   return await db
@@ -34,7 +40,11 @@ export async function findQuestions(
       jsonObjectFrom(
         eb
           .selectFrom('users')
-          .select(['avatar', 'username', 'id'])
+          .select([
+            'avatar',
+            'username',
+            sql<string>`CAST(id AS TEXT)`.as('id'),
+          ])
           .whereRef('forums.userid', '=', 'users.id')
       ).as('user'),
       jsonArrayFrom(
@@ -88,8 +98,13 @@ export async function findQuestions(
 export async function viewQuestion(
   id: string,
   offset: number,
-  perPage: number
+  perPage: number,
+  userid: string,
+  filter?: 'newest' | 'top'
 ) {
+  const isTop = filter === 'top'
+  const isNewest = filter === 'newest'
+
   return await db
     .selectFrom('forums')
     .leftJoin('forums_answers', 'forums_answers.forumid', 'forums.id')
@@ -99,7 +114,11 @@ export async function viewQuestion(
       jsonObjectFrom(
         eb
           .selectFrom('users')
-          .select(['avatar', 'username', 'id'])
+          .select([
+            'avatar',
+            'username',
+            sql<string>`CAST(id AS TEXT)`.as('id'),
+          ])
           .whereRef('forums.userid', '=', 'users.id')
       ).as('user'),
       jsonArrayFrom(
@@ -114,18 +133,53 @@ export async function viewQuestion(
       jsonArrayFrom(
         eb
           .selectFrom('forums_answers')
-          .select([
+          .leftJoin(
+            'answer_votes',
+            'answer_votes.answerid',
+            'forums_answers.id'
+          )
+          .select(({ fn }) => [
+            sql<string>`CAST(forums_answers.id AS TEXT)`.as('id'),
+            'forums_answers.answer',
+            'forums_answers.isaccepted',
             jsonObjectFrom(
               eb
                 .selectFrom('users')
-                .select(['avatar', 'username', 'id'])
+                .select([
+                  'avatar',
+                  'username',
+                  sql<string>`CAST(id AS TEXT)`.as('id'),
+                ])
                 .whereRef('forums_answers.userid', '=', 'users.id')
             ).as('user'),
-            'forums_answers.id',
-            'forums_answers.answer',
-            'forums_answers.isaccepted',
+            fn
+              .count<number>('answer_votes.id')
+              .filterWhere('type', '=', 'upvote')
+              .as('upvote_count'),
+            fn.count<number>('answer_votes.id').as('total_vote_count'),
+            jsonArrayFrom(
+              eb
+                .selectFrom('forums_comments')
+                .select([
+                  jsonObjectFrom(
+                    eb
+                      .selectFrom('users')
+                      .select([
+                        'avatar',
+                        'username',
+                        sql<string>`CAST(id AS TEXT)`.as('id'),
+                      ])
+                      .whereRef('forums_answers.userid', '=', 'users.id')
+                  ).as('user'),
+                  'forums_comments.comment',
+                ])
+                .whereRef('forums_answers.id', '=', 'forums_comments.answerid')
+            ).as('comments'),
           ])
+          .groupBy(['forums_answers.id', 'forums_answers.userid'])
           .whereRef('forums.id', '=', 'forums_answers.forumid')
+          .$if(isTop, (qb) => qb.orderBy('upvote_count', 'desc'))
+          .$if(isNewest, (qb) => qb.orderBy('forums_answers.createdat', 'desc'))
           .orderBy('forums_answers.createdat', 'desc')
           .limit(perPage)
           .offset(offset)
@@ -139,10 +193,25 @@ export async function viewQuestion(
       fn.count<number>('forums_answers.id').as('answer_count'),
       fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
+      jsonObjectFrom(
+        eb
+          .selectFrom('forums_ratings')
+          .select(['type'])
+          .where('forums_ratings.userid', '=', userid)
+          .whereRef('forums.id', '=', 'forums_ratings.questionid')
+      ).as('vote'),
       // fn.max<number>('')
     ])
     .groupBy(['forums.id', 'forums.userid', 'forums.createdat'])
     .where('forums.id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function getTotalAnswers(id: string) {
+  return await db
+    .selectFrom('forums_answers')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('forums_answers.forumid', '=', id)
     .executeTakeFirst()
 }
 
@@ -229,7 +298,7 @@ export async function voteQuestion(
         .column('userid')
         .doUpdateSet({
           type: vote,
-          createdat: sql`CURRENT_TIMESTAMP`,
+          updatedat: sql`CURRENT_TIMESTAMP`,
         })
     )
     .returningAll()
@@ -243,6 +312,23 @@ export async function incrementViews(id: string) {
       views: eb('views', '+', '1'),
     }))
     .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function voteAnswer(vote: NewVoteQuestion) {
+  return await db
+    .insertInto('answer_votes')
+    .values(vote)
+    .onConflict((oc) =>
+      oc
+        .column('answerid')
+        .column('userid')
+        .doUpdateSet({
+          type: vote.type,
+          updatedat: sql`CURRENT_TIMESTAMP`,
+        })
+    )
     .returningAll()
     .executeTakeFirst()
 }

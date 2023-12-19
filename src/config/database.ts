@@ -1,4 +1,4 @@
-import { Kysely, PostgresDialect } from 'kysely'
+import { Kysely, ParseJSONResultsPlugin, PostgresDialect } from 'kysely'
 import { DB } from 'kysely-codegen'
 import { Pool } from 'pg'
 import * as dotenv from 'dotenv'
@@ -11,6 +11,7 @@ export const db = new Kysely<DB>({
       connectionString: process.env.DATABASE_URL,
     }),
   }),
+  // plugins: [new ParseJSONResultsPlugin()],
   log(event) {
     if (event.level === 'query') {
       log.info(event.query.sql)
