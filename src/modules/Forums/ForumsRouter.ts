@@ -121,6 +121,14 @@ ForumsRouter.get('/', ForumsController.listQuestions)
  *         schema:
  *           type: string
  *         description: Page number (optional)
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - newest
+ *            - top
+ *         description: Filter criteria (optional, default newest)
  *     responses:
  *       "200":
  *         description: Successful response
@@ -128,6 +136,24 @@ ForumsRouter.get('/', ForumsController.listQuestions)
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/QuestionViewSchema"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */
 
 ForumsRouter.get('/:id', ForumsController.viewQuestion)
@@ -160,12 +186,30 @@ ForumsRouter.get('/:id', ForumsController.viewQuestion)
  *             required:
  *               - type
  *     responses:
- *       "200":
+ *       "201":
  *         description: Successful vote
  *         content:
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/VoteResponseSchema"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */
 
 ForumsRouter.post(
@@ -180,14 +224,160 @@ ForumsRouter.post(
   ForumsController.createNewQuestion
 )
 
+/**
+ * @openapi
+ * /api/forums/create/answers/{id}:
+ *   post:
+ *     summary: Create a new answer in the forum
+ *     tags:
+ *       - Forums
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the forum post
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/AnswersSchema"
+ *     responses:
+ *       "201":
+ *         description: Answer created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NewAnswerResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
 ForumsRouter.post(
   '/create/answers/:id',
   UserGuard(['member']),
   ForumsController.createNewAnswer
 )
 
+/**
+ * @openapi
+ * /api/forums/create/comments/{answerId}:
+ *   post:
+ *     summary: Create a comment for an answer in the forum
+ *     tags:
+ *       - Forums
+ *     parameters:
+ *       - name: answerId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the answer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/CommentsSchema"
+ *     responses:
+ *       "200":
+ *         description: Comment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NewCommentResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
 ForumsRouter.post(
   '/create/comments/:answerId',
   UserGuard(['member']),
   ForumsController.createNewComment
+)
+
+/**
+ * @openapi
+ * /api/forums/vote/answer/{id}:
+ *   post:
+ *     summary: Vote for an answer in the forum
+ *     tags:
+ *       - Forums
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the answer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/VoteAnswerSchema"
+ *     responses:
+ *       "201":
+ *         description: Voted Answer Successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/VoteAnswerSuccessResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+ForumsRouter.post(
+  '/vote/answer/:id',
+  UserGuard(['member']),
+  ForumsController.voteAnswer
 )

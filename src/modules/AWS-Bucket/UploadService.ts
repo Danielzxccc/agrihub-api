@@ -72,3 +72,36 @@ export async function getObjectSignedUrl(key: string) {
 
   return url
 }
+
+// Function to replace avatars in a JSON object with the corresponding URLs
+export async function replaceAvatarsWithUrls(jsonObject: any): Promise<any> {
+  const replaceAvatarAsync = async (avatarKey: string) => {
+    const avatarUrl = await getObjectUrl(avatarKey)
+    return avatarUrl
+  }
+
+  const replaceAvatarsRecursively = async (obj: any): Promise<any> => {
+    if (obj instanceof Array) {
+      return Promise.all(obj.map(replaceAvatarsRecursively))
+    } else if (obj !== null && typeof obj === 'object') {
+      const promises = Object.entries(obj).map(async ([key, value]) => {
+        if (key === 'avatar' && typeof value === 'string') {
+          // If the property is 'avatar' and the value is a string, replace it
+          return { [key]: await replaceAvatarAsync(value) }
+        } else {
+          // Recursively replace avatars in nested objects
+          return { [key]: await replaceAvatarsRecursively(value) }
+        }
+      })
+
+      const replacedProperties = await Promise.all(promises)
+      return Object.assign({}, ...replacedProperties)
+    } else {
+      return obj
+    }
+  }
+
+  // Start the replacement process
+  const replacedObject = await replaceAvatarsRecursively(jsonObject)
+  return replacedObject
+}

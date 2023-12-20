@@ -33,7 +33,7 @@ export async function registerUser(credentials: RegisterUser) {
   }
 
   const emailResult = await Service.findUserByEmail(email)
-  if (emailResult) throw new HttpError('Email Already Exists', 400)
+  if (emailResult) throw new HttpError('Email Already Exists', 409)
 
   const hashedPassword = await bcrypt.hash(password, 10)
 
