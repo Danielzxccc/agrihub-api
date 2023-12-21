@@ -3,6 +3,7 @@ import {
   Forums,
   Users,
   Articles,
+  AboutCms,
   CommunityEvents,
   EmailToken,
   UserTags,
@@ -34,6 +35,9 @@ export type NewArticle = Insertable<Articles>
 export type UpdateArticle = Updateable<Articles>
 
 export type UserTag = Insertable<UserTags>
+
+//About
+export type UpdateAbout = Updateable<AboutCms>
 
 //events
 export type Events = Selectable<CommunityEvents>
