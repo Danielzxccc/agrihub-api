@@ -3,6 +3,7 @@ import errorHandler from '../../utils/httpErrorHandler'
 import zParse from '../../utils/zParse'
 import * as Interactor from './FarmInteractor'
 import * as Schema from '../../schema/FarmSchema'
+import { SessionRequest } from '../../types/AuthType'
 
 // public route
 export async function listFarms(req: Request, res: Response) {
@@ -36,6 +37,17 @@ export async function viewFarm(req: Request, res: Response) {
     const { id } = req.params
     const farm = await Interactor.viewFarm(id)
     res.status(200).json(farm)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewSubFarm(req: SessionRequest, res: Response) {
+  try {
+    const userid = req.session.userid
+
+    const subfarm = await Interactor.viewSubFarm(userid)
+    res.status(200).json(subfarm)
   } catch (error) {
     errorHandler(res, error)
   }
@@ -106,6 +118,20 @@ export async function createCropReport(req: Request, res: Response) {
       message: 'Crop report successfully created',
       data: newCropReport,
     })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listActiveCropReports(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+
+    const reports = await Interactor.listActiveCropReports(userid)
+    res.status(200).json(reports)
   } catch (error) {
     errorHandler(res, error)
   }

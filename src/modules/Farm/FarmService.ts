@@ -9,6 +9,7 @@ import {
   UpdateCrop,
 } from '../../types/DBTypes'
 import { Crops } from 'kysely-codegen'
+import { sql } from 'kysely'
 
 export async function findFarm(id: string) {
   return await db
@@ -23,6 +24,14 @@ export async function findSubFarm(id: string) {
     .selectFrom('sub_farms')
     .selectAll()
     .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findSubFarmByHead(id: string) {
+  return await db
+    .selectFrom('sub_farms')
+    .selectAll()
+    .where('farm_head', '=', id)
     .executeTakeFirst()
 }
 
@@ -90,6 +99,46 @@ export async function createSubFarm(subFarm: NewSubFarm) {
     .executeTakeFirst()
 }
 
+export async function viewSubFarm(id: string, searchByHead?: boolean) {
+  let query = db.selectFrom('sub_farms').select((eb) => [
+    'sub_farms.id',
+    'sub_farms.name',
+    jsonObjectFrom(
+      eb
+        .selectFrom('farms')
+        .select([
+          'avatar',
+          'cover_photo',
+          'createdat',
+          'description',
+          'district',
+          sql<string>`CAST(id AS TEXT)`.as('id'),
+          'location',
+          'name',
+          'size',
+          'updatedat',
+        ])
+        .whereRef('sub_farms.farmid', '=', 'farms.id')
+    ).as('farm'),
+  ])
+
+  if (searchByHead) {
+    query = query.where('farm_head', '=', id)
+  } else {
+    query = query.where('id', '=', id)
+  }
+
+  return await query.executeTakeFirstOrThrow()
+}
+
+export async function findMember(id: string) {
+  return await db
+    .selectFrom('farm_members')
+    .selectAll()
+    .where('userid', '=', id)
+    .executeTakeFirst()
+}
+
 // crops
 export async function createCrop(crop: NewCrop) {
   return await db
@@ -130,4 +179,13 @@ export async function createCropReport(crop: NewCropReport) {
     .values(crop)
     .returningAll()
     .executeTakeFirst()
+}
+
+export async function listCropReports(farmid: string, isHarvested = false) {
+  return await db
+    .selectFrom('crop_reports')
+    .selectAll()
+    .where('farmid', '=', farmid)
+    .where('isharvested', '=', isHarvested)
+    .execute()
 }

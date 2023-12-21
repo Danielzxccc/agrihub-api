@@ -33,6 +33,48 @@ export const TagsRouter = express.Router()
 
 TagsRouter.get('/search', TagsController.findTags)
 
+/**
+ * @openapi
+ * /api/tags:
+ *   get:
+ *     summary: Get a list of tags
+ *     tags:
+ *       - Tags
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for tags (optional)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number (optional)
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of tags per page (optional)
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *         description: Sorting filter for tags (optional, default 'name')
+ *     responses:
+ *       "200":
+ *         description: Success. Returns a list of tags.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/TagList"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
 TagsRouter.get('/', TagsController.getTags)
 
 export default TagsRouter
