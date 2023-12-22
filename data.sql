@@ -63,6 +63,7 @@ CREATE TABLE farm_members(
     farmid INT NOT NULL,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(userid, farmid),
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (farmid) REFERENCES sub_farms(id) ON DELETE CASCADE
 );
@@ -99,6 +100,7 @@ CREATE TABLE crop_reports(
     isHarvested BOOLEAN DEFAULT FALSE,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    notes TEXT,
     FOREIGN KEY (crop_id) REFERENCES crops, 
     FOREIGN KEY (farmid) REFERENCES sub_farms(id) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE

@@ -7,7 +7,7 @@ export const ListFarmSchema = z.object({
     perpage: z.string().optional().default('20'),
   }),
 })
-87
+
 export const NewFarmSchema = z.object({
   body: z.object({
     name: z.string({ required_error: 'name is required' }),
@@ -24,6 +24,8 @@ export const NewFarmSchema = z.object({
     filename: z.string({ required_error: 'avatar is required' }),
   }),
 })
+
+// export const ViewSubFarmSchema = z.object({})
 
 export const NewSubFarmSchema = z.object({
   body: z.object({
@@ -64,7 +66,7 @@ export const NewCropReportSchema = z.object({
     expected_harvest: z.string({
       required_error: 'expected_harvest is required',
     }),
-    date_harvested: z.string({ required_error: 'date_harvested is required' }),
+    date_harvested: z.string().optional(),
     notes: z.string({ required_error: 'notes are required' }),
   }),
   params: z.object({
@@ -73,6 +75,7 @@ export const NewCropReportSchema = z.object({
   }),
 })
 
+/**@LIST_FAMRS */
 /**
  * @openapi
  * components:
@@ -115,6 +118,10 @@ export const NewCropReportSchema = z.object({
  *           description: The district where the farm is located
  *         size:
  *           type: number
+ *           description: The size of the farm (optional)
+ *         avatar:
+ *           type: string
+ *           format: binary
  *           description: The size of the farm (optional)
  *
  *     FarmData:
@@ -173,6 +180,7 @@ export const NewCropReportSchema = z.object({
  *           description: The total number of records
  */
 
+/**@CROP_INFORMATION */
 /**
  * @openapi
  * components:
@@ -215,6 +223,7 @@ export const NewCropReportSchema = z.object({
  *           description: The timestamp when the crop was last updated
  */
 
+/**@CROP_INFORMATION */
 /**
  * @openapi
  * components:
@@ -385,4 +394,119 @@ export const NewCropReportSchema = z.object({
  *               type: string
  *               format: date-time
  *               description: The actual date of harvest
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     SubfarmOverviewResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the subfarm
+ *         name:
+ *           type: string
+ *           description: The name of the subfarm
+ *         farm:
+ *           type: object
+ *           properties:
+ *             avatar:
+ *               type: string
+ *               description: The URL of the farm's avatar
+ *             cover_photo:
+ *               type: string
+ *               description: The URL of the farm's cover photo (null if not set)
+ *             createdat:
+ *               type: string
+ *               format: date-time
+ *               description: The timestamp when the farm was created
+ *             description:
+ *               type: string
+ *               description: The description of the farm
+ *             district:
+ *               type: string
+ *               description: The district of the farm
+ *             id:
+ *               type: string
+ *               description: The ID of the farm
+ *             location:
+ *               type: string
+ *               description: The location of the farm
+ *             name:
+ *               type: string
+ *               description: The name of the farm
+ *             size:
+ *               type: number
+ *               description: The size of the farm
+ *             updatedat:
+ *               type: string
+ *               format: date-time
+ *               description: The timestamp when the farm was last updated
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CropReport:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the crop report
+ *         farmid:
+ *           type: string
+ *           description: The ID of the farm to which the crop report belongs
+ *         userid:
+ *           type: string
+ *           description: The ID of the user who created the crop report
+ *         crop_name:
+ *           type: string
+ *           description: The name of the crop (null if not set)
+ *         crop_id:
+ *           type: string
+ *           description: The ID of the crop associated with the report
+ *         planted_qty:
+ *           type: string
+ *           description: The quantity of crops planted
+ *         harvested_qty:
+ *           type: string
+ *           description: The quantity of crops harvested (null if not set)
+ *         yield:
+ *           type: string
+ *           description: The yield of the crop (null if not set)
+ *         withered_crops:
+ *           type: string
+ *           description: The quantity of withered crops (null if not set)
+ *         date_planted:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the crops were planted
+ *         expected_harvest:
+ *           type: string
+ *           format: date-time
+ *           description: The expected timestamp for harvest
+ *         date_harvested:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the crops were harvested (null if not set)
+ *         image:
+ *           type: string
+ *           description: The URL of the image associated with the crop report (null if not set)
+ *         isharvested:
+ *           type: boolean
+ *           description: Indicates whether the crops have been harvested
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the crop report was created
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the crop report was last updated
+ *         notes:
+ *           type: string
+ *           description: Additional notes related to the crop report
  */

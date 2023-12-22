@@ -41,8 +41,9 @@ export const UserRouter = express.Router()
  */
 UserRouter.get('/profile/:username', UserController.findUserProfile)
 
+// TODO: fix edit profile
 /**
- * @openapi
+ * @openap
  * /api/user/profile/{id}:
  *   put:
  *     tags:

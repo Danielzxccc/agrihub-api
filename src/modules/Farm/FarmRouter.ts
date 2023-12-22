@@ -8,8 +8,18 @@ FarmRouter.get('/', FarmController.listFarms)
 FarmRouter.get('/:id', FarmController.viewFarm)
 // TODO: ADD USER AUTHORIZATION LATER
 FarmRouter.post('/', upload.single('avatar'), FarmController.registerFarm)
-// subfarm
-FarmRouter.post('/:farmid/:head', FarmController.registerSubFarm)
+// create subfarm
+FarmRouter.post(
+  '/subfarm/:farmid/:head',
+  UserGuard(['subfarm_head']),
+  FarmController.registerSubFarm
+)
+
+FarmRouter.get(
+  '/subfarm/overview',
+  UserGuard(['subfarm_head', 'farmer']),
+  FarmController.viewSubFarm
+)
 
 // crops
 FarmRouter.get('/crop/find', FarmController.listCrops)
@@ -23,10 +33,17 @@ FarmRouter.post(
 
 FarmRouter.post(
   '/crop/report/:farmid/:userid',
-  UserGuard(['user']),
+  UserGuard(['subfarm_head']),
   upload.single('image'),
   FarmController.createCropReport
 )
+
+FarmRouter.get(
+  '/crop/reports',
+  UserGuard(['subfarm_head', 'farm_head']),
+  FarmController.listActiveCropReports
+)
+
 // CREATE
 /**
  * @openapi
@@ -203,6 +220,76 @@ FarmRouter.post(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/NewCropReportResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/subfarm/overview:
+ *   get:
+ *     summary: Get overview details for a subfarm
+ *     tags:
+ *       - Farm
+ *     responses:
+ *       "200":
+ *         description: Success. Returns overview details for the subfarm.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/SubfarmOverviewResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/crop/reports:
+ *   get:
+ *     summary: Get crop reports for a farm
+ *     tags:
+ *       - Farm
+ *     responses:
+ *       "200":
+ *         description: Success. Returns a list of crop reports for the farm.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/CropReport"
  *       "401":
  *         description: Unauthorized
  *         content:

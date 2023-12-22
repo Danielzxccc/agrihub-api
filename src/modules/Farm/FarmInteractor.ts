@@ -71,6 +71,25 @@ export async function registerSubFarm(
   return newSubFarm
 }
 
+export async function viewSubFarm(id: string) {
+  const user = await findUser(id)
+
+  if (!user) throw new HttpError('User not Found', 404)
+
+  if (user.role === 'subfarm_head') {
+    const farmHeadView = await Service.viewSubFarm(id, true)
+    return farmHeadView
+  } else if (user.role === 'farmer') {
+    const member = await Service.findMember(id)
+    if (!member) throw new HttpError('Unauthorized', 401)
+
+    const farmerView = await Service.viewSubFarm(member.farmid, false)
+    return farmerView
+  } else {
+    throw new HttpError('Unauthorized', 401)
+  }
+}
+
 export async function listCrops() {
   const crops = await Service.findAllCrops()
 
@@ -102,10 +121,18 @@ export async function createNewCropReport(crop: NewCropReport) {
   ])
 
   if (!farm) throw new HttpError('Farm not found', 404)
-  if (!crops) throw new HttpError('Farm not found', 404)
+  if (!crops) throw new HttpError('Crop not found', 404)
   if (!head) throw new HttpError('User not found', 404)
 
   const newCropReport = await Service.createCropReport(crop)
 
   return newCropReport
+}
+
+export async function listActiveCropReports(userid: string) {
+  const subFarm = await Service.viewSubFarm(userid, true)
+
+  if (!subFarm) throw new HttpError('Unauthorized', 401)
+  const reports = await Service.listCropReports(subFarm.id)
+  return reports
 }
