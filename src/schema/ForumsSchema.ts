@@ -236,7 +236,7 @@ import { z } from 'zod'
  *           type: string
  *           description: The comment text
  *         user:
- *           $ref: "#/components/schemas/User"
+ *           $ref: "#/components/schemas/UserObject"
  *         createdat:
  *           type: string
  */
