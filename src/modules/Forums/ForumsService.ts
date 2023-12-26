@@ -62,8 +62,10 @@ export async function findQuestions(
       'forums.createdat',
       'forums.updatedat',
       'forums.views',
-      fn.count<number>('forums_answers.id').as('answer_count'),
-      fn.count<number>('forums_ratings.id').as('vote_count'),
+      sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
+      sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
+      // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
+      // fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
@@ -76,6 +78,7 @@ export async function findQuestions(
     ])
     .groupBy([
       'forums.id',
+      'forums.title',
       'forums.userid',
       'forums.createdat',
       // 'forums_answers.id',
