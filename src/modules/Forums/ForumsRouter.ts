@@ -407,6 +407,13 @@ ForumsRouter.post(
 
 ForumsRouter.post(
   '/vote/answer/:id',
-  UserGuard(['member']),
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   ForumsController.voteAnswer
 )
