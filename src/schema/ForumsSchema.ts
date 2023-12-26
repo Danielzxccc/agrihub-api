@@ -138,81 +138,15 @@ import { z } from 'zod'
  *               type: string
  *               description: The ID of the question
  *             user:
- *               type: object
- *               properties:
- *                 avatar:
- *                   type: string
- *                   description: The URL of the user's avatar
- *                 id:
- *                   type: string
- *                   description: The ID of the user
- *                 username:
- *                   type: string
- *                   description: The username of the user
+ *               $ref: "#/components/schemas/UserObject"
  *             tags:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   tag:
- *                     type: string
- *                     description: The tag associated with the question
+ *                 $ref: "#/components/schemas/QuestionTags"
  *             answers:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   answer:
- *                     type: string
- *                     description: The answer text
- *                   comments:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         comment:
- *                           type: string
- *                           description: The comment text
- *                         createdat:
- *                           type: string
- *                         user:
- *                           type: object
- *                           properties:
- *                             avatar:
- *                               type: string
- *                               description: The URL of the user's avatar
- *                             id:
- *                               type: string
- *                               description: The ID of the user
- *                             username:
- *                               type: string
- *                               description: The username of the user
- *                   id:
- *                     type: string
- *                     description: The ID of the answer
- *                   isaccepted:
- *                     type: boolean
- *                     description: Indicates whether the answer is accepted
- *                   total_vote_count:
- *                     type: integer
- *                     description: The total count of votes for the answer
- *                   upvote_count:
- *                     type: integer
- *                     description: The count of upvotes for the answer
- *                   createdat:
- *                     type: string
- *                   user:
- *                     type: object
- *                     properties:
- *                       avatar:
- *                         type: string
- *                         description: The URL of the user's avatar
- *                       id:
- *                         type: string
- *                         description: The ID of the user
- *                       username:
- *                         type: string
- *                         description: The username of the user
+ *                 $ref: "#/components/schemas/Answer"
  *             title:
  *               type: string
  *               description: The title of the question
@@ -243,22 +177,68 @@ import { z } from 'zod'
  *               type: object
  *               properties:
  *                 type:
- *                  type: string
+ *                   type: string
+ *               description: The vote information (null in the provided example)
  *         pagination:
- *           type: object
- *           properties:
- *             page:
- *               type: integer
- *               description: The current page number
- *             per_page:
- *               type: integer
- *               description: The number of records per page
- *             total_pages:
- *               type: integer
- *               description: The total number of pages
- *             total_records:
- *               type: integer
- *               description: The total number of records
+ *           $ref: "#/components/schemas/Pagination"
+ *
+ *     UserObject:
+ *       type: object
+ *       properties:
+ *         avatar:
+ *           type: string
+ *           description: The URL of the user's avatar
+ *         id:
+ *           type: string
+ *           description: The ID of the user
+ *         username:
+ *           type: string
+ *           description: The username of the user
+ *
+ *     QuestionTags:
+ *       type: object
+ *       properties:
+ *         tag:
+ *           type: string
+ *           description: The tag associated with the question
+ *
+ *     Answer:
+ *       type: object
+ *       properties:
+ *         answer:
+ *           type: string
+ *           description: The answer text
+ *         comments:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/Comment"
+ *         id:
+ *           type: string
+ *           description: The ID of the answer
+ *         isaccepted:
+ *           type: boolean
+ *           description: Indicates whether the answer is accepted
+ *         total_vote_count:
+ *           type: integer
+ *           description: The total count of votes for the answer
+ *         upvote_count:
+ *           type: integer
+ *           description: The count of upvotes for the answer
+ *         user:
+ *           $ref: "#/components/schemas/UserObject"
+ *         createdat:
+ *           type: string
+ *
+ *     Comment:
+ *       type: object
+ *       properties:
+ *         comment:
+ *           type: string
+ *           description: The comment text
+ *         user:
+ *           $ref: "#/components/schemas/User"
+ *         createdat:
+ *           type: string
  */
 
 export const SearchForums = z.object({
