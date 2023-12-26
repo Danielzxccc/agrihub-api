@@ -214,12 +214,27 @@ ForumsRouter.get('/:id', ForumsController.viewQuestion)
 
 ForumsRouter.post(
   '/vote/:id',
-  UserGuard(['member']),
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   ForumsController.voteQuestion
 )
 
 ForumsRouter.post(
   '/',
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   upload.array('imagesrc'),
   ForumsController.createNewQuestion
 )
@@ -273,7 +288,14 @@ ForumsRouter.post(
 
 ForumsRouter.post(
   '/create/answers/:id',
-  UserGuard(['member']),
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   ForumsController.createNewAnswer
 )
 
@@ -325,7 +347,14 @@ ForumsRouter.post(
  */
 ForumsRouter.post(
   '/create/comments/:answerId',
-  UserGuard(['member']),
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   ForumsController.createNewComment
 )
 
