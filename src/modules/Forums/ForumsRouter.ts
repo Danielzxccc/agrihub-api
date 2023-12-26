@@ -204,6 +204,12 @@ ForumsRouter.get('/:id', ForumsController.viewQuestion)
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "500":
  *         description: Server Error
  *         content:
@@ -272,6 +278,12 @@ ForumsRouter.post(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "429":
  *         description: Too much request
  *         content:
@@ -328,6 +340,12 @@ ForumsRouter.post(
  *               $ref: "#/components/schemas/NewCommentResponse"
  *       "400":
  *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
  *         content:
  *           application/json:
  *             schema:
@@ -391,6 +409,12 @@ ForumsRouter.post(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "429":
  *         description: Too much request
  *         content:
@@ -416,4 +440,49 @@ ForumsRouter.post(
     'asst_admin',
   ]),
   ForumsController.voteAnswer
+)
+
+/**
+ * @openapi
+ * /api/forums/delete/vote-answer/{id}:
+ *   delete:
+ *     summary: Delete a vote for an answer
+ *     tags:
+ *       - Forums
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the vote for an answer
+ *     responses:
+ *       "200":
+ *         description: Success. Indicates that the vote for the answer has been deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/DeleteVoteAnswerResponse"
+ *       "401":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+ForumsRouter.delete(
+  '/delete/vote-answer/:id',
+  ForumsController.deleteVoteAnswer
 )

@@ -158,3 +158,15 @@ export async function voteAnswer(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function deleteVoteAnswer(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.deleteAnswerVote(id, userid)
+    res.status(200).json({ message: 'deleted Successfully' })
+  } catch (error) {
+    console.log(error.stack)
+    errorHandler(res, error)
+  }
+}

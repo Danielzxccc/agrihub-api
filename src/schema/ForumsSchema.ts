@@ -176,6 +176,8 @@ import { z } from 'zod'
  *             vote:
  *               type: object
  *               properties:
+ *                 id:
+ *                   type: string
  *                 type:
  *                   type: string
  *               description: The vote information (null in the provided example)
@@ -228,6 +230,13 @@ import { z } from 'zod'
  *           $ref: "#/components/schemas/UserObject"
  *         createdat:
  *           type: string
+ *         vote:
+ *           type: object
+ *           properties:
+ *             id:
+ *              type: string
+ *             type:
+ *              type: string
  *
  *     Comment:
  *       type: object
@@ -492,3 +501,15 @@ export const VoteAnswerSchema = z.object({
 })
 
 export type ForumsContent = z.infer<typeof ForumsSchema>
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     DeleteVoteAnswerResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: The success message indicating that the vote has been deleted
+ */
