@@ -2,14 +2,9 @@ import HttpError from '../../utils/HttpError'
 import { AddImage, UpdateAbout } from '../../types/DBTypes'
 import * as Service from './AboutService'
 import fs from 'fs'
-import { readFileAsStream } from '../../utils/file'
-import {
-  deleteFile,
-  getObjectUrl,
-  uploadFile,
-} from '../AWS-Bucket/UploadService'
+import { deleteFile, readFileAsStream } from '../../utils/file'
+import { getObjectUrl, uploadFile } from '../AWS-Bucket/UploadService'
 import dbErrorHandler from '../../utils/dbErrorHandler'
-import { object } from 'zod'
 
 export async function updateAbout(body: UpdateAbout) {
   const update = await Service.updateAboutPage(body)
