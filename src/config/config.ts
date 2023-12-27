@@ -35,12 +35,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',
-  'http://localhost:5500',
-  'http://127.0.0.1:5500',
-  'http://127.0.0.1:8080',
-  'https://agrihub-frontend-agrihub-web.vercel.app',
   'https://qc-agrihub.xyz',
   'https://agrihub.vercel.app',
+  'https://agrihub-6vw7t76z8-wolfcarves.vercel.app',
 ]
 export const corsOptions = {
   origin: (origin: any, callback: any) => {

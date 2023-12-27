@@ -62,8 +62,10 @@ export async function findQuestions(
       'forums.createdat',
       'forums.updatedat',
       'forums.views',
-      fn.count<number>('forums_answers.id').as('answer_count'),
-      fn.count<number>('forums_ratings.id').as('vote_count'),
+      sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
+      sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
+      // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
+      // fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
@@ -76,6 +78,7 @@ export async function findQuestions(
     ])
     .groupBy([
       'forums.id',
+      'forums.title',
       'forums.userid',
       'forums.createdat',
       // 'forums_answers.id',
@@ -153,6 +156,13 @@ export async function viewQuestion(
                 ])
                 .whereRef('forums_answers.userid', '=', 'users.id')
             ).as('user'),
+            jsonObjectFrom(
+              eb
+                .selectFrom('answer_votes')
+                .select([sql<string>`CAST(id AS TEXT)`.as('id'), 'type'])
+                .where('answer_votes.userid', '=', userid)
+                .whereRef('answer_votes.answerid', '=', 'forums_answers.id')
+            ).as('vote'),
             fn
               .count<number>('answer_votes.id')
               .filterWhere('type', '=', 'upvote')
@@ -198,7 +208,7 @@ export async function viewQuestion(
       jsonObjectFrom(
         eb
           .selectFrom('forums_ratings')
-          .select(['type'])
+          .select([sql<string>`CAST(id AS TEXT)`.as('id'), 'type'])
           .where('forums_ratings.userid', '=', userid)
           .whereRef('forums.id', '=', 'forums_ratings.questionid')
       ).as('vote'),
@@ -332,6 +342,18 @@ export async function voteAnswer(vote: NewVoteQuestion) {
         })
     )
     .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteAnswerVote(id: string) {
+  return await db.deleteFrom('answer_votes').where('id', '=', id).execute()
+}
+
+export async function findAnswerVote(id: string) {
+  return await db
+    .selectFrom('answer_votes')
+    .selectAll()
+    .where('id', '=', id)
     .executeTakeFirst()
 }
 

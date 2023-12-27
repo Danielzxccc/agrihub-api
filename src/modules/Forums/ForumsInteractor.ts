@@ -169,3 +169,13 @@ export async function voteAnswer(
   const votedQuestion = await Service.voteAnswer(data)
   return votedQuestion
 }
+
+export async function deleteAnswerVote(id: string, userid: string) {
+  if (!userid) throw new HttpError('Unauthorized', 401)
+  const vote = await Service.findAnswerVote(id)
+  if (!vote) throw new HttpError('Already Deleted', 400)
+
+  if (vote.userid !== userid) throw new HttpError('Unauthorized', 401)
+
+  await Service.deleteAnswerVote(id)
+}

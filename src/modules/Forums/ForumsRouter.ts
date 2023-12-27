@@ -204,6 +204,12 @@ ForumsRouter.get('/:id', ForumsController.viewQuestion)
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "500":
  *         description: Server Error
  *         content:
@@ -214,12 +220,27 @@ ForumsRouter.get('/:id', ForumsController.viewQuestion)
 
 ForumsRouter.post(
   '/vote/:id',
-  UserGuard(['member']),
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   ForumsController.voteQuestion
 )
 
 ForumsRouter.post(
   '/',
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   upload.array('imagesrc'),
   ForumsController.createNewQuestion
 )
@@ -257,6 +278,12 @@ ForumsRouter.post(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "429":
  *         description: Too much request
  *         content:
@@ -273,7 +300,14 @@ ForumsRouter.post(
 
 ForumsRouter.post(
   '/create/answers/:id',
-  UserGuard(['member']),
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   ForumsController.createNewAnswer
 )
 
@@ -310,6 +344,12 @@ ForumsRouter.post(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "429":
  *         description: Too much request
  *         content:
@@ -325,7 +365,14 @@ ForumsRouter.post(
  */
 ForumsRouter.post(
   '/create/comments/:answerId',
-  UserGuard(['member']),
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   ForumsController.createNewComment
 )
 
@@ -362,6 +409,12 @@ ForumsRouter.post(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "429":
  *         description: Too much request
  *         content:
@@ -378,6 +431,58 @@ ForumsRouter.post(
 
 ForumsRouter.post(
   '/vote/answer/:id',
-  UserGuard(['member']),
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
   ForumsController.voteAnswer
+)
+
+/**
+ * @openapi
+ * /api/forums/delete/vote-answer/{id}:
+ *   delete:
+ *     summary: Delete a vote for an answer
+ *     tags:
+ *       - Forums
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the vote for an answer
+ *     responses:
+ *       "200":
+ *         description: Success. Indicates that the vote for the answer has been deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/DeleteVoteAnswerResponse"
+ *       "401":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+ForumsRouter.delete(
+  '/delete/vote-answer/:id',
+  ForumsController.deleteVoteAnswer
 )
