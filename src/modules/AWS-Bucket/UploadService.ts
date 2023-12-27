@@ -47,7 +47,7 @@ export async function uploadFiles(files: Express.Multer.File[]) {
   return Promise.all(uploadPromises)
 }
 
-export function deleteFile(fileName: string) {
+export function deleteFileCloud(fileName: string) {
   const deleteParams = {
     Bucket: bucketName,
     Key: fileName,
