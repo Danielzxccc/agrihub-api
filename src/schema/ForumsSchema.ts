@@ -513,3 +513,17 @@ export type ForumsContent = z.infer<typeof ForumsSchema>
  *           type: string
  *           description: The success message indicating that the vote has been deleted
  */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     DeleteVoteForumResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: The success message indicating that the vote has been deleted
+ *       required:
+ *         - message # Making the 'message' property required
+ */

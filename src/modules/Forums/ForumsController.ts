@@ -104,6 +104,19 @@ export async function voteQuestion(req: SessionRequest, res: Response) {
   }
 }
 
+export async function deleteVoteQuestion(req: SessionRequest, res: Response) {
+  try {
+    const id = req.params.id
+    const { userid } = req.session
+
+    await Interactor.deleteVoteQuestion(id, userid)
+
+    res.status(200).json({ message: 'deleted successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function createNewAnswer(req: SessionRequest, res: Response) {
   try {
     const userid = req.session.userid

@@ -317,6 +317,18 @@ export async function voteQuestion(
     .executeTakeFirst()
 }
 
+export async function deleteQuestionVote(id: string) {
+  return await db.deleteFrom('forums_ratings').where('id', '=', id).execute()
+}
+
+export async function findQuestionVote(id: string) {
+  return await db
+    .selectFrom('forums_ratings')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
 export async function incrementViews(id: string) {
   return await db
     .updateTable('forums')
