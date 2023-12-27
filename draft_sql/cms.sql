@@ -19,6 +19,6 @@ CREATE TABLE about_gallery(
     imagesrc TEXT,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    cms_id INT,
+    cms_id INT NOT NULL,
     FOREIGN KEY (cms_id) REFERENCES about_cms(id) ON DELETE CASCADE
 )

@@ -16,3 +16,12 @@ export const UpdateAbout = z.object({
     president_message: z.string().optional(),
   }),
 })
+
+export const AddImage = z.object({
+  body: z.object({
+    cms_id: z.string({ required_error: 'id required' }),
+  }),
+  file: z.object({
+    filename: z.string({ required_error: 'filname required' }),
+  }),
+})
