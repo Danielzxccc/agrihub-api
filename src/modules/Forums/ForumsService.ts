@@ -202,8 +202,8 @@ export async function viewQuestion(
       sql<string>`CAST(forums.createdat AS TEXT)`.as('createdat'),
       sql<string>`CAST(forums.updatedat AS TEXT)`.as('updatedat'),
       'forums.views',
-      fn.count<number>('forums_answers.id').as('answer_count'),
-      fn.count<number>('forums_ratings.id').as('vote_count'),
+      sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
+      sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
       // fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
