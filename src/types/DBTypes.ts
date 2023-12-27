@@ -14,6 +14,7 @@ import {
   Crops,
   CropReports,
   AnswerVotes,
+  AboutGallery,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -38,6 +39,8 @@ export type UserTag = Insertable<UserTags>
 
 //About
 export type UpdateAbout = Updateable<AboutCms>
+export type AddImage = Insertable<AboutCms>
+export type Gallery = Insertable<AboutGallery>
 
 //events
 export type Events = Selectable<CommunityEvents>
