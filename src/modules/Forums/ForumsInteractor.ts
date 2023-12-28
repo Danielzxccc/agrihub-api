@@ -160,6 +160,18 @@ export async function voteQuestion(
   return data
 }
 
+export async function deleteVoteQuestion(
+  id: string,
+  userid: string
+): Promise<void> {
+  const vote = await Service.findQuestionVote(id)
+
+  if (!vote) throw new HttpError('Vote not found', 404)
+
+  if (vote.userid !== userid) throw new HttpError('Unauthorized', 401)
+  await Service.deleteQuestionVote(id)
+}
+
 export async function voteAnswer(
   answerid: string,
   userid: string,

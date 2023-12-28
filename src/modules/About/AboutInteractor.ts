@@ -9,7 +9,6 @@ import {
   uploadFile,
 } from '../AWS-Bucket/UploadService'
 import dbErrorHandler from '../../utils/dbErrorHandler'
-import { object } from 'zod'
 
 export async function updateAbout(body: UpdateAbout) {
   const update = await Service.updateAboutPage(body)

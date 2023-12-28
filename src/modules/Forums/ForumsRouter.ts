@@ -231,6 +231,72 @@ ForumsRouter.post(
   ForumsController.voteQuestion
 )
 
+/**
+ * @openapi
+ * /api/forums/vote/delete/{id}:
+ *   delete:
+ *     summary: Delete a vote for a forum
+ *     tags:
+ *       - Forums
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the vote for a forum
+ *     responses:
+ *       "200":
+ *         description: Success. Indicates that the vote for the forum has been deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/DeleteVoteForumResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "429":
+ *         description: Too much request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+ForumsRouter.delete(
+  '/vote/delete/:id',
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
+  ForumsController.deleteVoteQuestion
+)
+
 ForumsRouter.post(
   '/',
   UserGuard([
