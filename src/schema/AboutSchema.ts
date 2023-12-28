@@ -22,6 +22,6 @@ export const AddImage = z.object({
     cms_id: z.string({ required_error: 'id required' }),
   }),
   file: z.object({
-    filename: z.string({ required_error: 'filname required' }),
+    filename: z.string({ required_error: 'filename required' }),
   }),
 })

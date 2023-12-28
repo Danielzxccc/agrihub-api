@@ -11,3 +11,4 @@ AboutRouter.post(
   upload.single('imagesrc'),
   AboutController.addImage
 )
+AboutRouter.delete('/about_gallery/:id', AboutController.deleteImage)

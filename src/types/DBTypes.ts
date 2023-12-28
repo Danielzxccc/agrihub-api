@@ -41,6 +41,7 @@ export type UserTag = Insertable<UserTags>
 export type UpdateAbout = Updateable<AboutCms>
 export type AddImage = Insertable<AboutCms>
 export type Gallery = Insertable<AboutGallery>
+export type UpdateGallery = Updateable<AboutGallery>
 
 //events
 export type Events = Selectable<CommunityEvents>
