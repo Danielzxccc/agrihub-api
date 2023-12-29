@@ -180,7 +180,7 @@ export async function viewQuestion(
                         'username',
                         sql<string>`CAST(id AS TEXT)`.as('id'),
                       ])
-                      .whereRef('forums_answers.userid', '=', 'users.id')
+                      .whereRef('userid', '=', 'users.id')
                   ).as('user'),
                   'forums_comments.comment',
                   'forums_comments.createdat',
