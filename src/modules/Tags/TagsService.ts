@@ -16,3 +16,39 @@ export async function findTags(tag: string) {
 
   return await query.limit(5).execute()
 }
+
+export async function getTotalCount() {
+  return await db
+    .selectFrom('tags')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
+
+export async function getTags(
+  offset: number,
+  filterKey: string,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('tags')
+    .leftJoin('forums_tags', 'forums_tags.tagid', 'tags.id')
+    .select(({ fn }) => [
+      'tags.id',
+      'tag_name',
+      'details',
+      'createdat',
+      fn.count<number>('forums_tags.tagid').as('count'),
+    ])
+    .groupBy([
+      'tags.id',
+      'forums_tags.tagid',
+      'tags.tag_name',
+      'tags.createdat',
+    ])
+
+  if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')
+  if (filterKey === 'popular') query = query.orderBy('count', 'desc')
+  if (filterKey === 'newest') query = query.orderBy('createdat', 'desc')
+  return await query.limit(perpage).offset(offset).execute()
+}

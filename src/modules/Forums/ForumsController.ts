@@ -5,6 +5,39 @@ import * as Schema from '../../schema/ForumsSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
 
+export async function viewQuestion(req: SessionRequest, res: Response) {
+  try {
+    const ip = req.ip
+    const user = req.session.userid
+    const { query, params } = await zParse(Schema.ViewQuestion, req)
+
+    const pageNumber = Number(query.page) || 1
+    const perPage = 10
+    const offset = (pageNumber - 1) * perPage
+
+    const question = await Interactor.viewQuestion(
+      params.id,
+      offset,
+      perPage,
+      ip,
+      user,
+      query.filter
+    )
+    const totalPages = Math.ceil(Number(question.total.count) / perPage)
+    res.status(200).json({
+      question: question.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(question.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function listQuestions(req: SessionRequest, res: Response) {
   try {
     const { query } = await zParse(Schema.SearchForums, req)
@@ -19,14 +52,16 @@ export async function listQuestions(req: SessionRequest, res: Response) {
       offset,
       searchKey,
       filterKey,
-      perPage
+      perPage,
+      req.session.userid || '00',
+      query.profile
     )
     const totalPages = Math.ceil(Number(questions.total.count) / perPage)
     res.status(200).json({
       questions: questions.data,
       pagination: {
         page: pageNumber,
-        per_page: 20,
+        per_page: perPage,
         total_pages: totalPages,
         total_records: Number(questions.total.count),
       },
@@ -45,11 +80,38 @@ export async function createNewQuestion(req: SessionRequest, res: Response) {
     const newQuestion = await Interactor.createNewQuestion(
       userid,
       imagesrc,
-      contents
+      contents,
+      uploadedFiles
     )
     res
       .status(201)
       .json({ message: 'Question created successfully', newQuestion })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function voteQuestion(req: SessionRequest, res: Response) {
+  try {
+    const userid = req.session.userid
+    const { params, body } = await zParse(Schema.VoteQuestion, req)
+
+    const vote = await Interactor.voteQuestion(params.id, userid, body.type)
+
+    res.status(201).json({ message: `${body.type} successfully`, vote })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteVoteQuestion(req: SessionRequest, res: Response) {
+  try {
+    const id = req.params.id
+    const { userid } = req.session
+
+    await Interactor.deleteVoteQuestion(id, userid)
+
+    res.status(200).json({ message: 'deleted successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
@@ -93,6 +155,31 @@ export async function createNewComment(req: SessionRequest, res: Response) {
       .status(201)
       .json({ message: 'Comment created successfully', newComment })
   } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function voteAnswer(req: SessionRequest, res: Response) {
+  try {
+    const userid = req.session.userid
+    const { body, params } = await zParse(Schema.VoteAnswerSchema, req)
+
+    const vote = await Interactor.voteAnswer(params.id, userid, body)
+
+    res.status(201).json({ message: 'Voted Answer Successfully', data: vote })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteVoteAnswer(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.deleteAnswerVote(id, userid)
+    res.status(200).json({ message: 'deleted Successfully' })
+  } catch (error) {
+    console.log(error.stack)
     errorHandler(res, error)
   }
 }

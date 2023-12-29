@@ -25,7 +25,7 @@ export const UserRouter = express.Router()
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/UserProfile"
+ *               $ref: "#/components/schemas/UserSchema"
  *       "404":
  *         description: Not Found Error
  *         content:
@@ -41,8 +41,9 @@ export const UserRouter = express.Router()
  */
 UserRouter.get('/profile/:username', UserController.findUserProfile)
 
+// TODO: fix edit profile
 /**
- * @openapi
+ * @openap
  * /api/user/profile/{id}:
  *   put:
  *     tags:

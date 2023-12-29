@@ -3,10 +3,19 @@ import {
   Forums,
   Users,
   Articles,
+  AboutCms,
+  Blogs,
+  CommunityEvents,
   EmailToken,
   UserTags,
   ForumsComments,
   ForumsAnswers,
+  Farms,
+  SubFarms,
+  Crops,
+  CropReports,
+  AnswerVotes,
+  AboutGallery,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -21,8 +30,42 @@ export type NewComment = Insertable<ForumsComments>
 export type Answer = Selectable<ForumsAnswers>
 export type UpdateQuestion = Updateable<Forums>
 
+export type NewVoteQuestion = Insertable<AnswerVotes>
+
 export type Article = Selectable<Articles>
 export type NewArticle = Insertable<Articles>
 export type UpdateArticle = Updateable<Articles>
 
 export type UserTag = Insertable<UserTags>
+
+//Blogs
+export type NewBlog = Insertable<Blogs>
+export type UpdateBlogs = Updateable<Blogs>
+
+//About
+export type UpdateAbout = Updateable<AboutCms>
+export type AddImage = Insertable<AboutCms>
+export type Gallery = Insertable<AboutGallery>
+export type UpdateGallery = Updateable<AboutGallery>
+
+//events
+export type Events = Selectable<CommunityEvents>
+export type NewEvent = Insertable<CommunityEvents>
+export type UpdateEvent = Updateable<CommunityEvents>
+
+// farms
+export type Farm = Selectable<Farms>
+export type NewFarm = Insertable<Farms>
+
+// subfarm
+export type SubFarm = Selectable<SubFarms>
+export type NewSubFarm = Insertable<SubFarms>
+
+// crops
+export type Crop = Selectable<Crops>
+export type NewCrop = Insertable<Crop>
+export type UpdateCrop = Updateable<Crop>
+
+// crop reports
+export type CropReport = Selectable<CropReports>
+export type NewCropReport = Insertable<CropReports>

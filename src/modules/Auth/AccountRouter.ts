@@ -40,6 +40,12 @@ export const AccountRouter = express.Router()
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "409":
+ *         description: Email Already Exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "500":
  *         description: Server Error
  *         content:
@@ -178,6 +184,12 @@ AccountRouter.post('/profile-completion', AuthController.profileCompletion)
  *               $ref: "#/components/schemas/UserAuthResponse"
  *       "400":
  *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "409":
+ *         description: Username Already Exists
  *         content:
  *           application/json:
  *             schema:

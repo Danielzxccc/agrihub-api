@@ -24,11 +24,14 @@ import swaggerUi from 'swagger-ui-express'
 import log from './utils'
 
 const options: swaggerJsdoc.Options = {
+  apisSorter: 'alpha',
+  tagsSorter: 'alpha',
+  operationsSorter: 'alpha',
   definition: {
     openapi: '3.0.0',
     basePath: 'https://qc-agrihub.xyz',
     info: {
-      title: 'REST API Docs',
+      title: 'AGRIHUB API',
       version: '1.0',
     },
     security: [
