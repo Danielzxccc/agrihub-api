@@ -37,7 +37,14 @@ export async function viewQuestion(
 
   if (!data) throw new HttpError('Question Not Found', 404)
 
-  const formattedQuestion = await replaceAvatarsWithUrls(data)
+  const dataWithImageSrc = data.imagesrc.map((item, _) => {
+    return getObjectUrl(item)
+  })
+
+  const formattedQuestion = await replaceAvatarsWithUrls({
+    ...data,
+    imagesrc: dataWithImageSrc,
+  })
 
   return { data: formattedQuestion, total }
 }
