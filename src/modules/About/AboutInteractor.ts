@@ -1,9 +1,13 @@
 import HttpError from '../../utils/HttpError'
-import { AddImage, UpdateAbout } from '../../types/DBTypes'
+import { AddImage, UpdateAbout, UpdateGallery } from '../../types/DBTypes'
 import * as Service from './AboutService'
 import fs from 'fs'
 import { deleteFile, readFileAsStream } from '../../utils/file'
-import { getObjectUrl, uploadFile } from '../AWS-Bucket/UploadService'
+import {
+  deleteFileCloud,
+  getObjectUrl,
+  uploadFile,
+} from '../AWS-Bucket/UploadService'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 
 export async function updateAbout(body: UpdateAbout) {
@@ -29,4 +33,13 @@ export async function addImage(body: AddImage, image: Express.Multer.File) {
     deleteFile(image.filename)
     dbErrorHandler(error)
   }
+}
+
+export async function deleteImage(id: string) {
+  const deleteImage = await Service.deleteImage(id)
+
+  deleteFileCloud(deleteImage.imagesrc)
+
+  if (!deleteImage) throw new HttpError('Image currently does not exist', 400)
+  return deleteImage
 }

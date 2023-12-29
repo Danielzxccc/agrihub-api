@@ -4,6 +4,7 @@ import {
   Users,
   Articles,
   AboutCms,
+  Blogs,
   CommunityEvents,
   EmailToken,
   UserTags,
@@ -37,10 +38,15 @@ export type UpdateArticle = Updateable<Articles>
 
 export type UserTag = Insertable<UserTags>
 
+//Blogs
+export type NewBlog = Insertable<Blogs>
+export type UpdateBlogs = Updateable<Blogs>
+
 //About
 export type UpdateAbout = Updateable<AboutCms>
 export type AddImage = Insertable<AboutCms>
 export type Gallery = Insertable<AboutGallery>
+export type UpdateGallery = Updateable<AboutGallery>
 
 //events
 export type Events = Selectable<CommunityEvents>

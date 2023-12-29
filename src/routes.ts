@@ -11,6 +11,7 @@ import { AboutRouter } from './modules/About/AboutRouter'
 import upload from './config/multer'
 import { multerLimitter } from './middleware/UploadMiddleware'
 import path from 'path'
+import { BlogsRouter } from './modules/Blogs/BlogsRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -45,6 +46,7 @@ function routes(app: Express) {
   app.use('/api/articles', ArticlesRouter)
   app.use('/api/events', EventsRouter)
   app.use('/api/cms/about', AboutRouter)
+  app.use('/api/blogs', BlogsRouter)
 
   // upload error messages
   app.use(multerLimitter)

@@ -27,3 +27,15 @@ export async function addImage(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function deleteImage(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+
+    const deleteImage = await Interactor.deleteImage(id)
+
+    res.status(200).json({ message: 'Image deleted', deleteImage })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
