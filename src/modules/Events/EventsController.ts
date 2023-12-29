@@ -32,7 +32,7 @@ export async function listEvents(req: SessionRequest, res: Response) {
   }
 }
 
-export async function viewEvents(req: Request, res: Response) {
+export async function viewEvents(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     const events = await Interactor.viewEvents(id)

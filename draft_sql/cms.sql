@@ -22,3 +22,13 @@ CREATE TABLE about_gallery(
     cms_id INT NOT NULL,
     FOREIGN KEY (cms_id) REFERENCES about_cms(id) ON DELETE CASCADE
 )
+
+CREATE TABLE blogs(
+    id SERIAL PRIMARY KEY,
+    bg_image TEXT,
+    author TEXT,
+    title TEXT,
+    description TEXT,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
+)
