@@ -63,7 +63,10 @@ export async function findQuestions(
       'forums.updatedat',
       'forums.views',
       sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
-      sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
+      fn
+        .count<number>('forums_ratings.id')
+        .filterWhere('type', '=', 'upvote')
+        .as('vote_count'),
       // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
       // fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
