@@ -7,13 +7,8 @@ import {
   NewVoteQuestion,
 } from '../../types/DBTypes'
 import { db } from '../../config/database'
-import {
-  jsonObjectFrom,
-  jsonArrayFrom,
-  jsonBuildObject,
-} from 'kysely/helpers/postgres'
+import { jsonObjectFrom, jsonArrayFrom } from 'kysely/helpers/postgres'
 import { sql } from 'kysely'
-import { query } from 'express'
 
 export async function findQuestionById(questionid: string) {
   return await db
@@ -73,7 +68,7 @@ export async function findQuestions(
       jsonObjectFrom(
         eb
           .selectFrom('forums_ratings')
-          .select(['type'])
+          .select([sql<string>`CAST(id AS TEXT)`.as('id'), 'type'])
           .where('forums_ratings.userid', '=', userid)
           .whereRef('forums.id', '=', 'forums_ratings.questionid')
       ).as('vote'),
