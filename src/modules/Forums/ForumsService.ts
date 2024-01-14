@@ -7,13 +7,8 @@ import {
   NewVoteQuestion,
 } from '../../types/DBTypes'
 import { db } from '../../config/database'
-import {
-  jsonObjectFrom,
-  jsonArrayFrom,
-  jsonBuildObject,
-} from 'kysely/helpers/postgres'
+import { jsonObjectFrom, jsonArrayFrom } from 'kysely/helpers/postgres'
 import { sql } from 'kysely'
-import { query } from 'express'
 
 export async function findQuestionById(questionid: string) {
   return await db
@@ -63,14 +58,17 @@ export async function findQuestions(
       'forums.updatedat',
       'forums.views',
       sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
-      sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
+      fn
+        .count<number>('forums_ratings.id')
+        .filterWhere('type', '=', 'upvote')
+        .as('vote_count'),
       // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
       // fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
           .selectFrom('forums_ratings')
-          .select(['type'])
+          .select([sql<string>`CAST(id AS TEXT)`.as('id'), 'type'])
           .where('forums_ratings.userid', '=', userid)
           .whereRef('forums.id', '=', 'forums_ratings.questionid')
       ).as('vote'),
@@ -180,7 +178,7 @@ export async function viewQuestion(
                         'username',
                         sql<string>`CAST(id AS TEXT)`.as('id'),
                       ])
-                      .whereRef('forums_answers.userid', '=', 'users.id')
+                      .whereRef('userid', '=', 'users.id')
                   ).as('user'),
                   'forums_comments.comment',
                   'forums_comments.createdat',
@@ -203,7 +201,13 @@ export async function viewQuestion(
       sql<string>`CAST(forums.updatedat AS TEXT)`.as('updatedat'),
       'forums.views',
       sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
-      sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
+      // sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
+      fn
+        .count<number>('forums_ratings.id')
+        .distinct()
+        .filterWhere('type', '=', 'upvote')
+        .as('vote_count'),
+
       // fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb

@@ -7,6 +7,67 @@ export const UserRouter = express.Router()
 
 /**
  * @openapi
+ * /api/user/list:
+ *   get:
+ *     summary: Get a list of users
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - name: search
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Search term for filtering users
+ *       - name: page
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Page number for pagination
+ *       - name: perpage
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Number of records per page
+ *       - name: filter
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Filter criteria for users
+ *     responses:
+ *       "200":
+ *         description: Success. Returns a list of users.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ListUserResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+UserRouter.get(
+  '/list',
+  UserGuard(['admin', 'asst_admin']),
+  UserController.listUsers
+)
+
+/**
+ * @openapi
  * /api/user/profile/{username}:
  *   get:
  *     tags:

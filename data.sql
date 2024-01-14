@@ -19,6 +19,7 @@ CREATE TABLE users(
     verification_level INT,
     bio TEXT,
     role roles DEFAULT 'member',
+    isbanned BOOLEAN DEFAULT TRUE,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (username, email)

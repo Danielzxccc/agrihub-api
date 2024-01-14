@@ -51,6 +51,8 @@ import { z } from 'zod'
  *               vote:
  *                 type: object
  *                 properties:
+ *                   id:
+ *                     type: string
  *                   type:
  *                     type: string
  *         pagination:

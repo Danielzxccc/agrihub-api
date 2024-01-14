@@ -6,6 +6,20 @@ import { deleteFile } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { getObjectUrl } from '../AWS-Bucket/UploadService'
 
+export async function listUsers(
+  offset: number,
+  perpage: number,
+  filterKey?: string,
+  searchKey?: string
+) {
+  const [data, total] = await Promise.all([
+    Service.listUsers(offset, perpage, filterKey, searchKey),
+    Service.getTotalUsers(),
+  ])
+
+  return { data, total }
+}
+
 export async function findUserProfile(username: string) {
   const user = await Service.findByEmailOrUsername(username)
   if (!user) throw new HttpError('User not found', 404)
