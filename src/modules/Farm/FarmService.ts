@@ -5,6 +5,7 @@ import {
   NewCrop,
   NewCropReport,
   NewFarm,
+  NewFarmApplication,
   NewSubFarm,
   UpdateCrop,
 } from '../../types/DBTypes'
@@ -188,4 +189,12 @@ export async function listCropReports(farmid: string, isHarvested = false) {
     .where('farmid', '=', farmid)
     .where('isharvested', '=', isHarvested)
     .execute()
+}
+
+export async function createFarmApplication(application: NewFarmApplication) {
+  return await db
+    .insertInto('farm_applications')
+    .values(application)
+    .returningAll()
+    .executeTakeFirst()
 }

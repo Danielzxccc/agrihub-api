@@ -5,6 +5,46 @@ import * as Interactor from './FarmInteractor'
 import * as Schema from '../../schema/FarmSchema'
 import { SessionRequest } from '../../types/AuthType'
 
+export async function applyFarm(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.NewFarmApplication, req)
+
+    const farmActualImages = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )['farm_actual_images']
+
+    const selfie = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )['selfie'][0]
+
+    const proof = (req.files as { [fieldname: string]: Express.Multer.File[] })[
+      'proof'
+    ][0]
+
+    const valid_id = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )['valid_id'][0]
+
+    const userid = req.session.userid
+
+    const newApplication = await Interactor.createFarmApplication({
+      farmActualImages,
+      application: { body },
+      proof,
+      selfie,
+      userid,
+      valid_id,
+    })
+
+    res.status(201).json({
+      message: 'Application Submitted Successfully',
+      data: newApplication,
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 // public route
 export async function listFarms(req: Request, res: Response) {
   try {

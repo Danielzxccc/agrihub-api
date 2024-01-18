@@ -75,6 +75,17 @@ export const NewCropReportSchema = z.object({
   }),
 })
 
+export const NewFarmApplication = z.object({
+  body: z.object({
+    farm_name: z.string(),
+    farm_size: z.string().transform((arg) => Number(arg)),
+    district: z.string(),
+    id_type: z.string(),
+  }),
+})
+
+export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
+
 /**@LIST_FAMRS */
 /**
  * @openapi
@@ -509,4 +520,106 @@ export const NewCropReportSchema = z.object({
  *         notes:
  *           type: string
  *           description: Additional notes related to the crop report
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewFarmApplication:
+ *       type: object
+ *       properties:
+ *         farm_name:
+ *           type: string
+ *           description: The name of the farm
+ *         farm_size:
+ *           type: string
+ *           description: The size of the farm
+ *         district:
+ *           type: string
+ *           description: The district of the farm
+ *         id_type:
+ *           type: string
+ *           description: The type of ID used for application
+ *         selfie:
+ *           type: string
+ *           format: binary
+ *           description: The selfie image file
+ *         valid_id:
+ *           type: string
+ *           format: binary
+ *           description: The proof image file
+ *         proof:
+ *           type: string
+ *           format: binary
+ *           description: The proof image file
+ *         farm_actual_images:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: binary
+ *           description: An array of actual farm image files
+ *
+ *     FarmApplicationData:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - farm_size
+ *         - district
+ *         - proof
+ *         - farm_actual_images
+ *         - id_type
+ *         - valid_id
+ *         - selfie
+ *         - applicant
+ *         - status
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the farm application
+ *         farm_name:
+ *           type: string
+ *           description: The name of the farm
+ *         farm_size:
+ *           type: string
+ *           description: The size of the farm
+ *         district:
+ *           type: string
+ *           description: The district of the farm
+ *         proof:
+ *           type: string
+ *           description: The proof image for the application
+ *         farm_actual_images:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: An array of actual farm image URLs
+ *         id_type:
+ *           type: string
+ *           description: The type of ID used for application
+ *         valid_id:
+ *           type: string
+ *           description: The image of the valid ID
+ *         selfie:
+ *           type: string
+ *           description: The selfie image of the applicant
+ *         applicant:
+ *           type: string
+ *           description: The ID of the applicant
+ *         status:
+ *           type: string
+ *           description: The status of the application
+ *
+ *     FarmApplicationResponse:
+ *       type: object
+ *       required:
+ *         - message
+ *         - data
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A message indicating the result of the operation
+ *         data:
+ *           $ref: "#/components/schemas/FarmApplicationData"
  */

@@ -4,6 +4,20 @@ import upload from '../../config/multer'
 import { UserGuard } from '../AuthGuard/UserGuard'
 export const FarmRouter = express.Router()
 
+// apply farms
+
+FarmRouter.post(
+  '/apply',
+  UserGuard(['member']),
+  upload.fields([
+    { name: 'selfie', maxCount: 1 },
+    { name: 'proof', maxCount: 1 },
+    { name: 'valid_id', maxCount: 1 },
+    { name: 'farm_actual_images', maxCount: 5 },
+  ]),
+  FarmController.applyFarm
+)
+
 FarmRouter.get('/', FarmController.listFarms)
 FarmRouter.get('/:id', FarmController.viewFarm)
 // TODO: ADD USER AUTHORIZATION LATER
@@ -43,6 +57,45 @@ FarmRouter.get(
   UserGuard(['subfarm_head', 'farm_head']),
   FarmController.listActiveCropReports
 )
+
+/**
+ * @openapi
+ * /api/farm/apply:
+ *   post:
+ *     summary: Submit a new farm application
+ *     tags:
+ *       - Farm
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/NewFarmApplication"
+ *     responses:
+ *       "201":
+ *         description: Success. Farm application submitted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmApplicationResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
 
 // CREATE
 /**

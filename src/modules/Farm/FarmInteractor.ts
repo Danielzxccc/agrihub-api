@@ -1,16 +1,82 @@
+import { NewFarmApplicationT } from '../../schema/FarmSchema'
 import {
   NewCrop,
   NewCropReport,
   NewFarm,
+  NewFarmApplication,
   NewSubFarm,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { deleteFile, readFileAsStream } from '../../utils/file'
-import { getObjectUrl, uploadFile } from '../AWS-Bucket/UploadService'
+import {
+  getObjectUrl,
+  uploadFile,
+  uploadFiles,
+} from '../AWS-Bucket/UploadService'
 import { findUser } from '../Users/UserService'
 import * as Service from './FarmService'
 import fs from 'fs'
+
+interface IFarmApplication {
+  application: NewFarmApplicationT
+  farmActualImages: Express.Multer.File[]
+  selfie: Express.Multer.File
+  proof: Express.Multer.File
+  valid_id: Express.Multer.File
+  userid: string
+}
+
+export async function createFarmApplication({
+  application,
+  farmActualImages,
+  selfie,
+  proof,
+  userid,
+  valid_id,
+}: IFarmApplication) {
+  try {
+    // check files
+    if (!farmActualImages || !selfie || !proof || !valid_id) {
+      throw new HttpError('Incomplete Details', 400)
+    }
+    const farm_actual_images = farmActualImages.map((item) => item.filename)
+
+    console.log(userid, 'USERIDDD')
+
+    const pendingApplication: NewFarmApplication = {
+      ...application.body,
+      applicant: userid,
+      selfie: selfie.filename,
+      proof: proof.filename,
+      farm_actual_images,
+      valid_id: valid_id.filename,
+    }
+
+    const allFiles = [...farmActualImages, selfie, proof, valid_id]
+    // batch upload in cloud
+    await uploadFiles(allFiles)
+
+    // delete files in disk after uploading
+
+    for (const image of allFiles) {
+      deleteFile(image.filename)
+    }
+
+    const newApplication = await Service.createFarmApplication(
+      pendingApplication
+    )
+
+    return newApplication
+  } catch (error) {
+    // delele local files if error occured
+    const allFiles = [...farmActualImages, selfie, proof, valid_id]
+    for (const image of allFiles) {
+      deleteFile(image.filename)
+    }
+    dbErrorHandler(error)
+  }
+}
 
 export async function listFarms(
   offset: number,
