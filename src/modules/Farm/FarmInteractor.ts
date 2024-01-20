@@ -1,3 +1,4 @@
+import { FarmApplicationStatus } from 'kysely-codegen'
 import { NewFarmApplicationT } from '../../schema/FarmSchema'
 import {
   NewCrop,
@@ -15,17 +16,9 @@ import {
   uploadFiles,
 } from '../AWS-Bucket/UploadService'
 import { findUser } from '../Users/UserService'
+import { IFarmApplication } from './FarmInterface'
 import * as Service from './FarmService'
 import fs from 'fs'
-
-interface IFarmApplication {
-  application: NewFarmApplicationT
-  farmActualImages: Express.Multer.File[]
-  selfie: Express.Multer.File
-  proof: Express.Multer.File
-  valid_id: Express.Multer.File
-  userid: string
-}
 
 export async function createFarmApplication({
   application,
@@ -76,6 +69,26 @@ export async function createFarmApplication({
     }
     dbErrorHandler(error)
   }
+}
+
+// list farm application
+export async function listFarmApplication(
+  offset: number,
+  filterKey: FarmApplicationStatus,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findFarmApplications(offset, filterKey, searchKey, perpage),
+    Service.getTotalFarmApplications(),
+  ])
+
+  return { data, total }
+}
+
+export async function viewFarmApplication(id: string) {
+  const data = await Service.findOneFarmApplication(id)
+  return data
 }
 
 export async function listFarms(

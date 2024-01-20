@@ -1,10 +1,11 @@
-CREATE TYPE IF NOT EXISTS farm_application_status AS ENUM ('pending', 'approved');
+CREATE TYPE IF NOT EXISTS farm_application_status AS ENUM ('pending', 'approved', 'rejected');
 
 CREATE TABLE farm_applications(
     id SERIAL PRIMARY KEY,
     farm_name TEXT NOT NULL,
     farm_size INT NOT NULL,
     district TEXT NOT NULL,
+    location TEXT NOT NULL,
     proof TEXT, --certificate or proof
     farm_actual_images TEXT[] NOT NULL,
     id_type TEXT NOT NULL,
@@ -12,6 +13,8 @@ CREATE TABLE farm_applications(
     selfie TEXT NOT NULL, --kung legit na tao,
     applicant INT NOT NULL, --user id nung applicant (siya ang magiging farm head kapag na approved ang application),
     status farm_application_status DEFAULT 'pending',
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (applicant) REFERENCES users(id) ON DELETE CASCADE
 );
 

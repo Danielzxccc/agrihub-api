@@ -8,7 +8,7 @@ export const FarmRouter = express.Router()
 
 FarmRouter.post(
   '/apply',
-  UserGuard(['member']),
+  UserGuard(['member', 'admin']),
   upload.fields([
     { name: 'selfie', maxCount: 1 },
     { name: 'proof', maxCount: 1 },
@@ -16,6 +16,20 @@ FarmRouter.post(
     { name: 'farm_actual_images', maxCount: 5 },
   ]),
   FarmController.applyFarm
+)
+
+// list farm applications
+// TODO: add member for testing only
+FarmRouter.get(
+  '/applications',
+  UserGuard(['admin', 'asst_admin', 'member']),
+  FarmController.listFarmApplications
+)
+
+FarmRouter.get(
+  '/applications/:id',
+  UserGuard(['admin', 'asst_admin', 'member']),
+  FarmController.viewFarmApplication
 )
 
 FarmRouter.get('/', FarmController.listFarms)
@@ -97,6 +111,69 @@ FarmRouter.get(
  *               $ref: "#/components/schemas/ServerError"
  */
 
+/**
+ * @openapi
+ * /api/farm/applications:
+ *   get:
+ *     summary: Get a list of farm applications
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - name: search
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - name: page
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - name: filter
+ *         in: query
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - pending
+ *            - rejected
+ *            - approved
+ *         description: Filter term
+ *       - name: perpage
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Records per page
+ *     responses:
+ *       "200":
+ *         description: Success. Returns a list of farm applications.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmApplicationsResponse"
+ */
+
+/**
+ * @openapi
+ * /api/farm/applications/{id}:
+ *   get:
+ *     summary: Get details for a farm application
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the farm application
+ *     responses:
+ *       "200":
+ *         description: Success. Returns details for the farm application.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmApplicationData"
+ */
 // CREATE
 /**
  * @openapi

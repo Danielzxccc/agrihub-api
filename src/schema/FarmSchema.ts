@@ -4,6 +4,14 @@ export const ListFarmSchema = z.object({
   query: z.object({
     search: z.string().optional().default(''),
     page: z.string().optional(),
+    filter: z
+      .union([
+        z.literal('pending'),
+        z.literal('approved'),
+        z.literal('rejected'),
+      ])
+      .optional()
+      .default('pending'),
     perpage: z.string().optional().default('20'),
   }),
 })
@@ -81,6 +89,7 @@ export const NewFarmApplication = z.object({
     farm_size: z.string().transform((arg) => Number(arg)),
     district: z.string(),
     id_type: z.string(),
+    location: z.string(),
   }),
 })
 
@@ -622,4 +631,135 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *           description: A message indicating the result of the operation
  *         data:
  *           $ref: "#/components/schemas/FarmApplicationData"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmApplicationsResponse:
+ *       type: object
+ *       required:
+ *         - applications
+ *         - pagination
+ *       properties:
+ *         applications:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/FarmApplicationData"
+ *           description: The array of farm applications
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *
+ *     FarmApplicationData:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - farm_size
+ *         - district
+ *         - location
+ *         - proof
+ *         - farm_actual_images
+ *         - id_type
+ *         - valid_id
+ *         - selfie
+ *         - status
+ *         - createdat
+ *         - updatedat
+ *         - applicant
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the farm application
+ *         farm_name:
+ *           type: string
+ *           description: The name of the farm
+ *         farm_size:
+ *           type: string
+ *           description: The size of the farm
+ *         district:
+ *           type: string
+ *           description: The district of the farm
+ *         location:
+ *           type: string
+ *           description: The location of the farm
+ *         proof:
+ *           type: string
+ *           description: The proof image for the application
+ *         farm_actual_images:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: An array of actual farm image URLs
+ *         id_type:
+ *           type: string
+ *           description: The type of ID used for application
+ *         valid_id:
+ *           type: string
+ *           description: The image of the valid ID
+ *         selfie:
+ *           type: string
+ *           description: The selfie image of the applicant
+ *         status:
+ *           type: string
+ *           description: The status of the application
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the application was created
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the application was last updated
+ *         applicant:
+ *           $ref: "#/components/schemas/ApplicantData"
+ *
+ *     ApplicantData:
+ *       type: object
+ *       required:
+ *         - avatar
+ *         - email
+ *         - firstname
+ *         - id
+ *         - lastname
+ *         - username
+ *       properties:
+ *         avatar:
+ *           type: string
+ *           description: The URL of the applicant's avatar
+ *         email:
+ *           type: string
+ *           description: The email of the applicant
+ *         firstname:
+ *           type: string
+ *           description: The first name of the applicant
+ *         id:
+ *           type: string
+ *           description: The ID of the applicant
+ *         lastname:
+ *           type: string
+ *           description: The last name of the applicant
+ *         username:
+ *           type: string
+ *           description: The username of the applicant
+ *
+ *     PaginationData:
+ *       type: object
+ *       required:
+ *         - page
+ *         - per_page
+ *         - total_pages
+ *         - total_records
+ *       properties:
+ *         page:
+ *           type: integer
+ *           description: The current page number
+ *         per_page:
+ *           type: integer
+ *           description: The number of records per page
+ *         total_pages:
+ *           type: integer
+ *           description: The total number of pages
+ *         total_records:
+ *           type: integer
+ *           description: The total number of records
  */
