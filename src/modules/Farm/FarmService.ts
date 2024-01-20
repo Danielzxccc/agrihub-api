@@ -218,8 +218,8 @@ export async function findFarmApplications(
     'valid_id',
     'selfie',
     'status',
-    'createdat',
-    'updatedat',
+    sql<string>`CAST(createdat AS TEXT)`.as('createdat'),
+    sql<string>`CAST(updatedat AS TEXT)`.as('updatedat'),
     jsonObjectFrom(
       eb
         .selectFrom('users')

@@ -84,7 +84,13 @@ export async function listFarmApplication(
     Service.getTotalFarmApplications(),
   ])
 
-  const formattedData = await replaceAvatarsWithUrls(data)
+  const formattedDates = data.map((item) => ({
+    ...item,
+    createdat: item.createdat.toString().slice(0, -3) + 'Z',
+    updatedat: item.updatedat.toString().slice(0, -3) + 'Z',
+  }))
+
+  const formattedData = await replaceAvatarsWithUrls(formattedDates)
 
   return { data: formattedData, total }
 }
