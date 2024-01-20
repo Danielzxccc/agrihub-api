@@ -4,6 +4,34 @@ import upload from '../../config/multer'
 import { UserGuard } from '../AuthGuard/UserGuard'
 export const FarmRouter = express.Router()
 
+// apply farms
+
+FarmRouter.post(
+  '/apply',
+  UserGuard(['member', 'admin']),
+  upload.fields([
+    { name: 'selfie', maxCount: 1 },
+    { name: 'proof', maxCount: 1 },
+    { name: 'valid_id', maxCount: 1 },
+    { name: 'farm_actual_images', maxCount: 5 },
+  ]),
+  FarmController.applyFarm
+)
+
+// list farm applications
+// TODO: add member for testing only
+FarmRouter.get(
+  '/applications',
+  UserGuard(['admin', 'asst_admin', 'member']),
+  FarmController.listFarmApplications
+)
+
+FarmRouter.get(
+  '/applications/:id',
+  UserGuard(['admin', 'asst_admin', 'member']),
+  FarmController.viewFarmApplication
+)
+
 FarmRouter.get('/', FarmController.listFarms)
 FarmRouter.get('/:id', FarmController.viewFarm)
 // TODO: ADD USER AUTHORIZATION LATER
@@ -44,6 +72,108 @@ FarmRouter.get(
   FarmController.listActiveCropReports
 )
 
+/**
+ * @openapi
+ * /api/farm/apply:
+ *   post:
+ *     summary: Submit a new farm application
+ *     tags:
+ *       - Farm
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/NewFarmApplication"
+ *     responses:
+ *       "201":
+ *         description: Success. Farm application submitted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmApplicationResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/applications:
+ *   get:
+ *     summary: Get a list of farm applications
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - name: search
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - name: page
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - name: filter
+ *         in: query
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - pending
+ *            - rejected
+ *            - approved
+ *         description: Filter term
+ *       - name: perpage
+ *         in: query
+ *         schema:
+ *           type: string
+ *         description: Records per page
+ *     responses:
+ *       "200":
+ *         description: Success. Returns a list of farm applications.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmApplicationsResponse"
+ */
+
+/**
+ * @openapi
+ * /api/farm/applications/{id}:
+ *   get:
+ *     summary: Get details for a farm application
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the farm application
+ *     responses:
+ *       "200":
+ *         description: Success. Returns details for the farm application.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmApplicationData"
+ */
 // CREATE
 /**
  * @openapi

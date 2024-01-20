@@ -1,5 +1,50 @@
 import { z } from 'zod'
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListUserResponse:
+ *       type: object
+ *       properties:
+ *         users:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/ListUser"
+ *         pagination:
+ *           $ref: "#/components/schemas/Pagination"
+ *
+ *     ListUser:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the user
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the user was created
+ *         fullname:
+ *           type: string
+ *           description: The full name of the user
+ *         email:
+ *           type: string
+ *           description: The email address of the user
+ *         name:
+ *           type: string
+ *           description: The name of the user
+ *         verification_level:
+ *           type: string
+ *           description: The verification level of the user
+ */
+export const ListUserSchema = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z.string().optional().default(''),
+  }),
+})
+
 export const UserProfile = z.object({
   params: z.object({
     username: z.string({ required_error: 'id is required' }),

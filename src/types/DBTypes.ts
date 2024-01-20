@@ -16,6 +16,7 @@ import {
   CropReports,
   AnswerVotes,
   AboutGallery,
+  FarmApplications,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -52,6 +53,10 @@ export type UpdateGallery = Updateable<AboutGallery>
 export type Events = Selectable<CommunityEvents>
 export type NewEvent = Insertable<CommunityEvents>
 export type UpdateEvent = Updateable<CommunityEvents>
+
+//farm application
+export type FarmApplication = Selectable<FarmApplications>
+export type NewFarmApplication = Insertable<FarmApplications>
 
 // farms
 export type Farm = Selectable<Farms>

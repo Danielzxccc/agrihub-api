@@ -5,6 +5,36 @@ import * as Schema from '../../schema/UserSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
 
+export async function listUsers(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListUserSchema, req)
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const users = await Interactor.listUsers(
+      offset,
+      perPage,
+      filterKey,
+      searchKey
+    )
+    const totalPages = Math.ceil(Number(users.total.count) / perPage)
+    res.status(200).json({
+      users: users.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(users.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function findUserProfile(req: Request, res: Response) {
   try {
     const { params } = await zParse(Schema.UserProfile, req)

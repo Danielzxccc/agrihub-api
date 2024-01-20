@@ -2,13 +2,15 @@ import { jsonObjectFrom } from 'kysely/helpers/postgres'
 import { db } from '../../config/database'
 import {
   Crop,
+  FarmApplication,
   NewCrop,
   NewCropReport,
   NewFarm,
+  NewFarmApplication,
   NewSubFarm,
   UpdateCrop,
 } from '../../types/DBTypes'
-import { Crops } from 'kysely-codegen'
+import { Crops, FarmApplicationStatus } from 'kysely-codegen'
 import { sql } from 'kysely'
 
 export async function findFarm(id: string) {
@@ -188,4 +190,93 @@ export async function listCropReports(farmid: string, isHarvested = false) {
     .where('farmid', '=', farmid)
     .where('isharvested', '=', isHarvested)
     .execute()
+}
+
+export async function createFarmApplication(application: NewFarmApplication) {
+  return await db
+    .insertInto('farm_applications')
+    .values(application)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findFarmApplications(
+  offset: number,
+  filterKey: FarmApplicationStatus,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db.selectFrom('farm_applications').select(({ eb }) => [
+    'id',
+    'farm_name',
+    'farm_size',
+    'district',
+    'location',
+    'proof',
+    'farm_actual_images',
+    'id_type',
+    'valid_id',
+    'selfie',
+    'status',
+    sql<string>`CAST(createdat AS TEXT)`.as('createdat'),
+    sql<string>`CAST(updatedat AS TEXT)`.as('updatedat'),
+    jsonObjectFrom(
+      eb
+        .selectFrom('users')
+        .select(({ eb }) => [
+          sql<string>`CAST(id AS TEXT)`.as('id'),
+          'username',
+          'avatar',
+          'email',
+          'firstname',
+          'lastname',
+        ])
+        .whereRef('users.id', '=', 'farm_applications.applicant')
+    ).as('applicant'),
+  ])
+
+  if (filterKey) query = query.where('status', '=', filterKey)
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function findOneFarmApplication(id: string) {
+  return await db
+    .selectFrom('farm_applications')
+    .select(({ eb }) => [
+      'id',
+      'farm_name',
+      'farm_size',
+      'district',
+      'location',
+      'proof',
+      'farm_actual_images',
+      'id_type',
+      'valid_id',
+      'selfie',
+      'status',
+      sql<string>`CAST(createdat AS TEXT)`.as('createdat'),
+      sql<string>`CAST(updatedat AS TEXT)`.as('updatedat'),
+      jsonObjectFrom(
+        eb
+          .selectFrom('users')
+          .select(({ eb }) => [
+            sql<string>`CAST(id AS TEXT)`.as('id'),
+            'username',
+            'avatar',
+            'email',
+            'firstname',
+            'lastname',
+          ])
+          .whereRef('users.id', '=', 'farm_applications.applicant')
+      ).as('applicant'),
+    ])
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function getTotalFarmApplications() {
+  return await db
+    .selectFrom('farm_applications')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
 }

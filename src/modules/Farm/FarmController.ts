@@ -4,6 +4,95 @@ import zParse from '../../utils/zParse'
 import * as Interactor from './FarmInteractor'
 import * as Schema from '../../schema/FarmSchema'
 import { SessionRequest } from '../../types/AuthType'
+import { deleteFile } from '../../utils/file'
+
+export async function applyFarm(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.NewFarmApplication, req)
+
+    const farmActualImages = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )['farm_actual_images']
+
+    const selfie = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )['selfie'][0]
+
+    const proof = (req.files as { [fieldname: string]: Express.Multer.File[] })[
+      'proof'
+    ][0]
+
+    const valid_id = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )['valid_id'][0]
+
+    var allImages = [...farmActualImages, selfie, valid_id, proof]
+
+    const userid = req.session.userid
+
+    const newApplication = await Interactor.createFarmApplication({
+      farmActualImages,
+      application: { body },
+      proof,
+      selfie,
+      userid,
+      valid_id,
+    })
+
+    res.status(201).json({
+      message: 'Application Submitted Successfully',
+      data: newApplication,
+    })
+  } catch (error) {
+    for (const image of allImages) {
+      deleteFile(image.filename)
+    }
+    errorHandler(res, error)
+  }
+}
+
+export async function listFarmApplications(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListFarmSchema, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const applications = await Interactor.listFarmApplication(
+      offset,
+      filterKey,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(Number(applications.total.count) / perPage)
+    res.status(200).json({
+      applications: applications.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(applications.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewFarmApplication(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+
+    const application = await Interactor.viewFarmApplication(id as string)
+    res.status(200).json(application)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
 
 // public route
 export async function listFarms(req: Request, res: Response) {

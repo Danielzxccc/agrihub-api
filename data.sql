@@ -19,6 +19,7 @@ CREATE TABLE users(
     verification_level INT,
     bio TEXT,
     role roles DEFAULT 'member',
+    isbanned BOOLEAN DEFAULT TRUE,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (username, email)
@@ -29,6 +30,20 @@ ON users (email);
 CREATE INDEX username_index
 ON users (username);
 
+CREATE TYPE IF NOT EXISTS farm_application_status AS ENUM ('pending', 'approved');
+
+CREATE TABLE farm_application(
+    id SERIAL PRIMARY KEY,
+    farm_name TEXT NOT NULL,
+    farm_size INT NOT NULL,
+    district TEXT NOT NULL,
+    id_type TEXT NOT NULL,
+    valid_id TEXT NOT NULL,
+    selfie TEXT NOT NULL,
+    status farm_application_status DEFAULT 'pending',
+);
+
+CREATE INDEX farm_application_status_index ON farm_application (status);
 
 CREATE TABLE farms(
     id SERIAL PRIMARY KEY,

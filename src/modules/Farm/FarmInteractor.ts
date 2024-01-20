@@ -1,16 +1,117 @@
+import { FarmApplicationStatus } from 'kysely-codegen'
+import { NewFarmApplicationT } from '../../schema/FarmSchema'
 import {
   NewCrop,
   NewCropReport,
   NewFarm,
+  NewFarmApplication,
   NewSubFarm,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { deleteFile, readFileAsStream } from '../../utils/file'
-import { getObjectUrl, uploadFile } from '../AWS-Bucket/UploadService'
+import {
+  getObjectUrl,
+  replaceAvatarsWithUrls,
+  uploadFile,
+  uploadFiles,
+} from '../AWS-Bucket/UploadService'
 import { findUser } from '../Users/UserService'
+import { IFarmApplication } from './FarmInterface'
 import * as Service from './FarmService'
 import fs from 'fs'
+
+export async function createFarmApplication({
+  application,
+  farmActualImages,
+  selfie,
+  proof,
+  userid,
+  valid_id,
+}: IFarmApplication) {
+  try {
+    // check files
+    if (!farmActualImages || !selfie || !proof || !valid_id) {
+      throw new HttpError('Incomplete Details', 400)
+    }
+    const farm_actual_images = farmActualImages.map((item) => item.filename)
+
+    console.log(userid, 'USERIDDD')
+
+    const pendingApplication: NewFarmApplication = {
+      ...application.body,
+      applicant: userid,
+      selfie: selfie.filename,
+      proof: proof.filename,
+      farm_actual_images,
+      valid_id: valid_id.filename,
+    }
+
+    const allFiles = [...farmActualImages, selfie, proof, valid_id]
+    // batch upload in cloud
+    await uploadFiles(allFiles)
+
+    // delete files in disk after uploading
+
+    for (const image of allFiles) {
+      deleteFile(image.filename)
+    }
+
+    const newApplication = await Service.createFarmApplication(
+      pendingApplication
+    )
+
+    return newApplication
+  } catch (error) {
+    // delele local files if error occured
+    const allFiles = [...farmActualImages, selfie, proof, valid_id]
+    for (const image of allFiles) {
+      deleteFile(image.filename)
+    }
+    dbErrorHandler(error)
+  }
+}
+
+// list farm application
+export async function listFarmApplication(
+  offset: number,
+  filterKey: FarmApplicationStatus,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findFarmApplications(offset, filterKey, searchKey, perpage),
+    Service.getTotalFarmApplications(),
+  ])
+
+  const formattedDates = data.map((item) => ({
+    ...item,
+    createdat: item.createdat.toString().slice(0, -3) + 'Z',
+    updatedat: item.updatedat.toString().slice(0, -3) + 'Z',
+  }))
+
+  const formattedData = await replaceAvatarsWithUrls(formattedDates)
+
+  return { data: formattedData, total }
+}
+
+export async function viewFarmApplication(id: string) {
+  const data = await Service.findOneFarmApplication(id)
+
+  const formattedActualImages = data.farm_actual_images.map((item) =>
+    getObjectUrl(item)
+  )
+  data.farm_actual_images = formattedActualImages
+  data.selfie = getObjectUrl(data.selfie)
+  data.proof = getObjectUrl(data.proof)
+  data.valid_id = getObjectUrl(data.valid_id)
+  data.createdat = data.createdat.toString().slice(0, -3) + 'Z'
+  data.updatedat = data.updatedat.toString().slice(0, -3) + 'Z'
+
+  const formattedData = await replaceAvatarsWithUrls(data)
+
+  return formattedData
+}
 
 export async function listFarms(
   offset: number,
