@@ -5,6 +5,7 @@ import * as Interactor from './FarmInteractor'
 import * as Schema from '../../schema/FarmSchema'
 import { SessionRequest } from '../../types/AuthType'
 import { deleteFile } from '../../utils/file'
+import { ZodError } from 'zod'
 
 export async function applyFarm(req: SessionRequest, res: Response) {
   try {
@@ -44,9 +45,12 @@ export async function applyFarm(req: SessionRequest, res: Response) {
       data: newApplication,
     })
   } catch (error) {
-    for (const image of allImages) {
-      deleteFile(image.filename)
+    if (error instanceof ZodError) {
+      for (const image of allImages) {
+        deleteFile(image.filename)
+      }
     }
+
     errorHandler(res, error)
   }
 }
