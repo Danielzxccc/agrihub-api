@@ -537,6 +537,16 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *   schemas:
  *     NewFarmApplication:
  *       type: object
+ *       required:
+ *         - farm_name
+ *         - farm_size
+ *         - district
+ *         - proof
+ *         - farm_actual_images
+ *         - id_type
+ *         - valid_id
+ *         - location
+ *         - selfie
  *       properties:
  *         farm_name:
  *           type: string
@@ -548,6 +558,9 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *           type: string
  *           description: The district of the farm
  *         id_type:
+ *           type: string
+ *           description: The type of ID used for application
+ *         location:
  *           type: string
  *           description: The type of ID used for application
  *         selfie:
@@ -580,6 +593,7 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         - farm_actual_images
  *         - id_type
  *         - valid_id
+ *         - location
  *         - selfie
  *         - applicant
  *         - status
@@ -610,6 +624,9 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         valid_id:
  *           type: string
  *           description: The image of the valid ID
+ *         location:
+ *           type: string
+ *           description: The location of the Farm
  *         selfie:
  *           type: string
  *           description: The selfie image of the applicant
