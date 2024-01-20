@@ -12,6 +12,7 @@ import dbErrorHandler from '../../utils/dbErrorHandler'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import {
   getObjectUrl,
+  replaceAvatarsWithUrls,
   uploadFile,
   uploadFiles,
 } from '../AWS-Bucket/UploadService'
@@ -83,12 +84,27 @@ export async function listFarmApplication(
     Service.getTotalFarmApplications(),
   ])
 
-  return { data, total }
+  const formattedData = await replaceAvatarsWithUrls(data)
+
+  return { data: formattedData, total }
 }
 
 export async function viewFarmApplication(id: string) {
   const data = await Service.findOneFarmApplication(id)
-  return data
+
+  const formattedActualImages = data.farm_actual_images.map((item) =>
+    getObjectUrl(item)
+  )
+  data.farm_actual_images = formattedActualImages
+  data.selfie = getObjectUrl(data.selfie)
+  data.proof = getObjectUrl(data.proof)
+  data.valid_id = getObjectUrl(data.valid_id)
+  data.createdat = data.createdat.toString().slice(0, -3) + 'Z'
+  data.updatedat = data.updatedat.toString().slice(0, -3) + 'Z'
+
+  const formattedData = await replaceAvatarsWithUrls(data)
+
+  return formattedData
 }
 
 export async function listFarms(
