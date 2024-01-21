@@ -288,7 +288,7 @@ export async function findOneFarmApplication(id: string) {
     .executeTakeFirst()
 }
 
-export async function checkExistingApplication(userid: string) {
+export async function findExistingApplication(userid: string) {
   return await db
     .selectFrom('farm_applications')
     .selectAll()
@@ -301,6 +301,10 @@ export async function getTotalFarmApplications() {
     .selectFrom('farm_applications')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .executeTakeFirst()
+}
+
+export async function deleteFarmApplicaiton(id: string) {
+  return await db.deleteFrom('farm_applications').where('id', '=', id).execute()
 }
 
 export async function createNewCommunityFarm(farm: NewCommunityFarm) {

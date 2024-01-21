@@ -785,6 +785,23 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  * @openapi
  * components:
  *   schemas:
+ *     CheckExistingApplicationResponse:
+ *       type: object
+ *       required:
+ *         - message
+ *         - data
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A success message
+ *         data:
+ *           $ref: "#/components/schemas/FarmApplicationData"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
  *     AcceptFarmApplicationResponse:
  *       type: object
  *       required:

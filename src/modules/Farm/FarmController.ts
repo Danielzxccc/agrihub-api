@@ -69,6 +69,53 @@ export async function acceptFarmApplication(req: Request, res: Response) {
   }
 }
 
+export async function rejectFarmApplication(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+
+    const application = await Interactor.rejectFarmApplication(id)
+
+    res
+      .status(200)
+      .json({ message: 'Application successfully rejected', data: application })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function cancelExistingApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const id = req.params.id
+    const userid = req.session.userid
+
+    await Interactor.cancelExistingApplication(id, userid)
+
+    res.status(200).json({ message: 'Application successfully cancelled' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function checkExistingApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const id = req.session.userid
+    const application = await Interactor.checkExistingApplication(id)
+
+    res.status(200).json({
+      message: "There's a current application in progress",
+      data: application,
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function listFarmApplications(req: Request, res: Response) {
   try {
     const { query } = await zParse(Schema.ListFarmSchema, req)
@@ -112,7 +159,6 @@ export async function viewFarmApplication(req: Request, res: Response) {
   }
 }
 
-// public route
 export async function listFarms(req: Request, res: Response) {
   try {
     const { query } = await zParse(Schema.ListFarmSchema, req)
@@ -160,7 +206,6 @@ export async function viewSubFarm(req: SessionRequest, res: Response) {
   }
 }
 
-// admin route
 export async function registerFarm(req: Request, res: Response) {
   try {
     const { body } = await zParse(Schema.NewFarmSchema, req)

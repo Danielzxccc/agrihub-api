@@ -33,7 +33,7 @@ export async function createFarmApplication({
 }: IFarmApplication) {
   try {
     // check if user has existing application
-    const checkApplication = await Service.checkExistingApplication(userid)
+    const checkApplication = await Service.findExistingApplication(userid)
     if (checkApplication)
       throw new HttpError(
         'It appears that you currently have an active application in progress.',
@@ -78,6 +78,15 @@ export async function createFarmApplication({
     }
     dbErrorHandler(error)
   }
+}
+
+export async function checkExistingApplication(userid: string) {
+  const application = await Service.findExistingApplication(userid)
+  if (!application) {
+    throw new HttpError('No application is currently in progress.', 400)
+  }
+
+  return application
 }
 
 // list farm application
@@ -152,6 +161,26 @@ export async function acceptFarmApplication(id: string) {
   })
 
   return newCommunityFarm
+}
+
+export async function rejectFarmApplication(id: string) {
+  const farm = await Service.findOneFarmApplication(id)
+  if (!farm) throw new HttpError('Farm Application not found', 404)
+
+  const application = await Service.updateFarmApplication(farm.id, {
+    status: 'rejected',
+  })
+  return application
+}
+
+export async function cancelExistingApplication(id: string, userid: string) {
+  const existingApplication = await Service.findOneFarmApplication(id)
+
+  if (userid !== existingApplication.applicant.id) {
+    throw new HttpError("You Can't Delete other's application", 401)
+  }
+
+  await Service.deleteFarmApplicaiton(id)
 }
 
 export async function listFarms(

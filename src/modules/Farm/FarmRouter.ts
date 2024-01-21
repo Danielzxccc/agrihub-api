@@ -24,8 +24,25 @@ FarmRouter.put(
   FarmController.acceptFarmApplication
 )
 
+FarmRouter.put(
+  '/applications/reject/:id',
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.rejectFarmApplication
+)
+
+FarmRouter.delete(
+  '/applications/cancel/:id',
+  UserGuard(['member']),
+  FarmController.cancelExistingApplication
+)
+
+FarmRouter.get(
+  '/applications/check-existing',
+  UserGuard(['member', 'admin']),
+  FarmController.checkExistingApplication
+)
+
 // list farm applications
-// TODO: add member for testing only
 FarmRouter.get(
   '/applications',
   UserGuard(['admin', 'asst_admin']),
@@ -138,6 +155,129 @@ FarmRouter.get(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/AcceptFarmApplicationResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/applications/reject/{id}:
+ *   put:
+ *     summary: Reject a farm application
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the farm application to accept
+ *     responses:
+ *       "200":
+ *         description: Success. Returns details for the rejected farm application.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AcceptFarmApplicationResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/applications/cancel/{id}:
+ *   delete:
+ *     summary: Cancel a farm application
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the farm application to accept
+ *     responses:
+ *       "200":
+ *         description: Success. Returns details for the rejected farm application.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */
 
 /**
@@ -232,6 +372,12 @@ FarmRouter.get(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
  *       "500":
  *         description: Server Error
  *         content:
@@ -239,6 +385,41 @@ FarmRouter.get(
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
+
+/**
+ * @openapi
+ * /api/farm/applications/check-existing:
+ *   get:
+ *     summary: Get details for a farm application
+ *     tags:
+ *       - Farm
+ *     responses:
+ *       "200":
+ *         description: Success. Returns details for the farm application.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CheckExistingApplicationResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
 // CREATE
 /**
  * @openapi
