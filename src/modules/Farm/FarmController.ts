@@ -55,6 +55,20 @@ export async function applyFarm(req: SessionRequest, res: Response) {
   }
 }
 
+export async function acceptFarmApplication(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+
+    const application = await Interactor.acceptFarmApplication(id)
+
+    res
+      .status(200)
+      .json({ message: 'Application successfully accepted', data: application })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function listFarmApplications(req: Request, res: Response) {
   try {
     const { query } = await zParse(Schema.ListFarmSchema, req)

@@ -22,7 +22,8 @@ CREATE TABLE users(
     isbanned BOOLEAN DEFAULT TRUE,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (username, email)
+    farm_id INT REFERENCES community_farms(id) ON DELETE CASCADE,
+    UNIQUE (username, email),
 );
 
 CREATE INDEX email_index

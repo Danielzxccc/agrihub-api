@@ -19,3 +19,21 @@ CREATE TABLE farm_applications(
 );
 
 CREATE INDEX farm_application_status_index ON farm_applications (status);
+
+CREATE TABLE community_farms(
+    id SERIAL PRIMARY KEY,
+    farm_name TEXT NOT NULL,
+    location TEXT NOT NULL,
+    description TEXT,
+    farm_head INT NOT NULL,
+    district TEXT NOT NULL,
+    size INT,
+    avatar TEXT,
+    cover_photo TEXT,
+    application_id INT NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (farm_head, name),
+    FOREIGN KEY (farm_head) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (application_id) REFERENCES farm_applications(id) ON DELETE CASCADE
+);

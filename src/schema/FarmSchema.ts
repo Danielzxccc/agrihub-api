@@ -780,3 +780,70 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *           type: integer
  *           description: The total number of records
  */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AcceptFarmApplicationResponse:
+ *       type: object
+ *       required:
+ *         - message
+ *         - data
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A success message
+ *         data:
+ *           $ref: "#/components/schemas/AcceptedFarmApplicationData"
+ *
+ *     AcceptedFarmApplicationData:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - location
+ *         - farm_head
+ *         - district
+ *         - size
+ *         - application_id
+ *         - createdat
+ *         - updatedat
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the accepted farm application
+ *         farm_name:
+ *           type: string
+ *           description: The name of the farm
+ *         location:
+ *           type: string
+ *           description: The location of the farm
+ *         description:
+ *           type: string
+ *           description: The description of the farm
+ *         farm_head:
+ *           type: string
+ *           description: The ID of the farm head
+ *         district:
+ *           type: string
+ *           description: The district of the farm
+ *         size:
+ *           type: string
+ *           description: The size of the farm
+ *         avatar:
+ *           type: string
+ *           description: The URL of the farm's avatar
+ *         cover_photo:
+ *           type: string
+ *           description: The URL of the farm's cover photo
+ *         application_id:
+ *           type: string
+ *           description: The ID of the associated farm application
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the farm was created
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the farm was last updated
+ */

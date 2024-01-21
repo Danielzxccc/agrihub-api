@@ -3,12 +3,14 @@ import { db } from '../../config/database'
 import {
   Crop,
   FarmApplication,
+  NewCommunityFarm,
   NewCrop,
   NewCropReport,
   NewFarm,
   NewFarmApplication,
   NewSubFarm,
   UpdateCrop,
+  UpdateFarmApplication,
 } from '../../types/DBTypes'
 import { Crops, FarmApplicationStatus } from 'kysely-codegen'
 import { sql } from 'kysely'
@@ -200,6 +202,18 @@ export async function createFarmApplication(application: NewFarmApplication) {
     .executeTakeFirst()
 }
 
+export async function updateFarmApplication(
+  id: string,
+  applicant: UpdateFarmApplication
+) {
+  return await db
+    .updateTable('farm_applications')
+    .set({ ...applicant, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
 export async function findFarmApplications(
   offset: number,
   filterKey: FarmApplicationStatus,
@@ -278,5 +292,13 @@ export async function getTotalFarmApplications() {
   return await db
     .selectFrom('farm_applications')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
+
+export async function createNewCommunityFarm(farm: NewCommunityFarm) {
+  return await db
+    .insertInto('community_farms')
+    .values(farm)
+    .returningAll()
     .executeTakeFirst()
 }

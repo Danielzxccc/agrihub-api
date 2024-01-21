@@ -10,3 +10,7 @@ export function startSocket() {
     })
   })
 }
+
+// export function emitNotification(id: string){
+//   io.to(id).emit()
+// }

@@ -1,6 +1,7 @@
 import { FarmApplicationStatus } from 'kysely-codegen'
 import { NewFarmApplicationT } from '../../schema/FarmSchema'
 import {
+  NewCommunityFarm,
   NewCrop,
   NewCropReport,
   NewFarm,
@@ -16,7 +17,7 @@ import {
   uploadFile,
   uploadFiles,
 } from '../AWS-Bucket/UploadService'
-import { findUser } from '../Users/UserService'
+import { findUser, updateUser } from '../Users/UserService'
 import { IFarmApplication } from './FarmInterface'
 import * as Service from './FarmService'
 import fs from 'fs'
@@ -35,8 +36,6 @@ export async function createFarmApplication({
       throw new HttpError('Incomplete Details', 400)
     }
     const farm_actual_images = farmActualImages.map((item) => item.filename)
-
-    console.log(userid, 'USERIDDD')
 
     const pendingApplication: NewFarmApplication = {
       ...application.body,
@@ -98,6 +97,8 @@ export async function listFarmApplication(
 export async function viewFarmApplication(id: string) {
   const data = await Service.findOneFarmApplication(id)
 
+  if (!data) throw new HttpError('Application not found', 404)
+
   const formattedActualImages = data.farm_actual_images.map((item) =>
     getObjectUrl(item)
   )
@@ -111,6 +112,37 @@ export async function viewFarmApplication(id: string) {
   const formattedData = await replaceAvatarsWithUrls(data)
 
   return formattedData
+}
+
+export async function acceptFarmApplication(id: string) {
+  const farm = await Service.findOneFarmApplication(id)
+
+  if (!farm) throw new HttpError('Farm Application not found', 404)
+
+  const updatedFarmApplication = await Service.updateFarmApplication(farm.id, {
+    status: 'approved',
+  })
+
+  const newFarm: NewCommunityFarm = {
+    farm_name: updatedFarmApplication.farm_name,
+    location: updatedFarmApplication.location,
+    description: '',
+    farm_head: updatedFarmApplication.applicant,
+    district: updatedFarmApplication.district,
+    size: updatedFarmApplication.farm_size,
+    application_id: updatedFarmApplication.id,
+  }
+
+  // update user
+  const newCommunityFarm = await Service.createNewCommunityFarm(newFarm)
+
+  const farmHead = await findUser(farm.applicant.id)
+  await updateUser(farmHead.id, {
+    farm_id: newCommunityFarm.id,
+    role: 'farm_head',
+  })
+
+  return newCommunityFarm
 }
 
 export async function listFarms(

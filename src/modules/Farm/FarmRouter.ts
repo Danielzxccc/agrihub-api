@@ -18,23 +18,29 @@ FarmRouter.post(
   FarmController.applyFarm
 )
 
+FarmRouter.put(
+  '/applications/accept/:id',
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.acceptFarmApplication
+)
+
 // list farm applications
 // TODO: add member for testing only
 FarmRouter.get(
   '/applications',
-  UserGuard(['admin', 'asst_admin', 'member']),
+  UserGuard(['admin', 'asst_admin']),
   FarmController.listFarmApplications
 )
 
 FarmRouter.get(
   '/applications/:id',
-  UserGuard(['admin', 'asst_admin', 'member']),
+  UserGuard(['admin', 'asst_admin']),
   FarmController.viewFarmApplication
 )
 
 FarmRouter.get('/', FarmController.listFarms)
 FarmRouter.get('/:id', FarmController.viewFarm)
-// TODO: ADD USER AUTHORIZATION LATER
+// TOD: ADD USER AUTHORIZATION LATER
 FarmRouter.post('/', upload.single('avatar'), FarmController.registerFarm)
 // create subfarm
 FarmRouter.post(
@@ -109,6 +115,29 @@ FarmRouter.get(
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/applications/accept/{id}:
+ *   put:
+ *     summary: Accept a farm application
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the farm application to accept
+ *     responses:
+ *       "200":
+ *         description: Success. Returns details for the accepted farm application.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AcceptFarmApplicationResponse"
  */
 
 /**
