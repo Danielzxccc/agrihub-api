@@ -32,6 +32,14 @@ export async function createFarmApplication({
   valid_id,
 }: IFarmApplication) {
   try {
+    // check if user has existing application
+    const checkApplication = await Service.checkExistingApplication(userid)
+    if (checkApplication)
+      throw new HttpError(
+        'It appears that you currently have an active application in progress.',
+        401
+      )
+
     // check files
     if (!farmActualImages || !selfie || !proof || !valid_id) {
       throw new HttpError('Incomplete Details', 400)

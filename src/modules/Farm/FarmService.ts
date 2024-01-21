@@ -288,6 +288,14 @@ export async function findOneFarmApplication(id: string) {
     .executeTakeFirst()
 }
 
+export async function checkExistingApplication(userid: string) {
+  return await db
+    .selectFrom('farm_applications')
+    .selectAll()
+    .where('applicant', '=', userid)
+    .executeTakeFirst()
+}
+
 export async function getTotalFarmApplications() {
   return await db
     .selectFrom('farm_applications')
