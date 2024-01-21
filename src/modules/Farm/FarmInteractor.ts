@@ -21,6 +21,7 @@ import { findUser, updateUser } from '../Users/UserService'
 import { IFarmApplication } from './FarmInterface'
 import * as Service from './FarmService'
 import fs from 'fs'
+import { emitNotificationToAdmin } from '../Socket/SocketController'
 
 export async function createFarmApplication({
   application,
@@ -90,7 +91,7 @@ export async function listFarmApplication(
   }))
 
   const formattedData = await replaceAvatarsWithUrls(formattedDates)
-
+  emitNotificationToAdmin()
   return { data: formattedData, total }
 }
 

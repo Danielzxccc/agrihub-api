@@ -25,12 +25,12 @@ CREATE TABLE community_farms(
     farm_name TEXT NOT NULL,
     location TEXT NOT NULL,
     description TEXT,
-    farm_head INT NOT NULL,
-    district TEXT NOT NULL,
-    size INT,
-    avatar TEXT,
-    cover_photo TEXT,
-    application_id INT NOT NULL,
+    farm_head INT NOT NULL, --userid nung farm head
+    district TEXT NOT NULL, 
+    size INT, --sqm
+    avatar TEXT, --icon ng farm
+    cover_photo TEXT, --cover photo sa page nila
+    application_id INT NOT NULL, -- relation ng application niya
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (farm_head, name),

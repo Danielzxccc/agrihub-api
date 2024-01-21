@@ -44,9 +44,6 @@ export async function sendMail(toEmail: string, token: string) {
             <p style="font-family: 'Inter', sans-serif; font-size: 20px; margin-left: 30px;">Hi!</p>
         </div>
 
-        <p
-            style="font-family: 'Montserrat', sans-serif; margin-left: 30px; font-size: 11px; padding-bottom: 40px; color: gray; line-height: 1px;">
-            Here are your password reset instructions</p>
         <hr width="92%" style="margin-top: -30px;">
         <p
             style="font-family: 'Montserrat', sans-serif;  text-align:justify; font-size: 15px; margin-left: 30px; margin-right: 30px;">
