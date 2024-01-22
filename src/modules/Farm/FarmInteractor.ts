@@ -86,6 +86,14 @@ export async function checkExistingApplication(userid: string) {
     throw new HttpError('No application is currently in progress.', 400)
   }
 
+  const formattedActualImages = application.farm_actual_images.map((item) =>
+    getObjectUrl(item)
+  )
+  application.farm_actual_images = formattedActualImages
+  application.selfie = getObjectUrl(application.selfie)
+  application.proof = getObjectUrl(application.proof)
+  application.valid_id = getObjectUrl(application.valid_id)
+
   return application
 }
 
