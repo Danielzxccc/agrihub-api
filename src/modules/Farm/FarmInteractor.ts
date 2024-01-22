@@ -184,6 +184,9 @@ export async function rejectFarmApplication(id: string) {
 export async function cancelExistingApplication(id: string, userid: string) {
   const existingApplication = await Service.findOneFarmApplication(id)
 
+  if (!existingApplication)
+    throw new HttpError('The application is not recognized.', 400)
+
   if (userid !== existingApplication.applicant.id) {
     throw new HttpError("You Can't Delete other's application", 401)
   }

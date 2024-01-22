@@ -93,7 +93,23 @@ export const NewFarmApplication = z.object({
   }),
 })
 
+export const UpdateFarmApplication = z.object({
+  body: z.object({
+    farm_name: z.string().optional(),
+    farm_size: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
+    district: z.string().optional(),
+    original_farm_images: z.string().array().optional(),
+    deleted_farm_images: z.string().array().optional(),
+    id_type: z.string().optional(),
+    location: z.string().optional(),
+  }),
+})
+
 export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
+export type UpdateFarmApplicationT = z.infer<typeof UpdateFarmApplication>
 
 /**@LIST_FAMRS */
 /**
