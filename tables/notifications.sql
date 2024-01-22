@@ -7,3 +7,10 @@ CREATE TABLE user_notifications(
     is_new BOOLEAN default TRUE,
     FOREIGN KEY (emit_to) REFERENCES users(id) ON DELETE CASCADE,
 );
+
+CREATE TABLE subscriptions(
+    id SERIAL PRIMARY KEY,
+    userid INT NOT NULL,
+    payload JSONB NOT NULL,
+    FOREIGN KEY (emit_to) REFERENCES users(id) ON DELETE CASCADE,
+);   
