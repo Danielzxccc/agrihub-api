@@ -285,6 +285,9 @@ export type UpdateFarmApplicationT = z.infer<typeof UpdateFarmApplication>
  *         growth_span:
  *           type: string
  *           description: The growth span of the crop
+ *         isyield:
+ *           type: boolean
+ *           description: Indicates whether the crop yields
  *         image:
  *           type: string
  *           format: binary
@@ -297,6 +300,7 @@ export type UpdateFarmApplicationT = z.infer<typeof UpdateFarmApplication>
  *         - harvest_season
  *         - growth_span
  *         - image
+ *         - isyield
  *
  *     NewCropResponse:
  *       type: object
