@@ -21,7 +21,10 @@ import { findUser, updateUser } from '../Users/UserService'
 import { IFarmApplication } from './FarmInterface'
 import * as Service from './FarmService'
 import fs from 'fs'
-import { emitNotificationToAdmin } from '../Socket/SocketController'
+import {
+  emitNotification,
+  emitNotificationToAdmin,
+} from '../Socket/SocketController'
 
 export async function createFarmApplication({
   application,
@@ -68,6 +71,8 @@ export async function createFarmApplication({
     const newApplication = await Service.createFarmApplication(
       pendingApplication
     )
+
+    emitNotificationToAdmin('A new application has been received.')
 
     return newApplication
   } catch (error) {
@@ -116,7 +121,7 @@ export async function listFarmApplication(
   }))
 
   const formattedData = await replaceAvatarsWithUrls(formattedDates)
-  emitNotificationToAdmin()
+
   return { data: formattedData, total }
 }
 
@@ -167,6 +172,11 @@ export async function acceptFarmApplication(id: string) {
     farm_id: newCommunityFarm.id,
     role: 'farm_head',
   })
+
+  emitNotification(
+    farm.applicant.id,
+    'Your Farm Application has been successfully accepted.'
+  )
 
   return newCommunityFarm
 }

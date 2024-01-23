@@ -75,12 +75,7 @@ FarmRouter.get(
 // crops
 FarmRouter.get('/crop/find', FarmController.listCrops)
 
-FarmRouter.post(
-  '/crop',
-  UserGuard(['user']),
-  upload.single('image'),
-  FarmController.createCrop
-)
+FarmRouter.post('/crop', upload.single('image'), FarmController.createCrop)
 
 FarmRouter.post(
   '/crop/report/:farmid/:userid',

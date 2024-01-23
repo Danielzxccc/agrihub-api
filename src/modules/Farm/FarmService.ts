@@ -293,6 +293,7 @@ export async function findExistingApplication(userid: string) {
     .selectFrom('farm_applications')
     .selectAll()
     .where('applicant', '=', userid)
+    .where('status', '=', 'pending')
     .executeTakeFirst()
 }
 

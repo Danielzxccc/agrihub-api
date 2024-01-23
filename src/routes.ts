@@ -40,7 +40,6 @@ function routes(app: Express) {
 
   app.post('/subscribe', (req, res) => {
     const subscription = req.body
-    console.log(subscription, 'SUBSCRIPTION')
     subscriptions.push(subscription)
 
     res.status(201).json({ status: 'success' })

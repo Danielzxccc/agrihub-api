@@ -20,6 +20,6 @@ export function emitNotification(id: string, payload: string) {
   io.emit(id, payload)
 }
 
-export function emitNotificationToAdmin() {
-  io.emit('admin', 'tangina mo admin')
+export function emitNotificationToAdmin(payload: string) {
+  io.emit('admin', payload)
 }
