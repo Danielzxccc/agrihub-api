@@ -370,3 +370,18 @@ export async function findCommunityFarmImages(id: string) {
     .where('farm_id', '=', id)
     .execute()
 }
+
+export async function findOneCommunityFarmImage(id: string) {
+  return await db
+    .selectFrom('community_farms_gallery')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function deleteCommunityFarmImage(id: string) {
+  return await db
+    .deleteFrom('community_farms_gallery')
+    .where('id', '=', id)
+    .execute()
+}

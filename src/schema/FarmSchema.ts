@@ -1071,4 +1071,13 @@ export const NewCommunityFarmGallery = z.object({
  *           description: The description of the gallery item
  *           optional: true
  *           default: ""
+ *
+ *     DeleteSuccessMessage:
+ *       type: object
+ *       required:
+ *         - message
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A message indicating the success of the deletion
  */

@@ -12,6 +12,7 @@ import HttpError from '../../utils/HttpError'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import {
+  deleteFileCloud,
   getObjectUrl,
   replaceAvatarsWithUrls,
   uploadFile,
@@ -308,6 +309,28 @@ export async function createCommunityGallery(
     }
     dbErrorHandler(error)
   }
+}
+
+export async function removeCommunityFarmImage(
+  id: string,
+  userid: string
+): Promise<void> {
+  const [image, user] = await Promise.all([
+    Service.findOneCommunityFarmImage(id),
+    findUser(userid),
+  ])
+
+  if (!image) {
+    throw new HttpError("Can't find image", 404)
+  }
+
+  if (image.farm_id !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await deleteFileCloud(image.imagesrc)
+
+  await Service.deleteCommunityFarmImage(id)
 }
 
 export async function listCommunityFarmGallery(id: string) {

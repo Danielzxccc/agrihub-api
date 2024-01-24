@@ -221,6 +221,21 @@ export async function createCommunityGallery(
   }
 }
 
+export async function removeCommunityFarmImage(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.removeCommunityFarmImage(id, userid)
+    res.status(200).json({ message: 'Succesfully removed' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function listCommunityFarmGallery(req: Request, res: Response) {
   try {
     const { id } = req.params

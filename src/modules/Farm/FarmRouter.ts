@@ -80,6 +80,12 @@ FarmRouter.get(
   FarmController.listCommunityFarmGallery
 )
 
+FarmRouter.delete(
+  '/community-farm/gallery/:id',
+  UserGuard(['farm_head']),
+  FarmController.removeCommunityFarmImage
+)
+
 /**
  * @deprecated
  */
