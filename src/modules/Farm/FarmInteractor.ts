@@ -125,6 +125,22 @@ export async function listFarmApplication(
   return { data: formattedData, total }
 }
 
+// public view of community farm
+export async function viewCommunityFarm(id: string) {
+  const communityFarm = await Service.findCommunityFarmById(id)
+
+  if (!communityFarm) throw new HttpError('Community Farm Not Found', 404)
+
+  const { cover_photo, avatar } = communityFarm
+
+  communityFarm.cover_photo = cover_photo
+    ? getObjectUrl(cover_photo)
+    : cover_photo
+  communityFarm.avatar = avatar ? getObjectUrl(avatar) : avatar
+
+  return communityFarm
+}
+
 export async function viewFarmApplication(id: string) {
   const data = await Service.findOneFarmApplication(id)
 
@@ -202,6 +218,58 @@ export async function cancelExistingApplication(id: string, userid: string) {
   }
 
   await Service.deleteFarmApplicaiton(id)
+}
+
+export async function registerCropInFarmCommunity(
+  farm_id: string,
+  crop_id: string,
+  userid: string
+) {
+  try {
+    const [farm, crop] = await Promise.all([
+      Service.findCommunityFarmById(farm_id),
+      Service.findCrop(crop_id),
+    ])
+
+    if (!farm) {
+      throw new HttpError("Can't find farm", 404)
+    }
+
+    if (!crop[0]) {
+      throw new HttpError("Can't find crop", 404)
+    }
+
+    if (farm.farm_head !== userid) {
+      throw new HttpError('Unauthorized', 401)
+    }
+
+    const createdCrop = await Service.insertCommunityFarmCrop({
+      farm_id,
+      crop_id,
+    })
+
+    return createdCrop
+  } catch (error) {
+    if (error.code === '23505') {
+      throw new HttpError('Crop Already Exists', 400)
+    } else {
+      dbErrorHandler(error)
+    }
+  }
+}
+
+export async function listCommunityFarmCrops(id: string) {
+  try {
+    const crops = await Service.findCommunityFarmCrops(id)
+
+    for (const crop of crops) {
+      crop.image = getObjectUrl(crop.image)
+    }
+
+    return crops
+  } catch (error) {
+    dbErrorHandler(error)
+  }
 }
 
 export async function listFarms(

@@ -884,3 +884,142 @@ export type UpdateFarmApplicationT = z.infer<typeof UpdateFarmApplication>
  *           type: string
  *           description: The timestamp when the farm was last updated
  */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AddFarmCropResponse:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_id
+ *         - crop_id
+ *         - createdat
+ *         - updatedat
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the added crop in the community farm
+ *         farm_id:
+ *           type: string
+ *           description: The ID of the community farm
+ *         crop_id:
+ *           type: string
+ *           description: The ID of the crop
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the crop was added
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the crop was last updated
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommunityFarmResponse:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - location
+ *         - farm_head
+ *         - district
+ *         - size
+ *         - application_id
+ *         - createdat
+ *         - updatedat
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the community farm
+ *         farm_name:
+ *           type: string
+ *           description: The name of the community farm
+ *         location:
+ *           type: string
+ *           description: The location of the community farm
+ *         description:
+ *           type: string
+ *           description: The description of the community farm
+ *         farm_head:
+ *           type: string
+ *           description: The ID of the farm head
+ *         district:
+ *           type: string
+ *           description: The district of the community farm
+ *         size:
+ *           type: string
+ *           description: The size of the community farm
+ *         avatar:
+ *           type: string
+ *           description: The URL of the farm's avatar
+ *         cover_photo:
+ *           type: string
+ *           description: The URL of the farm's cover photo
+ *         application_id:
+ *           type: string
+ *           description: The ID of the farm's application
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the community farm was created
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the community farm was last updated
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CropItem:
+ *       type: object
+ *       required:
+ *         - id
+ *         - updatedat
+ *         - createdat
+ *         - name
+ *         - description
+ *         - image
+ *         - seedling_season
+ *         - planting_season
+ *         - harvest_season
+ *         - isyield
+ *         - growth_span
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the crop
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the crop was last updated
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the crop was created
+ *         name:
+ *           type: string
+ *           description: The name of the crop
+ *         description:
+ *           type: string
+ *           description: The description of the crop
+ *         image:
+ *           type: string
+ *           description: The URL of the crop's image
+ *         seedling_season:
+ *           type: string
+ *           description: The seedling season of the crop
+ *         planting_season:
+ *           type: string
+ *           description: The planting season of the crop
+ *         harvest_season:
+ *           type: string
+ *           description: The harvest season of the crop
+ *         isyield:
+ *           type: boolean
+ *           description: Indicates whether the crop is a yield
+ *         growth_span:
+ *           type: string
+ *           description: The growth span of the crop
+ */

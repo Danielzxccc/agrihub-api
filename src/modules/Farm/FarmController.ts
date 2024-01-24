@@ -159,6 +159,77 @@ export async function viewFarmApplication(req: Request, res: Response) {
   }
 }
 
+export async function viewCommunityFarm(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+    const communityFarm = await Interactor.viewCommunityFarm(id)
+
+    res.status(200).json(communityFarm)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function registerCropInFarmCommunity(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { farm_id, crop_id } = req.params
+    const { userid } = req.session
+
+    const registeredCrop = await Interactor.registerCropInFarmCommunity(
+      farm_id,
+      crop_id,
+      userid
+    )
+    res.status(201).json(registeredCrop)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listCommunityFarmCrops(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    const availableCrops = await Interactor.listCommunityFarmCrops(id)
+    res.status(200).json(availableCrops)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listCrops(req: Request, res: Response) {
+  try {
+    const data = await Interactor.listCrops()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function createCrop(req: Request, res: Response) {
+  try {
+    const { body } = await zParse(Schema.NewCropSchema, req)
+
+    const data = { ...body, image: req.file.filename }
+    const newCrop = await Interactor.createCrop(data, req.file)
+
+    res
+      .status(201)
+      .json({ message: 'crop created successfully', data: newCrop })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+/**
+ *
+ *
+ * @DEPRICATED ROUTES
+ */
+
 export async function listFarms(req: Request, res: Response) {
   try {
     const { query } = await zParse(Schema.ListFarmSchema, req)
@@ -229,30 +300,6 @@ export async function registerSubFarm(req: Request, res: Response) {
     res
       .status(201)
       .json({ message: 'registered successfully', data: newSubFarm })
-  } catch (error) {
-    errorHandler(res, error)
-  }
-}
-
-export async function listCrops(req: Request, res: Response) {
-  try {
-    const data = await Interactor.listCrops()
-    res.status(200).json(data)
-  } catch (error) {
-    errorHandler(res, error)
-  }
-}
-
-export async function createCrop(req: Request, res: Response) {
-  try {
-    const { body } = await zParse(Schema.NewCropSchema, req)
-
-    const data = { ...body, image: req.file.filename }
-    const newCrop = await Interactor.createCrop(data, req.file)
-
-    res
-      .status(201)
-      .json({ message: 'crop created successfully', data: newCrop })
   } catch (error) {
     errorHandler(res, error)
   }

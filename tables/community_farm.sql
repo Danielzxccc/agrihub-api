@@ -37,3 +37,18 @@ CREATE TABLE community_farms(
     FOREIGN KEY (farm_head) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (application_id) REFERENCES farm_applications(id) ON DELETE CASCADE
 );
+
+CREATE TABLE community_farms_crops(
+    id SERIAL PRIMARY KEY,
+    farm_id INT NOT NULL,
+    crop_id INT NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(farm_id, crop_id),
+    FOREIGN KEY (farm_id) REFERENCES community_farms(id) ON DELETE CASCADE,
+    FOREIGN KEY (crop_id) REFERENCES crops(id) ON DELETE CASCADE
+);
+
+
+
+

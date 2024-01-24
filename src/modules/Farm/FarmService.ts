@@ -4,6 +4,7 @@ import {
   Crop,
   FarmApplication,
   NewCommunityFarm,
+  NewCommunityFarmCrop,
   NewCrop,
   NewCropReport,
   NewFarm,
@@ -314,4 +315,41 @@ export async function createNewCommunityFarm(farm: NewCommunityFarm) {
     .values(farm)
     .returningAll()
     .executeTakeFirst()
+}
+
+export async function findCommunityFarmById(id: string) {
+  return await db
+    .selectFrom('community_farms')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function insertCommunityFarmCrop(crop: NewCommunityFarmCrop) {
+  return await db
+    .insertInto('community_farms_crops')
+    .values(crop)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findCommunityFarmCrops(id: string) {
+  return await db
+    .selectFrom('community_farms_crops')
+    .leftJoin('crops', 'community_farms_crops.crop_id', 'crops.id')
+    .select([
+      'community_farms_crops.id',
+      'community_farms_crops.updatedat',
+      'community_farms_crops.createdat',
+      'crops.name',
+      'crops.description',
+      'crops.image',
+      'crops.seedling_season',
+      'crops.planting_season',
+      'crops.harvest_season',
+      'crops.isyield',
+      'crops.growth_span',
+    ])
+    .where('community_farms_crops.farm_id', '=', id)
+    .execute()
 }

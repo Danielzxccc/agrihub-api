@@ -18,6 +18,7 @@ import {
   AboutGallery,
   FarmApplications,
   CommunityFarms,
+  CommunityFarmsCrops,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -63,6 +64,10 @@ export type UpdateFarmApplication = Updateable<FarmApplications>
 // community farm
 export type CommunityFarm = Selectable<CommunityFarms>
 export type NewCommunityFarm = Insertable<CommunityFarms>
+
+//community farm crops
+export type CommunityFarmCrop = Selectable<CommunityFarmsCrops>
+export type NewCommunityFarmCrop = Insertable<CommunityFarmsCrops>
 
 // farms
 export type Farm = Selectable<Farms>
