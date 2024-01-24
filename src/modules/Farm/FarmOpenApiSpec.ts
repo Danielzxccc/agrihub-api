@@ -62,6 +62,74 @@
  *               $ref: "#/components/schemas/CommunityFarmResponse"
  */
 
+/**
+ * @openapi
+ * /api/farm/community-farm/gallery:
+ *   post:
+ *     summary: Add a new gallery item for a community farm
+ *     tags:
+ *       - Farm
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/NewCommunityFarmGallery"
+ *     responses:
+ *       "201":
+ *         description: Success. Returns the newly added gallery item.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/CropGalleryItem"
+ *
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/community-farm/gallery/{id}:
+ *   get:
+ *     summary: Get gallery items for a specific community farm
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the community farm
+ *     responses:
+ *       "200":
+ *         description: Success. Returns gallery items for the specified community farm.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/CropGalleryItem"
+ */
+
 // ACCEPT FARM
 /**
  * @openapi

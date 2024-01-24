@@ -200,6 +200,38 @@ export async function listCommunityFarmCrops(req: Request, res: Response) {
   }
 }
 
+export async function createCommunityGallery(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.NewCommunityFarmGallery, req)
+    const files = req.files as Express.Multer.File[]
+
+    const newImage = await Interactor.createCommunityGallery(
+      userid,
+      files,
+      body.description
+    )
+
+    res.status(201).json(newImage)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listCommunityFarmGallery(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    const gallery = await Interactor.listCommunityFarmGallery(id)
+    res.status(200).json(gallery)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function listCrops(req: Request, res: Response) {
   try {
     const data = await Interactor.listCrops()

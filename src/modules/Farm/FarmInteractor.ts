@@ -272,6 +272,57 @@ export async function listCommunityFarmCrops(id: string) {
   }
 }
 
+export async function createCommunityGallery(
+  userid: string,
+  images: Express.Multer.File[],
+  description: string
+) {
+  try {
+    if (!images.length) throw new HttpError('Image is required', 400)
+    const user = await findUser(userid)
+
+    const newImages = []
+
+    for (const image of images) {
+      newImages.push({
+        farm_id: user.farm_id,
+        imagesrc: image.filename,
+        description,
+      })
+    }
+
+    const imageObject = await Service.insertCommunityFarmImage(newImages)
+
+    //upload in loud
+    await uploadFiles(images)
+
+    //  delete locol files
+    for (const image of images) {
+      deleteFile(image.filename)
+    }
+
+    return imageObject
+  } catch (error) {
+    for (const image of images) {
+      deleteFile(image.filename)
+    }
+    dbErrorHandler(error)
+  }
+}
+
+export async function listCommunityFarmGallery(id: string) {
+  const farm = await Service.findCommunityFarmById(id)
+
+  if (!farm) throw new HttpError("Can't find farm", 404)
+
+  const gallery = await Service.findCommunityFarmImages(id)
+
+  for (const image of gallery) {
+    image.imagesrc = getObjectUrl(image.imagesrc)
+  }
+  return gallery
+}
+
 export async function listFarms(
   offset: number,
   searchQuery: string,

@@ -5,6 +5,7 @@ import {
   FarmApplication,
   NewCommunityFarm,
   NewCommunityFarmCrop,
+  NewCommunityFarmImage,
   NewCrop,
   NewCropReport,
   NewFarm,
@@ -351,5 +352,21 @@ export async function findCommunityFarmCrops(id: string) {
       'crops.growth_span',
     ])
     .where('community_farms_crops.farm_id', '=', id)
+    .execute()
+}
+
+export async function insertCommunityFarmImage(image: NewCommunityFarmImage[]) {
+  return await db
+    .insertInto('community_farms_gallery')
+    .values(image)
+    .returningAll()
+    .execute()
+}
+
+export async function findCommunityFarmImages(id: string) {
+  return await db
+    .selectFrom('community_farms_gallery')
+    .selectAll()
+    .where('farm_id', '=', id)
     .execute()
 }

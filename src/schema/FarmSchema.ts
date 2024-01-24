@@ -111,6 +111,12 @@ export const UpdateFarmApplication = z.object({
 export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
 export type UpdateFarmApplicationT = z.infer<typeof UpdateFarmApplication>
 
+export const NewCommunityFarmGallery = z.object({
+  body: z.object({
+    description: z.string().optional().default(''),
+  }),
+})
+
 /**@LIST_FAMRS */
 /**
  * @openapi
@@ -1022,4 +1028,47 @@ export type UpdateFarmApplicationT = z.infer<typeof UpdateFarmApplication>
  *         growth_span:
  *           type: string
  *           description: The growth span of the crop
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CropGalleryItem:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_id
+ *         - imagesrc
+ *         - description
+ *         - createdat
+ *         - updatedat
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the gallery item
+ *         farm_id:
+ *           type: string
+ *           description: The ID of the community farm
+ *         imagesrc:
+ *           type: string
+ *           description: The URL of the image
+ *         description:
+ *           type: string
+ *           description: The description of the gallery item
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the gallery item was created
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the gallery item was last updated
+ *
+ *     NewCommunityFarmGallery:
+ *       type: object
+ *       properties:
+ *         description:
+ *           type: string
+ *           description: The description of the gallery item
+ *           optional: true
+ *           default: ""
  */

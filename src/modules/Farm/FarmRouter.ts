@@ -68,6 +68,18 @@ FarmRouter.post(
   FarmController.registerCropInFarmCommunity
 )
 
+FarmRouter.post(
+  '/community-farm/gallery',
+  UserGuard(['farm_head']),
+  upload.array('image'),
+  FarmController.createCommunityGallery
+)
+
+FarmRouter.get(
+  '/community-farm/gallery/:id',
+  FarmController.listCommunityFarmGallery
+)
+
 /**
  * @deprecated
  */
