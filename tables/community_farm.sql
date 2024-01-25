@@ -59,6 +59,30 @@ CREATE TABLE community_farms_gallery(
     FOREIGN KEY (farm_id) REFERENCES community_farms(id) ON DELETE CASCADE
 );
 
+CREATE TABLE community_crop_reports(
+    id SERIAL PRIMARY KEY,
+    farmid INT NOT NULL,
+    userid INT NOT NULL,
+    crop_id INT,
+    planted_qty INT NOT NULL,
+    harvested_qty INT,
+    withered_crops INT,
+    date_planted DATE NOT NULL,
+    date_harvested DATE,
+    notes TEXT,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (crop_id) REFERENCES community_farms_crops(id) ON DELETE CASCADE, 
+    FOREIGN KEY (farmid) REFERENCES community_farms(id) ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE community_crop_reports_images(
+    id SERIAL PRIMARY KEY,
+    report_id INT NOT NULL,
+    imagesrc TEXT NOT NULL,
+    FOREIGN KEY (report_id) REFERENCES community_crop_reports(id) ON DELETE CASCADE
+);
 
 
 

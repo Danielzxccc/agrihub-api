@@ -10,6 +10,7 @@ import { EventsRouter } from './modules/Events/EventsRouter'
 import { AboutRouter } from './modules/About/AboutRouter'
 import { multerLimitter } from './middleware/UploadMiddleware'
 import { BlogsRouter } from './modules/Blogs/BlogsRouter'
+import { ReportsRouter } from './modules/Reports/ReportsRouter'
 import path from 'path'
 import upload from './config/multer'
 import webpush from 'web-push'
@@ -89,6 +90,7 @@ function routes(app: Express) {
 
   app.use('/api/auth', AuthRouter)
   app.use('/api/farm', FarmRouter)
+  app.use('/api/reports', ReportsRouter)
   app.use('/api/account', AccountRouter)
   app.use('/api/user', UserRouter)
   app.use('/api/forums', ForumsRouter)

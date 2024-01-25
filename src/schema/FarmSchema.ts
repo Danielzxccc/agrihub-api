@@ -90,6 +90,7 @@ export const NewFarmApplication = z.object({
     district: z.string(),
     id_type: z.string(),
     location: z.string(),
+    proof: z.string(),
   }),
 })
 
@@ -572,7 +573,6 @@ export const NewCommunityFarmGallery = z.object({
  *         - id_type
  *         - valid_id
  *         - location
- *         - selfie
  *       properties:
  *         farm_name:
  *           type: string
@@ -589,18 +589,13 @@ export const NewCommunityFarmGallery = z.object({
  *         location:
  *           type: string
  *           description: The type of ID used for application
- *         selfie:
- *           type: string
- *           format: binary
- *           description: The selfie image file
  *         valid_id:
  *           type: string
  *           format: binary
  *           description: The proof image file
  *         proof:
  *           type: string
- *           format: binary
- *           description: The proof image file
+ *           description: Type of farm
  *         farm_actual_images:
  *           type: array
  *           items:
