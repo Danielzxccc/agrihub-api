@@ -86,6 +86,27 @@ export async function createFarmApplication({
   }
 }
 
+export async function listCommunityFarms(
+  perpage: number,
+  offset: number,
+  search: string,
+  filter: string
+) {
+  const [data, total] = await Promise.all([
+    Service.findAllCommunityFarms(perpage, offset, search, filter),
+    Service.getTotalCommunityFarms(),
+  ])
+
+  for (const farm of data) {
+    farm.avatar = farm.avatar ? getObjectUrl(farm.avatar) : farm.avatar
+    farm.cover_photo = farm.cover_photo
+      ? getObjectUrl(farm.cover_photo)
+      : farm.cover_photo
+  }
+
+  return { data, total }
+}
+
 export async function checkExistingApplication(userid: string) {
   const application = await Service.findExistingApplication(userid)
   if (!application) {

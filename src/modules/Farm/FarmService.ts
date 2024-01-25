@@ -385,3 +385,24 @@ export async function deleteCommunityFarmImage(id: string) {
     .where('id', '=', id)
     .execute()
 }
+
+export async function findAllCommunityFarms(
+  perpage: number,
+  offset: number,
+  search: string,
+  filter: string
+) {
+  let query = db.selectFrom('community_farms').selectAll()
+
+  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (filter.length) query = query.where('district', '=', filter)
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalCommunityFarms() {
+  return await db
+    .selectFrom('community_farms')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}

@@ -55,6 +55,40 @@ export async function applyFarm(req: SessionRequest, res: Response) {
   }
 }
 
+export async function listCommunityFarms(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.CommunityFarms, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    console.log(filterKey, 'test fitler')
+
+    const farms = await Interactor.listCommunityFarms(
+      perPage,
+      offset,
+      searchKey,
+      filterKey
+    )
+
+    const totalPages = Math.ceil(Number(farms.total.count) / perPage)
+    res.status(200).json({
+      farms: farms.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(farms.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function acceptFarmApplication(req: Request, res: Response) {
   try {
     const id = req.params.id

@@ -118,6 +118,15 @@ export const NewCommunityFarmGallery = z.object({
   }),
 })
 
+export const CommunityFarms = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z.string().optional().default(''),
+  }),
+})
+
 /**@LIST_FAMRS */
 /**
  * @openapi
@@ -1075,4 +1084,49 @@ export const NewCommunityFarmGallery = z.object({
  *         message:
  *           type: string
  *           description: A message indicating the success of the deletion
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommunityFarmsResponse:
+ *       type: object
+ *       properties:
+ *         farms:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/CommunityFarmData"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *
+ *     CommunityFarmData:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         farm_name:
+ *           type: string
+ *         location:
+ *           type: string
+ *         description:
+ *           type: string
+ *         farm_head:
+ *           type: string
+ *         district:
+ *           type: string
+ *         size:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         cover_photo:
+ *           type: string
+ *         application_id:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
  */

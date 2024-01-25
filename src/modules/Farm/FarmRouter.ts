@@ -10,13 +10,15 @@ FarmRouter.post(
   '/apply',
   UserGuard(['member', 'admin']),
   upload.fields([
-    { name: 'selfie', maxCount: 1 },
+    // { name: 'selfie', maxCount: 1 },
     { name: 'proof', maxCount: 1 },
     { name: 'valid_id', maxCount: 1 },
     { name: 'farm_actual_images', maxCount: 5 },
   ]),
   FarmController.applyFarm
 )
+
+FarmRouter.get('/community-farm', FarmController.listCommunityFarms)
 
 FarmRouter.put(
   '/applications/accept/:id',
