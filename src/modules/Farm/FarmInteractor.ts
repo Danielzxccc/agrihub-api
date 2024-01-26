@@ -30,7 +30,6 @@ import {
 export async function createFarmApplication({
   application,
   farmActualImages,
-  selfie,
   proof,
   userid,
   valid_id,
@@ -45,7 +44,7 @@ export async function createFarmApplication({
       )
 
     // check files
-    if (!farmActualImages || !selfie || !proof || !valid_id) {
+    if (!farmActualImages || !proof || !valid_id) {
       throw new HttpError('Incomplete Details', 400)
     }
     const farm_actual_images = farmActualImages.map((item) => item.filename)
@@ -53,13 +52,13 @@ export async function createFarmApplication({
     const pendingApplication: NewFarmApplication = {
       ...application.body,
       applicant: userid,
-      selfie: selfie.filename,
+      selfie: '',
       proof: proof.filename,
       farm_actual_images,
       valid_id: valid_id.filename,
     }
 
-    const allFiles = [...farmActualImages, selfie, proof, valid_id]
+    const allFiles = [...farmActualImages, proof, valid_id]
     // batch upload in cloud
     await uploadFiles(allFiles)
 
@@ -78,7 +77,7 @@ export async function createFarmApplication({
     return newApplication
   } catch (error) {
     // delele local files if error occured
-    const allFiles = [...farmActualImages, selfie, proof, valid_id]
+    const allFiles = [...farmActualImages, proof, valid_id]
     for (const image of allFiles) {
       deleteFile(image.filename)
     }

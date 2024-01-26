@@ -23,7 +23,7 @@ export async function applyFarm(req: SessionRequest, res: Response) {
       req.files as { [fieldname: string]: Express.Multer.File[] }
     )['valid_id'][0]
 
-    var allImages = [...farmActualImages, selfie, valid_id, proof]
+    var allImages = [...farmActualImages, valid_id, proof]
 
     const userid = req.session.userid
 
@@ -31,7 +31,6 @@ export async function applyFarm(req: SessionRequest, res: Response) {
       farmActualImages,
       application: { body },
       proof,
-      selfie,
       userid,
       valid_id,
     })
