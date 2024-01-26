@@ -15,10 +15,6 @@ export async function applyFarm(req: SessionRequest, res: Response) {
       req.files as { [fieldname: string]: Express.Multer.File[] }
     )['farm_actual_images']
 
-    const selfie = (
-      req.files as { [fieldname: string]: Express.Multer.File[] }
-    )['selfie'][0]
-
     const proof = (req.files as { [fieldname: string]: Express.Multer.File[] })[
       'proof'
     ][0]
