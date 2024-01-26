@@ -53,7 +53,6 @@ export async function createFarmApplication({
       ...application.body,
       applicant: userid,
       selfie: '',
-      proof: proof.filename,
       farm_actual_images,
       valid_id: valid_id.filename,
     }
