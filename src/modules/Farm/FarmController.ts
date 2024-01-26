@@ -15,22 +15,17 @@ export async function applyFarm(req: SessionRequest, res: Response) {
       req.files as { [fieldname: string]: Express.Multer.File[] }
     )['farm_actual_images']
 
-    const proof = (req.files as { [fieldname: string]: Express.Multer.File[] })[
-      'proof'
-    ][0]
-
     const valid_id = (
       req.files as { [fieldname: string]: Express.Multer.File[] }
     )['valid_id'][0]
 
-    var allImages = [...farmActualImages, valid_id, proof]
+    var allImages = [...farmActualImages, valid_id]
 
     const userid = req.session.userid
 
     const newApplication = await Interactor.createFarmApplication({
       farmActualImages,
       application: { body },
-      proof,
       userid,
       valid_id,
     })
