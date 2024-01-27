@@ -1,3 +1,4 @@
+import { sql } from 'kysely'
 import { db } from '../../config/database'
 import { NewCommunityFarmReport, NewCropReportImage } from '../../types/DBTypes'
 
@@ -25,4 +26,22 @@ export async function findCommunityFarmCrop(id: string) {
     .selectAll()
     .where('id', '=', id)
     .executeTakeFirst()
+}
+
+export async function getHarvestedAndWitheredCrops(id: string) {
+  return await db
+    .selectFrom('community_farms_crops as cfc')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .leftJoin('community_crop_reports as ccr', 'cfc.id', 'ccr.crop_id')
+    .select([
+      'cfc.id as community_farms_crops_id',
+      'cfc.farm_id',
+      'cfc.crop_id',
+      'c.name as crop_name',
+      sql`COALESCE(SUM(ccr.harvested_qty), 0)`.as('total_harvested'),
+      sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('total_withered'),
+    ])
+    .where('cfc.farm_id', '=', id)
+    .groupBy(['cfc.id', 'cfc.farm_id', 'cfc.crop_id', 'c.name'])
+    .execute()
 }

@@ -22,7 +22,7 @@ export async function createCommunityCropReport(
     if (userid !== farm.farm_head) throw new HttpError('Unathorized', 401)
 
     const crop = await Service.findCommunityFarmCrop(report.crop_id as string)
-    if (!crop.id) throw new HttpError("Can't find crop", 404)
+    if (!crop) throw new HttpError("Can't find crop", 404)
 
     const newReport = await Service.insertCommunityCropReport({
       ...report,
@@ -53,4 +53,15 @@ export async function createCommunityCropReport(
 
     dbErrorHandler(error)
   }
+}
+
+export async function listWitheredHarvestedCrops(userid: string) {
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const farm = await findCommunityFarmById(user.farm_id)
+  if (!farm) throw new HttpError("Can't find farm", 404)
+
+  const data = await Service.getHarvestedAndWitheredCrops(farm.id)
+  return data
 }

@@ -11,3 +11,9 @@ ReportsRouter.post(
   upload.array('image'),
   ReportsController.createCommunityCropReport
 )
+
+ReportsRouter.get(
+  '/farmer/graph/stacked-bar',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.listWitheredHarvestedCrops
+)

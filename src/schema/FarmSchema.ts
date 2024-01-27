@@ -1075,6 +1075,12 @@ export const CommunityFarms = z.object({
  *           description: The description of the gallery item
  *           optional: true
  *           default: ""
+ *         image:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: binary
+ *             optional: true
  *
  *     DeleteSuccessMessage:
  *       type: object

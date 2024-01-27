@@ -34,3 +34,17 @@ export async function createCommunityCropReport(
     errorHandler(res, error)
   }
 }
+
+export async function listWitheredHarvestedCrops(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+
+    const data = await Interactor.listWitheredHarvestedCrops(userid)
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
