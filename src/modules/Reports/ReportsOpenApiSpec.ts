@@ -114,3 +114,131 @@
  *         data:
  *           $ref: "#/components/schemas/CropReportData"
  */
+
+/**
+ * @openapi
+ * /api/reports/farmer/graph/stacked-bar:
+ *   get:
+ *     summary: Get stacked bar graph data for farmer reports
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmerGraphStackedBarResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmerGraphStackedBarResponse:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/FarmerGraphStackedBarData"
+ *
+ *     FarmerGraphStackedBarData:
+ *       type: object
+ *       properties:
+ *         community_farms_crops_id:
+ *           type: string
+ *         farm_id:
+ *           type: string
+ *         crop_id:
+ *           type: string
+ *         crop_name:
+ *           type: string
+ *         total_harvested:
+ *           type: string
+ *         total_withered:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/farmer/total-harvested:
+ *   get:
+ *     summary: Get total harvested data for farmer reports
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmerTotalHarvestedResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmerTotalHarvestedResponse:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/FarmerTotalHarvestedData"
+ *
+ *     FarmerTotalHarvestedData:
+ *       type: object
+ *       properties:
+ *         crop_id:
+ *           type: string
+ *         crop_name:
+ *           type: string
+ *         image:
+ *           type: string
+ *         total_harvested:
+ *           type: string
+ */

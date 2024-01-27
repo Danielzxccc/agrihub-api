@@ -65,3 +65,14 @@ export async function listWitheredHarvestedCrops(userid: string) {
   const data = await Service.getHarvestedAndWitheredCrops(farm.id)
   return data
 }
+
+export async function listTotalHarvestedCrops(userid: string) {
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const farm = await findCommunityFarmById(user.farm_id)
+  if (!farm) throw new HttpError("Can't find farm", 404)
+
+  const data = await Service.getTotalHarvestedCrops(farm.id)
+  return data
+}

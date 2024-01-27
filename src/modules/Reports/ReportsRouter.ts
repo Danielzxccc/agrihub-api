@@ -17,3 +17,9 @@ ReportsRouter.get(
   UserGuard(['farm_head', 'farmer']),
   ReportsController.listWitheredHarvestedCrops
 )
+
+ReportsRouter.get(
+  '/farmer/total-harvested',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.listTotalHarvestedCrops
+)
