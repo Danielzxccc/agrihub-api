@@ -11,6 +11,8 @@ const log = logger({
   timestamp: () => `,"time":"${new Date().toISOString()}"`,
 })
 
+export default log
+
 export function getVerificationLevel(level: string) {
   return isNaN(parseInt(level)) ? 0 : parseInt(level)
 }
@@ -32,4 +34,23 @@ export const getUploadedFiles = (
   return files?.[fieldName] || null
 }
 
-export default log
+export function getMonthByIndex(index: number) {
+  if (index > 11) return null
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+  const currentMonthName = monthNames[index]
+  return currentMonthName
+}

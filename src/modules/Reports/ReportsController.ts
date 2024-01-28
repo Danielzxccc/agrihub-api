@@ -62,3 +62,14 @@ export async function listTotalHarvestedCrops(
     errorHandler(res, error)
   }
 }
+
+export async function viewCropStatistics(req: SessionRequest, res: Response) {
+  try {
+    const { name } = req.params
+
+    const data = await Interactor.viewCropStatistics(name)
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

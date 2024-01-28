@@ -23,3 +23,9 @@ ReportsRouter.get(
   UserGuard(['farm_head', 'farmer']),
   ReportsController.listTotalHarvestedCrops
 )
+
+ReportsRouter.get(
+  '/crop/statistics/:name',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.viewCropStatistics
+)

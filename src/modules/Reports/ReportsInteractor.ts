@@ -1,11 +1,12 @@
 import HttpError from '../../utils/HttpError'
 import { NewCommunityFarmReport } from '../../types/DBTypes'
-import { findCommunityFarmById } from '../Farm/FarmService'
+import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
 import * as Service from './ReportsService'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { deleteFile } from '../../utils/file'
 import { findUser } from '../Users/UserService'
 import { uploadFiles } from '../AWS-Bucket/UploadService'
+import { getMonthByIndex } from '../../utils/utils'
 
 export async function createCommunityCropReport(
   userid: string,
@@ -24,6 +25,8 @@ export async function createCommunityCropReport(
     const crop = await Service.findCommunityFarmCrop(report.crop_id as string)
     if (!crop) throw new HttpError("Can't find crop", 404)
 
+    const [parentCrop] = await findCrop(crop.crop_id)
+
     const newReport = await Service.insertCommunityCropReport({
       ...report,
       farmid: user.farm_id,
@@ -35,6 +38,7 @@ export async function createCommunityCropReport(
         return {
           imagesrc: item.filename,
           report_id: newReport.id,
+          crop_name: parentCrop.name,
         }
       })
       await Service.insertCropReportImage(reportImages)
@@ -75,4 +79,23 @@ export async function listTotalHarvestedCrops(userid: string) {
 
   const data = await Service.getTotalHarvestedCrops(farm.id)
   return data
+}
+
+export async function viewCropStatistics(id: string) {
+  const data = await Service.getCropStatistics(id)
+
+  if (!data) throw new HttpError('No Available Report Data', 404)
+
+  const formattedData = {
+    ...data,
+    // crop_yield: Number(data.total_harvested) / Number(data.planted_quanity),
+    growth_span:
+      data?.growth_span +
+      (Number(data?.growth_span) > 1 ? ' months' : ' month'),
+    seedling_season: getMonthByIndex(Number(data?.seedling_season)),
+    planting_season: getMonthByIndex(Number(data?.planting_season)),
+    harvest_season: getMonthByIndex(Number(data?.harvest_season)),
+  }
+
+  return formattedData
 }

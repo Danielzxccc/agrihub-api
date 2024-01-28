@@ -26,6 +26,7 @@ import {
   emitNotification,
   emitNotificationToAdmin,
 } from '../Socket/SocketController'
+import { getMonthByIndex } from '../../utils/utils'
 
 export async function createFarmApplication({
   application,
@@ -283,6 +284,12 @@ export async function listCommunityFarmCrops(id: string) {
 
     for (const crop of crops) {
       crop.image = getObjectUrl(crop.image)
+      crop.growth_span =
+        crop?.growth_span +
+        (Number(crop?.growth_span) > 1 ? ' months' : ' month')
+      crop.seedling_season = getMonthByIndex(Number(crop?.seedling_season))
+      crop.planting_season = getMonthByIndex(Number(crop?.planting_season))
+      crop.harvest_season = getMonthByIndex(Number(crop?.harvest_season))
     }
 
     return crops
