@@ -14,6 +14,30 @@ export async function insertCommunityCropReport(
     .executeTakeFirstOrThrow()
 }
 
+export async function findCommunityReports(
+  id: string,
+  offset: number,
+  filterKey: string,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .select(({ fn, val }) => [
+      'ccr.crop_id',
+      'c.name as crop_name',
+      fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
+      sql`SUM(ccr.harvested_qty)`.as('total_harvested'),
+    ])
+    .groupBy(['ccr.crop_id', 'c.name', 'c.image'])
+    .where('ccr.farmid', '=', id)
+    // .selectAll()
+    .where('ccr.farmid', '=', id)
+  return await query.limit(perpage).offset(offset).execute()
+}
+
 export async function insertCropReportImage(image: NewCropReportImage) {
   return await db
     .insertInto('community_crop_reports_images')
@@ -86,6 +110,9 @@ export async function getCropStatistics(name: string) {
         'net_yield'
       ),
       sql`ROUND(SUM(harvested_qty) / SUM(planted_qty), 2)`.as('crop_yield'),
+      sql`((ROUND(SUM(harvested_qty) / SUM(planted_qty), 2)) + (ROUND(SUM(ccr.harvested_qty - COALESCE(ccr.withered_crops, 0)), 1))) - COALESCE(SUM(ccr.withered_crops), 0)`.as(
+        'performance_score'
+      ),
       jsonArrayFrom(
         eb
           .selectFrom('community_crop_reports_images as ccri')
@@ -109,4 +136,39 @@ export async function getCropStatistics(name: string) {
     ])
     .where('c.name', '=', name)
     .executeTakeFirst()
+}
+
+export async function findLeastPerformantCrops(id: string) {
+  return await db
+    .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .select([
+      'c.name as plant',
+      sql`CASE WHEN c.isyield THEN 1 ELSE 0 END`.as('type'),
+      sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_qty'),
+      sql`COALESCE(SUM(ccr.harvested_qty), 0)`.as('harvested_qty'),
+      sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('withered_crops'),
+      sql`ROUND(SUM(ccr.harvested_qty - COALESCE(ccr.withered_crops, 0)), 1)`.as(
+        'net_yield'
+      ),
+      sql`ROUND(SUM(harvested_qty) / SUM(planted_qty), 2)`.as('crop_yield'),
+      sql`((ROUND(SUM(harvested_qty) / SUM(planted_qty), 2)) + (ROUND(SUM(ccr.harvested_qty - COALESCE(ccr.withered_crops, 0)), 1))) - COALESCE(SUM(ccr.withered_crops), 0)`.as(
+        'performance_score'
+      ),
+    ])
+    .groupBy([
+      'ccr.crop_id',
+      'c.name',
+      'c.image',
+      'c.description',
+      'c.growth_span',
+      'c.seedling_season',
+      'c.planting_season',
+      'c.harvest_season',
+      'c.isyield',
+    ])
+    .where('ccr.farmid', '=', id)
+    .orderBy('performance_score', 'asc')
+    .execute()
 }

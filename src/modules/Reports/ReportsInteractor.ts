@@ -88,7 +88,6 @@ export async function viewCropStatistics(id: string) {
 
   const formattedData = {
     ...data,
-    // crop_yield: Number(data.total_harvested) / Number(data.planted_quanity),
     growth_span:
       data?.growth_span +
       (Number(data?.growth_span) > 1 ? ' months' : ' month'),
@@ -98,4 +97,12 @@ export async function viewCropStatistics(id: string) {
   }
 
   return formattedData
+}
+
+export async function leastPerformantCrops(userid: string) {
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const crops = await Service.findLeastPerformantCrops(user.farm_id)
+  return crops
 }

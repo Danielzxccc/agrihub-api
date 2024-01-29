@@ -29,3 +29,9 @@ ReportsRouter.get(
   UserGuard(['farm_head', 'farmer']),
   ReportsController.viewCropStatistics
 )
+
+ReportsRouter.get(
+  '/crop/report/summary',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.leastPerformantCrops
+)

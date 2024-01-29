@@ -105,6 +105,8 @@ import { z } from 'zod'
  *           type: string
  *         bio:
  *           type: string
+ *         farm_id:
+ *           type: string
  *
  *     UserProfile:
  *       type: object

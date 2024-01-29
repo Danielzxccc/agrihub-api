@@ -6,6 +6,7 @@ import * as Schema from '../../schema/ReportsSchema'
 import zParse from '../../utils/zParse'
 import { ZodError } from 'zod'
 import { deleteFile } from '../../utils/file'
+import axios from 'axios'
 
 export async function createCommunityCropReport(
   req: SessionRequest,
@@ -69,6 +70,23 @@ export async function viewCropStatistics(req: SessionRequest, res: Response) {
 
     const data = await Interactor.viewCropStatistics(name)
     res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function leastPerformantCrops(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+
+    const data = await Interactor.leastPerformantCrops(userid)
+
+    const suggestions = await axios.post(
+      'http://localhost:5000/pre-defined',
+      data
+    )
+
+    res.status(200).json(suggestions.data)
   } catch (error) {
     errorHandler(res, error)
   }

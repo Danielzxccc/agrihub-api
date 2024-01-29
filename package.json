@@ -18,6 +18,7 @@
     "@aws-sdk/s3-request-presigner": "^3.451.0",
     "@types/cors": "^2.8.15",
     "@types/nodemailer": "^6.4.13",
+    "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "connect-redis": "^7.1.0",
     "cors": "^2.8.5",
