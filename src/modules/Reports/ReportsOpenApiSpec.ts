@@ -336,3 +336,200 @@
  *         image:
  *           type: string
  */
+
+/**
+ *  @openapi
+ * /api/reports/crop/report/{id}:
+ *   get:
+ *     summary: Get crop reports by ID
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the farm
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Records per page
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Array of filters
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *         description: Sorting parameter
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommunityCropReportsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommunityCropReportResponseItem:
+ *       type: object
+ *       properties:
+ *         crop_id:
+ *           type: string
+ *         crop_name:
+ *           type: string
+ *         date_planted:
+ *           type: string
+ *         date_harvested:
+ *           type: string
+ *         harvested_qty:
+ *           type: string
+ *         withered_crops:
+ *           type: string
+ *         image:
+ *           type: string
+ *           format: uri
+ *     CommunityCropReportsResponse:
+ *       type: object
+ *       properties:
+ *         reports:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/CommunityCropReportResponseItem"
+ *         pagination:
+ *           type: object
+ *           properties:
+ *             page:
+ *               type: string
+ *             per_page:
+ *               type: string
+ *             total_pages:
+ *               type: string
+ *             total_records:
+ *               type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/crop/report/view/{id}:
+ *   get:
+ *     summary: Get crop report view by ID
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the crop report
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CropReportViewResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CropReportViewResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         crop_name:
+ *           type: string
+ *         date_planted:
+ *           type: string
+ *         date_harvested:
+ *           type: string
+ *         harvested_qty:
+ *           type: string
+ *         withered_crops:
+ *           type: string
+ *         farmid:
+ *           type: string
+ *         image:
+ *           type: string
+ *           format: uri
+ *         images:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: uri
+ */

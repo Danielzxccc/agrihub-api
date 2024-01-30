@@ -72,6 +72,7 @@ CREATE TABLE community_crop_reports(
     notes TEXT,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    is_archived BOOLEAN DEFAULT false,
     FOREIGN KEY (crop_id) REFERENCES community_farms_crops(id) ON DELETE CASCADE, 
     FOREIGN KEY (farmid) REFERENCES community_farms(id) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE

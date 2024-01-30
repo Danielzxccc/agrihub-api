@@ -14,28 +14,100 @@ export async function insertCommunityCropReport(
     .executeTakeFirstOrThrow()
 }
 
+export async function findCommunityReportById(id: string) {
+  return await db
+    .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .select(({ fn, val, eb }) => [
+      'ccr.id',
+      'c.name as crop_name',
+      'ccr.date_planted',
+      'ccr.date_harvested',
+      'ccr.harvested_qty',
+      'ccr.withered_crops',
+      'ccr.farmid',
+      fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('community_crop_reports_images as ccri')
+          .select(({ fn }) => [
+            fn<string>('concat', [val(returnObjectUrl()), 'ccri.imagesrc']).as(
+              'image'
+            ),
+          ])
+          .whereRef('ccri.crop_name', '=', 'c.name')
+      ).as('images'),
+    ])
+    .groupBy([
+      'ccr.id',
+      'c.name',
+      'c.image',
+      'ccr.date_planted',
+      'ccr.date_harvested',
+      'ccr.harvested_qty',
+      'ccr.withered_crops',
+    ])
+    .where('ccr.id', '=', id)
+    .where('ccr.is_archived', '=', false)
+    .executeTakeFirst()
+}
+
 export async function findCommunityReports(
   id: string,
   offset: number,
-  filterKey: string,
+  filterKey: string[],
   searchKey: string,
-  perpage: number
+  perpage: number,
+  sortBy: string
 ) {
   let query = db
     .selectFrom('community_crop_reports as ccr')
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn, val }) => [
-      'ccr.crop_id',
+      'ccr.id',
       'c.name as crop_name',
+      'ccr.date_planted',
+      'ccr.date_harvested',
+      'ccr.harvested_qty',
+      'ccr.withered_crops',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
-      sql`SUM(ccr.harvested_qty)`.as('total_harvested'),
     ])
-    .groupBy(['ccr.crop_id', 'c.name', 'c.image'])
+    .groupBy([
+      'ccr.id',
+      'c.name',
+      'c.image',
+      'ccr.date_planted',
+      'ccr.date_harvested',
+      'ccr.harvested_qty',
+      'ccr.withered_crops',
+    ])
     .where('ccr.farmid', '=', id)
-    // .selectAll()
-    .where('ccr.farmid', '=', id)
+    .where('ccr.is_archived', '=', false)
+
+  if (filterKey.length) {
+    for (const filter of filterKey) {
+      query = query.where((eb) => eb.or([eb('c.name', 'ilike', `${filter}%`)]))
+    }
+  }
+
+  if (searchKey.length) {
+    query = query.where('c.name', 'ilike', `${searchKey}%`)
+  }
+
+  query = query.orderBy('ccr.date_harvested', 'desc')
+  // if (sortBy.length) {
+  //   query = query.orderBy('ccr.date_harvested', 'asc')
+  // }
   return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalReportCount() {
+  return await db
+    .selectFrom('community_crop_reports as ccr')
+    .select(({ fn }) => [fn.count<number>('ccr.id').as('count')])
+    .executeTakeFirst()
 }
 
 export async function insertCropReportImage(image: NewCropReportImage) {
@@ -85,6 +157,7 @@ export async function getTotalHarvestedCrops(id: string) {
     ])
     .groupBy(['ccr.crop_id', 'c.name', 'c.image'])
     .where('ccr.farmid', '=', id)
+    .where('ccr.is_archived', '=', false)
     .execute()
 }
 
@@ -135,6 +208,7 @@ export async function getCropStatistics(name: string) {
       'c.harvest_season',
     ])
     .where('c.name', '=', name)
+    .where('ccr.is_archived', '=', false)
     .executeTakeFirst()
 }
 
@@ -169,6 +243,20 @@ export async function findLeastPerformantCrops(id: string) {
       'c.isyield',
     ])
     .where('ccr.farmid', '=', id)
+    .where('ccr.is_archived', '=', false)
     .orderBy('performance_score', 'asc')
     .execute()
+}
+
+/**
+ *
+ * @param id report id
+ */
+export async function archiveCommunityCropReport(id: string) {
+  return await db
+    .updateTable('community_crop_reports')
+    .set({ is_archived: true })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }

@@ -106,3 +106,47 @@ export async function leastPerformantCrops(userid: string) {
   const crops = await Service.findLeastPerformantCrops(user.farm_id)
   return crops
 }
+
+export async function listCommuntityCropReports(
+  id: string,
+  offset: number,
+  filterKey: string[],
+  searchKey: string,
+  perpage: number,
+  sortBy: string
+) {
+  const [data, total] = await Promise.all([
+    Service.findCommunityReports(
+      id,
+      offset,
+      filterKey,
+      searchKey,
+      perpage,
+      sortBy
+    ),
+    Service.getTotalReportCount(),
+  ])
+
+  return { data, total }
+}
+
+export async function removeCommunityCropReport(id: string) {
+  const report = await Service.findCommunityReportById(id)
+  if (!report) throw new HttpError("Can't find report", 404)
+
+  const data = await Service.archiveCommunityCropReport(id)
+  return data
+}
+
+export async function viewCommunityCropReport(id: string, userid: string) {
+  const report = await Service.findCommunityReportById(id)
+  if (!report) throw new HttpError("Can't find report", 404)
+
+  const user = await findUser(userid)
+
+  if (user.farm_id !== report.farmid) {
+    throw new HttpError('Unathorized', 401)
+  }
+
+  return report
+}

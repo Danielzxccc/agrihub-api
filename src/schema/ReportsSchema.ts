@@ -12,3 +12,16 @@ export const NewCommunityCropReport = z.object({
     notes: z.string().optional(),
   }),
 })
+
+export const CommunityCropReports = z.object({
+  params: z.object({
+    id: z.string(),
+  }),
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z.array(z.string()).optional().default([]),
+    sort: z.string().optional().default('date_harvested'),
+  }),
+})

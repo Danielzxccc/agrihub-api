@@ -35,3 +35,21 @@ ReportsRouter.get(
   UserGuard(['farm_head', 'farmer']),
   ReportsController.leastPerformantCrops
 )
+
+ReportsRouter.get(
+  '/crop/report/:id',
+  UserGuard(['farm_head']),
+  ReportsController.listCommuntityCropReports
+)
+
+ReportsRouter.get(
+  '/crop/report/view/:id',
+  UserGuard(['farm_head']),
+  ReportsController.viewCommunityCropReport
+)
+
+ReportsRouter.put(
+  '/crop/remove/:id',
+  UserGuard(['farm_head']),
+  ReportsController.removeCommunityCropReport
+)
