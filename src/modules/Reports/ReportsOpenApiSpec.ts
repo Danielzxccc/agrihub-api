@@ -183,6 +183,134 @@
 
 /**
  * @openapi
+ * /api/reports/farmer/graph/piechart:
+ *   get:
+ *     summary: Get farmer graph piechart data
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmerGraphPiechartResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmerGraphPiechartResponse:
+ *       type: array
+ *       items:
+ *         type: object
+ *         properties:
+ *           crop_name:
+ *             type: string
+ *           planted_quantity:
+ *             type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/farmer/graph/total-harvest:
+ *   get:
+ *     summary: Get farmer graph total harvest data
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmerGraphTotalHarvestResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmerGraphTotalHarvestResponse:
+ *       type: object
+ *       properties:
+ *         january:
+ *           type: string
+ *         february:
+ *           type: string
+ *         march:
+ *           type: string
+ *         april:
+ *           type: string
+ *         may:
+ *           type: string
+ *         june:
+ *           type: string
+ *         july:
+ *           type: string
+ *         august:
+ *           type: string
+ *         september:
+ *           type: string
+ *         october:
+ *           type: string
+ *         november:
+ *           type: string
+ *         december:
+ *           type: string
+ */
+
+/**
+ * @openapi
  * /api/reports/farmer/total-harvested:
  *   get:
  *     summary: Get total harvested data for farmer reports

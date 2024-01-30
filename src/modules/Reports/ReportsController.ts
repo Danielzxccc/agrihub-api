@@ -64,11 +64,40 @@ export async function listTotalHarvestedCrops(
   }
 }
 
+export async function listTotalPlantedCrops(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const data = await Interactor.listTotalPlantedCrops(userid)
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listTotalHarvestEachMonth(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const data = await Interactor.listTotalHarvestEachMonth(userid)
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function viewCropStatistics(req: SessionRequest, res: Response) {
   try {
     const { name } = req.params
+    const { userid } = req.session
 
-    const data = await Interactor.viewCropStatistics(name)
+    const data = await Interactor.viewCropStatistics(name, userid)
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)

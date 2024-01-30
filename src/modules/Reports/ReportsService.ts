@@ -161,7 +161,60 @@ export async function getTotalHarvestedCrops(id: string) {
     .execute()
 }
 
-export async function getCropStatistics(name: string) {
+export async function getTotalPlantedQuantity(farmid: string) {
+  return await db
+    .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .select([
+      'c.name as crop_name',
+      sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_quanity'),
+    ])
+    .groupBy(['ccr.crop_id', 'ccr.planted_qty', 'c.name'])
+    .where('ccr.farmid', '=', farmid)
+    .where('ccr.is_archived', '=', false)
+    .execute()
+}
+
+export async function getTotalHarvestEachMonth(farmid: string) {
+  return await db.executeQuery(
+    sql`
+      SELECT
+        COALESCE(SUM(CASE WHEN month = 1 THEN total_harvested_qty END), 0) AS January,
+        COALESCE(SUM(CASE WHEN month = 2 THEN total_harvested_qty END), 0) AS February,
+        COALESCE(SUM(CASE WHEN month = 3 THEN total_harvested_qty END), 0) AS March,
+        COALESCE(SUM(CASE WHEN month = 4 THEN total_harvested_qty END), 0) AS April,
+        COALESCE(SUM(CASE WHEN month = 5 THEN total_harvested_qty END), 0) AS May,
+        COALESCE(SUM(CASE WHEN month = 6 THEN total_harvested_qty END), 0) AS June,
+        COALESCE(SUM(CASE WHEN month = 7 THEN total_harvested_qty END), 0) AS July,
+        COALESCE(SUM(CASE WHEN month = 8 THEN total_harvested_qty END), 0) AS August,
+        COALESCE(SUM(CASE WHEN month = 9 THEN total_harvested_qty END), 0) AS September,
+        COALESCE(SUM(CASE WHEN month = 10 THEN total_harvested_qty END), 0) AS October,
+        COALESCE(SUM(CASE WHEN month = 11 THEN total_harvested_qty END), 0) AS November,
+        COALESCE(SUM(CASE WHEN month = 12 THEN total_harvested_qty END), 0) AS December
+    FROM (
+        SELECT
+            EXTRACT(MONTH FROM date_harvested) AS month,
+            EXTRACT(YEAR FROM date_harvested) AS year,
+            SUM(harvested_qty) AS total_harvested_qty
+        FROM
+            community_crop_reports
+        WHERE
+            date_harvested IS NOT NULL
+        AND
+            farmid = ${farmid}
+        GROUP BY
+            year, month
+    ) AS source
+    GROUP BY
+        year
+    ORDER BY
+        year;
+  `.compile(db)
+  )
+}
+
+export async function getCropStatistics(name: string, farmid: string) {
   return await db
     .selectFrom('community_crop_reports as ccr')
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
@@ -208,6 +261,7 @@ export async function getCropStatistics(name: string) {
       'c.harvest_season',
     ])
     .where('c.name', '=', name)
+    .where('ccr.farmid', '=', farmid)
     .where('ccr.is_archived', '=', false)
     .executeTakeFirst()
 }

@@ -19,6 +19,18 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
+  '/farmer/graph/piechart',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.listTotalPlantedCrops
+)
+
+ReportsRouter.get(
+  '/farmer/graph/total-harvest',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.listTotalHarvestEachMonth
+)
+
+ReportsRouter.get(
   '/farmer/total-harvested',
   UserGuard(['farm_head', 'farmer']),
   ReportsController.listTotalHarvestedCrops

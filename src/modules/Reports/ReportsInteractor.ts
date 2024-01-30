@@ -81,8 +81,35 @@ export async function listTotalHarvestedCrops(userid: string) {
   return data
 }
 
-export async function viewCropStatistics(id: string) {
-  const data = await Service.getCropStatistics(id)
+export async function listTotalPlantedCrops(userid: string) {
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const farm = await findCommunityFarmById(user.farm_id)
+  if (!farm) throw new HttpError("Can't find farm", 404)
+
+  const data = await Service.getTotalPlantedQuantity(farm.id)
+  return data
+}
+
+export async function listTotalHarvestEachMonth(userid: string) {
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const farm = await findCommunityFarmById(user.farm_id)
+  if (!farm) throw new HttpError("Can't find farm", 404)
+
+  const data = await Service.getTotalHarvestEachMonth(farm.id)
+
+  return data.rows[0]
+}
+
+export async function viewCropStatistics(id: string, userid: string) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unathorized', 401)
+
+  const data = await Service.getCropStatistics(id, user.farm_id)
 
   if (!data) throw new HttpError('No Available Report Data', 404)
 
