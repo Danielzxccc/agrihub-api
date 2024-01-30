@@ -192,25 +192,25 @@ export async function getTotalHarvestEachMonth(farmid: string) {
         COALESCE(SUM(CASE WHEN month = 10 THEN total_harvested_qty END), 0) AS October,
         COALESCE(SUM(CASE WHEN month = 11 THEN total_harvested_qty END), 0) AS November,
         COALESCE(SUM(CASE WHEN month = 12 THEN total_harvested_qty END), 0) AS December
-    FROM (
-        SELECT
-            EXTRACT(MONTH FROM date_harvested) AS month,
-            EXTRACT(YEAR FROM date_harvested) AS year,
-            SUM(harvested_qty) AS total_harvested_qty
-        FROM
-            community_crop_reports
-        WHERE
-            date_harvested IS NOT NULL
-        AND
-            farmid = ${farmid}
+        FROM (
+            SELECT
+                EXTRACT(MONTH FROM date_harvested) AS month,
+                EXTRACT(YEAR FROM date_harvested) AS year,
+                SUM(harvested_qty) AS total_harvested_qty
+            FROM
+                community_crop_reports
+            WHERE
+                date_harvested IS NOT NULL
+            AND
+                farmid = ${farmid}
+            GROUP BY
+                year, month
+        ) AS source
         GROUP BY
-            year, month
-    ) AS source
-    GROUP BY
-        year
-    ORDER BY
-        year;
-  `.compile(db)
+            year
+        ORDER BY
+            year;
+      `.compile(db)
   )
 }
 
@@ -313,4 +313,23 @@ export async function archiveCommunityCropReport(id: string) {
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
+}
+
+export async function getGrowthHarvestStats(id: string) {
+  return await db
+    .selectFrom('crops as c')
+    .select([
+      'c.name as crop_name',
+      sql`ROUND(AVG(ccr.harvested_qty), 2)`.as('avg_harvest_qty'),
+      sql`ROUND(AVG(ccr.date_harvested - ccr.date_planted), 2)`.as(
+        'avg_growth_span'
+      ),
+    ])
+    .leftJoin('community_farms_crops as cfc', 'c.id', 'cfc.crop_id')
+    .leftJoin('community_crop_reports as ccr', 'cfc.id', 'ccr.crop_id')
+    .groupBy(['c.name'])
+    .where('ccr.date_planted', 'is not', null)
+    .where('ccr.date_harvested', 'is not', null)
+    .where('ccr.farmid', '=', id)
+    .execute()
 }

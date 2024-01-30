@@ -177,3 +177,15 @@ export async function viewCommunityCropReport(id: string, userid: string) {
 
   return report
 }
+
+export async function listGrowthHarvestStats(userid: string) {
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const farm = await findCommunityFarmById(user.farm_id)
+  if (!farm) throw new HttpError("Can't find farm", 404)
+
+  const data = await Service.getGrowthHarvestStats(farm.id)
+
+  return data
+}

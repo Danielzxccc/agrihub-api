@@ -31,6 +31,12 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
+  '/farmer/graph/growth-harvest',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.listGrowthHarvestStats
+)
+
+ReportsRouter.get(
   '/farmer/total-harvested',
   UserGuard(['farm_head', 'farmer']),
   ReportsController.listTotalHarvestedCrops
