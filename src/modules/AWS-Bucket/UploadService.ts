@@ -60,6 +60,10 @@ export function getObjectUrl(key: string) {
   return `https://s3.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_BUCKET_NAME}/${key}`
 }
 
+export function returnObjectUrl() {
+  return `https://s3.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_BUCKET_NAME}/`
+}
+
 export async function getObjectSignedUrl(key: string) {
   const params = {
     Bucket: bucketName,

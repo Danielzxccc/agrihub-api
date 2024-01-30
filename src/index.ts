@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(session(sessionConfig))
 
 const httpServer = createServer(app)
-const io = new Server(httpServer)
+const io = new Server(httpServer, { cors: corsOptions })
 
 httpServer.listen(3000, () => {
   log.info('Server is running on port 3000')

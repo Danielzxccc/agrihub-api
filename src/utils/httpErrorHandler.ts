@@ -8,6 +8,7 @@ function errorHandler(
   message?: string,
   status?: number
 ) {
+  log.warn(error.stack)
   if (error instanceof HttpError) {
     return res.status(error.httpCode || 500).json({
       error: true,

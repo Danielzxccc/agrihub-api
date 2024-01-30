@@ -16,6 +16,12 @@ import {
   CropReports,
   AnswerVotes,
   AboutGallery,
+  FarmApplications,
+  CommunityFarms,
+  CommunityFarmsCrops,
+  CommunityFarmsGallery,
+  CommunityCropReports,
+  CommunityCropReportsImages,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -53,6 +59,26 @@ export type Events = Selectable<CommunityEvents>
 export type NewEvent = Insertable<CommunityEvents>
 export type UpdateEvent = Updateable<CommunityEvents>
 
+//farm application
+export type FarmApplication = Selectable<FarmApplications>
+export type NewFarmApplication = Insertable<FarmApplications>
+export type UpdateFarmApplication = Updateable<FarmApplications>
+
+// community farm
+export type CommunityFarm = Selectable<CommunityFarms>
+export type NewCommunityFarm = Insertable<CommunityFarms>
+
+//community farm crops
+export type CommunityFarmCrop = Selectable<CommunityFarmsCrops>
+export type NewCommunityFarmCrop = Insertable<CommunityFarmsCrops>
+
+//community farm images
+export type CommunityFarmImages = Selectable<CommunityFarmsGallery>
+export type NewCommunityFarmImage = Insertable<CommunityFarmsGallery>
+
+export type CommunityCropReport = Selectable<CommunityCropReports>
+export type NewCommunityFarmReport = Insertable<CommunityCropReports>
+export type NewCropReportImage = Insertable<CommunityCropReportsImages>
 // farms
 export type Farm = Selectable<Farms>
 export type NewFarm = Insertable<Farms>

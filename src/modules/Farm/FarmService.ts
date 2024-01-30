@@ -2,13 +2,19 @@ import { jsonObjectFrom } from 'kysely/helpers/postgres'
 import { db } from '../../config/database'
 import {
   Crop,
+  FarmApplication,
+  NewCommunityFarm,
+  NewCommunityFarmCrop,
+  NewCommunityFarmImage,
   NewCrop,
   NewCropReport,
   NewFarm,
+  NewFarmApplication,
   NewSubFarm,
   UpdateCrop,
+  UpdateFarmApplication,
 } from '../../types/DBTypes'
-import { Crops } from 'kysely-codegen'
+import { Crops, FarmApplicationStatus } from 'kysely-codegen'
 import { sql } from 'kysely'
 
 export async function findFarm(id: string) {
@@ -188,4 +194,215 @@ export async function listCropReports(farmid: string, isHarvested = false) {
     .where('farmid', '=', farmid)
     .where('isharvested', '=', isHarvested)
     .execute()
+}
+
+export async function createFarmApplication(application: NewFarmApplication) {
+  return await db
+    .insertInto('farm_applications')
+    .values(application)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function updateFarmApplication(
+  id: string,
+  applicant: UpdateFarmApplication
+) {
+  return await db
+    .updateTable('farm_applications')
+    .set({ ...applicant, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findFarmApplications(
+  offset: number,
+  filterKey: FarmApplicationStatus,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db.selectFrom('farm_applications').select(({ eb }) => [
+    'id',
+    'farm_name',
+    'farm_size',
+    'district',
+    'location',
+    'proof',
+    'farm_actual_images',
+    'id_type',
+    'valid_id',
+    'selfie',
+    'status',
+    sql<string>`CAST(createdat AS TEXT)`.as('createdat'),
+    sql<string>`CAST(updatedat AS TEXT)`.as('updatedat'),
+    jsonObjectFrom(
+      eb
+        .selectFrom('users')
+        .select(({ eb }) => [
+          sql<string>`CAST(id AS TEXT)`.as('id'),
+          'username',
+          'avatar',
+          'email',
+          'firstname',
+          'lastname',
+        ])
+        .whereRef('users.id', '=', 'farm_applications.applicant')
+    ).as('applicant'),
+  ])
+
+  if (filterKey) query = query.where('status', '=', filterKey)
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function findOneFarmApplication(id: string) {
+  return await db
+    .selectFrom('farm_applications')
+    .select(({ eb }) => [
+      'id',
+      'farm_name',
+      'farm_size',
+      'district',
+      'location',
+      'proof',
+      'farm_actual_images',
+      'id_type',
+      'valid_id',
+      'selfie',
+      'status',
+      sql<string>`CAST(createdat AS TEXT)`.as('createdat'),
+      sql<string>`CAST(updatedat AS TEXT)`.as('updatedat'),
+      jsonObjectFrom(
+        eb
+          .selectFrom('users')
+          .select(({ eb }) => [
+            sql<string>`CAST(id AS TEXT)`.as('id'),
+            'username',
+            'avatar',
+            'email',
+            'firstname',
+            'lastname',
+          ])
+          .whereRef('users.id', '=', 'farm_applications.applicant')
+      ).as('applicant'),
+    ])
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findExistingApplication(userid: string) {
+  return await db
+    .selectFrom('farm_applications')
+    .selectAll()
+    .where('applicant', '=', userid)
+    .where('status', '=', 'pending')
+    .executeTakeFirst()
+}
+
+export async function getTotalFarmApplications() {
+  return await db
+    .selectFrom('farm_applications')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
+
+export async function deleteFarmApplicaiton(id: string) {
+  return await db.deleteFrom('farm_applications').where('id', '=', id).execute()
+}
+
+export async function createNewCommunityFarm(farm: NewCommunityFarm) {
+  return await db
+    .insertInto('community_farms')
+    .values(farm)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findCommunityFarmById(id: string) {
+  return await db
+    .selectFrom('community_farms')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function insertCommunityFarmCrop(crop: NewCommunityFarmCrop) {
+  return await db
+    .insertInto('community_farms_crops')
+    .values(crop)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findCommunityFarmCrops(id: string) {
+  return await db
+    .selectFrom('community_farms_crops')
+    .leftJoin('crops', 'community_farms_crops.crop_id', 'crops.id')
+    .select([
+      'community_farms_crops.id',
+      'community_farms_crops.updatedat',
+      'community_farms_crops.createdat',
+      'crops.name',
+      'crops.description',
+      'crops.image',
+      'crops.seedling_season',
+      'crops.planting_season',
+      'crops.harvest_season',
+      'crops.isyield',
+      'crops.growth_span',
+    ])
+    .where('community_farms_crops.farm_id', '=', id)
+    .execute()
+}
+
+export async function insertCommunityFarmImage(image: NewCommunityFarmImage[]) {
+  return await db
+    .insertInto('community_farms_gallery')
+    .values(image)
+    .returningAll()
+    .execute()
+}
+
+export async function findCommunityFarmImages(id: string) {
+  return await db
+    .selectFrom('community_farms_gallery')
+    .selectAll()
+    .where('farm_id', '=', id)
+    .execute()
+}
+
+export async function findOneCommunityFarmImage(id: string) {
+  return await db
+    .selectFrom('community_farms_gallery')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function deleteCommunityFarmImage(id: string) {
+  return await db
+    .deleteFrom('community_farms_gallery')
+    .where('id', '=', id)
+    .execute()
+}
+
+export async function findAllCommunityFarms(
+  perpage: number,
+  offset: number,
+  search: string,
+  filter: string
+) {
+  let query = db.selectFrom('community_farms').selectAll()
+
+  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (filter.length) query = query.where('district', '=', filter)
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalCommunityFarms() {
+  return await db
+    .selectFrom('community_farms')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
 }

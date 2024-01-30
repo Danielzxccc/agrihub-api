@@ -61,6 +61,7 @@ export async function findQuestions(
       fn
         .count<number>('forums_ratings.id')
         .filterWhere('type', '=', 'upvote')
+        .distinct()
         .as('vote_count'),
       // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
       // fn.count<number>('forums_ratings.id').as('vote_count'),
@@ -74,15 +75,7 @@ export async function findQuestions(
       ).as('vote'),
       // fn.max<number>('')
     ])
-    .groupBy([
-      'forums.id',
-      'forums.title',
-      'forums.userid',
-      'forums.createdat',
-      // 'forums_answers.id',
-      // 'forums_answers.forumid',
-      // 'forums_answers.id',
-    ])
+    .groupBy(['forums.id', 'forums.userid', 'forums.createdat'])
 
   if (profile.length) query = query.where('forums.userid', '=', profile)
   if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
@@ -163,6 +156,7 @@ export async function viewQuestion(
             ).as('vote'),
             fn
               .count<number>('answer_votes.id')
+              .distinct()
               .filterWhere('type', '=', 'upvote')
               .as('upvote_count'),
             fn.count<number>('answer_votes.id').as('total_vote_count'),

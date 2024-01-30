@@ -31,7 +31,7 @@ export const sessionConfig: SessionOptions = {
 }
 
 // hard coded for now
-const allowedOrigins = [
+export const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',
