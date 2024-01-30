@@ -13,6 +13,7 @@ CREATE TABLE farm_applications(
     selfie TEXT NOT NULL, --kung legit na tao,
     applicant INT NOT NULL, --user id nung applicant (siya ang magiging farm head kapag na approved ang application),
     status farm_application_status DEFAULT 'pending',
+    type_of_farm TEXT DEFAULT 'Community Farm',
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (applicant) REFERENCES users(id) ON DELETE CASCADE

@@ -91,6 +91,7 @@ export const NewFarmApplication = z.object({
     id_type: z.string(),
     location: z.string(),
     proof: z.string(),
+    type_of_farm: z.string(),
   }),
 })
 
@@ -605,6 +606,9 @@ export const CommunityFarms = z.object({
  *         proof:
  *           type: string
  *           description: Type of farm
+ *         type_of_farm:
+ *           type: string
+ *           description: Type of farm community
  *         farm_actual_images:
  *           type: array
  *           items:
