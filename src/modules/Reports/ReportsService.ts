@@ -87,9 +87,9 @@ export async function findCommunityReports(
     .where('ccr.is_archived', '=', false)
 
   if (filterKey.length) {
-    for (const filter of filterKey) {
-      query = query.where((eb) => eb.or([eb('c.name', 'ilike', `${filter}%`)]))
-    }
+    query = query.where((eb) =>
+      eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
+    )
   }
 
   if (searchKey.length) {

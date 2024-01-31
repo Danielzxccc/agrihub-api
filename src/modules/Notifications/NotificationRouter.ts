@@ -29,5 +29,5 @@ NotificationRouter.post(
     'member',
     'user',
   ]),
-  NotificationController.emitNotification
+  NotificationController.emitPushNotification
 )

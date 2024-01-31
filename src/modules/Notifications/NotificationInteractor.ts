@@ -1,3 +1,4 @@
+import { emitNotification } from '../Socket/SocketController'
 import * as Service from './NotificationService'
 import PushService from './WebPush'
 
@@ -6,7 +7,7 @@ export async function subscribeToNotification(userid: string, payload: string) {
   return newSubscription
 }
 
-export async function emitNotification(
+export async function emitPushNotification(
   userid: string,
   title: string,
   body: string
@@ -22,8 +23,18 @@ export async function emitNotification(
 
   const subscription = await Service.findSubscription(userid)
 
+  if (!subscription) return
+
+  // create notification
+  await Service.createNotification({
+    emitted_to: userid,
+    body,
+    redirect_to: '',
+  })
+
   await PushService.sendNotification(
     subscription.payload as any,
     JSON.stringify(notificationPayload)
   )
+  emitNotification(userid, 'emit')
 }

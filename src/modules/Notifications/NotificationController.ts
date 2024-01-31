@@ -21,11 +21,11 @@ export async function subscribeToNotification(
   }
 }
 
-export async function emitNotification(req: SessionRequest, res: Response) {
+export async function emitPushNotification(req: SessionRequest, res: Response) {
   try {
     const { userid } = req.session
 
-    await Interactor.emitNotification(
+    await Interactor.emitPushNotification(
       userid,
       'Juicy',
       'Ana is 500km away from you'
