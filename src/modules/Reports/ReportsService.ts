@@ -56,7 +56,7 @@ export async function findCommunityReportById(id: string) {
 export async function findCommunityReports(
   id: string,
   offset: number,
-  filterKey: string[],
+  filterKey: string[] | string,
   searchKey: string,
   perpage: number,
   sortBy: string
@@ -87,9 +87,13 @@ export async function findCommunityReports(
     .where('ccr.is_archived', '=', false)
 
   if (filterKey.length) {
-    query = query.where((eb) =>
-      eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
-    )
+    if (typeof filterKey === 'string') {
+      query = query.where('c.name', 'ilike', `${filterKey}%`)
+    } else {
+      query = query.where((eb) =>
+        eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
+      )
+    }
   }
 
   if (searchKey.length) {

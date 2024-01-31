@@ -137,7 +137,7 @@ export async function leastPerformantCrops(userid: string) {
 export async function listCommuntityCropReports(
   id: string,
   offset: number,
-  filterKey: string[],
+  filterKey: string[] | string,
   searchKey: string,
   perpage: number,
   sortBy: string
