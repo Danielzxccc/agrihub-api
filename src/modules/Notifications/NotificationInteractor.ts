@@ -1,4 +1,6 @@
+import HttpError from '../../utils/HttpError'
 import { emitNotification } from '../Socket/SocketController'
+import { findUser } from '../Users/UserService'
 import * as Service from './NotificationService'
 import PushService from './WebPush'
 
@@ -37,4 +39,28 @@ export async function emitPushNotification(
     JSON.stringify(notificationPayload)
   )
   emitNotification(userid, 'emit')
+}
+
+export async function listUserNotifications(
+  userid: string,
+  offset: number,
+  filterKey: string,
+  searchKey: string,
+  perpage: number
+) {
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const [data, total] = await Promise.all([
+    Service.findUserNotifications(
+      userid,
+      offset,
+      filterKey,
+      searchKey,
+      perpage
+    ),
+    Service.getUserNotificationCount(userid),
+  ])
+
+  return { data, total }
 }

@@ -31,3 +31,5 @@ NotificationRouter.post(
   ]),
   NotificationController.emitPushNotification
 )
+
+NotificationRouter.get('/user', NotificationController.listUserNotifications)
