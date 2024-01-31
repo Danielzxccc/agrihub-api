@@ -23,6 +23,7 @@ export function UserGuard(allowedRoles: AllowedRoles[]) {
     try {
       const userid = req.session.userid
 
+      console.log(userid, 'BAKIT WALA POTA')
       if (!userid) throw new HttpError('Unauthorized', 401)
 
       const user = await findUser(userid)
