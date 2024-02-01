@@ -16,6 +16,7 @@ import {
 } from '../../types/DBTypes'
 import { Crops, FarmApplicationStatus } from 'kysely-codegen'
 import { sql } from 'kysely'
+import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 
 export async function findFarm(id: string) {
   return await db
@@ -338,13 +339,14 @@ export async function findCommunityFarmCrops(id: string) {
   return await db
     .selectFrom('community_farms_crops')
     .leftJoin('crops', 'community_farms_crops.crop_id', 'crops.id')
-    .select([
+    .select(({ val, fn }) => [
       'community_farms_crops.id',
       'community_farms_crops.updatedat',
       'community_farms_crops.createdat',
       'crops.name',
       'crops.description',
-      'crops.image',
+      fn<string>('concat', [val(returnObjectUrl()), 'crops.image']).as('image'),
+      ,
       'crops.seedling_season',
       'crops.planting_season',
       'crops.harvest_season',
