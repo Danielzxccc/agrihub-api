@@ -452,6 +452,10 @@ export async function viewSubFarm(id: string) {
 export async function listCrops() {
   const crops = await Service.findAllCrops()
 
+  for (const crop of crops) {
+    crop.image = getObjectUrl(crop.image)
+  }
+
   return crops
 }
 
