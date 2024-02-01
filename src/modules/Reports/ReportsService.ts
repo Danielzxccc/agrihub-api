@@ -172,7 +172,7 @@ export async function getTotalPlantedQuantity(farmid: string) {
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select([
       'c.name as crop_name',
-      sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_quanity'),
+      sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_quantity'),
     ])
     .groupBy(['ccr.crop_id', 'ccr.planted_qty', 'c.name'])
     .where('ccr.farmid', '=', farmid)
