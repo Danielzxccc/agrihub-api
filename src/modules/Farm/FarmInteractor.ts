@@ -236,6 +236,13 @@ export async function cancelExistingApplication(id: string, userid: string) {
   if (userid !== existingApplication.applicant.id) {
     throw new HttpError("You Can't Delete other's application", 401)
   }
+  const { valid_id, farm_actual_images } = existingApplication
+
+  const allFiles = [...farm_actual_images, valid_id]
+
+  for (const file of allFiles) {
+    await deleteFileCloud(file)
+  }
 
   await Service.deleteFarmApplicaiton(id)
 }
