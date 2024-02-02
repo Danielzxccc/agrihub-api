@@ -957,12 +957,112 @@
  *           schema:
  *             $ref: "#/components/schemas/NewFarmerInvitationRequest"
  *     responses:
- *       "200":
+ *       "201":
  *         description: Successful invitation
  *         content:
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/FarmerInvitationResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/farmer/invitation/accept/{id}:
+ *   post:
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the invitation to accept.
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message indicating the invitation was accepted successfully.
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/farmer/invitation/reject/{id}:
+ *   delete:
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the invitation to accept.
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message indicating the invitation was accepted successfully.
  *       "401":
  *         description: Unauthorized
  *         content:

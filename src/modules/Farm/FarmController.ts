@@ -429,3 +429,37 @@ export async function createFarmerInvitation(
     errorHandler(res, error)
   }
 }
+
+export async function acceptFarmerApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.acceptFarmerApplication(id, userid)
+    res
+      .status(200)
+      .json({ message: 'Invitation has been successfully accepted' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function rejectFarmerApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.rejectFarmerApplication(id, userid)
+    res
+      .status(200)
+      .json({ message: 'Invitation has been successfully rejected' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

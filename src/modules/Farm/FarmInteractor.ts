@@ -8,6 +8,7 @@ import {
   NewFarmApplication,
   NewFarmerInvitation,
   NewSubFarm,
+  UpdateUser,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import dbErrorHandler from '../../utils/dbErrorHandler'
@@ -526,8 +527,12 @@ export async function createFarmerInvitation(
   const user = await findUser(userid)
   if (!user) throw new HttpError('User not found', 404)
 
+  if (user.role === 'farmer' || user.role === 'farm_head') {
+    throw new HttpError('User is already registered as a farmer.', 400)
+  }
+
   // check if there's an existing invitaion
-  const checkExistingInvitation = await Service.findFarmerInvitation(
+  const checkExistingInvitation = await Service.findFarmerInvitationByUser(
     userid,
     farm.id
   )
@@ -547,5 +552,60 @@ export async function createFarmerInvitation(
   const notificationTitle = 'Invitation'
   const notificationBody = `${farm.farm_name} invited you to join the community.`
   await emitPushNotification(userid, notificationTitle, notificationBody)
+
   return famerInvitaion
+}
+
+export async function acceptFarmerApplication(
+  invitationId: string,
+  userid: string
+) {
+  const invitation = await Service.findFarmerInvitationById(invitationId)
+  if (userid !== invitation.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  if (new Date(invitation.expiresat) <= new Date()) {
+    throw new HttpError('Invitation Expired', 400)
+  }
+
+  const newUserCredentials: UpdateUser = {
+    role: 'farmer',
+    farm_id: invitation.farmid,
+  }
+
+  const farm = await Service.findCommunityFarmById(invitation.farmid)
+
+  // update user credentials
+  const updatedUser = await updateUser(userid, newUserCredentials)
+
+  // delete farmer invitation
+  await Service.deleteFarmerInvitation(invitation.id)
+
+  await emitPushNotification(
+    farm.farm_head,
+    'Hello',
+    `${updatedUser.username} accepted your invitation`
+  )
+}
+
+export async function rejectFarmerApplication(
+  invitationId: string,
+  userid: string
+) {
+  const invitation = await Service.findFarmerInvitationById(invitationId)
+  if (userid !== invitation.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.deleteFarmerInvitation(invitation.id)
+  const farm = await Service.findCommunityFarmById(invitation.farmid)
+
+  const user = await findUser(userid)
+
+  await emitPushNotification(
+    farm.farm_head,
+    'Hello',
+    `${user.username} rejected your invitation`
+  )
 }

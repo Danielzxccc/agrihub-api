@@ -428,11 +428,30 @@ export async function updateFarmerInvitation(
     .executeTakeFirst()
 }
 
-export async function findFarmerInvitation(userid: string, farmid: string) {
+export async function deleteFarmerInvitation(invitationId: string) {
+  return await db
+    .deleteFrom('farmer_invitations')
+    .where('id', '=', invitationId)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitationByUser(
+  userid: string,
+  farmid: string
+) {
   return await db
     .selectFrom('farmer_invitations')
     .selectAll()
     .where('userid', '=', userid)
     .where('farmid', '=', farmid)
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitationById(id: string) {
+  return await db
+    .selectFrom('farmer_invitations')
+    .selectAll()
+    .where('id', '=', id)
     .executeTakeFirst()
 }

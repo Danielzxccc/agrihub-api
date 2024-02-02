@@ -132,3 +132,15 @@ FarmRouter.post(
   UserGuard(['farm_head']),
   FarmController.createFarmerInvitation
 )
+
+FarmRouter.post(
+  '/farmer/invitation/accept/:id',
+  UserGuard(['member']),
+  FarmController.acceptFarmerApplication
+)
+
+FarmRouter.delete(
+  '/farmer/invitation/reject/:id',
+  UserGuard(['member']),
+  FarmController.acceptFarmerApplication
+)
