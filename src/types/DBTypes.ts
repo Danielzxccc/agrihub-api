@@ -109,3 +109,4 @@ export type NewSubscription = Insertable<Subscriptions>
 
 export type FarmerInvitation = Selectable<FarmerInvitations>
 export type NewFarmerInvitation = Insertable<FarmerInvitations>
+export type UpdateFarmerInvitation = Updateable<FarmApplications>

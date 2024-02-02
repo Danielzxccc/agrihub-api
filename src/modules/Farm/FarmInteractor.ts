@@ -514,24 +514,27 @@ export async function createFarmerInvitation(
   expiresat: string,
   farm_head_id: string
 ) {
-  // check if there's an existing invitaion
-  const checkExistingInvitation = await Service.findFarmerInvitation(userid)
-
-  if (checkExistingInvitation) {
-    throw new HttpError('User has already been invited.', 400)
-  }
-
-  const user = await findUser(userid)
-  if (!user) throw new HttpError('User not found', 404)
-
   const farmhead = await findUser(farm_head_id)
+
+  const farm = await Service.findCommunityFarmById(farmhead.farm_id)
+  if (!farm) throw new HttpError('Farm not found', 404)
 
   if (farmhead.id === userid) {
     throw new HttpError('Self-invitations are not allowed.', 400)
   }
 
-  const farm = await Service.findCommunityFarmById(farmhead.farm_id)
-  if (!farm) throw new HttpError('Farm not found', 404)
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('User not found', 404)
+
+  // check if there's an existing invitaion
+  const checkExistingInvitation = await Service.findFarmerInvitation(
+    userid,
+    farm.id
+  )
+
+  if (checkExistingInvitation) {
+    throw new HttpError('User has already been invited.', 400)
+  }
 
   const invitation: NewFarmerInvitation = {
     userid,

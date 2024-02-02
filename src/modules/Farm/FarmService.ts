@@ -13,6 +13,7 @@ import {
   NewSubFarm,
   UpdateCrop,
   UpdateFarmApplication,
+  UpdateFarmerInvitation,
 } from '../../types/DBTypes'
 import { FarmApplicationStatus } from 'kysely-codegen'
 import { sql } from 'kysely'
@@ -415,10 +416,23 @@ export async function insertFarmerInvitation(farm: NewFarmerInvitation) {
     .executeTakeFirst()
 }
 
-export async function findFarmerInvitation(userid: string) {
+export async function updateFarmerInvitation(
+  invitationId: string,
+  farm: UpdateFarmerInvitation
+) {
+  return await db
+    .updateTable('farmer_invitations')
+    .set({ ...farm, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', invitationId)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitation(userid: string, farmid: string) {
   return await db
     .selectFrom('farmer_invitations')
     .selectAll()
     .where('userid', '=', userid)
+    .where('farmid', '=', farmid)
     .executeTakeFirst()
 }

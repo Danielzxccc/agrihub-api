@@ -1147,3 +1147,66 @@ export const NewFarmerInvitaion = z.object({
  *           type: string
  *           format: date-time
  */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewFarmerInvitationRequest:
+ *       type: object
+ *       properties:
+ *         userid:
+ *           type: string
+ *           description: ID of the user being invited
+ *         expiresat:
+ *           type: string
+ *           description: Expiry date and time of the invitation
+ *       required:
+ *         - userid
+ *         - expiresat
+ *
+ *     FarmerInvitationResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Success message
+ *         invitation:
+ *           $ref: "#/components/schemas/FarmerInvitation"
+ *       required:
+ *         - message
+ *         - invitation
+ *
+ *     FarmerInvitation:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID of the invitation
+ *         farmid:
+ *           type: string
+ *           description: ID of the farm
+ *         userid:
+ *           type: string
+ *           description: ID of the user being invited
+ *         expiresat:
+ *           type: string
+ *           description: Expiry date and time of the invitation
+ *         isaccepted:
+ *           type: boolean
+ *           description: Flag indicating whether the invitation is accepted
+ *         createdat:
+ *           type: string
+ *           description: Date and time of creation
+ *         updatedat:
+ *           type: string
+ *           description: Date and time of last update
+ *       required:
+ *         - id
+ *         - farmid
+ *         - userid
+ *         - expiresat
+ *         - isaccepted
+ *         - createdat
+ *         - updatedat
+ */

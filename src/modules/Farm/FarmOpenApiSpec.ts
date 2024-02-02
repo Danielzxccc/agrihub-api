@@ -942,3 +942,49 @@
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
+
+/**
+ * @openapi
+ * /api/farm/farmer/invitation:
+ *   post:
+ *     tags:
+ *       - Farm
+ *     summary: Send a farmer invitation
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/NewFarmerInvitationRequest"
+ *     responses:
+ *       "200":
+ *         description: Successful invitation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmerInvitationResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
