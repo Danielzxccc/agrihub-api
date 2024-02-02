@@ -128,6 +128,13 @@ export const CommunityFarms = z.object({
   }),
 })
 
+export const NewFarmerInvitaion = z.object({
+  body: z.object({
+    userid: z.string(),
+    expiresat: z.string(),
+  }),
+})
+
 /**@LIST_FAMRS */
 /**
  * @openapi

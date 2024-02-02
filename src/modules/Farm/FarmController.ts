@@ -406,3 +406,26 @@ export async function listActiveCropReports(
     errorHandler(res, error)
   }
 }
+
+export async function createFarmerInvitation(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { body } = await zParse(Schema.NewFarmerInvitaion, req)
+    const { userid, expiresat } = body
+    const { userid: farm_head_id } = req.session
+
+    const invitation = await Interactor.createFarmerInvitation(
+      userid,
+      expiresat,
+      farm_head_id
+    )
+
+    res
+      .status(201)
+      .json({ message: 'Invitation sent successfully', invitation })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

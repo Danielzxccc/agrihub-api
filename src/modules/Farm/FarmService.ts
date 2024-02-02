@@ -2,7 +2,6 @@ import { jsonObjectFrom } from 'kysely/helpers/postgres'
 import { db } from '../../config/database'
 import {
   Crop,
-  FarmApplication,
   NewCommunityFarm,
   NewCommunityFarmCrop,
   NewCommunityFarmImage,
@@ -10,13 +9,13 @@ import {
   NewCropReport,
   NewFarm,
   NewFarmApplication,
+  NewFarmerInvitation,
   NewSubFarm,
   UpdateCrop,
   UpdateFarmApplication,
 } from '../../types/DBTypes'
-import { Crops, FarmApplicationStatus } from 'kysely-codegen'
+import { FarmApplicationStatus } from 'kysely-codegen'
 import { sql } from 'kysely'
-import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 
 export async function findFarm(id: string) {
   return await db
@@ -405,5 +404,21 @@ export async function getTotalCommunityFarms() {
   return await db
     .selectFrom('community_farms')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
+
+export async function insertFarmerInvitation(farm: NewFarmerInvitation) {
+  return await db
+    .insertInto('farmer_invitations')
+    .values(farm)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitation(userid: string) {
+  return await db
+    .selectFrom('farmer_invitations')
+    .selectAll()
+    .where('userid', '=', userid)
     .executeTakeFirst()
 }

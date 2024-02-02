@@ -6,6 +6,7 @@ import {
   NewCropReport,
   NewFarm,
   NewFarmApplication,
+  NewFarmerInvitation,
   NewSubFarm,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
@@ -27,6 +28,7 @@ import {
   emitNotificationToAdmin,
 } from '../Socket/SocketController'
 import { getMonthByIndex } from '../../utils/utils'
+import { emitPushNotification } from '../Notifications/NotificationInteractor'
 
 export async function createFarmApplication({
   application,
@@ -505,4 +507,42 @@ export async function listActiveCropReports(userid: string) {
   if (!subFarm) throw new HttpError('Unauthorized', 401)
   const reports = await Service.listCropReports(subFarm.id)
   return reports
+}
+
+export async function createFarmerInvitation(
+  userid: string,
+  expiresat: string,
+  farm_head_id: string
+) {
+  // check if there's an existing invitaion
+  const checkExistingInvitation = await Service.findFarmerInvitation(userid)
+
+  if (checkExistingInvitation) {
+    throw new HttpError('User has already been invited.', 400)
+  }
+
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('User not found', 404)
+
+  const farmhead = await findUser(farm_head_id)
+
+  if (farmhead.id === userid) {
+    throw new HttpError('Self-invitations are not allowed.', 400)
+  }
+
+  const farm = await Service.findCommunityFarmById(farmhead.farm_id)
+  if (!farm) throw new HttpError('Farm not found', 404)
+
+  const invitation: NewFarmerInvitation = {
+    userid,
+    farmid: farmhead.farm_id,
+    expiresat,
+  }
+
+  const famerInvitaion = await Service.insertFarmerInvitation(invitation)
+
+  const notificationTitle = 'Invitation'
+  const notificationBody = `${farm.farm_name} invited you to join the community.`
+  await emitPushNotification(userid, notificationTitle, notificationBody)
+  return famerInvitaion
 }

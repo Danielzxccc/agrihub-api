@@ -126,3 +126,9 @@ FarmRouter.get(
   UserGuard(['subfarm_head', 'farm_head']),
   FarmController.listActiveCropReports
 )
+
+FarmRouter.post(
+  '/farmer/invitation',
+  UserGuard(['farm_head']),
+  FarmController.createFarmerInvitation
+)

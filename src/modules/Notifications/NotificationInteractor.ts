@@ -38,7 +38,7 @@ export async function emitPushNotification(
     subscription.payload as any,
     JSON.stringify(notificationPayload)
   )
-  emitNotification(userid, 'emit')
+  emitNotification(userid, body)
 }
 
 export async function listUserNotifications(

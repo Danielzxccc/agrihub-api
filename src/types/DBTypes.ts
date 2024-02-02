@@ -24,6 +24,7 @@ import {
   CommunityCropReportsImages,
   UserNotifications,
   Subscriptions,
+  FarmerInvitations,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -105,3 +106,6 @@ export type NewUserNotification = Insertable<UserNotifications>
 //subscription
 export type Subscription = Selectable<Subscriptions>
 export type NewSubscription = Insertable<Subscriptions>
+
+export type FarmerInvitation = Selectable<FarmerInvitations>
+export type NewFarmerInvitation = Insertable<FarmerInvitations>
