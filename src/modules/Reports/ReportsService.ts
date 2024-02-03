@@ -233,7 +233,7 @@ export async function getCropStatistics(name: string, farmid: string) {
       'c.seedling_season',
       'c.planting_season',
       'c.harvest_season',
-      sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_quanity'),
+      sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_quantity'),
       sql`COALESCE(SUM(ccr.harvested_qty), 0)`.as('total_harvested'),
       sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('total_withered'),
       sql`ROUND(SUM(ccr.harvested_qty - COALESCE(ccr.withered_crops, 0)), 1)`.as(
