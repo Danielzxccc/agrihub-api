@@ -70,3 +70,44 @@ export const UpdateProfile = z.object({
     bio: z.string().optional(),
   }),
 })
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListMemberResponse:
+ *       type: object
+ *       properties:
+ *         members:
+ *           $ref: "#/components/schemas/Members"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     Members:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/Member"
+ *     Member:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *           format: uri
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *           format: email
+ *       required:
+ *         - id
+ *         - avatar
+ *         - firstname
+ *         - lastname
+ *         - username
+ *         - email
+ */

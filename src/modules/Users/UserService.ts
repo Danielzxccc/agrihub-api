@@ -1,6 +1,7 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
 import { NewUser, UpdateUser, User } from '../../types/DBTypes'
+import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 
 export async function listUsers(
   offset: number,
@@ -40,6 +41,51 @@ export async function listUsers(
     .limit(perpage)
     .offset(offset)
     .execute()
+}
+
+export async function findMembers(
+  offset: number,
+  perpage: number,
+  searchKey: string
+) {
+  let query = db
+    .selectFrom('users as u')
+    .select(({ fn, val }) => [
+      'u.id',
+      fn<string>('concat', [val(returnObjectUrl()), 'u.avatar']).as('avatar'),
+      'u.firstname',
+      'u.lastname',
+      'u.username',
+      'u.email',
+    ])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.username', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query
+    .where('u.isbanned', '=', false)
+    .where('u.role', '=', 'member')
+    .where('u.verification_level', '=', '4')
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalMembers() {
+  return await db
+    .selectFrom('users as u')
+    .select(({ fn }) => [fn.count<number>('u.id').as('count')])
+    .where('u.isbanned', '=', false)
+    .where('u.role', '=', 'member')
+    .where('u.verification_level', '=', '4')
+    .executeTakeFirst()
 }
 
 export async function getTotalUsers() {

@@ -64,3 +64,28 @@ export async function updateUserProfile(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function listMembers(req: SessionRequest, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListUserSchema, req)
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const members = await Interactor.listMembers(offset, perPage, searchKey)
+
+    const totalPages = Math.ceil(Number(members.total.count) / perPage)
+    res.status(200).json({
+      members: members.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(members.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

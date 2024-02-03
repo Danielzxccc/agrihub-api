@@ -59,3 +59,16 @@ export async function updateUserProfile(
     dbErrorHandler(error)
   }
 }
+
+export async function listMembers(
+  offset: number,
+  perpage: number,
+  searchKey: string
+) {
+  const [data, total] = await Promise.all([
+    Service.findMembers(offset, perpage, searchKey),
+    Service.getTotalMembers(),
+  ])
+
+  return { data, total }
+}
