@@ -46,7 +46,8 @@ export async function listUsers(
 export async function findMembers(
   offset: number,
   perpage: number,
-  searchKey: string
+  searchKey: string,
+  farmid: string
 ) {
   let query = db
     .selectFrom('users as u')
@@ -73,6 +74,14 @@ export async function findMembers(
     .where('u.isbanned', '=', false)
     .where('u.role', '=', 'member')
     .where('u.verification_level', '=', '4')
+    .where(
+      'u.id',
+      'not in',
+      sql`(SELECT u.id
+      FROM users u
+      LEFT JOIN farmer_invitations fi ON u.id = fi.userid
+      WHERE fi.farmid = ${farmid})`
+    )
     .limit(perpage)
     .offset(offset)
     .execute()

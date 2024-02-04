@@ -73,7 +73,14 @@ export async function listMembers(req: SessionRequest, res: Response) {
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
 
-    const members = await Interactor.listMembers(offset, perPage, searchKey)
+    const { userid } = req.session
+
+    const members = await Interactor.listMembers(
+      offset,
+      perPage,
+      searchKey,
+      userid
+    )
 
     const totalPages = Math.ceil(Number(members.total.count) / perPage)
     res.status(200).json({
