@@ -135,6 +135,18 @@ export const NewFarmerInvitaion = z.object({
   }),
 })
 
+export const UpdateCommunityFarm = z.object({
+  body: z.object({
+    farm_name: z.string().optional(),
+    location: z.string().optional(),
+    description: z.string().optional(),
+    disctrict: z.string().optional(),
+    size: z.string().optional(),
+  }),
+})
+
+export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
+
 /**@LIST_FAMRS */
 /**
  * @openapi
@@ -1290,4 +1302,158 @@ export const NewFarmerInvitaion = z.object({
  *         - avatar
  *         - email
  *         - userid
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListFarmMembersResponse:
+ *       type: object
+ *       properties:
+ *         members:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/FarmMember"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     FarmMember:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         birthdate:
+ *           type: string
+ *           format: date-time
+ *         present_address:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         zipcode:
+ *           type: string
+ *         district:
+ *           type: string
+ *         municipality:
+ *           type: string
+ *         verification_level:
+ *           type: string
+ *         bio:
+ *           type: string
+ *         role:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         isbanned:
+ *           type: boolean
+ *         farm_id:
+ *           type: string
+ *       required:
+ *         - id
+ *         - username
+ *         - email
+ *         - firstname
+ *         - lastname
+ *         - birthdate
+ *         - present_address
+ *         - avatar
+ *         - zipcode
+ *         - district
+ *         - municipality
+ *         - verification_level
+ *         - role
+ *         - createdat
+ *         - updatedat
+ *         - isbanned
+ *         - farm_id
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateCommunityFarmRequest:
+ *       type: object
+ *       properties:
+ *         farm_name:
+ *           type: string
+ *         location:
+ *           type: string
+ *         description:
+ *           type: string
+ *         district:
+ *           type: string
+ *         size:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *           format: binary
+ *         cover_photo:
+ *           type: string
+ *           format: binary
+ *
+ *     UpdateCommunityFarmResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: "#/components/schemas/CommunityFarm"
+ *       required:
+ *         - message
+ *         - data
+ *
+ *     CommunityFarm:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         farm_name:
+ *           type: string
+ *         location:
+ *           type: string
+ *         description:
+ *           type: string
+ *         farm_head:
+ *           type: string
+ *         district:
+ *           type: string
+ *         size:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         cover_photo:
+ *           type: string
+ *         application_id:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - location
+ *         - description
+ *         - farm_head
+ *         - district
+ *         - size
+ *         - avatar
+ *         - cover_photo
+ *         - application_id
+ *         - createdat
+ *         - updatedat
  */

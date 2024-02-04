@@ -1,5 +1,8 @@
 import { FarmApplicationStatus } from 'kysely-codegen'
-import { NewFarmApplicationT } from '../../schema/FarmSchema'
+import {
+  NewFarmApplicationT,
+  UpdateCommunityFarmT,
+} from '../../schema/FarmSchema'
 import {
   NewCommunityFarm,
   NewCrop,
@@ -8,6 +11,7 @@ import {
   NewFarmApplication,
   NewFarmerInvitation,
   NewSubFarm,
+  UpdateCommunityFarm,
   UpdateUser,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
@@ -659,4 +663,94 @@ export async function listFarmerInvitations(
   ])
 
   return { data, total }
+}
+
+export async function listCommunityFarmMembers(
+  userid: string,
+  perpage: number,
+  offset: number,
+  search: string
+) {
+  const user = await findUser(userid)
+
+  const [data, total] = await Promise.all([
+    Service.findCommunityFarmMembers(user.farm_id, perpage, offset, search),
+    Service.getTotalFarmMembers(user.farm_id),
+  ])
+
+  for (const item of data) {
+    item.avatar = getObjectUrl(item.avatar)
+    delete item.password
+  }
+
+  return { data, total }
+}
+
+export async function updateCommunityFarm(
+  userid: string,
+  farm: UpdateCommunityFarmT,
+  avatar: Express.Multer.File,
+  cover_photo: Express.Multer.File
+) {
+  try {
+    const user = await findUser(userid)
+
+    const communityFarm = await Service.findCommunityFarmById(user.farm_id)
+    if (!communityFarm) {
+      throw new HttpError("Can't find farm", 404)
+    }
+
+    const updatedCommunityFarm: UpdateCommunityFarm = {
+      ...farm.body,
+      avatar: avatar?.filename ? avatar?.filename : communityFarm.avatar,
+      cover_photo: cover_photo?.filename
+        ? cover_photo?.filename
+        : communityFarm.cover_photo,
+    }
+
+    // var files = [avatar, cover_photo]
+
+    // upload file to cloud
+    if (avatar) {
+      const stream: fs.ReadStream = await readFileAsStream(avatar.path)
+      await uploadFile(stream, avatar.filename, avatar.mimetype)
+    }
+
+    if (cover_photo) {
+      const stream: fs.ReadStream = await readFileAsStream(cover_photo.path)
+      await uploadFile(stream, cover_photo.filename, cover_photo.mimetype)
+    }
+
+    const updatedFarm = await Service.updateCommunityFarm(
+      user.farm_id,
+      updatedCommunityFarm
+    )
+
+    if (updatedFarm.cover_photo !== communityFarm.cover_photo) {
+      await deleteFileCloud(communityFarm.cover_photo)
+    }
+
+    if (updatedFarm.avatar !== communityFarm.avatar) {
+      await deleteFileCloud(communityFarm.avatar)
+    }
+
+    if (avatar?.filename) {
+      deleteFile(avatar.filename)
+    }
+
+    if (cover_photo?.filename) {
+      deleteFile(cover_photo.filename)
+    }
+
+    return updatedFarm
+  } catch (error) {
+    if (avatar?.filename) {
+      deleteFile(avatar.filename)
+    }
+    if (cover_photo?.filename) {
+      deleteFile(cover_photo.filename)
+    }
+
+    dbErrorHandler(error)
+  }
 }

@@ -528,3 +528,81 @@ export async function listFarmerInvitations(
     errorHandler(res, error)
   }
 }
+
+export async function listCommunityFarmMembers(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.CommunityFarms, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    // const filterKey = query.filter
+
+    const { userid } = req.session
+
+    const members = await Interactor.listCommunityFarmMembers(
+      userid,
+      perPage,
+      offset,
+      searchKey
+    )
+
+    const totalPages = Math.ceil(Number(members.total.count) / perPage)
+    res.status(200).json({
+      members: members.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(members.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateCommunityFarm(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.UpdateCommunityFarm, req)
+
+    const cover_photo = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )?.['cover_photo']?.[0]
+
+    const avatar = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )?.['avatar']?.[0]
+
+    console.log(cover_photo, 'TEST COVER')
+
+    const userid = req.session.userid
+    var allImages = [cover_photo || null, avatar || null]
+
+    const updatedCommunityFarm = await Interactor.updateCommunityFarm(
+      userid,
+      {
+        body,
+      },
+      avatar,
+      cover_photo
+    )
+
+    res.status(200).json({
+      message: 'Community Farm Updated Successfully',
+      data: updatedCommunityFarm,
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      for (const image of allImages) {
+        deleteFile(image?.filename)
+      }
+    }
+
+    errorHandler(res, error)
+  }
+}

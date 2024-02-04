@@ -70,6 +70,7 @@ export type UpdateFarmApplication = Updateable<FarmApplications>
 // community farm
 export type CommunityFarm = Selectable<CommunityFarms>
 export type NewCommunityFarm = Insertable<CommunityFarms>
+export type UpdateCommunityFarm = Updateable<CommunityFarms>
 
 //community farm crops
 export type CommunityFarmCrop = Selectable<CommunityFarmsCrops>

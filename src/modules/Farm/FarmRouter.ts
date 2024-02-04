@@ -59,6 +59,16 @@ FarmRouter.get(
 
 FarmRouter.get('/community-farm/:id', FarmController.viewCommunityFarm)
 
+FarmRouter.put(
+  '/community-farm/update',
+  UserGuard(['farm_head']),
+  upload.fields([
+    { name: 'avatar', maxCount: 1 },
+    { name: 'cover_photo', maxCount: 1 },
+  ]),
+  FarmController.updateCommunityFarm
+)
+
 FarmRouter.get(
   '/community-farm/crops/:id',
   FarmController.listCommunityFarmCrops
@@ -161,4 +171,10 @@ FarmRouter.get(
   '/farmer/invitation/list',
   UserGuard(['farm_head']),
   FarmController.listFarmerInvitations
+)
+
+FarmRouter.get(
+  '/farmer/members',
+  UserGuard(['farm_head']),
+  FarmController.listCommunityFarmMembers
 )

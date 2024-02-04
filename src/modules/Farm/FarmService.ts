@@ -11,6 +11,7 @@ import {
   NewFarmApplication,
   NewFarmerInvitation,
   NewSubFarm,
+  UpdateCommunityFarm,
   UpdateCrop,
   UpdateFarmApplication,
   UpdateFarmerInvitation,
@@ -503,5 +504,50 @@ export async function getTotalFarmerInvitaions(farmid: string) {
     .selectFrom('farmer_invitations')
     .select(({ fn }) => [fn.count('id').as('count')])
     .where('farmid', '=', farmid)
+    .executeTakeFirst()
+}
+
+export async function findCommunityFarmMembers(
+  farmid: string,
+  perpage: number,
+  offset: number,
+  search: string
+) {
+  let query = db.selectFrom('users as u').selectAll()
+
+  if (search.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${search}%`),
+        eb('u.lastname', 'ilike', `${search}%`),
+        eb('u.username', 'ilike', `${search}%`),
+      ])
+    )
+  }
+
+  return await query
+    .where('u.farm_id', '=', farmid)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalFarmMembers(farmid: string) {
+  return await db
+    .selectFrom('users as u')
+    .select(({ fn }) => [fn.count<number>('u.id').as('count')])
+    .where('u.farm_id', '=', farmid)
+    .executeTakeFirst()
+}
+
+export async function updateCommunityFarm(
+  id: string,
+  farm: UpdateCommunityFarm
+) {
+  return await db
+    .updateTable('community_farms')
+    .set(farm)
+    .where('id', '=', id)
+    .returningAll()
     .executeTakeFirst()
 }
