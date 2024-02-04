@@ -144,3 +144,21 @@ FarmRouter.delete(
   UserGuard(['member']),
   FarmController.acceptFarmerApplication
 )
+
+FarmRouter.delete(
+  '/farmer/invitation/cancel/:id',
+  UserGuard(['farm_head']),
+  FarmController.cancelFarmerInvitation
+)
+
+FarmRouter.get(
+  '/farmer/invitation/view/:id',
+  UserGuard(['member']),
+  FarmController.viewFarmerInvitation
+)
+
+FarmRouter.get(
+  '/farmer/invitation/list',
+  UserGuard(['farm_head']),
+  FarmController.listFarmerInvitations
+)

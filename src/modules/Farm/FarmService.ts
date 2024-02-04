@@ -17,6 +17,7 @@ import {
 } from '../../types/DBTypes'
 import { FarmApplicationStatus } from 'kysely-codegen'
 import { sql } from 'kysely'
+import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 
 export async function findFarm(id: string) {
   return await db
@@ -453,5 +454,54 @@ export async function findFarmerInvitationById(id: string) {
     .selectFrom('farmer_invitations')
     .selectAll()
     .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitationDetails(id: string) {
+  return await db
+    .selectFrom('farmer_invitations as fi')
+    .leftJoin('community_farms as cf', 'fi.farmid', 'cf.id')
+    .select([
+      'fi.id',
+      'fi.expiresat',
+      'fi.createdat',
+      'fi.updatedat',
+      'fi.userid',
+      'cf.farm_name',
+    ])
+    .where('fi.id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitations(
+  farmid: string,
+  perpage: number,
+  offset: number,
+  search?: string
+) {
+  let query = db
+    .selectFrom('farmer_invitations as fi')
+    .leftJoin('users as u', 'fi.userid', 'u.id')
+    .select(({ fn, val }) => [
+      'fi.id',
+      'u.firstname',
+      'u.lastname',
+      fn<string>('concat', [val(returnObjectUrl()), 'u.avatar']).as('avatar'),
+      'u.email',
+      'u.id as userid',
+    ])
+
+  return await query
+    .where('fi.farmid', '=', farmid)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalFarmerInvitaions(farmid: string) {
+  return await db
+    .selectFrom('farmer_invitations')
+    .select(({ fn }) => [fn.count('id').as('count')])
+    .where('farmid', '=', farmid)
     .executeTakeFirst()
 }

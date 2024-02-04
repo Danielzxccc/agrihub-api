@@ -463,3 +463,68 @@ export async function rejectFarmerApplication(
     errorHandler(res, error)
   }
 }
+
+export async function cancelFarmerInvitation(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.cancelFarmerInvitation(id, userid)
+    res
+      .status(200)
+      .json({ message: 'Invitation has been successfully cancelled' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewFarmerInvitation(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    const invitation = await Interactor.viewFarmerInvitation(id, userid)
+    res.status(200).json(invitation)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listFarmerInvitations(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.CommunityFarms, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    // const searchKey = String(query.search)
+    // const filterKey = query.filter
+
+    const { userid } = req.session
+
+    const invitations = await Interactor.listFarmerInvitations(
+      userid,
+      perPage,
+      offset
+    )
+
+    const totalPages = Math.ceil(Number(invitations.total.count) / perPage)
+    res.status(200).json({
+      invitations: invitations.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(invitations.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

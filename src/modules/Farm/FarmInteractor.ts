@@ -609,3 +609,54 @@ export async function rejectFarmerApplication(
     `${user.username} rejected your invitation`
   )
 }
+
+export async function cancelFarmerInvitation(
+  invitationId: string,
+  userid: string
+) {
+  const invitaion = await Service.findFarmerInvitationById(invitationId)
+
+  if (!invitaion) throw new HttpError("Can't find invitation", 404)
+
+  const user = await findUser(userid)
+
+  if (invitaion.farmid !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.deleteFarmerInvitation(invitationId)
+}
+
+export async function viewFarmerInvitation(
+  invitationId: string,
+  userid: string
+) {
+  const invitaion = await Service.findFarmerInvitationDetails(invitationId)
+
+  if (!invitaion) throw new HttpError('Invitation expired', 404)
+
+  if (new Date(invitaion.expiresat) <= new Date()) {
+    throw new HttpError('Invitation expired', 401)
+  }
+
+  if (invitaion.userid !== userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  return invitaion
+}
+
+export async function listFarmerInvitations(
+  userid: string,
+  perpage: number,
+  offset: number
+) {
+  const user = await findUser(userid)
+
+  const [data, total] = await Promise.all([
+    Service.findFarmerInvitations(user.farm_id, perpage, offset),
+    Service.getTotalFarmerInvitaions(user.farm_id),
+  ])
+
+  return { data, total }
+}

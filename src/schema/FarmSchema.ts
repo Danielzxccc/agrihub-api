@@ -1210,3 +1210,84 @@ export const NewFarmerInvitaion = z.object({
  *         - createdat
  *         - updatedat
  */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CancelInvitationResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ViewInvitationResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         expiresat:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         userid:
+ *           type: string
+ *         farm_name:
+ *           type: string
+ *       required:
+ *         - id
+ *         - expiresat
+ *         - createdat
+ *         - updatedat
+ *         - userid
+ *         - farm_name
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListInvitationsResponse:
+ *       type: object
+ *       properties:
+ *         invitations:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/InvitationItem"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     InvitationItem:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         email:
+ *           type: string
+ *         userid:
+ *           type: string
+ *       required:
+ *         - id
+ *         - firstname
+ *         - lastname
+ *         - avatar
+ *         - email
+ *         - userid
+ */
