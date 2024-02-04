@@ -1457,3 +1457,16 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *         - createdat
  *         - updatedat
  */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ArchiveCropResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */

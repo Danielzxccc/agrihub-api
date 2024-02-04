@@ -45,6 +45,7 @@ CREATE TABLE community_farms_crops(
     crop_id INT NOT NULL,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    is_archived BOOLEAN DEFAULT false,
     UNIQUE(farm_id, crop_id),
     FOREIGN KEY (farm_id) REFERENCES community_farms(id) ON DELETE CASCADE,
     FOREIGN KEY (crop_id) REFERENCES crops(id) ON DELETE CASCADE

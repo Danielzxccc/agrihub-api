@@ -606,3 +606,16 @@ export async function updateCommunityFarm(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function archiveCommunityCrop(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.archiveCommunityCrop(userid, id)
+
+    res.status(200).json({ message: 'Archived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

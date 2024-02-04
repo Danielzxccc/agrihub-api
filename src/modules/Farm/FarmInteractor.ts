@@ -754,3 +754,19 @@ export async function updateCommunityFarm(
     dbErrorHandler(error)
   }
 }
+
+export async function archiveCommunityCrop(userid: string, cropid: string) {
+  const user = await findUser(userid)
+
+  const crop = await Service.findCommunityCropById(cropid)
+
+  if (!crop) {
+    throw new HttpError('Crop not found', 404)
+  }
+
+  if (crop.farm_id !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.archiveCommunityCrop(cropid)
+}

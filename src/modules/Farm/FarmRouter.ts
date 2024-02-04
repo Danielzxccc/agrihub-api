@@ -178,3 +178,9 @@ FarmRouter.get(
   UserGuard(['farm_head']),
   FarmController.listCommunityFarmMembers
 )
+
+FarmRouter.delete(
+  '/community-farm/crop/archive/:id',
+  UserGuard(['farm_head']),
+  FarmController.archiveCommunityCrop
+)

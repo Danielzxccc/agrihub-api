@@ -355,6 +355,7 @@ export async function findCommunityFarmCrops(id: string) {
       'crops.growth_span',
     ])
     .where('community_farms_crops.farm_id', '=', id)
+    .where('community_farms_crops.is_archived', '=', false)
     .execute()
 }
 
@@ -546,7 +547,24 @@ export async function updateCommunityFarm(
 ) {
   return await db
     .updateTable('community_farms')
-    .set(farm)
+    .set({ ...farm, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findCommunityCropById(id: string) {
+  return await db
+    .selectFrom('community_farms_crops')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function archiveCommunityCrop(id: string) {
+  return await db
+    .updateTable('community_farms_crops')
+    .set({ is_archived: true })
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
