@@ -48,6 +48,7 @@ export async function findUserNotifications(
     .selectFrom('user_notifications')
     .selectAll()
     .where('emitted_to', '=', userid)
+    .orderBy('createdat desc')
 
   return await query.limit(perpage).offset(offset).execute()
 }
