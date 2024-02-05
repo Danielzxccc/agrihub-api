@@ -140,7 +140,7 @@ export const UpdateCommunityFarm = z.object({
     farm_name: z.string().optional(),
     location: z.string().optional(),
     description: z.string().optional(),
-    disctrict: z.string().optional(),
+    district: z.string().optional(),
     size: z.string().optional(),
   }),
 })
