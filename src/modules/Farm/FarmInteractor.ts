@@ -559,7 +559,7 @@ export async function createFarmerInvitation(
     userid,
     notificationTitle,
     notificationBody,
-    `/farm/invite/${famerInvitaion.id}`
+    `/invite/farm/${famerInvitaion.id}`
   )
 
   return famerInvitaion
