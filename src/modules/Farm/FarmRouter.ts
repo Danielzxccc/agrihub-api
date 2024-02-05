@@ -152,7 +152,7 @@ FarmRouter.post(
 FarmRouter.delete(
   '/farmer/invitation/reject/:id',
   UserGuard(['member']),
-  FarmController.acceptFarmerApplication
+  FarmController.rejectFarmerApplication
 )
 
 FarmRouter.delete(
