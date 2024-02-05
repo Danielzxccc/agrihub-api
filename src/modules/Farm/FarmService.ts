@@ -463,13 +463,14 @@ export async function findFarmerInvitationDetails(id: string) {
   return await db
     .selectFrom('farmer_invitations as fi')
     .leftJoin('community_farms as cf', 'fi.farmid', 'cf.id')
-    .select([
+    .select(({ fn, val }) => [
       'fi.id',
       'fi.expiresat',
       'fi.createdat',
       'fi.updatedat',
       'fi.userid',
       'cf.farm_name',
+      fn<string>('concat', [val(returnObjectUrl()), 'cf.avatar']).as('avatar'),
     ])
     .where('fi.id', '=', id)
     .executeTakeFirst()

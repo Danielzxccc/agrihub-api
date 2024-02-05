@@ -1258,6 +1258,8 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *           type: string
  *         farm_name:
  *           type: string
+ *         avatar:
+ *           type: string
  *       required:
  *         - id
  *         - expiresat
@@ -1265,6 +1267,7 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *         - updatedat
  *         - userid
  *         - farm_name
+ *         - avatar
  */
 
 /**

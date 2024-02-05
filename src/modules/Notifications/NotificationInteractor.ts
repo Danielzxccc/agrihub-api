@@ -12,7 +12,8 @@ export async function subscribeToNotification(userid: string, payload: string) {
 export async function emitPushNotification(
   userid: string,
   title: string,
-  body: string
+  body: string,
+  redirect_to = ''
 ) {
   const notificationPayload = {
     title,
@@ -31,7 +32,7 @@ export async function emitPushNotification(
   await Service.createNotification({
     emitted_to: userid,
     body,
-    redirect_to: '',
+    redirect_to: redirect_to,
   })
 
   await PushService.sendNotification(

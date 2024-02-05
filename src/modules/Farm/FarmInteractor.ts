@@ -555,7 +555,12 @@ export async function createFarmerInvitation(
 
   const notificationTitle = 'Invitation'
   const notificationBody = `${farm.farm_name} invited you to join the community.`
-  await emitPushNotification(userid, notificationTitle, notificationBody)
+  await emitPushNotification(
+    userid,
+    notificationTitle,
+    notificationBody,
+    `/farm/invite/${famerInvitaion.id}`
+  )
 
   return famerInvitaion
 }
