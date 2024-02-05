@@ -70,7 +70,7 @@ export async function listMembers(
 
   const [data, total] = await Promise.all([
     Service.findMembers(offset, perpage, searchKey, farmhead.farm_id),
-    Service.getTotalMembers(),
+    Service.getTotalMembers(farmhead.farm_id),
   ])
 
   return { data, total }

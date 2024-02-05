@@ -87,13 +87,21 @@ export async function findMembers(
     .execute()
 }
 
-export async function getTotalMembers() {
+export async function getTotalMembers(farmid: string) {
   return await db
     .selectFrom('users as u')
     .select(({ fn }) => [fn.count<number>('u.id').as('count')])
     .where('u.isbanned', '=', false)
     .where('u.role', '=', 'member')
     .where('u.verification_level', '=', '4')
+    .where(
+      'u.id',
+      'not in',
+      sql`(SELECT u.id
+      FROM users u
+      LEFT JOIN farmer_invitations fi ON u.id = fi.userid
+      WHERE fi.farmid = ${farmid})`
+    )
     .executeTakeFirst()
 }
 
