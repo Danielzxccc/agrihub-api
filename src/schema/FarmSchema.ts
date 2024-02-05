@@ -1470,3 +1470,48 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *       required:
  *         - message
  */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ArchivedCrop:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         image:
+ *           type: string
+ *         seedling_season:
+ *           type: string
+ *         planting_season:
+ *           type: string
+ *         harvest_season:
+ *           type: string
+ *         isyield:
+ *           type: boolean
+ *         growth_span:
+ *           type: string
+ *       required:
+ *         - id
+ *         - updatedat
+ *         - createdat
+ *         - name
+ *         - description
+ *         - image
+ *         - seedling_season
+ *         - planting_season
+ *         - harvest_season
+ *         - isyield
+ *         - growth_span
+ */

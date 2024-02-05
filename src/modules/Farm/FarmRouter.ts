@@ -184,3 +184,15 @@ FarmRouter.delete(
   UserGuard(['farm_head']),
   FarmController.archiveCommunityCrop
 )
+
+FarmRouter.put(
+  '/community-farm/crop/unarchive/:id',
+  UserGuard(['farm_head']),
+  FarmController.unArchiveCommunityCrop
+)
+
+FarmRouter.get(
+  '/community-farm/crop/archived/list',
+  UserGuard(['farm_head']),
+  FarmController.listArchivedCommunityCrops
+)

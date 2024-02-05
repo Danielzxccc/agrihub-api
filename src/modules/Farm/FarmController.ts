@@ -619,3 +619,34 @@ export async function archiveCommunityCrop(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function unArchiveCommunityCrop(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.unArchiveCommunityCrop(userid, id)
+
+    res.status(200).json({ message: 'Unarchived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listArchivedCommunityCrops(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+
+    const crops = await Interactor.listArchivedCommunityCrops(userid)
+
+    res.status(200).json(crops)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

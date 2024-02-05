@@ -337,7 +337,7 @@ export async function insertCommunityFarmCrop(crop: NewCommunityFarmCrop) {
     .executeTakeFirst()
 }
 
-export async function findCommunityFarmCrops(id: string) {
+export async function findCommunityFarmCrops(id: string, is_archived = false) {
   return await db
     .selectFrom('community_farms_crops')
     .leftJoin('crops', 'community_farms_crops.crop_id', 'crops.id')
@@ -355,7 +355,7 @@ export async function findCommunityFarmCrops(id: string) {
       'crops.growth_span',
     ])
     .where('community_farms_crops.farm_id', '=', id)
-    .where('community_farms_crops.is_archived', '=', false)
+    .where('community_farms_crops.is_archived', '=', is_archived)
     .execute()
 }
 
@@ -565,6 +565,15 @@ export async function archiveCommunityCrop(id: string) {
   return await db
     .updateTable('community_farms_crops')
     .set({ is_archived: true })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function unArchiveCommunityCrop(id: string) {
+  return await db
+    .updateTable('community_farms_crops')
+    .set({ is_archived: false })
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()

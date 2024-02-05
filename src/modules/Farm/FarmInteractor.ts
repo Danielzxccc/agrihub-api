@@ -770,3 +770,31 @@ export async function archiveCommunityCrop(userid: string, cropid: string) {
 
   await Service.archiveCommunityCrop(cropid)
 }
+
+export async function unArchiveCommunityCrop(userid: string, cropid: string) {
+  const user = await findUser(userid)
+
+  const crop = await Service.findCommunityCropById(cropid)
+
+  if (!crop) {
+    throw new HttpError('Crop not found', 404)
+  }
+
+  if (crop.farm_id !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.unArchiveCommunityCrop(cropid)
+}
+
+export async function listArchivedCommunityCrops(userid: string) {
+  const user = await findUser(userid)
+
+  const crops = await Service.findCommunityFarmCrops(user.farm_id, true)
+
+  for (const crop of crops) {
+    crop.image = getObjectUrl(crop.image)
+  }
+
+  return crops
+}
