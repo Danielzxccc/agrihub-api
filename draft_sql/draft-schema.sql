@@ -28,3 +28,6 @@ CREATE TABLE community_events(
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );
 
+UPDATE users set role = 'member', farm_id = null WHERE id = 925979934661378049;
+DELETE FROM user_notifications WHERE id > 1;
+

@@ -88,3 +88,39 @@
  *         updatedat:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/notification/user/read/{id}:
+ *   put:
+ *     summary: Mark a user notification as read
+ *     tags:
+ *       - Notification
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the notification to mark as read
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ReadNotificationResponse"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ReadNotificationResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */
