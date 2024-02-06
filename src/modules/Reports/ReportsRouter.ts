@@ -71,3 +71,9 @@ ReportsRouter.put(
   UserGuard(['farm_head']),
   ReportsController.removeCommunityCropReport
 )
+
+ReportsRouter.get(
+  '/crop/growth-rate',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.getAverageGrowthRate
+)
