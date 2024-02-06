@@ -175,7 +175,7 @@ FarmRouter.get(
 
 FarmRouter.get(
   '/farmer/members',
-  UserGuard(['farm_head']),
+  UserGuard(['farm_head', 'farmer']),
   FarmController.listCommunityFarmMembers
 )
 
