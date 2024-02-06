@@ -1,3 +1,4 @@
+import { UpdateUserNotification } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import { emitNotification } from '../Socket/SocketController'
 import { findUser } from '../Users/UserService'
@@ -64,4 +65,23 @@ export async function listUserNotifications(
   ])
 
   return { data, total }
+}
+
+export async function readUserNotifications(userid: string, id: string) {
+  const user = await findUser(userid)
+  const notification = await Service.findUserNotificationById(id)
+
+  if (!notification) {
+    throw new HttpError('Notification not found', 404)
+  }
+
+  if (user.id !== notification.emitted_to) {
+    throw new HttpError('Unathorized', 401)
+  }
+
+  const updatedObject: UpdateUserNotification = {
+    viewed: true,
+  }
+
+  await Service.updateUserNotification(id, updatedObject)
 }

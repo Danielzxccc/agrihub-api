@@ -74,3 +74,18 @@ export async function listUserNotifications(
     errorHandler(res, error)
   }
 }
+
+export async function readUserNotifications(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.readUserNotifications(userid, id)
+    res.status(200).json({ message: 'Read successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

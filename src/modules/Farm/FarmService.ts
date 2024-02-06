@@ -470,6 +470,7 @@ export async function findFarmerInvitationDetails(id: string) {
       'fi.updatedat',
       'fi.userid',
       'cf.farm_name',
+      'cf.id as community_farm_id',
       fn<string>('concat', [val(returnObjectUrl()), 'cf.avatar']).as('avatar'),
     ])
     .where('fi.id', '=', id)

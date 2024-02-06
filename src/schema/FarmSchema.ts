@@ -1258,6 +1258,8 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *           type: string
  *         farm_name:
  *           type: string
+ *         community_farm_id:
+ *           type: string
  *         avatar:
  *           type: string
  *       required:

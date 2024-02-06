@@ -103,6 +103,7 @@ export type NewCropReport = Insertable<CropReports>
 // user notification
 export type UserNotification = Selectable<UserNotifications>
 export type NewUserNotification = Insertable<UserNotifications>
+export type UpdateUserNotification = Updateable<UserNotifications>
 
 //subscription
 export type Subscription = Selectable<Subscriptions>

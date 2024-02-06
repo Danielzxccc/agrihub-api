@@ -66,7 +66,7 @@ export async function findCommunityReports(
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn, val }) => [
-      'ccr.id',
+      'ccr.crop_id',
       'c.name as crop_name',
       'ccr.date_planted',
       'ccr.date_harvested',

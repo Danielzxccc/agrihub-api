@@ -4,6 +4,7 @@ import {
   NewSubscription,
   NewUserNotification,
   Subscription,
+  UpdateUserNotification,
   UserNotification,
 } from '../../types/DBTypes'
 
@@ -53,10 +54,30 @@ export async function findUserNotifications(
   return await query.limit(perpage).offset(offset).execute()
 }
 
+export async function findUserNotificationById(id: string) {
+  return await db
+    .selectFrom('user_notifications')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
 export async function getUserNotificationCount(userid: string) {
   return await db
     .selectFrom('user_notifications')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('emitted_to', '=', userid)
+    .executeTakeFirst()
+}
+
+export async function updateUserNotification(
+  id: string,
+  notification: UpdateUserNotification
+) {
+  return await db
+    .updateTable('user_notifications')
+    .set({ ...notification, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
     .executeTakeFirst()
 }
