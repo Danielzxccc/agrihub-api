@@ -21,7 +21,11 @@ export const CommunityCropReports = z.object({
     search: z.string().optional().default(''),
     page: z.string().optional(),
     perpage: z.string().optional().default('20'),
-    filter: z.array(z.string()).optional().default([]),
+    // filter: z.array(z.string()).optional().default([]),
+    filter: z
+      .union([z.array(z.string()), z.string()])
+      .optional()
+      .default([]),
     sort: z.string().optional().default('date_harvested'),
   }),
 })

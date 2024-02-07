@@ -22,6 +22,10 @@ import {
   CommunityFarmsGallery,
   CommunityCropReports,
   CommunityCropReportsImages,
+  UserNotifications,
+  Subscriptions,
+  FarmerInvitations,
+  LearningMaterials,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -67,6 +71,7 @@ export type UpdateFarmApplication = Updateable<FarmApplications>
 // community farm
 export type CommunityFarm = Selectable<CommunityFarms>
 export type NewCommunityFarm = Insertable<CommunityFarms>
+export type UpdateCommunityFarm = Updateable<CommunityFarms>
 
 //community farm crops
 export type CommunityFarmCrop = Selectable<CommunityFarmsCrops>
@@ -95,3 +100,21 @@ export type UpdateCrop = Updateable<Crop>
 // crop reports
 export type CropReport = Selectable<CropReports>
 export type NewCropReport = Insertable<CropReports>
+
+// user notification
+export type UserNotification = Selectable<UserNotifications>
+export type NewUserNotification = Insertable<UserNotifications>
+export type UpdateUserNotification = Updateable<UserNotifications>
+
+//subscription
+export type Subscription = Selectable<Subscriptions>
+export type NewSubscription = Insertable<Subscriptions>
+
+export type FarmerInvitation = Selectable<FarmerInvitations>
+export type NewFarmerInvitation = Insertable<FarmerInvitations>
+export type UpdateFarmerInvitation = Updateable<FarmApplications>
+
+// learning materials
+export type LearningMaterial = Selectable<LearningMaterials>
+export type NewLearningMaterial = Insertable<LearningMaterials>
+export type UpdateLearningMaterial = Updateable<LearningMaterials>

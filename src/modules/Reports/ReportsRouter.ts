@@ -31,6 +31,12 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
+  '/farmer/graph/growth-harvest',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.listGrowthHarvestStats
+)
+
+ReportsRouter.get(
   '/farmer/total-harvested',
   UserGuard(['farm_head', 'farmer']),
   ReportsController.listTotalHarvestedCrops
@@ -64,4 +70,10 @@ ReportsRouter.put(
   '/crop/remove/:id',
   UserGuard(['farm_head']),
   ReportsController.removeCommunityCropReport
+)
+
+ReportsRouter.get(
+  '/crop/growth-rate',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.getAverageGrowthRate
 )

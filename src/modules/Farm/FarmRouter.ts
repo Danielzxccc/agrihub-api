@@ -59,6 +59,16 @@ FarmRouter.get(
 
 FarmRouter.get('/community-farm/:id', FarmController.viewCommunityFarm)
 
+FarmRouter.put(
+  '/community-farm/update',
+  UserGuard(['farm_head']),
+  upload.fields([
+    { name: 'avatar', maxCount: 1 },
+    { name: 'cover_photo', maxCount: 1 },
+  ]),
+  FarmController.updateCommunityFarm
+)
+
 FarmRouter.get(
   '/community-farm/crops/:id',
   FarmController.listCommunityFarmCrops
@@ -125,4 +135,64 @@ FarmRouter.get(
   '/crop/reports',
   UserGuard(['subfarm_head', 'farm_head']),
   FarmController.listActiveCropReports
+)
+
+FarmRouter.post(
+  '/farmer/invitation',
+  UserGuard(['farm_head']),
+  FarmController.createFarmerInvitation
+)
+
+FarmRouter.post(
+  '/farmer/invitation/accept/:id',
+  UserGuard(['member']),
+  FarmController.acceptFarmerApplication
+)
+
+FarmRouter.delete(
+  '/farmer/invitation/reject/:id',
+  UserGuard(['member']),
+  FarmController.rejectFarmerApplication
+)
+
+FarmRouter.delete(
+  '/farmer/invitation/cancel/:id',
+  UserGuard(['farm_head']),
+  FarmController.cancelFarmerInvitation
+)
+
+FarmRouter.get(
+  '/farmer/invitation/view/:id',
+  UserGuard(['member']),
+  FarmController.viewFarmerInvitation
+)
+
+FarmRouter.get(
+  '/farmer/invitation/list',
+  UserGuard(['farm_head']),
+  FarmController.listFarmerInvitations
+)
+
+FarmRouter.get(
+  '/farmer/members',
+  UserGuard(['farm_head', 'farmer']),
+  FarmController.listCommunityFarmMembers
+)
+
+FarmRouter.delete(
+  '/community-farm/crop/archive/:id',
+  UserGuard(['farm_head']),
+  FarmController.archiveCommunityCrop
+)
+
+FarmRouter.put(
+  '/community-farm/crop/unarchive/:id',
+  UserGuard(['farm_head']),
+  FarmController.unArchiveCommunityCrop
+)
+
+FarmRouter.get(
+  '/community-farm/crop/archived/list',
+  UserGuard(['farm_head']),
+  FarmController.listArchivedCommunityCrops
 )

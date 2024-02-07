@@ -187,3 +187,26 @@ export async function removeCommunityCropReport(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function listGrowthHarvestStats(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const data = await Interactor.listGrowthHarvestStats(userid)
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getAverageGrowthRate(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const data = await Interactor.getAverageGrowthRate(userid)
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

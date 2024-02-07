@@ -150,3 +150,59 @@ UserRouter.put(
   upload.single('avatar'),
   UserController.updateUserProfile
 )
+
+/**
+ * @openapi
+ * /api/user/search/members:
+ *   get:
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *           default: ""
+ *         description: Search term
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *           default: "20"
+ *         description: Items per page
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           default: ""
+ *         description: Filter criteria
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ListMemberResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+UserRouter.get(
+  '/search/members',
+  UserGuard(['farm_head']),
+  UserController.listMembers
+)

@@ -7,6 +7,7 @@ import { deleteFile } from '../../utils/file'
 import { findUser } from '../Users/UserService'
 import { uploadFiles } from '../AWS-Bucket/UploadService'
 import { getMonthByIndex } from '../../utils/utils'
+import axios from 'axios'
 
 export async function createCommunityCropReport(
   userid: string,
@@ -137,7 +138,7 @@ export async function leastPerformantCrops(userid: string) {
 export async function listCommuntityCropReports(
   id: string,
   offset: number,
-  filterKey: string[],
+  filterKey: string[] | string,
   searchKey: string,
   perpage: number,
   sortBy: string
@@ -151,7 +152,7 @@ export async function listCommuntityCropReports(
       perpage,
       sortBy
     ),
-    Service.getTotalReportCount(),
+    Service.getTotalReportCount(id),
   ])
 
   return { data, total }
@@ -176,4 +177,60 @@ export async function viewCommunityCropReport(id: string, userid: string) {
   }
 
   return report
+}
+
+export async function listGrowthHarvestStats(userid: string) {
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const farm = await findCommunityFarmById(user.farm_id)
+  if (!farm) throw new HttpError("Can't find farm", 404)
+
+  const data = await Service.getGrowthHarvestStats(farm.id)
+
+  return data
+}
+
+export async function getAverageGrowthRate(userid: string) {
+  const user = await findUser(userid)
+
+  const data = await Service.getAverageGrowthRate(user.farm_id)
+  const [first] = data
+  const latestGrowthRate =
+    [first].reduce((acc, plant) => {
+      const growthRate =
+        plant.type === '1'
+          ? ((parseInt(plant.harvested_qty as string) -
+              parseInt(plant.planted_qty as string)) /
+              parseInt(plant.planted_qty as string)) *
+            100
+          : (parseInt(plant.harvested_qty as string) /
+              parseInt(plant.planted_qty as string)) *
+            100
+      return acc + growthRate
+    }, 0) / 1
+
+  // Calculate the average growth rate
+  const averageGrowthRate =
+    data.slice(1).reduce((acc, plant) => {
+      const growthRate =
+        plant.type === '1'
+          ? ((parseInt(plant.harvested_qty as string) -
+              parseInt(plant.planted_qty as string)) /
+              parseInt(plant.planted_qty as string)) *
+            100
+          : (parseInt(plant.harvested_qty as string) /
+              parseInt(plant.planted_qty as string)) *
+            100
+      return acc + growthRate
+    }, 0) / data.slice(1).length
+
+  console.log(data, 'GET')
+
+  const results = await axios.post(`${process.env.PYTHON_API}/growth-rate`, {
+    average_growth: Number(averageGrowthRate.toFixed(2)),
+    recent_growth: Number(latestGrowthRate.toFixed(2)),
+  })
+
+  return results.data
 }

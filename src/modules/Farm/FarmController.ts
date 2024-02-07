@@ -406,3 +406,247 @@ export async function listActiveCropReports(
     errorHandler(res, error)
   }
 }
+
+export async function createFarmerInvitation(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { body } = await zParse(Schema.NewFarmerInvitaion, req)
+    const { userid, expiresat } = body
+    const { userid: farm_head_id } = req.session
+
+    const invitation = await Interactor.createFarmerInvitation(
+      userid,
+      expiresat,
+      farm_head_id
+    )
+
+    res
+      .status(201)
+      .json({ message: 'Invitation sent successfully', invitation })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function acceptFarmerApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.acceptFarmerApplication(id, userid)
+    res
+      .status(200)
+      .json({ message: 'Invitation has been successfully accepted' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function rejectFarmerApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.rejectFarmerApplication(id, userid)
+    res
+      .status(200)
+      .json({ message: 'Invitation has been successfully rejected' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function cancelFarmerInvitation(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.cancelFarmerInvitation(id, userid)
+    res
+      .status(200)
+      .json({ message: 'Invitation has been successfully cancelled' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewFarmerInvitation(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    const invitation = await Interactor.viewFarmerInvitation(id, userid)
+    res.status(200).json(invitation)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listFarmerInvitations(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.CommunityFarms, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    // const searchKey = String(query.search)
+    // const filterKey = query.filter
+
+    const { userid } = req.session
+
+    const invitations = await Interactor.listFarmerInvitations(
+      userid,
+      perPage,
+      offset
+    )
+
+    const totalPages = Math.ceil(Number(invitations.total.count) / perPage)
+    res.status(200).json({
+      invitations: invitations.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(invitations.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listCommunityFarmMembers(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.CommunityFarms, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    // const filterKey = query.filter
+
+    const { userid } = req.session
+
+    const members = await Interactor.listCommunityFarmMembers(
+      userid,
+      perPage,
+      offset,
+      searchKey
+    )
+
+    const totalPages = Math.ceil(Number(members.total.count) / perPage)
+    res.status(200).json({
+      members: members.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(members.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateCommunityFarm(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.UpdateCommunityFarm, req)
+
+    const cover_photo = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )?.['cover_photo']?.[0]
+
+    const avatar = (
+      req.files as { [fieldname: string]: Express.Multer.File[] }
+    )?.['avatar']?.[0]
+
+    console.log(cover_photo, 'TEST COVER')
+
+    const userid = req.session.userid
+    var allImages = [cover_photo || null, avatar || null]
+
+    const updatedCommunityFarm = await Interactor.updateCommunityFarm(
+      userid,
+      {
+        body,
+      },
+      avatar,
+      cover_photo
+    )
+
+    res.status(200).json({
+      message: 'Community Farm Updated Successfully',
+      data: updatedCommunityFarm,
+    })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      for (const image of allImages) {
+        deleteFile(image?.filename)
+      }
+    }
+
+    errorHandler(res, error)
+  }
+}
+
+export async function archiveCommunityCrop(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.archiveCommunityCrop(userid, id)
+
+    res.status(200).json({ message: 'Archived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function unArchiveCommunityCrop(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.unArchiveCommunityCrop(userid, id)
+
+    res.status(200).json({ message: 'Unarchived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listArchivedCommunityCrops(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+
+    const crops = await Interactor.listArchivedCommunityCrops(userid)
+
+    res.status(200).json(crops)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

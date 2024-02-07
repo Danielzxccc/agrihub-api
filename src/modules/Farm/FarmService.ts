@@ -2,7 +2,6 @@ import { jsonObjectFrom } from 'kysely/helpers/postgres'
 import { db } from '../../config/database'
 import {
   Crop,
-  FarmApplication,
   NewCommunityFarm,
   NewCommunityFarmCrop,
   NewCommunityFarmImage,
@@ -10,12 +9,16 @@ import {
   NewCropReport,
   NewFarm,
   NewFarmApplication,
+  NewFarmerInvitation,
   NewSubFarm,
+  UpdateCommunityFarm,
   UpdateCrop,
   UpdateFarmApplication,
+  UpdateFarmerInvitation,
 } from '../../types/DBTypes'
-import { Crops, FarmApplicationStatus } from 'kysely-codegen'
+import { FarmApplicationStatus } from 'kysely-codegen'
 import { sql } from 'kysely'
+import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 
 export async function findFarm(id: string) {
   return await db
@@ -334,11 +337,11 @@ export async function insertCommunityFarmCrop(crop: NewCommunityFarmCrop) {
     .executeTakeFirst()
 }
 
-export async function findCommunityFarmCrops(id: string) {
+export async function findCommunityFarmCrops(id: string, is_archived = false) {
   return await db
     .selectFrom('community_farms_crops')
     .leftJoin('crops', 'community_farms_crops.crop_id', 'crops.id')
-    .select([
+    .select(({ val, fn }) => [
       'community_farms_crops.id',
       'community_farms_crops.updatedat',
       'community_farms_crops.createdat',
@@ -352,6 +355,7 @@ export async function findCommunityFarmCrops(id: string) {
       'crops.growth_span',
     ])
     .where('community_farms_crops.farm_id', '=', id)
+    .where('community_farms_crops.is_archived', '=', is_archived)
     .execute()
 }
 
@@ -404,5 +408,175 @@ export async function getTotalCommunityFarms() {
   return await db
     .selectFrom('community_farms')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
+
+export async function insertFarmerInvitation(farm: NewFarmerInvitation) {
+  return await db
+    .insertInto('farmer_invitations')
+    .values(farm)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function updateFarmerInvitation(
+  invitationId: string,
+  farm: UpdateFarmerInvitation
+) {
+  return await db
+    .updateTable('farmer_invitations')
+    .set({ ...farm, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', invitationId)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteFarmerInvitation(invitationId: string) {
+  return await db
+    .deleteFrom('farmer_invitations')
+    .where('id', '=', invitationId)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitationByUser(
+  userid: string,
+  farmid: string
+) {
+  return await db
+    .selectFrom('farmer_invitations')
+    .selectAll()
+    .where('userid', '=', userid)
+    .where('farmid', '=', farmid)
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitationById(id: string) {
+  return await db
+    .selectFrom('farmer_invitations')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitationDetails(id: string) {
+  return await db
+    .selectFrom('farmer_invitations as fi')
+    .leftJoin('community_farms as cf', 'fi.farmid', 'cf.id')
+    .select(({ fn, val }) => [
+      'fi.id',
+      'fi.expiresat',
+      'fi.createdat',
+      'fi.updatedat',
+      'fi.userid',
+      'cf.farm_name',
+      'cf.id as community_farm_id',
+      fn<string>('concat', [val(returnObjectUrl()), 'cf.avatar']).as('avatar'),
+    ])
+    .where('fi.id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findFarmerInvitations(
+  farmid: string,
+  perpage: number,
+  offset: number,
+  search?: string
+) {
+  let query = db
+    .selectFrom('farmer_invitations as fi')
+    .leftJoin('users as u', 'fi.userid', 'u.id')
+    .select(({ fn, val }) => [
+      'fi.id',
+      'u.firstname',
+      'u.lastname',
+      fn<string>('concat', [val(returnObjectUrl()), 'u.avatar']).as('avatar'),
+      'u.email',
+      'u.id as userid',
+    ])
+
+  return await query
+    .where('fi.farmid', '=', farmid)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalFarmerInvitaions(farmid: string) {
+  return await db
+    .selectFrom('farmer_invitations')
+    .select(({ fn }) => [fn.count('id').as('count')])
+    .where('farmid', '=', farmid)
+    .executeTakeFirst()
+}
+
+export async function findCommunityFarmMembers(
+  farmid: string,
+  perpage: number,
+  offset: number,
+  search: string
+) {
+  let query = db.selectFrom('users as u').selectAll()
+
+  if (search.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${search}%`),
+        eb('u.lastname', 'ilike', `${search}%`),
+        eb('u.username', 'ilike', `${search}%`),
+      ])
+    )
+  }
+
+  return await query
+    .where('u.farm_id', '=', farmid)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalFarmMembers(farmid: string) {
+  return await db
+    .selectFrom('users as u')
+    .select(({ fn }) => [fn.count<number>('u.id').as('count')])
+    .where('u.farm_id', '=', farmid)
+    .executeTakeFirst()
+}
+
+export async function updateCommunityFarm(
+  id: string,
+  farm: UpdateCommunityFarm
+) {
+  return await db
+    .updateTable('community_farms')
+    .set({ ...farm, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findCommunityCropById(id: string) {
+  return await db
+    .selectFrom('community_farms_crops')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function archiveCommunityCrop(id: string) {
+  return await db
+    .updateTable('community_farms_crops')
+    .set({ is_archived: true })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function unArchiveCommunityCrop(id: string) {
+  return await db
+    .updateTable('community_farms_crops')
+    .set({ is_archived: false })
+    .where('id', '=', id)
+    .returningAll()
     .executeTakeFirst()
 }

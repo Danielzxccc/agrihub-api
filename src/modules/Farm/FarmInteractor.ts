@@ -1,12 +1,18 @@
 import { FarmApplicationStatus } from 'kysely-codegen'
-import { NewFarmApplicationT } from '../../schema/FarmSchema'
+import {
+  NewFarmApplicationT,
+  UpdateCommunityFarmT,
+} from '../../schema/FarmSchema'
 import {
   NewCommunityFarm,
   NewCrop,
   NewCropReport,
   NewFarm,
   NewFarmApplication,
+  NewFarmerInvitation,
   NewSubFarm,
+  UpdateCommunityFarm,
+  UpdateUser,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import dbErrorHandler from '../../utils/dbErrorHandler'
@@ -27,6 +33,7 @@ import {
   emitNotificationToAdmin,
 } from '../Socket/SocketController'
 import { getMonthByIndex } from '../../utils/utils'
+import { emitPushNotification } from '../Notifications/NotificationInteractor'
 
 export async function createFarmApplication({
   application,
@@ -235,6 +242,13 @@ export async function cancelExistingApplication(id: string, userid: string) {
 
   if (userid !== existingApplication.applicant.id) {
     throw new HttpError("You Can't Delete other's application", 401)
+  }
+  const { valid_id, farm_actual_images } = existingApplication
+
+  const allFiles = [...farm_actual_images, valid_id]
+
+  for (const file of allFiles) {
+    await deleteFileCloud(file)
   }
 
   await Service.deleteFarmApplicaiton(id)
@@ -452,6 +466,10 @@ export async function viewSubFarm(id: string) {
 export async function listCrops() {
   const crops = await Service.findAllCrops()
 
+  for (const crop of crops) {
+    crop.image = getObjectUrl(crop.image)
+  }
+
   return crops
 }
 
@@ -494,4 +512,294 @@ export async function listActiveCropReports(userid: string) {
   if (!subFarm) throw new HttpError('Unauthorized', 401)
   const reports = await Service.listCropReports(subFarm.id)
   return reports
+}
+
+export async function createFarmerInvitation(
+  userid: string,
+  expiresat: string,
+  farm_head_id: string
+) {
+  const farmhead = await findUser(farm_head_id)
+
+  const farm = await Service.findCommunityFarmById(farmhead.farm_id)
+  if (!farm) throw new HttpError('Farm not found', 404)
+
+  if (farmhead.id === userid) {
+    throw new HttpError('Self-invitations are not allowed.', 400)
+  }
+
+  const user = await findUser(userid)
+  if (!user) throw new HttpError('User not found', 404)
+
+  if (user.role === 'farmer' || user.role === 'farm_head') {
+    throw new HttpError('User is already registered as a farmer.', 400)
+  }
+
+  // check if there's an existing invitaion
+  const checkExistingInvitation = await Service.findFarmerInvitationByUser(
+    userid,
+    farm.id
+  )
+
+  if (checkExistingInvitation) {
+    throw new HttpError('User has already been invited.', 400)
+  }
+
+  const invitation: NewFarmerInvitation = {
+    userid,
+    farmid: farmhead.farm_id,
+    expiresat,
+  }
+
+  const famerInvitaion = await Service.insertFarmerInvitation(invitation)
+
+  const notificationTitle = 'Invitation'
+  const notificationBody = `${farm.farm_name} invited you to join the community.`
+  await emitPushNotification(
+    userid,
+    notificationTitle,
+    notificationBody,
+    `/invite/farm/${famerInvitaion.id}`
+  )
+
+  return famerInvitaion
+}
+
+export async function acceptFarmerApplication(
+  invitationId: string,
+  userid: string
+) {
+  const invitation = await Service.findFarmerInvitationById(invitationId)
+  if (userid !== invitation.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  if (new Date(invitation.expiresat) <= new Date()) {
+    throw new HttpError('Invitation Expired', 400)
+  }
+
+  const newUserCredentials: UpdateUser = {
+    role: 'farmer',
+    farm_id: invitation.farmid,
+  }
+
+  const farm = await Service.findCommunityFarmById(invitation.farmid)
+
+  // update user credentials
+  const updatedUser = await updateUser(userid, newUserCredentials)
+
+  // delete farmer invitation
+  await Service.deleteFarmerInvitation(invitation.id)
+
+  await emitPushNotification(
+    farm.farm_head,
+    'Hello',
+    `${updatedUser.username} accepted your invitation`
+  )
+}
+
+export async function rejectFarmerApplication(
+  invitationId: string,
+  userid: string
+) {
+  const invitation = await Service.findFarmerInvitationById(invitationId)
+  if (userid !== invitation.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.deleteFarmerInvitation(invitation.id)
+  const farm = await Service.findCommunityFarmById(invitation.farmid)
+
+  const user = await findUser(userid)
+
+  await emitPushNotification(
+    farm.farm_head,
+    'Hello',
+    `${user.username} rejected your invitation`
+  )
+}
+
+export async function cancelFarmerInvitation(
+  invitationId: string,
+  userid: string
+) {
+  const invitaion = await Service.findFarmerInvitationById(invitationId)
+
+  if (!invitaion) throw new HttpError("Can't find invitation", 404)
+
+  const user = await findUser(userid)
+
+  if (invitaion.farmid !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.deleteFarmerInvitation(invitationId)
+}
+
+export async function viewFarmerInvitation(
+  invitationId: string,
+  userid: string
+) {
+  const invitaion = await Service.findFarmerInvitationDetails(invitationId)
+
+  if (!invitaion) throw new HttpError('Invitation expired', 404)
+
+  if (new Date(invitaion.expiresat) <= new Date()) {
+    throw new HttpError('Invitation expired', 401)
+  }
+
+  if (invitaion.userid !== userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  return invitaion
+}
+
+export async function listFarmerInvitations(
+  userid: string,
+  perpage: number,
+  offset: number
+) {
+  const user = await findUser(userid)
+
+  const [data, total] = await Promise.all([
+    Service.findFarmerInvitations(user.farm_id, perpage, offset),
+    Service.getTotalFarmerInvitaions(user.farm_id),
+  ])
+
+  return { data, total }
+}
+
+export async function listCommunityFarmMembers(
+  userid: string,
+  perpage: number,
+  offset: number,
+  search: string
+) {
+  const user = await findUser(userid)
+
+  const [data, total] = await Promise.all([
+    Service.findCommunityFarmMembers(user.farm_id, perpage, offset, search),
+    Service.getTotalFarmMembers(user.farm_id),
+  ])
+
+  for (const item of data) {
+    item.avatar = getObjectUrl(item.avatar)
+    delete item.password
+  }
+
+  return { data, total }
+}
+
+export async function updateCommunityFarm(
+  userid: string,
+  farm: UpdateCommunityFarmT,
+  avatar: Express.Multer.File,
+  cover_photo: Express.Multer.File
+) {
+  try {
+    const user = await findUser(userid)
+
+    const communityFarm = await Service.findCommunityFarmById(user.farm_id)
+    if (!communityFarm) {
+      throw new HttpError("Can't find farm", 404)
+    }
+
+    const updatedCommunityFarm: UpdateCommunityFarm = {
+      ...farm.body,
+      avatar: avatar?.filename ? avatar?.filename : communityFarm.avatar,
+      cover_photo: cover_photo?.filename
+        ? cover_photo?.filename
+        : communityFarm.cover_photo,
+    }
+
+    // var files = [avatar, cover_photo]
+
+    // upload file to cloud
+    if (avatar) {
+      const stream: fs.ReadStream = await readFileAsStream(avatar.path)
+      await uploadFile(stream, avatar.filename, avatar.mimetype)
+    }
+
+    if (cover_photo) {
+      const stream: fs.ReadStream = await readFileAsStream(cover_photo.path)
+      await uploadFile(stream, cover_photo.filename, cover_photo.mimetype)
+    }
+
+    const updatedFarm = await Service.updateCommunityFarm(
+      user.farm_id,
+      updatedCommunityFarm
+    )
+
+    if (updatedFarm.cover_photo !== communityFarm.cover_photo) {
+      await deleteFileCloud(communityFarm.cover_photo)
+    }
+
+    if (updatedFarm.avatar !== communityFarm.avatar) {
+      await deleteFileCloud(communityFarm.avatar)
+    }
+
+    if (avatar?.filename) {
+      deleteFile(avatar.filename)
+    }
+
+    if (cover_photo?.filename) {
+      deleteFile(cover_photo.filename)
+    }
+
+    return updatedFarm
+  } catch (error) {
+    if (avatar?.filename) {
+      deleteFile(avatar.filename)
+    }
+    if (cover_photo?.filename) {
+      deleteFile(cover_photo.filename)
+    }
+
+    dbErrorHandler(error)
+  }
+}
+
+export async function archiveCommunityCrop(userid: string, cropid: string) {
+  const user = await findUser(userid)
+
+  const crop = await Service.findCommunityCropById(cropid)
+
+  if (!crop) {
+    throw new HttpError('Crop not found', 404)
+  }
+
+  if (crop.farm_id !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.archiveCommunityCrop(cropid)
+}
+
+export async function unArchiveCommunityCrop(userid: string, cropid: string) {
+  const user = await findUser(userid)
+
+  const crop = await Service.findCommunityCropById(cropid)
+
+  if (!crop) {
+    throw new HttpError('Crop not found', 404)
+  }
+
+  if (crop.farm_id !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.unArchiveCommunityCrop(cropid)
+}
+
+export async function listArchivedCommunityCrops(userid: string) {
+  const user = await findUser(userid)
+
+  const crops = await Service.findCommunityFarmCrops(user.farm_id, true)
+
+  for (const crop of crops) {
+    crop.image = getObjectUrl(crop.image)
+  }
+
+  return crops
 }

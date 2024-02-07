@@ -128,6 +128,25 @@ export const CommunityFarms = z.object({
   }),
 })
 
+export const NewFarmerInvitaion = z.object({
+  body: z.object({
+    userid: z.string(),
+    expiresat: z.string(),
+  }),
+})
+
+export const UpdateCommunityFarm = z.object({
+  body: z.object({
+    farm_name: z.string().optional(),
+    location: z.string().optional(),
+    description: z.string().optional(),
+    district: z.string().optional(),
+    size: z.string().optional(),
+  }),
+})
+
+export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
+
 /**@LIST_FAMRS */
 /**
  * @openapi
@@ -1139,4 +1158,365 @@ export const CommunityFarms = z.object({
  *         updatedat:
  *           type: string
  *           format: date-time
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewFarmerInvitationRequest:
+ *       type: object
+ *       properties:
+ *         userid:
+ *           type: string
+ *           description: ID of the user being invited
+ *         expiresat:
+ *           type: string
+ *           description: Expiry date and time of the invitation
+ *       required:
+ *         - userid
+ *         - expiresat
+ *
+ *     FarmerInvitationResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Success message
+ *         invitation:
+ *           $ref: "#/components/schemas/FarmerInvitation"
+ *       required:
+ *         - message
+ *         - invitation
+ *
+ *     FarmerInvitation:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID of the invitation
+ *         farmid:
+ *           type: string
+ *           description: ID of the farm
+ *         userid:
+ *           type: string
+ *           description: ID of the user being invited
+ *         expiresat:
+ *           type: string
+ *           description: Expiry date and time of the invitation
+ *         isaccepted:
+ *           type: boolean
+ *           description: Flag indicating whether the invitation is accepted
+ *         createdat:
+ *           type: string
+ *           description: Date and time of creation
+ *         updatedat:
+ *           type: string
+ *           description: Date and time of last update
+ *       required:
+ *         - id
+ *         - farmid
+ *         - userid
+ *         - expiresat
+ *         - isaccepted
+ *         - createdat
+ *         - updatedat
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CancelInvitationResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ViewInvitationResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         expiresat:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         userid:
+ *           type: string
+ *         farm_name:
+ *           type: string
+ *         community_farm_id:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *       required:
+ *         - id
+ *         - expiresat
+ *         - createdat
+ *         - updatedat
+ *         - userid
+ *         - farm_name
+ *         - avatar
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListInvitationsResponse:
+ *       type: object
+ *       properties:
+ *         invitations:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/InvitationItem"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     InvitationItem:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         email:
+ *           type: string
+ *         userid:
+ *           type: string
+ *       required:
+ *         - id
+ *         - firstname
+ *         - lastname
+ *         - avatar
+ *         - email
+ *         - userid
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListFarmMembersResponse:
+ *       type: object
+ *       properties:
+ *         members:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/FarmMember"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     FarmMember:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         birthdate:
+ *           type: string
+ *           format: date-time
+ *         present_address:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         zipcode:
+ *           type: string
+ *         district:
+ *           type: string
+ *         municipality:
+ *           type: string
+ *         verification_level:
+ *           type: string
+ *         bio:
+ *           type: string
+ *         role:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         isbanned:
+ *           type: boolean
+ *         farm_id:
+ *           type: string
+ *       required:
+ *         - id
+ *         - username
+ *         - email
+ *         - firstname
+ *         - lastname
+ *         - birthdate
+ *         - present_address
+ *         - avatar
+ *         - zipcode
+ *         - district
+ *         - municipality
+ *         - verification_level
+ *         - role
+ *         - createdat
+ *         - updatedat
+ *         - isbanned
+ *         - farm_id
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateCommunityFarmRequest:
+ *       type: object
+ *       properties:
+ *         farm_name:
+ *           type: string
+ *         location:
+ *           type: string
+ *         description:
+ *           type: string
+ *         district:
+ *           type: string
+ *         size:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *           format: binary
+ *         cover_photo:
+ *           type: string
+ *           format: binary
+ *
+ *     UpdateCommunityFarmResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: "#/components/schemas/CommunityFarm"
+ *       required:
+ *         - message
+ *         - data
+ *
+ *     CommunityFarm:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         farm_name:
+ *           type: string
+ *         location:
+ *           type: string
+ *         description:
+ *           type: string
+ *         farm_head:
+ *           type: string
+ *         district:
+ *           type: string
+ *         size:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         cover_photo:
+ *           type: string
+ *         application_id:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - location
+ *         - description
+ *         - farm_head
+ *         - district
+ *         - size
+ *         - avatar
+ *         - cover_photo
+ *         - application_id
+ *         - createdat
+ *         - updatedat
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ArchiveCropResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ArchivedCrop:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         image:
+ *           type: string
+ *         seedling_season:
+ *           type: string
+ *         planting_season:
+ *           type: string
+ *         harvest_season:
+ *           type: string
+ *         isyield:
+ *           type: boolean
+ *         growth_span:
+ *           type: string
+ *       required:
+ *         - id
+ *         - updatedat
+ *         - createdat
+ *         - name
+ *         - description
+ *         - image
+ *         - seedling_season
+ *         - planting_season
+ *         - harvest_season
+ *         - isyield
+ *         - growth_span
  */
