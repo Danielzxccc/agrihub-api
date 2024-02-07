@@ -152,7 +152,7 @@ export async function listCommuntityCropReports(
       perpage,
       sortBy
     ),
-    Service.getTotalReportCount(),
+    Service.getTotalReportCount(id),
   ])
 
   return { data, total }
