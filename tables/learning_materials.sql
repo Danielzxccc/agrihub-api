@@ -5,6 +5,7 @@ CREATE TABLE learning_materials(
     type TEXT,
     language TEXT,
     status TEXT NOT NULL, --draft
+    published_date TIMESTAMP,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

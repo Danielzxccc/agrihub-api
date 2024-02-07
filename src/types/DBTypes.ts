@@ -25,6 +25,7 @@ import {
   UserNotifications,
   Subscriptions,
   FarmerInvitations,
+  LearningMaterials,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -112,3 +113,8 @@ export type NewSubscription = Insertable<Subscriptions>
 export type FarmerInvitation = Selectable<FarmerInvitations>
 export type NewFarmerInvitation = Insertable<FarmerInvitations>
 export type UpdateFarmerInvitation = Updateable<FarmApplications>
+
+// learning materials
+export type LearningMaterial = Selectable<LearningMaterials>
+export type NewLearningMaterial = Insertable<LearningMaterials>
+export type UpdateLearningMaterial = Updateable<LearningMaterials>
