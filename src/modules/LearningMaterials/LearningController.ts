@@ -35,3 +35,37 @@ export async function updateDraftLearningMaterial(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function createLearningResource(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.NewLearningResource, req)
+    const image = req.file
+
+    const newLearningResource = await Interactor.createLearningResource(
+      id,
+      image,
+      {
+        body,
+      }
+    )
+
+    res
+      .status(201)
+      .json({ message: 'created successfully', data: newLearningResource })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function removeLearningResource(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.removeLearningResource(id)
+
+    res.status(200).json({ message: 'Removed Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

@@ -2,12 +2,21 @@ import { sql } from 'kysely'
 import { db } from '../../config/database'
 import {
   NewLearningMaterial,
+  NewLearningResource,
   UpdateLearningMaterial,
 } from '../../types/DBTypes'
 
 export async function findLearningMaterial(id: string) {
   return await db
     .selectFrom('learning_materials')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findLearningResource(id: string) {
+  return await db
+    .selectFrom('learning_resource')
     .selectAll()
     .where('id', '=', id)
     .executeTakeFirst()
@@ -31,4 +40,16 @@ export async function updateLearningMaterial(
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
+}
+
+export async function insertLearningResource(resource: NewLearningResource) {
+  return await db
+    .insertInto('learning_resource')
+    .values(resource)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteLearningResource(id: string) {
+  return await db.deleteFrom('learning_resource').where('id', '=', id).execute()
 }

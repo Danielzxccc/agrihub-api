@@ -15,4 +15,14 @@ export const UpdateLearningMaterial = z.object({
   }),
 })
 
+export const NewLearningResource = z.object({
+  body: z.object({
+    name: z.string(),
+    description: z.string().optional(),
+    resource: z.string().optional(),
+    type: z.string().optional(),
+  }),
+})
+
 export type NewLearningMaterialT = z.infer<typeof NewLearningMaterial>
+export type NewLearningResourceT = z.infer<typeof NewLearningResource>

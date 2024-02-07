@@ -16,3 +16,16 @@ LearningRouter.put(
   UserGuard(['admin', 'asst_admin']),
   LearningController.updateDraftLearningMaterial
 )
+
+LearningRouter.post(
+  '/create/resource/:id',
+  UserGuard(['admin', 'asst_admin']),
+  upload.single('image'),
+  LearningController.createLearningResource
+)
+
+LearningRouter.delete(
+  '/remove/resource/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.removeLearningResource
+)

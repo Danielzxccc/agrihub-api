@@ -1,6 +1,10 @@
-import { NewLearningMaterialT } from '../../schema/LearningMaterialSchema'
+import {
+  NewLearningMaterialT,
+  NewLearningResourceT,
+} from '../../schema/LearningMaterialSchema'
 import {
   NewLearningMaterial,
+  NewLearningResource,
   UpdateLearningMaterial,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
@@ -42,4 +46,42 @@ export async function updateDraftLearningMaterial(
   )
 
   return updatedLearningMaterial
+}
+
+export async function createLearningResource(
+  id: string,
+  image: Express.Multer.File,
+  resource: NewLearningResourceT
+) {
+  const learningMaterial = await Service.findLearningMaterial(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  const resourceType = image?.filename
+    ? image?.filename
+    : resource.body?.resource || null
+
+  const learningResource: NewLearningResource = {
+    ...resource.body,
+    resource: resourceType,
+    learning_id: id,
+  }
+
+  const newLearningResource = await Service.insertLearningResource(
+    learningResource
+  )
+
+  return newLearningResource
+}
+
+export async function removeLearningResource(id: string) {
+  const learningMaterial = await Service.findLearningResource(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Resource Not Found', 404)
+  }
+
+  await Service.deleteLearningResource(id)
 }
