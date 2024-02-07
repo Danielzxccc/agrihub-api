@@ -107,10 +107,11 @@ export async function findCommunityReports(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalReportCount() {
+export async function getTotalReportCount(farmid: string) {
   return await db
     .selectFrom('community_crop_reports as ccr')
     .select(({ fn }) => [fn.count<number>('ccr.id').as('count')])
+    .where('ccr.farmid', '=', farmid)
     .executeTakeFirst()
 }
 
