@@ -6,9 +6,11 @@ import {
   NewLearningCredits,
   NewLearningMaterial,
   NewLearningResource,
+  NewLearningTags,
   UpdateLearningMaterial,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
+import { deleteFileCloud } from '../AWS-Bucket/UploadService'
 import * as Service from './LearningService'
 
 export async function createDraftLearningMaterial(
@@ -78,10 +80,14 @@ export async function createLearningResource(
 }
 
 export async function removeLearningResource(id: string) {
-  const learningMaterial = await Service.findLearningResource(id)
+  const learningResource = await Service.findLearningResource(id)
 
-  if (!learningMaterial) {
+  if (!learningResource) {
     throw new HttpError('Learning Resource Not Found', 404)
+  }
+
+  if (learningResource.type === 'image') {
+    await deleteFileCloud(learningResource.resource)
   }
 
   await Service.deleteLearningResource(id)
@@ -117,4 +123,42 @@ export async function removeLearningCredits(id: string) {
   }
 
   await Service.deleteLearningCredits(id)
+}
+
+export async function createLearningTags(id: string, tags: string[] | string) {
+  const learningMaterial = await Service.findLearningMaterial(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  let learningTags: NewLearningTags[] | NewLearningTags
+
+  if (Array.isArray(tags)) {
+    learningTags = tags.map((item) => {
+      return {
+        tag_id: item,
+        learning_id: id,
+      }
+    })
+  } else {
+    learningTags = {
+      tag_id: tags,
+      learning_id: id,
+    }
+  }
+
+  const newLearningTags = await Service.insertLearningTags(learningTags)
+  return newLearningTags
+}
+
+export async function removeLearningTags(id: string) {
+  const learningTag = await Service.findLearningTag(id)
+
+  console.log(id)
+  if (!learningTag) {
+    throw new HttpError('Learning Tag Not Found', 404)
+  }
+
+  await Service.deleteLearningTag(id)
 }

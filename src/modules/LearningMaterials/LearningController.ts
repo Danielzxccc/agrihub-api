@@ -95,3 +95,28 @@ export async function removeLearningCredits(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function createLearningTags(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.NewLearningTags, req)
+
+    const newLearningTags = await Interactor.createLearningTags(id, body.tags)
+    res
+      .status(201)
+      .json({ message: 'Created Successfully', data: newLearningTags })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function removeLearningTags(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.removeLearningTags(id)
+    res.status(200).json({ message: 'Removed Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

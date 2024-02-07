@@ -544,3 +544,160 @@
  *       required:
  *         - message
  */
+
+/**
+ * @openapi
+ * /api/learning/create/tags/{id}:
+ *   post:
+ *     summary: Remove tags from learning material
+ *     tags:
+ *       - LearningMaterials
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the learning material
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/NewLearningTags"
+ *     responses:
+ *       "201":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CreateLearningTagsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewLearningTags:
+ *       type: object
+ *       properties:
+ *         tags:
+ *           oneOf:
+ *             - type: array
+ *               items:
+ *                 type: string
+ *             - type: string
+ *       required:
+ *         - tags
+ *
+ *     CreateLearningTagsResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/LearningTag"
+ *       required:
+ *         - message
+ *         - data
+ *
+ *     LearningTag:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         learning_id:
+ *           type: string
+ *         tag_id:
+ *           type: string
+ *       required:
+ *         - id
+ *         - learning_id
+ *         - tag_id
+ */
+
+/**
+ * @openapi
+ * /api/learning/remove/tags/{id}:
+ *   delete:
+ *     summary: Remove tags from learning material
+ *     tags:
+ *       - LearningMaterials
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the learning material
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/RemoveLearningTagsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     RemoveLearningTagsResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */

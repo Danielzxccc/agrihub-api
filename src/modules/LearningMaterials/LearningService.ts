@@ -4,6 +4,7 @@ import {
   NewLearningCredits,
   NewLearningMaterial,
   NewLearningResource,
+  NewLearningTags,
   UpdateLearningMaterial,
 } from '../../types/DBTypes'
 
@@ -26,6 +27,14 @@ export async function findLearningResource(id: string) {
 export async function findLearningCredits(id: string) {
   return await db
     .selectFrom('learning_credits')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findLearningTag(id: string) {
+  return await db
+    .selectFrom('learning_tags')
     .selectAll()
     .where('id', '=', id)
     .executeTakeFirst()
@@ -73,4 +82,17 @@ export async function insertLearningCredits(credits: NewLearningCredits) {
 
 export async function deleteLearningCredits(id: string) {
   return await db.deleteFrom('learning_credits').where('id', '=', id).execute()
+}
+
+export async function insertLearningTags(learningTags: NewLearningTags) {
+  return await db
+    .insertInto('learning_tags')
+    .values(learningTags)
+    .returningAll()
+    .onConflict((oc) => oc.column('learning_id').column('tag_id').doNothing())
+    .execute()
+}
+
+export async function deleteLearningTag(id: string) {
+  return await db.deleteFrom('learning_tags').where('id', '=', id).execute()
 }

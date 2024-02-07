@@ -31,5 +31,11 @@ export const NewLearningCredits = z.object({
   }),
 })
 
+export const NewLearningTags = z.object({
+  body: z.object({
+    tags: z.union([z.array(z.string()), z.string()]),
+  }),
+})
+
 export type NewLearningMaterialT = z.infer<typeof NewLearningMaterial>
 export type NewLearningResourceT = z.infer<typeof NewLearningResource>

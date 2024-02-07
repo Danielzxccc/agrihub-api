@@ -41,3 +41,15 @@ LearningRouter.delete(
   UserGuard(['admin', 'asst_admin']),
   LearningController.removeLearningCredits
 )
+
+LearningRouter.post(
+  '/create/tags/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.createLearningTags
+)
+
+LearningRouter.delete(
+  '/remove/tags/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.removeLearningTags
+)
