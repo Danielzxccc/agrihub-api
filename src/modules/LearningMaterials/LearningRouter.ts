@@ -29,3 +29,15 @@ LearningRouter.delete(
   UserGuard(['admin', 'asst_admin']),
   LearningController.removeLearningResource
 )
+
+LearningRouter.post(
+  '/create/credits/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.createLearningCredits
+)
+
+LearningRouter.delete(
+  '/remove/credits/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.removeLearningCredits
+)

@@ -24,5 +24,12 @@ export const NewLearningResource = z.object({
   }),
 })
 
+export const NewLearningCredits = z.object({
+  body: z.object({
+    name: z.string(),
+    title: z.string(),
+  }),
+})
+
 export type NewLearningMaterialT = z.infer<typeof NewLearningMaterial>
 export type NewLearningResourceT = z.infer<typeof NewLearningResource>

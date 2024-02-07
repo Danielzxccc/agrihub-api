@@ -3,6 +3,7 @@ import {
   NewLearningResourceT,
 } from '../../schema/LearningMaterialSchema'
 import {
+  NewLearningCredits,
   NewLearningMaterial,
   NewLearningResource,
   UpdateLearningMaterial,
@@ -84,4 +85,36 @@ export async function removeLearningResource(id: string) {
   }
 
   await Service.deleteLearningResource(id)
+}
+
+export async function createLearningCredits(
+  id: string,
+  credit: NewLearningCredits
+) {
+  const learningMaterial = await Service.findLearningMaterial(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  const learningCredits: NewLearningCredits = {
+    ...credit,
+    learning_id: id,
+  }
+
+  const newLearningCredits = await Service.insertLearningCredits(
+    learningCredits
+  )
+
+  return newLearningCredits
+}
+
+export async function removeLearningCredits(id: string) {
+  const learningCredits = await Service.findLearningCredits(id)
+
+  if (!learningCredits) {
+    throw new HttpError('Learning Credit Not Found', 404)
+  }
+
+  await Service.deleteLearningCredits(id)
 }

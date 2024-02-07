@@ -27,6 +27,7 @@ import {
   FarmerInvitations,
   LearningMaterials,
   LearningResource,
+  LearningCredits,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -122,3 +123,6 @@ export type UpdateLearningMaterial = Updateable<LearningMaterials>
 
 // learning resource
 export type NewLearningResource = Insertable<LearningResource>
+
+// learning credits
+export type NewLearningCredits = Insertable<LearningCredits>

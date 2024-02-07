@@ -1,6 +1,7 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
 import {
+  NewLearningCredits,
   NewLearningMaterial,
   NewLearningResource,
   UpdateLearningMaterial,
@@ -17,6 +18,14 @@ export async function findLearningMaterial(id: string) {
 export async function findLearningResource(id: string) {
   return await db
     .selectFrom('learning_resource')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findLearningCredits(id: string) {
+  return await db
+    .selectFrom('learning_credits')
     .selectAll()
     .where('id', '=', id)
     .executeTakeFirst()
@@ -52,4 +61,16 @@ export async function insertLearningResource(resource: NewLearningResource) {
 
 export async function deleteLearningResource(id: string) {
   return await db.deleteFrom('learning_resource').where('id', '=', id).execute()
+}
+
+export async function insertLearningCredits(credits: NewLearningCredits) {
+  return await db
+    .insertInto('learning_credits')
+    .values(credits)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteLearningCredits(id: string) {
+  return await db.deleteFrom('learning_credits').where('id', '=', id).execute()
 }
