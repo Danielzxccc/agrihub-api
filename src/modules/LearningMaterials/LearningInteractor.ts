@@ -211,3 +211,33 @@ export async function publishLearningMaterial(id: string) {
 
   await Service.updateLearningMaterial(id, publishedObject)
 }
+
+export async function setFeaturedLearningResource(
+  learningid: string,
+  id: string
+) {
+  const learningMaterial = await Service.findLearningMaterial(learningid)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  const learningResource = await Service.findLearningResource(id)
+
+  if (!learningResource) {
+    throw new HttpError('Learning Resource Not Found', 404)
+  }
+
+  await Promise.all([
+    Service.setLearningResourceAsFeatured(learningid, id),
+    Service.setIsFeaturedToFalse(learningid, id),
+  ])
+}
+
+export async function unpublishedLearningMaterial(id: string) {
+  const learningMaterial = await Service.findLearningMaterial(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+}

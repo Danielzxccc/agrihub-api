@@ -183,3 +183,26 @@ export async function getTotalDraftLearningMaterials() {
     .where('status', '=', 'draft')
     .executeTakeFirst()
 }
+
+export async function setLearningResourceAsFeatured(
+  learningid: string,
+  id: string
+) {
+  return await db
+    .updateTable('learning_resource')
+    .set({ is_featured: true })
+    .where('id', '=', id)
+    .where('learning_id', '=', learningid)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function setIsFeaturedToFalse(learningid: string, id: string) {
+  return await db
+    .updateTable('learning_resource')
+    .set({ is_featured: false })
+    .where('id', '!=', id)
+    .where('learning_id', '=', learningid)
+    .returningAll()
+    .executeTakeFirst()
+}

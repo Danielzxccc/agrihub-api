@@ -175,3 +175,15 @@ export async function publishLearningMaterial(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function setFeaturedLearningResource(req: Request, res: Response) {
+  try {
+    const { materialId, id } = req.params
+
+    await Interactor.setFeaturedLearningResource(materialId, id)
+
+    res.status(200).json({ message: 'Set Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

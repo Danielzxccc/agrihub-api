@@ -71,3 +71,9 @@ LearningRouter.put(
   UserGuard(['admin', 'asst_admin']),
   LearningController.publishLearningMaterial
 )
+
+LearningRouter.put(
+  '/featured/:materialId/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.setFeaturedLearningResource
+)
