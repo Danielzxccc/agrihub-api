@@ -773,6 +773,12 @@
  *         published_date:
  *           type: string
  *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
  *         learning_resource:
  *           type: array
  *           items:
@@ -1027,6 +1033,66 @@
  * components:
  *   schemas:
  *     SetFeaturedLearningMaterialResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */
+
+/**
+ * @openapi
+ * /api/learning/unpublish/{id}:
+ *   delete:
+ *     summary: Unpublish a learning material
+ *     tags:
+ *       - LearningMaterials
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the learning material to be unpublished
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UnpublishLearningMaterialResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UnpublishLearningMaterialResponse:
  *       type: object
  *       properties:
  *         message:

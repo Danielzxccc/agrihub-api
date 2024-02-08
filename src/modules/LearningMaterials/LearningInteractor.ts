@@ -234,10 +234,16 @@ export async function setFeaturedLearningResource(
   ])
 }
 
-export async function unpublishedLearningMaterial(id: string) {
+export async function unpublishLearningMaterial(id: string) {
   const learningMaterial = await Service.findLearningMaterial(id)
 
   if (!learningMaterial) {
     throw new HttpError('Learning Material Not Found', 404)
   }
+
+  const updateObject: UpdateLearningMaterial = {
+    status: 'draft',
+  }
+
+  await Service.updateLearningMaterial(id, updateObject)
 }

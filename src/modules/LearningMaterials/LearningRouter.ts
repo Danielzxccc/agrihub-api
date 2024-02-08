@@ -77,3 +77,9 @@ LearningRouter.put(
   UserGuard(['admin', 'asst_admin']),
   LearningController.setFeaturedLearningResource
 )
+
+LearningRouter.delete(
+  '/unpublish/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.unpublishLearningMaterial
+)
