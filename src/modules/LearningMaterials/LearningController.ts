@@ -131,3 +131,35 @@ export async function removeLearningTags(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function listDraftLearningMaterials(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListDraftLearningMaterials, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const learningMaterials = await Interactor.listDraftLearningMaterials(
+      offset,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(
+      Number(learningMaterials.total.count) / perPage
+    )
+    res.status(200).json({
+      data: learningMaterials.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(learningMaterials.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

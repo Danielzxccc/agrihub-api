@@ -59,3 +59,9 @@ LearningRouter.delete(
   UserGuard(['admin', 'asst_admin']),
   LearningController.removeLearningTags
 )
+
+LearningRouter.get(
+  '/draft',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.listDraftLearningMaterials
+)

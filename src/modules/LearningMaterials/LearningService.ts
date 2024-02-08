@@ -153,3 +153,33 @@ export async function insertLearningTags(learningTags: NewLearningTags) {
 export async function deleteLearningTag(id: string) {
   return await db.deleteFrom('learning_tags').where('id', '=', id).execute()
 }
+
+export async function findDraftLearningMaterials(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('learning_materials')
+    .selectAll()
+    .where('status', '=', 'draft')
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('content', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalDraftLearningMaterials() {
+  return await db
+    .selectFrom('learning_materials')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('status', '=', 'draft')
+    .executeTakeFirst()
+}

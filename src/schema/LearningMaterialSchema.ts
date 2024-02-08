@@ -37,5 +37,13 @@ export const NewLearningTags = z.object({
   }),
 })
 
+export const ListDraftLearningMaterials = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+  }),
+})
+
 export type NewLearningMaterialT = z.infer<typeof NewLearningMaterial>
 export type NewLearningResourceT = z.infer<typeof NewLearningResource>

@@ -172,3 +172,16 @@ export async function removeLearningTags(id: string) {
 
   await Service.deleteLearningTag(id)
 }
+
+export async function listDraftLearningMaterials(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findDraftLearningMaterials(offset, searchKey, perpage),
+    Service.getTotalDraftLearningMaterials(),
+  ])
+
+  return { data, total }
+}
