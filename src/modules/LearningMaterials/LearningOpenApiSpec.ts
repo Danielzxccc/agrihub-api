@@ -773,12 +773,6 @@
  *         published_date:
  *           type: string
  *           format: date-time
- *         createdat:
- *           type: string
- *           format: date-time
- *         updatedat:
- *           type: string
- *           format: date-time
  *         learning_resource:
  *           type: array
  *           items:
@@ -937,4 +931,40 @@
  *       required:
  *         - data
  *         - pagination
+ */
+
+/**
+ * @openapi
+ * /api/learning/publish/{id}:
+ *   put:
+ *     summary: Publish a learning material
+ *     tags:
+ *       - LearningMaterials
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the learning material to publish
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/PublishLearningMaterialResponse"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PublishLearningMaterialResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
  */

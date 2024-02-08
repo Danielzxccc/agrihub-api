@@ -185,3 +185,29 @@ export async function listDraftLearningMaterials(
 
   return { data, total }
 }
+
+export async function publishLearningMaterial(id: string) {
+  const learningMaterial = await Service.findLearningMaterialDetails(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  if (learningMaterial.learning_resource.length <= 0) {
+    throw new HttpError('You must have at least one learning resource.', 400)
+  }
+
+  if (learningMaterial.learning_credits.length <= 0) {
+    throw new HttpError('You must have at least one learning credits.', 400)
+  }
+
+  if (learningMaterial.tags.length <= 0) {
+    throw new HttpError('You must have at least one learning tags.', 400)
+  }
+
+  const publishedObject: UpdateLearningMaterial = {
+    status: 'published',
+  }
+
+  await Service.updateLearningMaterial(id, publishedObject)
+}

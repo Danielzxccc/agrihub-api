@@ -65,3 +65,9 @@ LearningRouter.get(
   UserGuard(['admin', 'asst_admin']),
   LearningController.listDraftLearningMaterials
 )
+
+LearningRouter.put(
+  '/publish/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.publishLearningMaterial
+)

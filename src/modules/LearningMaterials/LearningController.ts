@@ -163,3 +163,15 @@ export async function listDraftLearningMaterials(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function publishLearningMaterial(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.publishLearningMaterial(id)
+
+    res.status(200).json({ message: 'Published Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
