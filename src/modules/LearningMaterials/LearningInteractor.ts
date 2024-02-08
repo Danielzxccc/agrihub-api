@@ -13,6 +13,16 @@ import HttpError from '../../utils/HttpError'
 import { deleteFileCloud } from '../AWS-Bucket/UploadService'
 import * as Service from './LearningService'
 
+export async function viewLearningMaterial(id: string) {
+  const learningMaterial = await Service.findLearningMaterialDetails(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  return learningMaterial
+}
+
 export async function createDraftLearningMaterial(
   material: NewLearningMaterialT
 ) {

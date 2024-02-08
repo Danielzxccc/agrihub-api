@@ -226,7 +226,7 @@
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             $ref: "#/components/schemas/NewLearningResource"
  *     responses:
@@ -277,6 +277,9 @@
  *           type: string
  *         type:
  *           type: string
+ *         image:
+ *           type: string
+ *           format: binary
  *       required:
  *         - name
  *
@@ -700,4 +703,142 @@
  *           type: string
  *       required:
  *         - message
+ */
+
+/**
+ * @openapi
+ * /api/learning/view/{id}:
+ *   get:
+ *     summary: View a learning material by ID
+ *     tags:
+ *       - LearningMaterials
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/LearningMaterialViewResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     LearningMaterialViewResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         title:
+ *           type: string
+ *         content:
+ *           type: string
+ *         type:
+ *           type: string
+ *         language:
+ *           type: string
+ *         status:
+ *           type: string
+ *         published_date:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         learning_resource:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/LearningResource"
+ *         learning_credits:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/LearningCredit"
+ *         tags:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/LearningTag"
+ *       required:
+ *         - id
+ *         - title
+ *         - status
+ *         - createdat
+ *         - updatedat
+ *
+ *     LearningResource:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         resource:
+ *           type: string
+ *         type:
+ *           type: string
+ *         is_featured:
+ *           type: boolean
+ *       required:
+ *         - id
+ *         - name
+ *
+ *     LearningCredit:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         title:
+ *           type: string
+ *       required:
+ *         - id
+ *         - name
+ *         - title
+ *
+ *     LearningTag:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         tag:
+ *           type: string
+ *       required:
+ *         - id
+ *         - tag
  */

@@ -4,6 +4,17 @@ import * as Interactor from './LearningInteractor'
 import * as Schema from '../../schema/LearningMaterialSchema'
 import zParse from '../../utils/zParse'
 
+export async function viewLearningMaterial(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    const learningMaterial = await Interactor.viewLearningMaterial(id)
+    res.status(200).json(learningMaterial)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function createDraftLearningMaterial(req: Request, res: Response) {
   try {
     const { body } = await zParse(Schema.NewLearningMaterial, req)

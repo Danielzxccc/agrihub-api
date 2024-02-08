@@ -17,6 +17,7 @@ CREATE TABLE learning_resource(
     description TEXT,
     resource TEXT,
     type TEXT,
+    is_featured BOOLEAN default false,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (learning_id) REFERENCES learning_materials(id) ON DELETE CASCADE
