@@ -66,6 +66,12 @@ LearningRouter.get(
   LearningController.listDraftLearningMaterials
 )
 
+LearningRouter.get(
+  '/published',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.listPublishedLearningMaterials
+)
+
 LearningRouter.put(
   '/publish/:id',
   UserGuard(['admin', 'asst_admin']),
@@ -82,4 +88,28 @@ LearningRouter.delete(
   '/unpublish/:id',
   UserGuard(['admin', 'asst_admin']),
   LearningController.unpublishLearningMaterial
+)
+
+LearningRouter.delete(
+  '/draft/delete/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.removeLearningMaterial
+)
+
+LearningRouter.delete(
+  '/archive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.archiveLearningMaterial
+)
+
+LearningRouter.put(
+  '/unarchive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.unArchiveLearningMaterial
+)
+
+LearningRouter.get(
+  '/archive/list',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.listArchivedLearningMaterials
 )

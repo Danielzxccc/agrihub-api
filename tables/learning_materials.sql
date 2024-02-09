@@ -6,6 +6,7 @@ CREATE TABLE learning_materials(
     language TEXT,
     status TEXT NOT NULL, --draft
     published_date TIMESTAMP,
+    is_archived BOOLEAN DEFAULT false,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

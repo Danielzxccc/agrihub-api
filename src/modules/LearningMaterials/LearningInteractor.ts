@@ -1,3 +1,4 @@
+import { sql } from 'kysely'
 import {
   NewLearningMaterialT,
   NewLearningResourceT,
@@ -10,14 +11,21 @@ import {
   UpdateLearningMaterial,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
-import { deleteFileCloud } from '../AWS-Bucket/UploadService'
+import { deleteFileCloud, getObjectUrl } from '../AWS-Bucket/UploadService'
 import * as Service from './LearningService'
+import { ZodError, z } from 'zod'
 
 export async function viewLearningMaterial(id: string) {
   const learningMaterial = await Service.findLearningMaterialDetails(id)
 
   if (!learningMaterial) {
     throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  for (const material of learningMaterial.learning_resource) {
+    if (material.type === 'image') {
+      material.resource = getObjectUrl(material.resource)
+    }
   }
 
   return learningMaterial
@@ -186,6 +194,19 @@ export async function listDraftLearningMaterials(
   return { data, total }
 }
 
+export async function listPublishedLearningMaterials(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findPublishedLearningMaterials(offset, searchKey, perpage),
+    Service.getTotalPublishedLearningMaterials(),
+  ])
+
+  return { data, total }
+}
+
 export async function publishLearningMaterial(id: string) {
   const learningMaterial = await Service.findLearningMaterialDetails(id)
 
@@ -205,11 +226,28 @@ export async function publishLearningMaterial(id: string) {
     throw new HttpError('You must have at least one learning tags.', 400)
   }
 
+  const validation = z.object({
+    title: z.string({ required_error: 'title is required' }),
+    content: z.string({ required_error: 'content is required' }),
+    type: z.string({ required_error: 'type is required' }),
+    language: z.string({ required_error: 'language is required' }),
+    status: z.string({ required_error: 'status is required' }),
+  })
+
+  try {
+    await validation.parseAsync(learningMaterial)
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new HttpError('validation error', 400, error.errors)
+    }
+    throw new HttpError('validation error', 400)
+  }
+
   const publishedObject: UpdateLearningMaterial = {
     status: 'published',
   }
 
-  await Service.updateLearningMaterial(id, publishedObject)
+  await Service.publishLearningMaterial(id, publishedObject)
 }
 
 export async function setFeaturedLearningResource(
@@ -246,4 +284,59 @@ export async function unpublishLearningMaterial(id: string) {
   }
 
   await Service.updateLearningMaterial(id, updateObject)
+}
+
+export async function removeLearningMaterial(id: string) {
+  const learningMaterial = await Service.findLearningMaterial(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  if (learningMaterial.status !== 'draft') {
+    throw new HttpError("You can't delete published learning materials", 401)
+  }
+
+  await Service.deleteLearningMaterial(id)
+}
+
+export async function archiveLearningMaterial(id: string) {
+  const learningMaterial = await Service.findLearningMaterial(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  const updatedObject: UpdateLearningMaterial = {
+    is_archived: true,
+  }
+
+  await Service.updateLearningMaterial(id, updatedObject)
+}
+
+export async function unArchiveLearningMaterial(id: string) {
+  const learningMaterial = await Service.findLearningMaterial(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  const updatedObject: UpdateLearningMaterial = {
+    is_archived: false,
+  }
+
+  await Service.updateLearningMaterial(id, updatedObject)
+}
+
+export async function listArchivedLearningMaterials(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findArchivedLearningMaterials(offset, searchKey, perpage),
+    Service.getTotalArchivedLearningMaterials(),
+  ])
+
+  return { data, total }
 }

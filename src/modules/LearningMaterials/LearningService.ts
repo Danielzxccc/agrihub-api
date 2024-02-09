@@ -111,6 +111,18 @@ export async function updateLearningMaterial(
 ) {
   return await db
     .updateTable('learning_materials')
+    .set({ ...material, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function publishLearningMaterial(
+  id: string,
+  material: UpdateLearningMaterial
+) {
+  return await db
+    .updateTable('learning_materials')
     .set({ ...material, published_date: sql`CURRENT_TIMESTAMP` })
     .where('id', '=', id)
     .returningAll()
@@ -184,6 +196,36 @@ export async function getTotalDraftLearningMaterials() {
     .executeTakeFirst()
 }
 
+export async function findPublishedLearningMaterials(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('learning_materials')
+    .selectAll()
+    .where('status', '=', 'published')
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('content', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalPublishedLearningMaterials() {
+  return await db
+    .selectFrom('learning_materials')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('status', '=', 'published')
+    .executeTakeFirst()
+}
+
 export async function setLearningResourceAsFeatured(
   learningid: string,
   id: string
@@ -204,5 +246,42 @@ export async function setIsFeaturedToFalse(learningid: string, id: string) {
     .where('id', '!=', id)
     .where('learning_id', '=', learningid)
     .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteLearningMaterial(id: string) {
+  return await db
+    .deleteFrom('learning_materials')
+    .where('id', '=', id)
+    .execute()
+}
+
+export async function findArchivedLearningMaterials(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('learning_materials')
+    .selectAll()
+    .where('is_archived', '=', true)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('content', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalArchivedLearningMaterials() {
+  return await db
+    .selectFrom('learning_materials')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('status', '=', 'draft')
     .executeTakeFirst()
 }

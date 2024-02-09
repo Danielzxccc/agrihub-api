@@ -163,6 +163,75 @@ export async function listDraftLearningMaterials(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+export async function listPublishedLearningMaterials(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.ListDraftLearningMaterials, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const learningMaterials = await Interactor.listPublishedLearningMaterials(
+      offset,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(
+      Number(learningMaterials.total.count) / perPage
+    )
+    res.status(200).json({
+      data: learningMaterials.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(learningMaterials.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listArchivedLearningMaterials(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.ListDraftLearningMaterials, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const learningMaterials = await Interactor.listArchivedLearningMaterials(
+      offset,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(
+      Number(learningMaterials.total.count) / perPage
+    )
+    res.status(200).json({
+      data: learningMaterials.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(learningMaterials.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
 
 export async function publishLearningMaterial(req: Request, res: Response) {
   try {
@@ -195,6 +264,42 @@ export async function unpublishLearningMaterial(req: Request, res: Response) {
     await Interactor.unpublishLearningMaterial(id)
 
     res.status(200).json({ message: 'Unpublished Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function removeLearningMaterial(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.removeLearningMaterial(id)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function archiveLearningMaterial(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.archiveLearningMaterial(id)
+
+    res.status(200).json({ message: 'Archived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function unArchiveLearningMaterial(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.unArchiveLearningMaterial(id)
+
+    res.status(200).json({ message: 'Unarchived Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
