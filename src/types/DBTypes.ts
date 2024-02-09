@@ -29,6 +29,7 @@ import {
   LearningResource,
   LearningCredits,
   LearningTags,
+  AuditLogs,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -130,3 +131,6 @@ export type NewLearningCredits = Insertable<LearningCredits>
 
 // learning tags
 export type NewLearningTags = Insertable<LearningTags>
+
+// audit logs
+export type NewAuditLogs = Insertable<AuditLogs>
