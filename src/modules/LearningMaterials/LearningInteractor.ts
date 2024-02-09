@@ -11,9 +11,15 @@ import {
   UpdateLearningMaterial,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
-import { deleteFileCloud, getObjectUrl } from '../AWS-Bucket/UploadService'
+import {
+  deleteFileCloud,
+  getObjectUrl,
+  uploadFiles,
+} from '../AWS-Bucket/UploadService'
 import * as Service from './LearningService'
 import { ZodError, z } from 'zod'
+import dbErrorHandler from '../../utils/dbErrorHandler'
+import { deleteFile } from '../../utils/file'
 
 export async function viewLearningMaterial(id: string) {
   const learningMaterial = await Service.findLearningMaterialDetails(id)
@@ -74,27 +80,40 @@ export async function createLearningResource(
   image: Express.Multer.File,
   resource: NewLearningResourceT
 ) {
-  const learningMaterial = await Service.findLearningMaterial(id)
+  try {
+    const learningMaterial = await Service.findLearningMaterial(id)
 
-  if (!learningMaterial) {
-    throw new HttpError('Learning Material Not Found', 404)
+    if (!learningMaterial) {
+      throw new HttpError('Learning Material Not Found', 404)
+    }
+
+    const resourceType = image?.filename
+      ? image?.filename
+      : resource.body?.resource || null
+
+    const learningResource: NewLearningResource = {
+      ...resource.body,
+      resource: resourceType,
+      learning_id: id,
+    }
+
+    const newLearningResource = await Service.insertLearningResource(
+      learningResource
+    )
+
+    // upload to cloud
+    if (image?.filename) {
+      await uploadFiles([image])
+    }
+
+    // delete to local
+    deleteFile(image?.filename)
+
+    return newLearningResource
+  } catch (error) {
+    deleteFile(image?.filename)
+    dbErrorHandler(error)
   }
-
-  const resourceType = image?.filename
-    ? image?.filename
-    : resource.body?.resource || null
-
-  const learningResource: NewLearningResource = {
-    ...resource.body,
-    resource: resourceType,
-    learning_id: id,
-  }
-
-  const newLearningResource = await Service.insertLearningResource(
-    learningResource
-  )
-
-  return newLearningResource
 }
 
 export async function removeLearningResource(id: string) {
