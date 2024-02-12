@@ -210,3 +210,16 @@ export async function getAverageGrowthRate(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function getSuggestedLearningMaterials(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const data = await Interactor.getSuggestedLearningMaterials(userid)
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

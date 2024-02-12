@@ -65,6 +65,18 @@ export async function findLearningMaterialDetails(id: string) {
   return await query.executeTakeFirst()
 }
 
+export async function findLearningMaterialByTags(tags: string[]) {
+  return await db
+    .selectFrom('learning_materials as lm')
+    .selectAll()
+    .leftJoin('learning_tags as lt', 'lm.id', 'lt.learning_id')
+    .leftJoin('tags as t', 'lt.tag_id', 't.id')
+    .where('lm.status', '=', 'published')
+    .where('is_archived', '=', false)
+    .where((eb) => eb.or(tags.map((item) => eb('t.tag_name', '=', item))))
+    .execute()
+}
+
 export async function findLearningMaterial(id: string) {
   return await db
     .selectFrom('learning_materials')
@@ -175,6 +187,7 @@ export async function findDraftLearningMaterials(
     .selectFrom('learning_materials')
     .selectAll()
     .where('status', '=', 'draft')
+    .where('is_archived', '=', false)
 
   if (searchKey.length) {
     query = query.where((eb) =>
@@ -205,6 +218,7 @@ export async function findPublishedLearningMaterials(
     .selectFrom('learning_materials')
     .selectAll()
     .where('status', '=', 'published')
+    .where('is_archived', '=', false)
 
   if (searchKey.length) {
     query = query.where((eb) =>

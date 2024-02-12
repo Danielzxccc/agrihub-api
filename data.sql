@@ -299,3 +299,10 @@ CREATE TABLE IF NOT EXISTS public.session (
   expire timestamp(6) NOT NULL,
   CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
 );CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON public.session ("expire");
+
+
+SELECT lm.id, lm.title, lm.content, lm.type, lm.language, lm.status, lm.published_date
+FROM learning_materials lm
+JOIN learning_tags lt ON lm.id = lt.learning_id
+JOIN tags t ON lt.tag_id = t.id
+WHERE t.tag_name = 'foodsecurity';

@@ -77,3 +77,9 @@ ReportsRouter.get(
   UserGuard(['farm_head', 'farmer']),
   ReportsController.getAverageGrowthRate
 )
+
+ReportsRouter.get(
+  '/learning-materials',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.getSuggestedLearningMaterials
+)
