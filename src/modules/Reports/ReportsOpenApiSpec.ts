@@ -766,8 +766,12 @@
  *     GrowthRateResponse:
  *       type: object
  *       properties:
- *         result:
+ *         results:
  *           type: string
+ *         growth_rate:
+ *           type: number
+ *         average_growth_rate:
+ *           type: number
  *       required:
  *         - result
  */

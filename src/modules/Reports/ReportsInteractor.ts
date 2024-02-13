@@ -250,7 +250,7 @@ export async function getAverageGrowthRate(userid: string) {
   })
 
   return {
-    results: results.data,
+    results: results.data.result,
     growth_rate: Number(latestGrowthRate.toFixed(2)),
     average_growth_rate: Number(averageGrowthRate.toFixed(2)),
   }
