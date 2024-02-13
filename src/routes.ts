@@ -13,6 +13,7 @@ import { BlogsRouter } from './modules/Blogs/BlogsRouter'
 import { ReportsRouter } from './modules/Reports/ReportsRouter'
 import { NotificationRouter } from './modules/Notifications/NotificationRouter'
 import { LearningRouter } from './modules/LearningMaterials/LearningRouter'
+import { UploaderRouter } from './modules/Uploader/UploaderRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -32,6 +33,7 @@ function routes(app: Express) {
   app.use('/api/blogs', BlogsRouter)
   app.use('/api/notification', NotificationRouter)
   app.use('/api/learning', LearningRouter)
+  app.use('/api/upload', UploaderRouter)
 
   // upload error messages
   app.use(multerLimitter)
