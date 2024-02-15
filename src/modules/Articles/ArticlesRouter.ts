@@ -4,5 +4,9 @@ import * as ArticlesController from './ArticlesController'
 export const ArticlesRouter = express.Router()
 
 ArticlesRouter.post('/', ArticlesController.createArticle)
+
 ArticlesRouter.put('/:id', ArticlesController.updateArticle)
 ArticlesRouter.delete('/:id', ArticlesController.deleteArticle)
+
+ArticlesRouter.get('/', ArticlesController.listArticle)
+ArticlesRouter.get('/:id', ArticlesController.viewArticle)

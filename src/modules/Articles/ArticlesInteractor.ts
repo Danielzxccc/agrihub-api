@@ -32,3 +32,16 @@ export async function deleteArticle(id: string) {
   }
   return deletedArticle
 }
+
+export async function viewArticle(id: string) {
+  const articles = await Service.viewArticle(id)
+
+  if (!articles)
+    throw new HttpError('Article does not exit or may have been removed.', 404)
+  return articles
+}
+
+export async function listArticle(searchKey: string) {
+  const [data] = await Promise.all([Service.findArticle(searchKey)])
+  return { data }
+}

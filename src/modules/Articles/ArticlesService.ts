@@ -28,3 +28,24 @@ export async function deleteArticles(id: string) {
     .returningAll()
     .executeTakeFirst()
 }
+
+export async function viewArticle(id: string) {
+  return await db
+    .selectFrom('articles')
+    .selectAll()
+    .where('articles.id', '=', id)
+    .groupBy('articles.id')
+    .executeTakeFirst()
+}
+
+export async function findArticle(searchQuery: string) {
+  let query = db
+    .selectFrom('articles')
+    .selectAll()
+    .orderBy('articles.createdat', 'desc')
+
+  if (searchQuery.length) {
+    query = query.where('articles.title', 'ilike', `${searchQuery}%`)
+    return await query.execute()
+  }
+}
