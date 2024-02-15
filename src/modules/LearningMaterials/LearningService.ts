@@ -8,7 +8,7 @@ import {
   UpdateLearningMaterial,
   UpdateLearningResource,
 } from '../../types/DBTypes'
-import { jsonArrayFrom } from 'kysely/helpers/postgres'
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres'
 
 export async function findLearningMaterialDetails(id: string) {
   let query = db
@@ -240,8 +240,39 @@ export async function findPublishedLearningMaterials(
   perpage: number
 ) {
   let query = db
-    .selectFrom('learning_materials')
-    .selectAll()
+    .selectFrom('learning_materials as lm')
+    .select(({ eb }) => [
+      'lm.id',
+      'lm.title',
+      'lm.content',
+      'lm.type',
+      'lm.language',
+      'lm.status',
+      'lm.published_date',
+      'lm.is_archived',
+      'lm.createdat',
+      'lm.updatedat',
+      jsonObjectFrom(
+        eb
+          .selectFrom('learning_resource as lr')
+          .select([
+            sql<string>`CAST(lr.id AS TEXT)`.as('id'),
+            'lr.resource',
+            'lr.type',
+          ])
+          .whereRef('lm.id', '=', 'lr.learning_id')
+          .where('is_featured', '=', true)
+      ).as('thumnail'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_tags as lt')
+          .leftJoin('tags as t', 'lt.tag_id', 't.id')
+          .select(['t.tag_name as tag'])
+          .whereRef('lt.learning_id', '=', 'lm.id')
+          .groupBy(['lt.id', 't.tag_name'])
+          .orderBy('lt.id')
+      ).as('tags'),
+    ])
     .where('status', '=', 'published')
     .where('is_archived', '=', false)
 

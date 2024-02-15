@@ -94,6 +94,64 @@
  *         - status
  *         - createdat
  *         - updatedat
+ *
+ *
+ *
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PublishedLearningMaterial:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         title:
+ *           type: string
+ *         context:
+ *           type: string
+ *         type:
+ *           type: string
+ *         language:
+ *           type: string
+ *         status:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         thumbnail:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *             resource:
+ *               type: string
+ *             type:
+ *               type: string
+ *           required:
+ *             - id
+ *             - resource
+ *             - type
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               tag:
+ *                 type: string
+ *       required:
+ *         - id
+ *         - title
+ *         - status
+ *         - createdat
+ *         - updatedat
+ *         - thumbnail
+ *         - tags
  */
 
 /**
@@ -1065,7 +1123,7 @@
  * @openapi
  * /api/learning/published:
  *   get:
- *     summary: List draft learning materials
+ *     summary: List published learning materials
  *     tags:
  *       - LearningMaterials
  *     parameters:
@@ -1090,7 +1148,7 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/ListDraftLearningMaterialsResponse"
+ *               $ref: "#/components/schemas/ListPublishedLearningMaterialsResponse"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -1155,6 +1213,33 @@
  *       required:
  *         - data
  *         - pagination
+ *
+ *     ListPublishedLearningMaterialsResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/PublishedLearningMaterial"
+ *         pagination:
+ *           $ref: "#/components/schemas/Pagination"
+ *       required:
+ *         - data
+ *         - pagination
+ *
+ *     ListPublishedLearningMaterials:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/PublishedLearningMaterial"
+ *         pagination:
+ *           $ref: "#/components/schemas/Pagination"
+ *       required:
+ *         - data
+ *         - pagination
+ *
  */
 
 /**
