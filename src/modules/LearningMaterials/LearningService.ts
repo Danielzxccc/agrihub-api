@@ -262,7 +262,7 @@ export async function findPublishedLearningMaterials(
           ])
           .whereRef('lm.id', '=', 'lr.learning_id')
           .where('is_featured', '=', true)
-      ).as('thumnail'),
+      ).as('thumbnail'),
       jsonArrayFrom(
         eb
           .selectFrom('learning_tags as lt')
