@@ -6,8 +6,9 @@ import dbErrorHandler from '../../utils/dbErrorHandler'
 import { deleteFile } from '../../utils/file'
 import { findUser } from '../Users/UserService'
 import { uploadFiles } from '../AWS-Bucket/UploadService'
-import { getMonthByIndex } from '../../utils/utils'
+import log, { getMonthByIndex } from '../../utils/utils'
 import axios from 'axios'
+import { findLearningMaterialByTags } from '../LearningMaterials/LearningService'
 
 export async function createCommunityCropReport(
   userid: string,
@@ -195,42 +196,82 @@ export async function getAverageGrowthRate(userid: string) {
   const user = await findUser(userid)
 
   const data = await Service.getAverageGrowthRate(user.farm_id)
-  const [first] = data
+
+  console.log(data, 'CHECK DATA')
+  const [plant] = data
   const latestGrowthRate =
-    [first].reduce((acc, plant) => {
-      const growthRate =
-        plant.type === '1'
-          ? ((parseInt(plant.harvested_qty as string) -
-              parseInt(plant.planted_qty as string)) /
-              parseInt(plant.planted_qty as string)) *
-            100
-          : (parseInt(plant.harvested_qty as string) /
-              parseInt(plant.planted_qty as string)) *
-            100
-      return acc + growthRate
-    }, 0) / 1
+    plant.type === '1'
+      ? ((parseFloat(plant.harvested_qty as string) -
+          parseFloat(plant.planted_qty as string)) /
+          parseFloat(plant.planted_qty as string)) *
+        100
+      : (parseFloat(plant.harvested_qty as string) /
+          parseFloat(plant.planted_qty as string)) *
+        100
 
   // Calculate the average growth rate
-  const averageGrowthRate =
-    data.slice(1).reduce((acc, plant) => {
-      const growthRate =
-        plant.type === '1'
-          ? ((parseInt(plant.harvested_qty as string) -
-              parseInt(plant.planted_qty as string)) /
-              parseInt(plant.planted_qty as string)) *
-            100
-          : (parseInt(plant.harvested_qty as string) /
-              parseInt(plant.planted_qty as string)) *
-            100
-      return acc + growthRate
-    }, 0) / data.slice(1).length
+  // const averageGrowthRate =
+  //   data.reduce((acc, plant) => {
+  //     const growthRate =
+  //       plant.type === '1'
+  //         ? ((parseFloat(plant.harvested_qty as string) -
+  //             parseFloat(plant.planted_qty as string)) /
+  //             parseFloat(plant.planted_qty as string)) *
+  //           100
+  //         : (parseFloat(plant.harvested_qty as string) /
+  //             parseFloat(plant.planted_qty as string)) *
+  //           100
 
-  console.log(data, 'GET')
+  //     console.log(growthRate)
+  //     return acc + growthRate
+  //   }, 0) / data.length
+  let sum = 0
+  for (let i = 1; i < data.length; i++) {
+    const plant = data[i]
+    const growthRate =
+      plant.type === '1'
+        ? ((parseFloat(plant.harvested_qty as string) -
+            parseFloat(plant.planted_qty as string)) /
+            parseFloat(plant.planted_qty as string)) *
+          100
+        : (parseFloat(plant.harvested_qty as string) /
+            parseFloat(plant.planted_qty as string)) *
+          100
+
+    console.log(growthRate)
+    sum += growthRate
+  }
+
+  const averageGrowthRate = sum / (data.length - 1)
 
   const results = await axios.post(`${process.env.PYTHON_API}/growth-rate`, {
     average_growth: Number(averageGrowthRate.toFixed(2)),
     recent_growth: Number(latestGrowthRate.toFixed(2)),
   })
 
-  return results.data
+  return {
+    results: results.data.result,
+    growth_rate: Number(latestGrowthRate.toFixed(2)),
+    average_growth_rate: Number(averageGrowthRate.toFixed(2)),
+  }
+}
+
+export async function getSuggestedLearningMaterials(userid: string) {
+  const user = await findUser(userid)
+
+  // get latest report
+  const [data] = await Service.getAverageGrowthRate(user.farm_id)
+
+  // get suggested tags from python
+  const suggestedTags = await axios.post(
+    `${process.env.PYTHON_API}/suggested-tags`,
+    [data]
+  )
+
+  // feed dataset from python to our database for query
+  const dataSet = suggestedTags.data.tags[0]
+
+  const suggestedLearningMaterials = await findLearningMaterialByTags(dataSet)
+
+  return suggestedLearningMaterials
 }

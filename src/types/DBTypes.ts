@@ -26,6 +26,13 @@ import {
   Subscriptions,
   FarmerInvitations,
   LearningMaterials,
+  LearningResource,
+  LearningCredits,
+  LearningTags,
+  AuditLogs,
+  EventPartnership,
+  EventSpeaker,
+  Events,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -59,9 +66,9 @@ export type Gallery = Insertable<AboutGallery>
 export type UpdateGallery = Updateable<AboutGallery>
 
 //events
-export type Events = Selectable<CommunityEvents>
-export type NewEvent = Insertable<CommunityEvents>
-export type UpdateEvent = Updateable<CommunityEvents>
+// export type Events = Selectable<CommunityEvents>
+// export type NewEvent = Insertable<CommunityEvents>
+// export type UpdateEvent = Updateable<CommunityEvents>
 
 //farm application
 export type FarmApplication = Selectable<FarmApplications>
@@ -118,3 +125,26 @@ export type UpdateFarmerInvitation = Updateable<FarmApplications>
 export type LearningMaterial = Selectable<LearningMaterials>
 export type NewLearningMaterial = Insertable<LearningMaterials>
 export type UpdateLearningMaterial = Updateable<LearningMaterials>
+
+// learning resource
+export type NewLearningResource = Insertable<LearningResource>
+export type UpdateLearningResource = Updateable<LearningResource>
+
+// learning credits
+export type NewLearningCredits = Insertable<LearningCredits>
+export type UpdateLearningCredits = Updateable<LearningCredits>
+
+// learning tags
+export type NewLearningTags = Insertable<LearningTags>
+
+// audit logs
+export type NewAuditLogs = Insertable<AuditLogs>
+
+export type NewEvents = Insertable<Events>
+export type UpdateEvents = Updateable<Events>
+
+export type NewEventPartnership = Insertable<EventPartnership>
+export type UpdateEventPartnership = Updateable<EventPartnership>
+
+export type NewEventSpeaker = Insertable<EventSpeaker>
+export type UpdateEventSpeaker = Updateable<EventSpeaker>
