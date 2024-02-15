@@ -36,11 +36,12 @@ export async function emitPushNotification(
     redirect_to: redirect_to,
   })
 
+  emitNotification(userid, body)
+
   await PushService.sendNotification(
     subscription.payload as any,
     JSON.stringify(notificationPayload)
   )
-  emitNotification(userid, body)
 }
 
 export async function listUserNotifications(
