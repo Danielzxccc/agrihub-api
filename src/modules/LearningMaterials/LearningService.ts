@@ -6,6 +6,7 @@ import {
   NewLearningResource,
   NewLearningTags,
   UpdateLearningMaterial,
+  UpdateLearningResource,
 } from '../../types/DBTypes'
 import { jsonArrayFrom } from 'kysely/helpers/postgres'
 
@@ -149,6 +150,18 @@ export async function insertLearningResource(resource: NewLearningResource) {
     .executeTakeFirst()
 }
 
+export async function updateLearningResource(
+  id: string,
+  resource: UpdateLearningResource
+) {
+  return await db
+    .updateTable('learning_resource')
+    .set(resource)
+    .returningAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
 export async function deleteLearningResource(id: string) {
   return await db.deleteFrom('learning_resource').where('id', '=', id).execute()
 }
@@ -158,6 +171,18 @@ export async function insertLearningCredits(credits: NewLearningCredits) {
     .insertInto('learning_credits')
     .values(credits)
     .returningAll()
+    .executeTakeFirst()
+}
+
+export async function updateLearningCredits(
+  id: string,
+  resource: UpdateLearningResource
+) {
+  return await db
+    .updateTable('learning_credits')
+    .set(resource)
+    .returningAll()
+    .where('id', '=', id)
     .executeTakeFirst()
 }
 

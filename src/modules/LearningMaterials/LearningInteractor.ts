@@ -8,7 +8,9 @@ import {
   NewLearningMaterial,
   NewLearningResource,
   NewLearningTags,
+  UpdateLearningCredits,
   UpdateLearningMaterial,
+  UpdateLearningResource,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import {
@@ -116,6 +118,49 @@ export async function createLearningResource(
   }
 }
 
+export async function updateLearningResource(
+  id: string,
+  image: Express.Multer.File,
+  resource: UpdateLearningResource
+) {
+  try {
+    const resourceObject = await Service.findLearningResource(id)
+
+    if (!resourceObject) {
+      throw new HttpError('Learning Resource Not Found', 404)
+    }
+
+    const resourceType = image?.filename
+      ? image?.filename
+      : resource.resource
+      ? resource.resource
+      : resourceObject.resource
+
+    const learningResource: NewLearningResource = {
+      ...resource,
+      resource: resourceType,
+    }
+
+    const newLearningResource = await Service.updateLearningResource(
+      id,
+      learningResource
+    )
+
+    // upload to cloud
+    if (image?.filename) {
+      await uploadFiles([image])
+    }
+
+    // delete to local
+    deleteFile(image?.filename)
+
+    return newLearningResource
+  } catch (error) {
+    deleteFile(image?.filename)
+    dbErrorHandler(error)
+  }
+}
+
 export async function removeLearningResource(id: string) {
   const learningResource = await Service.findLearningResource(id)
 
@@ -150,6 +195,23 @@ export async function createLearningCredits(
   )
 
   return newLearningCredits
+}
+
+export async function updateLearningCredits(
+  id: string,
+  credits: UpdateLearningCredits
+) {
+  const creditObject = await Service.findLearningCredits(id)
+  if (!creditObject) {
+    throw new HttpError('Learning Credit Not Found', 404)
+  }
+
+  const updatedLearningCredits = await Service.updateLearningCredits(
+    id,
+    credits
+  )
+
+  return updatedLearningCredits
 }
 
 export async function removeLearningCredits(id: string) {

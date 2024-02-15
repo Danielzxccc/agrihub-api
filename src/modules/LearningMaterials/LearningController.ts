@@ -80,6 +80,26 @@ export async function createLearningResource(req: Request, res: Response) {
   }
 }
 
+export async function updateLearningResource(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const { body: resource } = await zParse(Schema.NewLearningResource, req)
+    const image = req.file
+
+    const updatedLearningResource = await Interactor.updateLearningResource(
+      id,
+      image,
+      resource
+    )
+
+    res
+      .status(200)
+      .json({ message: 'Updated Successfully', data: updatedLearningResource })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function removeLearningResource(req: Request, res: Response) {
   try {
     const { id } = req.params
@@ -102,6 +122,21 @@ export async function createLearningCredits(req: Request, res: Response) {
     res
       .status(201)
       .json({ message: 'Created Successfully', data: newLearningCredits })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateLearningCredits(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.NewLearningCredits, req)
+
+    const newLearningCredits = await Interactor.updateLearningCredits(id, body)
+
+    res
+      .status(200)
+      .json({ message: 'Updated Successfully', data: newLearningCredits })
   } catch (error) {
     errorHandler(res, error)
   }

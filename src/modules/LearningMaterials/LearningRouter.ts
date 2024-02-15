@@ -30,6 +30,13 @@ LearningRouter.post(
   LearningController.createLearningResource
 )
 
+LearningRouter.put(
+  '/update/resource/:id',
+  UserGuard(['admin', 'asst_admin']),
+  upload.single('image'),
+  LearningController.updateLearningResource
+)
+
 LearningRouter.delete(
   '/remove/resource/:id',
   UserGuard(['admin', 'asst_admin']),
@@ -40,6 +47,12 @@ LearningRouter.post(
   '/create/credits/:id',
   UserGuard(['admin', 'asst_admin']),
   LearningController.createLearningCredits
+)
+
+LearningRouter.put(
+  '/update/credits/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.updateLearningCredits
 )
 
 LearningRouter.delete(

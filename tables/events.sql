@@ -1,14 +1,18 @@
+CREATE TYPE IF NOT EXISTS cms_status AS ENUM ('draft', 'published');
+
 CREATE TABLE events(
     id SERIAL PRIMARY KEY,
-    banner TEXT NOT NULL,
-    event_start TIMESTAMP NOT NULL,
-    event_end TIMESTAMP NOT NULL,
-    where TEXT,
+    banner TEXT,
+    event_start DATETIME,
+    event_end DATETIME,
+    location TEXT,
     title TEXT NOT NULL,
-    about TEXT NOT NULL,
+    about TEXT,
     is_archived BOOLEAN default FALSE,
-    type TEXT NOT NULL,
-    guide TEXT NOT NULL,
+    status cms_status default draft,
+    type TEXT, --virtual or onsite
+    guide,
+    published_date TIMESTAMP,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 );
