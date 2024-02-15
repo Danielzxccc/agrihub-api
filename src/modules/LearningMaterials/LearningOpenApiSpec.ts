@@ -74,7 +74,7 @@
  *           type: string
  *         title:
  *           type: string
- *         context:
+ *         content:
  *           type: string
  *         type:
  *           type: string
@@ -110,7 +110,7 @@
  *           type: string
  *         title:
  *           type: string
- *         context:
+ *         content:
  *           type: string
  *         type:
  *           type: string
