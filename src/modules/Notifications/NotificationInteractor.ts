@@ -25,10 +25,6 @@ export async function emitPushNotification(
     },
   }
 
-  const subscription = await Service.findSubscription(userid)
-
-  if (!subscription) return
-
   // create notification
   await Service.createNotification({
     emitted_to: userid,
@@ -37,6 +33,10 @@ export async function emitPushNotification(
   })
 
   emitNotification(userid, body)
+
+  const subscription = await Service.findSubscription(userid)
+
+  if (!subscription) return
 
   await PushService.sendNotification(
     subscription.payload as any,
