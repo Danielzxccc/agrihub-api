@@ -81,7 +81,6 @@ LearningRouter.get(
 
 LearningRouter.get(
   '/published',
-  UserGuard(['admin', 'asst_admin']),
   LearningController.listPublishedLearningMaterials
 )
 
