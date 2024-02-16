@@ -66,6 +66,119 @@ export async function findLearningMaterialDetails(id: string) {
   return await query.executeTakeFirst()
 }
 
+export async function findPublishedLearningMaterial(id: string) {
+  let query = db
+    .selectFrom('learning_materials as lm')
+    .select(({ eb }) => [
+      'lm.id',
+      'lm.title',
+      'lm.content',
+      'lm.type',
+      'lm.language',
+      'lm.status',
+      'lm.published_date',
+      'lm.createdat',
+      'lm.updatedat',
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_resource as lr')
+          .select([
+            sql<string>`CAST(lr.id AS TEXT)`.as('id'),
+            sql<string>`CAST(lr.learning_id AS TEXT)`.as('learning_id'),
+            'lr.name',
+            'lr.description',
+            'lr.resource',
+            'lr.type',
+            'lr.is_featured',
+          ])
+          .whereRef('lr.learning_id', '=', 'lm.id')
+      ).as('learning_resource'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_credits as lc')
+          .select([
+            sql<string>`CAST(lc.id AS TEXT)`.as('id'),
+            sql<string>`CAST(lc.learning_id AS TEXT)`.as('learning_id'),
+            'lc.name',
+            'lc.title',
+          ])
+          .whereRef('lc.learning_id', '=', 'lm.id')
+      ).as('learning_credits'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_tags as lt')
+          .leftJoin('tags', 'lt.tag_id', 'tags.id')
+          .select([
+            'tags.tag_name as tag',
+            sql<string>`CAST(lt.id AS TEXT)`.as('id'),
+          ])
+          .whereRef('lt.learning_id', '=', 'lm.id')
+          .groupBy(['lt.id', 'lt.learning_id', 'tags.tag_name'])
+          .orderBy('lt.id')
+      ).as('tags'),
+    ])
+    .where('id', '=', id)
+    .where('lm.status', '=', 'published')
+
+  return await query.executeTakeFirst()
+}
+
+export async function findRelatedLearningMaterials(tags: string[]) {
+  let query = db
+    .selectFrom('learning_materials as lm')
+    .select(({ eb }) => [
+      'lm.id',
+      'lm.title',
+      'lm.content',
+      'lm.type',
+      'lm.language',
+      'lm.status',
+      'lm.published_date',
+      'lm.createdat',
+      'lm.updatedat',
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_resource as lr')
+          .select([
+            sql<string>`CAST(lr.id AS TEXT)`.as('id'),
+            sql<string>`CAST(lr.learning_id AS TEXT)`.as('learning_id'),
+            'lr.name',
+            'lr.description',
+            'lr.resource',
+            'lr.type',
+            'lr.is_featured',
+          ])
+          .whereRef('lr.learning_id', '=', 'lm.id')
+      ).as('learning_resource'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_credits as lc')
+          .select([
+            sql<string>`CAST(lc.id AS TEXT)`.as('id'),
+            sql<string>`CAST(lc.learning_id AS TEXT)`.as('learning_id'),
+            'lc.name',
+            'lc.title',
+          ])
+          .whereRef('lc.learning_id', '=', 'lm.id')
+      ).as('learning_credits'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_tags as lt')
+          .leftJoin('tags', 'lt.tag_id', 'tags.id')
+          .select([
+            'tags.tag_name as tag',
+            sql<string>`CAST(lt.id AS TEXT)`.as('id'),
+          ])
+          .whereRef('lt.learning_id', '=', 'lm.id')
+          .groupBy(['lt.id', 'lt.learning_id', 'tags.tag_name'])
+          .orderBy('lt.id')
+      ).as('tags'),
+    ])
+    .where('lm.status', '=', 'published')
+
+  return await query.executeTakeFirst()
+}
+
 export async function findLearningMaterialByTags(tags: string[]) {
   return await db
     .selectFrom('learning_materials as lm')

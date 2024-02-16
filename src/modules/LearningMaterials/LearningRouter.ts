@@ -5,7 +5,16 @@ import { UserGuard } from '../AuthGuard/UserGuard'
 
 export const LearningRouter = express.Router()
 
-LearningRouter.get('/view/:id', LearningController.viewLearningMaterial)
+LearningRouter.get(
+  '/view/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.viewLearningMaterial
+)
+
+LearningRouter.get(
+  '/view/published/:id',
+  LearningController.viewLearningMaterial
+)
 
 LearningRouter.post(
   '/create/draft',

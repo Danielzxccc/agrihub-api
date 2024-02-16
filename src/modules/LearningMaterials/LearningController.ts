@@ -17,6 +17,20 @@ export async function viewLearningMaterial(req: Request, res: Response) {
   }
 }
 
+export async function viewPublishedLearningMaterial(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+
+    const learningMaterial = await Interactor.viewLearningMaterial(id)
+    res.status(200).json(learningMaterial)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function createDraftLearningMaterial(
   req: SessionRequest,
   res: Response
