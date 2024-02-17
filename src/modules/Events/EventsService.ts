@@ -1,7 +1,15 @@
 import { db } from '../../config/database'
-import { NewEvents, UpdateEvents } from '../../types/DBTypes'
+import { NewEvent, UpdateEvent } from '../../types/DBTypes'
 
-export async function insertNewEvent(event: NewEvents) {
+export async function findEventById(id: string) {
+  return await db
+    .selectFrom('events')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function insertNewEvent(event: NewEvent) {
   return await db
     .insertInto('events')
     .values(event)
@@ -10,7 +18,7 @@ export async function insertNewEvent(event: NewEvents) {
     .executeTakeFirst()
 }
 
-export async function updateEvent(id: string, event: UpdateEvents) {
+export async function updateEvent(id: string, event: UpdateEvent) {
   return await db
     .updateTable('events')
     .set(event)

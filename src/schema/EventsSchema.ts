@@ -1,34 +1,22 @@
 import { z } from 'zod'
 
-export const NewEvent = z.object({
+export const NewDraftEvent = z.object({
   body: z.object({
-    event_name: z.string({ required_error: 'event name is required' }),
-    event_location: z.string({ required_error: 'location is required' }),
-    details: z.string({ required_error: 'description is required' }),
-    scope: z.string({ required_error: 'scope is required' }),
-    event_date: z.string({ required_error: 'event_date is required' }),
-    imagesrc: z.string().optional(),
+    title: z.string(),
   }),
 })
 
-export const UpdateEvent = z.object({
+export const UpdateDraftEvent = z.object({
   body: z.object({
-    event_name: z
-      .string({ required_error: 'event name is required' })
-      .optional(),
-    event_location: z
-      .string({ required_error: 'location is required' })
-      .optional(),
-    details: z.string({ required_error: 'description is required' }).optional(),
-    scope: z.string({ required_error: 'scope is required' }).optional(),
-    event_date: z
-      .string({ required_error: 'event_date is required' })
-      .optional(),
+    event_start: z.string(),
+    event_end: z.string(),
+    location: z.string(),
+    title: z.string(),
+    about: z.string(),
+    type: z.string(),
+    guide: z.string(),
   }),
-})
-
-export const ListEvents = z.object({
-  query: z.object({
-    search: z.string().optional().default(''),
+  file: z.object({
+    filename: z.string(),
   }),
 })
