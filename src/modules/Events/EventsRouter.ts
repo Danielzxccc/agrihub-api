@@ -75,3 +75,9 @@ EventsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   EventsController.viewUnpublishedEvent
 )
+
+EventsRouter.get(
+  '/draft',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.listDraftEvents
+)

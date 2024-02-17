@@ -175,3 +175,29 @@ export async function viewUnpublishedEvent(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function listDraftEvents(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListDraftEvents, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const events = await Interactor.listDraftEvents(offset, searchKey, perPage)
+
+    const totalPages = Math.ceil(Number(events.total.count) / perPage)
+    res.status(200).json({
+      data: events.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(events.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

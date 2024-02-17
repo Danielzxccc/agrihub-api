@@ -342,6 +342,7 @@ export async function getTotalDraftLearningMaterials() {
     .selectFrom('learning_materials')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('status', '=', 'draft')
+    .where('is_archived', '=', false)
     .executeTakeFirst()
 }
 
@@ -404,6 +405,7 @@ export async function getTotalPublishedLearningMaterials() {
     .selectFrom('learning_materials')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('status', '=', 'published')
+    .where('is_archived', '=', false)
     .executeTakeFirst()
 }
 

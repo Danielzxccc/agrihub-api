@@ -236,3 +236,16 @@ export async function viewUnpublishedEvent(id: string) {
 
   return event
 }
+
+export async function listDraftEvents(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findDraftEvents(offset, searchKey, perpage),
+    Service.getTotalDraftEvents(),
+  ])
+
+  return { data, total }
+}

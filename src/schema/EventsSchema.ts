@@ -75,3 +75,11 @@ export const NewEventTags = z.object({
     tags: z.union([z.array(z.string()), z.string()]),
   }),
 })
+
+export const ListDraftEvents = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+  }),
+})

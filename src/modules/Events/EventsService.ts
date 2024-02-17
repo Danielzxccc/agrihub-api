@@ -182,3 +182,36 @@ export async function findUnpublishedEvent(id: string) {
     .where('e.id', '=', id)
     .executeTakeFirst()
 }
+
+export async function findDraftEvents(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('events')
+    .selectAll()
+    .where('status', '=', 'draft')
+    .where('is_archived', '=', false)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('about', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+        eb('location', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalDraftEvents() {
+  return await db
+    .selectFrom('events')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('status', '=', 'draft')
+    .where('is_archived', '=', false)
+    .executeTakeFirst()
+}
