@@ -119,13 +119,16 @@ export async function findPublishedLearningMaterial(id: string) {
     ])
     .where('id', '=', id)
     .where('lm.status', '=', 'published')
+    .where('is_archived', '=', false)
 
   return await query.executeTakeFirst()
 }
 
-export async function findRelatedLearningMaterials(tags: string[]) {
+export async function findRelatedLearningMaterials(tags: string[] | string) {
   let query = db
     .selectFrom('learning_materials as lm')
+    .leftJoin('learning_tags as lt', 'lm.id', 'lt.learning_id')
+    .leftJoin('tags as t', 'lt.tag_id', 't.id')
     .select(({ eb }) => [
       'lm.id',
       'lm.title',
@@ -134,49 +137,44 @@ export async function findRelatedLearningMaterials(tags: string[]) {
       'lm.language',
       'lm.status',
       'lm.published_date',
+      'lm.is_archived',
       'lm.createdat',
       'lm.updatedat',
-      jsonArrayFrom(
+      jsonObjectFrom(
         eb
           .selectFrom('learning_resource as lr')
           .select([
             sql<string>`CAST(lr.id AS TEXT)`.as('id'),
-            sql<string>`CAST(lr.learning_id AS TEXT)`.as('learning_id'),
-            'lr.name',
-            'lr.description',
             'lr.resource',
             'lr.type',
-            'lr.is_featured',
           ])
-          .whereRef('lr.learning_id', '=', 'lm.id')
-      ).as('learning_resource'),
-      jsonArrayFrom(
-        eb
-          .selectFrom('learning_credits as lc')
-          .select([
-            sql<string>`CAST(lc.id AS TEXT)`.as('id'),
-            sql<string>`CAST(lc.learning_id AS TEXT)`.as('learning_id'),
-            'lc.name',
-            'lc.title',
-          ])
-          .whereRef('lc.learning_id', '=', 'lm.id')
-      ).as('learning_credits'),
+          .whereRef('lm.id', '=', 'lr.learning_id')
+          .where('is_featured', '=', true)
+      ).as('thumbnail'),
       jsonArrayFrom(
         eb
           .selectFrom('learning_tags as lt')
-          .leftJoin('tags', 'lt.tag_id', 'tags.id')
-          .select([
-            'tags.tag_name as tag',
-            sql<string>`CAST(lt.id AS TEXT)`.as('id'),
-          ])
+          .leftJoin('tags as t', 'lt.tag_id', 't.id')
+          .select(['t.tag_name as tag'])
           .whereRef('lt.learning_id', '=', 'lm.id')
-          .groupBy(['lt.id', 'lt.learning_id', 'tags.tag_name'])
+          .groupBy(['lt.id', 't.tag_name'])
           .orderBy('lt.id')
       ).as('tags'),
     ])
-    .where('lm.status', '=', 'published')
+    .where('status', '=', 'published')
+    .where('is_archived', '=', false)
 
-  return await query.executeTakeFirst()
+  if (tags.length) {
+    if (typeof tags === 'string') {
+      query = query.where('t.tag_name', '=', tags)
+    } else {
+      query = query.where((eb) =>
+        eb.or(tags.map((tag) => eb('t.tag_name', '=', tag)))
+      )
+    }
+  }
+
+  return await query.limit(3).execute()
 }
 
 export async function findLearningMaterialByTags(tags: string[]) {

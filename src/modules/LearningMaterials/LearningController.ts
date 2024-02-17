@@ -17,6 +17,22 @@ export async function viewLearningMaterial(req: Request, res: Response) {
   }
 }
 
+export async function listRelatedLearningMaterials(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.ListRelatedMaterials, req)
+
+    const learningMaterial = await Interactor.listRelatedLearningMaterials(
+      query.tags
+    )
+    res.status(200).json(learningMaterial)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function viewPublishedLearningMaterial(
   req: Request,
   res: Response

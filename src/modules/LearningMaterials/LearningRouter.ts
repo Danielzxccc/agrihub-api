@@ -16,6 +16,8 @@ LearningRouter.get(
   LearningController.viewLearningMaterial
 )
 
+LearningRouter.get('/related', LearningController.listRelatedLearningMaterials)
+
 LearningRouter.post(
   '/create/draft',
   UserGuard(['admin', 'asst_admin']),

@@ -45,5 +45,11 @@ export const ListDraftLearningMaterials = z.object({
   }),
 })
 
+export const ListRelatedMaterials = z.object({
+  query: z.object({
+    tags: z.union([z.array(z.string()), z.string()]),
+  }),
+})
+
 export type NewLearningMaterialT = z.infer<typeof NewLearningMaterial>
 export type NewLearningResourceT = z.infer<typeof NewLearningResource>

@@ -40,7 +40,7 @@ export async function viewLearningMaterial(id: string) {
 }
 
 export async function viewPublishedLearningMaterial(id: string) {
-  const learningMaterial = await Service.findLearningMaterialDetails(id)
+  const learningMaterial = await Service.findPublishedLearningMaterial(id)
 
   if (!learningMaterial) {
     throw new HttpError('Learning Material Not Found', 404)
@@ -440,4 +440,10 @@ export async function listArchivedLearningMaterials(
   ])
 
   return { data, total }
+}
+
+export async function listRelatedLearningMaterials(tags: string[] | string) {
+  const learningMaterials = await Service.findRelatedLearningMaterials(tags)
+
+  return learningMaterials
 }
