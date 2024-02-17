@@ -33,6 +33,7 @@ import {
   EventPartnership,
   EventSpeaker,
   Events,
+  EventTags,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -148,3 +149,5 @@ export type UpdateEventPartnership = Updateable<EventPartnership>
 
 export type NewEventSpeaker = Insertable<EventSpeaker>
 export type UpdateEventSpeaker = Updateable<EventSpeaker>
+
+export type NewEventTag = Insertable<EventTags>

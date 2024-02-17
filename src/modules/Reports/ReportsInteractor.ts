@@ -268,8 +268,6 @@ export async function getSuggestedLearningMaterials(userid: string) {
     [data]
   )
 
-  console.log(data, 'TEST DATA')
-  console.log(suggestedTags.data.suggested_tags[0].tags, 'CHECK DATAS PRE')
   // feed dataset from python to our database for query
   const dataSet = suggestedTags.data.suggested_tags[0].tags
 

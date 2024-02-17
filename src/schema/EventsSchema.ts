@@ -20,3 +20,58 @@ export const UpdateDraftEvent = z.object({
     filename: z.string(),
   }),
 })
+
+export const NewEventPartnership = z.object({
+  body: z.object({
+    name: z.string(),
+    organizer: z.string().transform((arg) => Boolean(arg)),
+    type: z.string(),
+  }),
+  file: z.object({
+    filename: z.string(),
+  }),
+})
+
+export const updateEventPartnership = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    organizer: z
+      .string()
+      .transform((arg) => Boolean(arg))
+      .optional(),
+    type: z.string().optional(),
+  }),
+  file: z
+    .object({
+      filename: z.string(),
+    })
+    .optional(),
+})
+
+export const NewEventSpearker = z.object({
+  body: z.object({
+    title: z.string(),
+    name: z.string(),
+  }),
+  file: z.object({
+    filename: z.string(),
+  }),
+})
+
+export const UpdateEventSpeaker = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    title: z.string().optional(),
+  }),
+  file: z
+    .object({
+      filename: z.string(),
+    })
+    .optional(),
+})
+
+export const NewEventTags = z.object({
+  body: z.object({
+    tags: z.union([z.array(z.string()), z.string()]),
+  }),
+})

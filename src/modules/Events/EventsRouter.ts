@@ -17,3 +17,61 @@ EventsRouter.put(
   upload.single('image'),
   EventsController.updateDraftEvent
 )
+
+EventsRouter.post(
+  '/create/partnership/:id',
+  UserGuard(['admin', 'asst_admin']),
+  upload.single('logo'),
+  EventsController.createNewEventPartnership
+)
+
+EventsRouter.put(
+  '/update/partnership/:id',
+  UserGuard(['admin', 'asst_admin']),
+  upload.single('logo'),
+  EventsController.updateEventPartnership
+)
+
+EventsRouter.delete(
+  '/remove/partnership/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.removeEventPartnership
+)
+
+EventsRouter.post(
+  '/create/speaker/:id',
+  UserGuard(['admin', 'asst_admin']),
+  upload.single('profile'),
+  EventsController.createEventSpeaker
+)
+
+EventsRouter.put(
+  '/update/speaker/:id',
+  UserGuard(['admin', 'asst_admin']),
+  upload.single('profile'),
+  EventsController.updateEventSpeaker
+)
+
+EventsRouter.delete(
+  '/remove/speaker/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.removeEventSpeaker
+)
+
+EventsRouter.post(
+  '/create/tags/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.createEventTags
+)
+
+EventsRouter.delete(
+  '/remove/tags/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.removeEventTag
+)
+
+EventsRouter.get(
+  '/view/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.viewUnpublishedEvent
+)
