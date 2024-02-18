@@ -81,3 +81,21 @@ EventsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   EventsController.listDraftEvents
 )
+
+EventsRouter.delete(
+  '/archive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.archiveEvent
+)
+
+EventsRouter.put(
+  '/unarchive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.unarchiveEvent
+)
+
+EventsRouter.get(
+  '/archived/list',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.listArchivedEvents
+)

@@ -249,3 +249,47 @@ export async function listDraftEvents(
 
   return { data, total }
 }
+
+export async function listArchivedEvents(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findArchivedEvents(offset, searchKey, perpage),
+    Service.getTotalArchiveEvents(),
+  ])
+
+  return { data, total }
+}
+
+export async function archiveEvent(id: string) {
+  const event = await Service.findUnpublishedEvent(id)
+  if (!event) {
+    throw new HttpError('Event Not Found', 404)
+  }
+
+  await Service.archiveEvent(id)
+}
+
+export async function unarchiveEvent(id: string) {
+  const event = await Service.findUnpublishedEvent(id)
+  if (!event) {
+    throw new HttpError('Event Not Found', 404)
+  }
+
+  await Service.unarchiveEvent(id)
+}
+
+export async function deleteDraftEvent(id: string) {
+  const event = await Service.findUnpublishedEvent(id)
+  if (!event) {
+    throw new HttpError('Event Not Found', 404)
+  }
+
+  if (event.status !== 'draft') {
+    throw new HttpError("You can't delete published events", 401)
+  }
+
+  await Service.deleteEvent(id)
+}

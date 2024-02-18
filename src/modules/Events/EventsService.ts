@@ -38,6 +38,14 @@ export async function updateEvent(id: string, event: UpdateEvent) {
     .executeTakeFirst()
 }
 
+export async function deleteEvent(id: string) {
+  return await db
+    .deleteFrom('events')
+    .returningAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
 export async function insertNewEventPartnership(
   partnership: NewEventPartnership
 ) {
@@ -207,11 +215,60 @@ export async function findDraftEvents(
   return await query.limit(perpage).offset(offset).execute()
 }
 
+export async function findArchivedEvents(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('events')
+    .selectAll()
+    .where('is_archived', '=', true)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('about', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+        eb('location', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalArchiveEvents() {
+  return await db
+    .selectFrom('events')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('is_archived', '=', true)
+    .executeTakeFirst()
+}
+
 export async function getTotalDraftEvents() {
   return await db
     .selectFrom('events')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('status', '=', 'draft')
     .where('is_archived', '=', false)
+    .executeTakeFirst()
+}
+
+export async function archiveEvent(id: string) {
+  return await db
+    .updateTable('events')
+    .set({ is_archived: true })
+    .returningAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function unarchiveEvent(id: string) {
+  return await db
+    .updateTable('events')
+    .set({ is_archived: false })
+    .returningAll()
+    .where('id', '=', id)
     .executeTakeFirst()
 }
