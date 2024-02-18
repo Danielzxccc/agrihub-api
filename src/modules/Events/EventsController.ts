@@ -266,3 +266,66 @@ export async function deleteDraftEvent(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function publishEvent(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await Interactor.publishEvent(id)
+
+    res.status(200).json({ message: 'Published Successfuilly' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function unpublishEvent(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await Interactor.unpublishEvent(id)
+
+    res.status(200).json({ message: 'Unpublished Successfuilly' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewPublishedEvent(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    const event = await Interactor.viewPublishedEvent(id)
+    res.status(200).json(event)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listPublishedEvents(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListDraftEvents, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const events = await Interactor.listPublishedEvents(
+      offset,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(Number(events.total.count) / perPage)
+    res.status(200).json({
+      data: events.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(events.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

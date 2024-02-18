@@ -13,6 +13,9 @@ import dbErrorHandler from '../../utils/dbErrorHandler'
 import { deleteFile } from '../../utils/file'
 import { deleteFileCloud, uploadFiles } from '../AWS-Bucket/UploadService'
 import * as Service from './EventsService'
+import { ZodError, z } from 'zod'
+import zParse from '../../utils/zParse'
+import { sql } from 'kysely'
 
 export async function createDraftEvent(event: NewEvent) {
   const newEvent = await Service.insertNewEvent(event)
@@ -292,4 +295,81 @@ export async function deleteDraftEvent(id: string) {
   }
 
   await Service.deleteEvent(id)
+}
+
+export async function publishEvent(id: string) {
+  const event = await Service.findEventById(id)
+
+  if (!event) {
+    throw new HttpError('Event Not Found', 404)
+  }
+
+  const validation = z.object({
+    banner: z.string(),
+    event_start: z.date().transform((arg) => new Date(arg)),
+    event_end: z.date().transform((arg) => new Date(arg)),
+    location: z.string(),
+    title: z.string(),
+    about: z.string(),
+    type: z.string(),
+    guide: z.string(),
+  })
+
+  try {
+    await validation.parseAsync(event)
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new HttpError('Incomplete Details', 400, error.errors)
+    }
+    throw new HttpError('Incomplete Details', 400)
+  }
+
+  // if (!event.partnership.length) {
+  //   throw new HttpError('You need at least one partnership', 400)
+  // }
+
+  // if (!event.speaker.length) {
+  //   throw new HttpError('You need at least one speaker', 400)
+  // }
+
+  if (event.event_end <= new Date()) {
+    throw new HttpError('Unable to publish: event end date has passed.', 400)
+  }
+
+  await Service.updateEvent(id, {
+    status: 'published',
+    published_date: new Date(),
+  })
+}
+
+export async function unpublishEvent(id: string) {
+  const event = await Service.findEventById(id)
+
+  if (!event) {
+    throw new HttpError('Event Not Found', 404)
+  }
+
+  await Service.updateEvent(id, { status: 'draft' })
+}
+
+export async function viewPublishedEvent(id: string) {
+  const event = await Service.findPublishedEvent(id)
+  if (!event) {
+    throw new HttpError('Event Not Found', 404)
+  }
+
+  return event
+}
+
+export async function listPublishedEvents(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findPublishedEvents(offset, searchKey, perpage),
+    Service.getTotalPublishedEvents(),
+  ])
+
+  return { data, total }
 }

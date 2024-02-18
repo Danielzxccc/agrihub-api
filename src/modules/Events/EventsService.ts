@@ -191,6 +191,69 @@ export async function findUnpublishedEvent(id: string) {
     .executeTakeFirst()
 }
 
+export async function findPublishedEvent(id: string) {
+  return await db
+    .selectFrom('events as e')
+    .select(({ eb }) => [
+      'e.id',
+      'e.banner',
+      'e.event_start',
+      'e.event_end',
+      'e.location',
+      'e.title',
+      'e.about',
+      'e.is_archived',
+      'e.status',
+      'e.guide',
+      'e.published_date',
+      'e.createdat',
+      'e.updatedat',
+      jsonArrayFrom(
+        eb
+          .selectFrom('event_partnership as ep')
+          .select(({ fn, val }) => [
+            sql<string>`CAST(ep.id AS TEXT)`.as('id'),
+            'ep.name',
+            fn<string>('concat', [val(returnObjectUrl()), 'ep.logo']).as(
+              'logo'
+            ),
+            'ep.organizer',
+            'ep.type',
+          ])
+          .whereRef('ep.event_id', '=', 'e.id')
+      ).as('partnership'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('event_speaker as es')
+          .select(({ fn, val }) => [
+            sql<string>`CAST(es.id AS TEXT)`.as('id'),
+            fn<string>('concat', [val(returnObjectUrl()), 'es.profile']).as(
+              'profile'
+            ),
+            'es.name',
+            'es.title',
+          ])
+          .whereRef('es.event_id', '=', 'e.id')
+      ).as('speaker'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('event_tags as et')
+          .leftJoin('tags as t', 'et.tag_id', 't.id')
+          .select([
+            sql<string>`CAST(et.id AS TEXT)`.as('id'),
+            't.tag_name as tag',
+          ])
+          .whereRef('et.event_id', '=', 'e.id')
+          .groupBy(['et.id', 't.tag_name'])
+          .orderBy('et.id')
+      ).as('tags'),
+    ])
+    .where('e.id', '=', id)
+    .where('e.status', '=', 'published')
+    .where('e.is_archived', '=', false)
+    .executeTakeFirst()
+}
+
 export async function findDraftEvents(
   offset: number,
   searchKey: string,
@@ -270,5 +333,38 @@ export async function unarchiveEvent(id: string) {
     .set({ is_archived: false })
     .returningAll()
     .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findPublishedEvents(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('events')
+    .selectAll()
+    .where('status', '=', 'published')
+    .where('is_archived', '=', false)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('about', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+        eb('location', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalPublishedEvents() {
+  return await db
+    .selectFrom('events')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('status', '=', 'published')
+    .where('is_archived', '=', true)
     .executeTakeFirst()
 }

@@ -1074,7 +1074,7 @@
  * @openapi
  * /api/events/archived/list:
  *   get:
- *     summary: Retrieve a list of draft events
+ *     summary: Retrieve a list of archived events
  *     tags:
  *       - Events
  *     parameters:
@@ -1098,7 +1098,277 @@
  *         required: false
  *     responses:
  *       "200":
- *         description: Successful response with a list of draft events
+ *         description: Successful response with a list of archived events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/EventDetails"
+ *                 pagination:
+ *                   $ref: "#/components/schemas/PaginationData"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/delete/draft/{id}:
+ *   delete:
+ *     summary: Delete a draft event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the event to be archived
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/publish/{id}:
+ *   put:
+ *     summary: Publish an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the event to be archived
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event published successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/unpublish/{id}:
+ *   put:
+ *     summary: Unpublish an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the event to be Unpublished
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event Unpublished successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/published/{id}:
+ *   get:
+ *     summary: View details of an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/EventDetailsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/published/list:
+ *   get:
+ *     summary: Retrieve a list of published events
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search keyword for events
+ *         required: false
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number for pagination
+ *         required: false
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page
+ *         required: false
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - upcoming
+ *            - previous
+ *         description: Filter criteria
+ *     responses:
+ *       "200":
+ *         description: Successful response with a list of published events
  *         content:
  *           application/json:
  *             schema:

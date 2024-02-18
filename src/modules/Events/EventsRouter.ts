@@ -99,3 +99,25 @@ EventsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   EventsController.listArchivedEvents
 )
+
+EventsRouter.delete(
+  '/delete/draft/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.deleteDraftEvent
+)
+
+EventsRouter.put(
+  '/publish/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.publishEvent
+)
+
+EventsRouter.put(
+  '/unpublish/:id',
+  UserGuard(['admin', 'asst_admin']),
+  EventsController.unpublishEvent
+)
+
+EventsRouter.get('/published/:id', EventsController.viewUnpublishedEvent)
+
+EventsRouter.get('/published/list', EventsController.listPublishedEvents)
