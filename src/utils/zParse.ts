@@ -3,7 +3,7 @@ import HttpError from './HttpError'
 import { Request } from 'express'
 async function zParse<T extends AnyZodObject, K>(
   schema: T,
-  req: K
+  req: Request
 ): Promise<z.infer<T>> {
   try {
     return await schema.parseAsync(req)

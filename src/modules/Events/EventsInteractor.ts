@@ -332,7 +332,7 @@ export async function publishEvent(id: string) {
   //   throw new HttpError('You need at least one speaker', 400)
   // }
 
-  if (event.event_end <= new Date()) {
+  if (event?.event_end <= new Date()) {
     throw new HttpError('Unable to publish: event end date has passed.', 400)
   }
 
