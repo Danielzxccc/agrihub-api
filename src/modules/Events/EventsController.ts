@@ -302,8 +302,9 @@ export async function viewPublishedEvent(req: Request, res: Response) {
 
 export async function listPublishedEvents(req: Request, res: Response) {
   try {
-    const { query } = await zParse(Schema.ListDraftEvents, req)
+    const { query } = await zParse(Schema.ListPublishedEvents, req)
 
+    console.log('test')
     const perPage = Number(query.perpage)
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perPage
@@ -320,7 +321,7 @@ export async function listPublishedEvents(req: Request, res: Response) {
       data: events.data,
       pagination: {
         page: pageNumber,
-        per_page: 20,
+        per_page: perPage,
         total_pages: totalPages,
         total_records: Number(events.total.count),
       },
