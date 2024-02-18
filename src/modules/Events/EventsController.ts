@@ -309,11 +309,13 @@ export async function listPublishedEvents(req: Request, res: Response) {
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
+    const filterKey = query.filter
 
     const events = await Interactor.listPublishedEvents(
       offset,
       searchKey,
-      perPage
+      perPage,
+      filterKey
     )
 
     const totalPages = Math.ceil(Number(events.total.count) / perPage)

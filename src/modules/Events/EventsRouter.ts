@@ -117,5 +117,6 @@ EventsRouter.put(
   UserGuard(['admin', 'asst_admin']),
   EventsController.unpublishEvent
 )
+
 EventsRouter.get('/published/list', EventsController.listPublishedEvents)
 EventsRouter.get('/published/:id', EventsController.viewUnpublishedEvent)

@@ -364,10 +364,11 @@ export async function viewPublishedEvent(id: string) {
 export async function listPublishedEvents(
   offset: number,
   searchKey: string,
-  perpage: number
+  perpage: number,
+  filter: string
 ) {
   const [data, total] = await Promise.all([
-    Service.findPublishedEvents(offset, searchKey, perpage),
+    Service.findPublishedEvents(offset, searchKey, perpage, filter),
     Service.getTotalPublishedEvents(),
   ])
 

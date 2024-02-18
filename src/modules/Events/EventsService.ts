@@ -339,13 +339,20 @@ export async function unarchiveEvent(id: string) {
 export async function findPublishedEvents(
   offset: number,
   searchKey: string,
-  perpage: number
+  perpage: number,
+  filter: string
 ) {
   let query = db
     .selectFrom('events')
     .selectAll()
     .where('status', '=', 'published')
     .where('is_archived', '=', false)
+
+  if (filter === 'upcoming') {
+    query = query.where('events.createdat', '>', new Date())
+  } else if (filter === 'previous') {
+    query = query.where('events.createdat', '<', new Date())
+  }
 
   if (searchKey.length) {
     query = query.where((eb) =>
