@@ -39,6 +39,26 @@ export async function viewLearningMaterial(id: string) {
   return learningMaterial
 }
 
+export async function viewPublishedLearningMaterial(id: string) {
+  const learningMaterial = await Service.findPublishedLearningMaterial(id)
+
+  if (!learningMaterial) {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  if (learningMaterial.status === 'draft') {
+    throw new HttpError('Learning Material Not Found', 404)
+  }
+
+  for (const material of learningMaterial.learning_resource) {
+    if (material.type === 'image') {
+      material.resource = getObjectUrl(material.resource)
+    }
+  }
+
+  return learningMaterial
+}
+
 export async function createDraftLearningMaterial(
   material: NewLearningMaterialT
 ) {
@@ -420,4 +440,10 @@ export async function listArchivedLearningMaterials(
   ])
 
   return { data, total }
+}
+
+export async function listRelatedLearningMaterials(tags: string[] | string) {
+  const learningMaterials = await Service.findRelatedLearningMaterials(tags)
+
+  return learningMaterials
 }

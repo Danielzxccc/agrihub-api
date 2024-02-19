@@ -269,7 +269,7 @@ export async function getSuggestedLearningMaterials(userid: string) {
   )
 
   // feed dataset from python to our database for query
-  const dataSet = suggestedTags.data.tags[0]
+  const dataSet = suggestedTags.data.suggested_tags[0].tags
 
   const suggestedLearningMaterials = await findLearningMaterialByTags(dataSet)
 

@@ -1,23 +1,23 @@
 /**
  * @openapi
- * /api/learning/create/draft:
+ * /api/events/create/draft:
  *   post:
- *     summary: Create a draft learning material
+ *     summary: Create a draft event
  *     tags:
- *       - LearningMaterials
+ *       - Events
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/NewLearningMaterial"
+ *             $ref: "#/components/schemas/NewDraftEvent"
  *     responses:
  *       "201":
  *         description: Successful response
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/CreateDraftResponse"
+ *               $ref: "#/components/schemas/CreateDraftEventResponse"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -48,7 +48,7 @@
  * @openapi
  * components:
  *   schemas:
- *     NewLearningMaterial:
+ *     NewDraftEvent:
  *       type: object
  *       properties:
  *         title:
@@ -56,929 +56,43 @@
  *       required:
  *         - title
  *
- *     CreateDraftResponse:
+ *     CreateDraftEventResponse:
  *       type: object
  *       properties:
  *         message:
  *           type: string
  *         data:
- *           $ref: "#/components/schemas/LearningMaterial"
+ *           $ref: "#/components/schemas/Event"
  *       required:
  *         - message
  *         - data
  *
- *     LearningMaterial:
+ *     Event:
  *       type: object
  *       properties:
  *         id:
  *           type: string
+ *         banner:
+ *           type: string
+ *         event_start:
+ *           type: string
+ *           format: date-time
+ *         event_end:
+ *           type: string
+ *           format: date-time
+ *         location:
+ *           type: string
  *         title:
  *           type: string
- *         content:
+ *         about:
  *           type: string
- *         type:
- *           type: string
- *         language:
- *           type: string
+ *         is_archived:
+ *           type: boolean
  *         status:
  *           type: string
- *         createdat:
- *           type: string
- *           format: date-time
- *         updatedat:
- *           type: string
- *           format: date-time
- *       required:
- *         - id
- *         - title
- *         - status
- *         - createdat
- *         - updatedat
- *
- *
- *
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     PublishedLearningMaterial:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         title:
- *           type: string
- *         content:
- *           type: string
  *         type:
  *           type: string
- *         language:
- *           type: string
- *         status:
- *           type: string
- *         createdat:
- *           type: string
- *           format: date-time
- *         updatedat:
- *           type: string
- *           format: date-time
- *         thumbnail:
- *           type: object
- *           properties:
- *             id:
- *               type: string
- *             resource:
- *               type: string
- *             type:
- *               type: string
- *           required:
- *             - id
- *             - resource
- *             - type
- *         tags:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               tag:
- *                 type: string
- *       required:
- *         - id
- *         - title
- *         - status
- *         - createdat
- *         - updatedat
- *         - thumbnail
- *         - tags
- */
-
-/**
- *  @openapi
- * /api/learning/update/draft/{id}:
- *   put:
- *     summary: Update a draft learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The ID of the learning resource
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: "#/components/schemas/UpdateLearningMaterial"
- *     responses:
- *       "201":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/UpdateDraftResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     UpdateLearningMaterial:
- *       type: object
- *       properties:
- *         title:
- *           type: string
- *           nullable: true
- *         content:
- *           type: string
- *           nullable: true
- *         type:
- *           type: string
- *           nullable: true
- *         language:
- *           type: string
- *           nullable: true
- *
- *     UpdateDraftResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *         data:
- *           $ref: "#/components/schemas/LearningMaterial"
- *       required:
- *         - message
- *         - data
- *
- *     LearningMaterial:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         title:
- *           type: string
- *         content:
- *           type: string
- *         type:
- *           type: string
- *         language:
- *           type: string
- *         status:
- *           type: string
- *         createdat:
- *           type: string
- *           format: date-time
- *         updatedat:
- *           type: string
- *           format: date-time
- *       required:
- *         - id
- *         - title
- *         - status
- *         - createdat
- *         - updatedat
- */
-
-/**
- * @openapi
- * /api/learning/create/resource/{id}:
- *   post:
- *     summary: Create a resource for a learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the learning material
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             $ref: "#/components/schemas/NewLearningResource"
- *     responses:
- *       "201":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/CreateResourceResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * /api/learning/update/resource/{id}:
- *   put:
- *     summary: Update a resource for a learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the learning material
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             $ref: "#/components/schemas/NewLearningResource"
- *     responses:
- *       "201":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/CreateResourceResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     NewLearningResource:
- *       type: object
- *       properties:
- *         name:
- *           type: string
- *         description:
- *           type: string
- *         resource:
- *           type: string
- *         type:
- *           type: string
- *         image:
- *           type: string
- *           format: binary
- *       required:
- *         - name
- *
- *     CreateResourceResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *         data:
- *           $ref: "#/components/schemas/LearningResource"
- *       required:
- *         - message
- *         - data
- *
- *     LearningResource:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         learning_id:
- *           type: string
- *         name:
- *           type: string
- *         description:
- *           type: string
- *         resource:
- *           type: string
- *         type:
- *           type: string
- *         createdat:
- *           type: string
- *           format: date-time
- *         updatedat:
- *           type: string
- *           format: date-time
- *       required:
- *         - id
- *         - learning_id
- *         - name
- *         - createdat
- *         - updatedat
- */
-
-/**
- * @openapi
- * /api/learning/remove/resource/{id}:
- *   delete:
- *     summary: Remove a resource from a learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the resource
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/RemoveResourceResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     RemoveResourceResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *       required:
- *         - message
- */
-
-/**
- * @openapi
- * /api/learning/create/credits/{id}:
- *   post:
- *     summary: Create learning credits
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the learning material
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: "#/components/schemas/NewLearningCredits"
- *     responses:
- *       "201":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/CreateLearningCreditsResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * /api/learning/update/credits/{id}:
- *   put:
- *     summary: Update learning credits
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the learning material
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: "#/components/schemas/NewLearningCredits"
- *     responses:
- *       "201":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/CreateLearningCreditsResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     NewLearningCredits:
- *       type: object
- *       properties:
- *         name:
- *           type: string
- *         title:
- *           type: string
- *       required:
- *         - name
- *         - title
- *
- *     CreateLearningCreditsResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *         data:
- *           $ref: "#/components/schemas/LearningCredits"
- *       required:
- *         - message
- *         - data
- *
- *     LearningCredits:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         learning_id:
- *           type: string
- *         name:
- *           type: string
- *         title:
- *           type: string
- *         createdat:
- *           type: string
- *           format: date-time
- *         updatedat:
- *           type: string
- *           format: date-time
- *       required:
- *         - id
- *         - learning_id
- *         - name
- *         - title
- *         - createdat
- *         - updatedat
- */
-
-/**
- * @openapi
- * /api/learning/remove/credits/{id}:
- *   delete:
- *     summary: Remove learning credits
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the learning credits
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/RemoveLearningCreditsResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     RemoveLearningCreditsResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *       required:
- *         - message
- */
-
-/**
- * @openapi
- * /api/learning/create/tags/{id}:
- *   post:
- *     summary: Remove tags from learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the learning material
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: "#/components/schemas/NewLearningTags"
- *     responses:
- *       "201":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/CreateLearningTagsResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     NewLearningTags:
- *       type: object
- *       properties:
- *         tags:
- *           oneOf:
- *             - type: array
- *               items:
- *                 type: string
- *             - type: string
- *       required:
- *         - tags
- *
- *     CreateLearningTagsResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *         data:
- *           type: array
- *           items:
- *             $ref: "#/components/schemas/LearningTag"
- *       required:
- *         - message
- *         - data
- *
- *     LearningTag:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         learning_id:
- *           type: string
- *         tag_id:
- *           type: string
- *       required:
- *         - id
- *         - learning_id
- *         - tag_id
- */
-
-/**
- * @openapi
- * /api/learning/remove/tags/{id}:
- *   delete:
- *     summary: Remove tags from learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the learning material
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/RemoveLearningTagsResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     RemoveLearningTagsResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *       required:
- *         - message
- */
-
-/**
- * @openapi
- * /api/learning/view/{id}:
- *   get:
- *     summary: View a learning material by ID
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/LearningMaterialViewResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * /api/learning/view/published/{id}:
- *   get:
- *     summary: View a learning material by ID
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/LearningMaterialViewResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     LearningMaterialViewResponse:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         title:
- *           type: string
- *         content:
- *           type: string
- *         type:
- *           type: string
- *         language:
- *           type: string
- *         status:
+ *         guide:
  *           type: string
  *         published_date:
  *           type: string
@@ -989,59 +103,754 @@
  *         updatedat:
  *           type: string
  *           format: date-time
- *         learning_resource:
- *           type: array
- *           items:
- *             $ref: "#/components/schemas/LearningResource"
- *         learning_credits:
- *           type: array
- *           items:
- *             $ref: "#/components/schemas/LearningCredit"
- *         tags:
- *           type: array
- *           items:
- *             $ref: "#/components/schemas/LearningTag"
  *       required:
  *         - id
  *         - title
- *         - status
  *         - createdat
  *         - updatedat
- *
- *     LearningResource:
+ */
+
+/**
+ * @openapi
+ * /api/events/update/draft/{id}:
+ *   put:
+ *     summary: Update a draft event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateDraftEvent"
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UpdateDraftEventResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateDraftEvent:
  *       type: object
  *       properties:
- *         id:
+ *         event_start:
  *           type: string
- *         name:
+ *         event_end:
  *           type: string
- *         description:
+ *         location:
  *           type: string
- *         resource:
+ *         title:
+ *           type: string
+ *         about:
  *           type: string
  *         type:
  *           type: string
- *         is_featured:
+ *         guide:
+ *           type: string
+ *         image:
+ *           type: string
+ *           format: binary
+ *       required:
+ *         - title
+ *
+ *     UpdateDraftEventResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: "#/components/schemas/Event"
+ *       required:
+ *         - message
+ *         - data
+ *
+ */
+
+/**
+ * @openapi
+ * /api/events/create/partnership/{id}:
+ *   post:
+ *     summary: Create a partnership for an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/NewEventPartnership"
+ *     responses:
+ *       "201":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NewEventPartnershipResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewEventPartnership:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         organizer:
+ *           type: string
+ *         type:
+ *           type: string
+ *         logo:
+ *           type: string
+ *           format: binary
+ *       required:
+ *         - name
+ *         - organizer
+ *         - type
+ *         - logo
+ *
+ *     NewEventPartnershipResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: "#/components/schemas/EventPartnership"
+ *       required:
+ *         - message
+ *         - data
+ *
+ *     EventPartnership:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         event_id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         logo:
+ *           type: string
+ *         organizer:
  *           type: boolean
+ *         type:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
  *       required:
  *         - id
+ *         - event_id
  *         - name
+ *         - organizer
+ *         - type
+ *         - createdat
+ *         - updatedat
+ */
+
+/**
+ * @openapi
+ * /api/events/update/partnership/{id}:
+ *   put:
+ *     summary: Update partnership details of an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               organizer:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UpdateEventPartnershipResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateEventPartnershipResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: "#/components/schemas/EventPartnership"
+ *       required:
+ *         - message
+ *         - data
+ */
+
+/**
+ * @openapi
+ * /api/events/delete/partnership/{id}:
+ *   delete:
+ *     summary: Delete partnership details of an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ *  @openapi
+ * /api/events/create/speaker/{id}:
+ *   post:
+ *     summary: Add a speaker to an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/NewEventSpeaker"
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NewEventSpeakerResponse"
+ */
+
+/**
+ *  @openapi
+ * components:
+ *   schemas:
+ *     NewEventSpeaker:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *         name:
+ *           type: string
+ *         profile:
+ *           type: string
+ *           format: binary
  *
- *     LearningCredit:
+ *     NewEventSpeakerResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: "#/components/schemas/EventSpeaker"
+ *       required:
+ *         - message
+ *         - data
+ *
+ *     EventSpeaker:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         event_id:
+ *           type: string
+ *         profile:
+ *           type: string
+ *         name:
+ *           type: string
+ *         title:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *       required:
+ *         - id
+ *         - event_id
+ *         - profile
+ *         - name
+ *         - title
+ *         - createdat
+ *         - updatedat
+ */
+
+/**
+ * @openapi
+ * /api/events/update/speaker/{id}:
+ *   put:
+ *     summary: Update a speaker of an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateEventSpeaker"
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/EventSpeakerResponse"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateEventSpeaker:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         title:
+ *           type: string
+ *         profile:
+ *           type: string
+ *           format: binary
+ *
+ *     EventSpeakerResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: "#/components/schemas/EventSpeaker"
+ *       required:
+ *         - message
+ *         - data
+ */
+
+/**
+ * @openapi
+ * /api/events/remove/speaker/{id}:
+ *   delete:
+ *     summary: Remove a speaker from an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/create/tags/{id}:
+ *   post:
+ *     summary: Create tags for an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/CreateEventTagsRequest"
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CreateEventTagsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CreateEventTagsRequest:
+ *       type: object
+ *       properties:
+ *         tags:
+ *           oneOf:
+ *             - type: array
+ *               items:
+ *                 type: string
+ *             - type: string
+ *     CreateEventTagsResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               event_id:
+ *                 type: string
+ *               tag_id:
+ *                 type: string
+ *       required:
+ *         - message
+ */
+
+/**
+ * @openapi
+ * /api/events/view/{id}:
+ *   get:
+ *     summary: View details of an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/EventDetailsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     EventDetailsResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         banner:
+ *           type: string
+ *         event_start:
+ *           type: string
+ *           format: date-time
+ *         event_end:
+ *           type: string
+ *           format: date-time
+ *         location:
+ *           type: string
+ *         title:
+ *           type: string
+ *         about:
+ *           type: string
+ *         is_archived:
+ *           type: boolean
+ *         status:
+ *           type: string
+ *         guide:
+ *           type: string
+ *         published_date:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         partnership:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/EventPartnership"
+ *         speaker:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/EventSpeaker"
+ *         tags:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/EventTag"
+ *       required:
+ *         - id
+ *         - title
+ *         - createdat
+ *         - updatedat
+ *
+ *     EventPartnership:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         logo:
+ *           type: string
+ *         name:
+ *           type: string
+ *         organizer:
+ *           type: boolean
+ *         type:
+ *           type: string
+ *       required:
+ *         - id
+ *         - logo
+ *         - name
+ *         - organizer
+ *         - type
+ *
+ *     EventSpeaker:
  *       type: object
  *       properties:
  *         id:
  *           type: string
  *         name:
+ *           type: string
+ *         profile:
  *           type: string
  *         title:
  *           type: string
  *       required:
  *         - id
  *         - name
+ *         - profile
  *         - title
  *
- *     LearningTag:
+ *     EventTag:
  *       type: object
  *       properties:
  *         id:
@@ -1055,34 +864,44 @@
 
 /**
  * @openapi
- * /api/learning/draft:
+ * /api/events/draft:
  *   get:
- *     summary: List draft learning materials
+ *     summary: Retrieve a list of draft events
  *     tags:
- *       - LearningMaterials
+ *       - Events
  *     parameters:
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
- *         description: Search query string (optional)
+ *         description: Search keyword for events
+ *         required: false
  *       - in: query
  *         name: page
  *         schema:
  *           type: string
- *         description: Page number (optional)
+ *         description: Page number for pagination
+ *         required: false
  *       - in: query
  *         name: perpage
  *         schema:
  *           type: string
- *         description: Number of items per page (optional)
+ *         description: Number of items per page
+ *         required: false
  *     responses:
  *       "200":
- *         description: Successful response
+ *         description: Successful response with a list of draft events
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/ListDraftLearningMaterialsResponse"
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/EventDetails"
+ *                 pagination:
+ *                   $ref: "#/components/schemas/PaginationData"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -1111,34 +930,186 @@
 
 /**
  * @openapi
- * /api/learning/archive/list:
- *   get:
- *     summary: List archived learning materials
+ * components:
+ *   schemas:
+ *     EventDetails:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         banner:
+ *           type: string
+ *         event_start:
+ *           type: string
+ *           format: date-time
+ *         event_end:
+ *           type: string
+ *           format: date-time
+ *         location:
+ *           type: string
+ *         title:
+ *           type: string
+ *         about:
+ *           type: string
+ *         is_archived:
+ *           type: boolean
+ *         status:
+ *           type: string
+ *         type:
+ *           type: string
+ *         guide:
+ *           type: string
+ *         published_date:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ */
+
+/**
+ * @openapi
+ * /api/events/archive/{id}:
+ *   delete:
+ *     summary: Archive an event
  *     tags:
- *       - LearningMaterials
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the event to be archived
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event archived successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/unarchive/{id}:
+ *   put:
+ *     summary: Archive an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the event to be archived
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event archived successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/archived/list:
+ *   get:
+ *     summary: Retrieve a list of archived events
+ *     tags:
+ *       - Events
  *     parameters:
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
- *         description: Search query string (optional)
+ *         description: Search keyword for events
+ *         required: false
  *       - in: query
  *         name: page
  *         schema:
  *           type: string
- *         description: Page number (optional)
+ *         description: Page number for pagination
+ *         required: false
  *       - in: query
  *         name: perpage
  *         schema:
  *           type: string
- *         description: Number of items per page (optional)
+ *         description: Number of items per page
+ *         required: false
  *     responses:
  *       "200":
- *         description: Successful response
+ *         description: Successful response with a list of archived events
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/ListDraftLearningMaterialsResponse"
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/EventDetails"
+ *                 pagination:
+ *                   $ref: "#/components/schemas/PaginationData"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -1167,84 +1138,248 @@
 
 /**
  * @openapi
- * /api/learning/published:
- *   get:
- *     summary: List published learning materials
+ * /api/events/delete/draft/{id}:
+ *   delete:
+ *     summary: Delete a draft event
  *     tags:
- *       - LearningMaterials
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the event to be archived
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/publish/{id}:
+ *   put:
+ *     summary: Publish an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the event to be archived
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event published successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/unpublish/{id}:
+ *   put:
+ *     summary: Unpublish an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the event to be Unpublished
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event Unpublished successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/published/{id}:
+ *   get:
+ *     summary: View details of an event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/EventDetailsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/events/published/list:
+ *   get:
+ *     summary: Retrieve a list of published events
+ *     tags:
+ *       - Events
  *     parameters:
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
- *         description: Search query string (optional)
+ *         description: Search keyword for events
+ *         required: false
  *       - in: query
  *         name: page
  *         schema:
  *           type: string
- *         description: Page number (optional)
+ *         description: Page number for pagination
+ *         required: false
  *       - in: query
  *         name: perpage
  *         schema:
  *           type: string
- *         description: Number of items per page (optional)
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ListPublishedLearningMaterialsResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * /api/learning/related:
- *   get:
- *     summary: List related learning materials
- *     tags:
- *       - LearningMaterials
- *     parameters:
+ *         description: Number of items per page
+ *         required: false
  *       - in: query
- *         name: tags
+ *         name: filter
  *         schema:
- *           type: array
- *           items:
- *             type: string
- *         style: form
- *         explode: true
- *         description: Tags to filter related materials by
+ *           type: string
+ *           enum:
+ *            - upcoming
+ *            - previous
+ *         description: Filter criteria
  *     responses:
  *       "200":
- *         description: Successful response
+ *         description: Successful response with a list of published events
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/ListPublishedLearningMaterialsResponse"
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/EventDetails"
+ *                 pagination:
+ *                   $ref: "#/components/schemas/PaginationData"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -1269,400 +1404,4 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     ListDraftLearningMaterials:
- *       type: object
- *       properties:
- *         query:
- *           $ref: "#/components/schemas/ListDraftLearningMaterialsQuery"
- *       required:
- *         - query
- *
- *     ListDraftLearningMaterialsQuery:
- *       type: object
- *       properties:
- *         search:
- *           type: string
- *         page:
- *           type: string
- *         perpage:
- *           type: string
- *       required:
- *         - search
- *         - page
- *         - perpage
- *
- *     ListDraftLearningMaterialsResponse:
- *       type: object
- *       properties:
- *         data:
- *           type: array
- *           items:
- *             $ref: "#/components/schemas/LearningMaterial"
- *         pagination:
- *           $ref: "#/components/schemas/Pagination"
- *       required:
- *         - data
- *         - pagination
- *
- *     ListPublishedLearningMaterialsResponse:
- *       type: object
- *       properties:
- *         data:
- *           type: array
- *           items:
- *             $ref: "#/components/schemas/PublishedLearningMaterial"
- *         pagination:
- *           $ref: "#/components/schemas/Pagination"
- *       required:
- *         - data
- *         - pagination
- *
- *     ListPublishedLearningMaterials:
- *       type: object
- *       properties:
- *         data:
- *           type: array
- *           items:
- *             $ref: "#/components/schemas/PublishedLearningMaterial"
- *         pagination:
- *           $ref: "#/components/schemas/Pagination"
- *       required:
- *         - data
- *         - pagination
- *
- */
-
-/**
- * @openapi
- * /api/learning/publish/{id}:
- *   put:
- *     summary: Publish a learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the learning material to publish
- *         schema:
- *           type: string
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/PublishLearningMaterialResponse"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     PublishLearningMaterialResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *       required:
- *         - message
- */
-
-/**
- * @openapi
- * /api/learning/featured/{materialId}/{id}:
- *   put:
- *     summary: Set a learning material as featured
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: materialId
- *         required: true
- *         description: ID of the learning material
- *         schema:
- *           type: string
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the featured item
- *         schema:
- *           type: string
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/SetFeaturedLearningMaterialResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     SetFeaturedLearningMaterialResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *       required:
- *         - message
- */
-
-/**
- * @openapi
- * /api/learning/unpublish/{id}:
- *   delete:
- *     summary: Unpublish a learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the learning material to be unpublished
- *         schema:
- *           type: string
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/UnpublishLearningMaterialResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     UnpublishLearningMaterialResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *       required:
- *         - message
- */
-
-/**
- * @openapi
- * /api/learning/draft/delete/{id}:
- *   delete:
- *     summary: Delete a draft learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the draft learning material to be deleted
- *         schema:
- *           type: string
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/DeleteDraftLearningMaterialResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     DeleteDraftLearningMaterialResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *       required:
- *         - message
- */
-
-/**
- *  @openapi
- * /api/learning/archive/{id}:
- *   delete:
- *     summary: Archive a learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the learning material to be archived
- *         schema:
- *           type: string
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/MessageResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- *  @openapi
- * /api/learning/unarchive/{id}:
- *   put:
- *     summary: Unarchive a learning material
- *     tags:
- *       - LearningMaterials
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the learning material to be archived
- *         schema:
- *           type: string
- *     responses:
- *       "200":
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/MessageResponse"
- *       "401":
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "400":
- *         description: Validation Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "404":
- *         description: Not Found Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ErrorResponse"
- *       "500":
- *         description: Server Error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/ServerError"
- */
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     MessageResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *       required:
- *         - message
  */

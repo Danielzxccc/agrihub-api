@@ -8,7 +8,7 @@ import {
   UpdateLearningMaterial,
   UpdateLearningResource,
 } from '../../types/DBTypes'
-import { jsonArrayFrom } from 'kysely/helpers/postgres'
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres'
 
 export async function findLearningMaterialDetails(id: string) {
   let query = db
@@ -64,6 +64,117 @@ export async function findLearningMaterialDetails(id: string) {
     .where('id', '=', id)
 
   return await query.executeTakeFirst()
+}
+
+export async function findPublishedLearningMaterial(id: string) {
+  let query = db
+    .selectFrom('learning_materials as lm')
+    .select(({ eb }) => [
+      'lm.id',
+      'lm.title',
+      'lm.content',
+      'lm.type',
+      'lm.language',
+      'lm.status',
+      'lm.published_date',
+      'lm.createdat',
+      'lm.updatedat',
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_resource as lr')
+          .select([
+            sql<string>`CAST(lr.id AS TEXT)`.as('id'),
+            sql<string>`CAST(lr.learning_id AS TEXT)`.as('learning_id'),
+            'lr.name',
+            'lr.description',
+            'lr.resource',
+            'lr.type',
+            'lr.is_featured',
+          ])
+          .whereRef('lr.learning_id', '=', 'lm.id')
+      ).as('learning_resource'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_credits as lc')
+          .select([
+            sql<string>`CAST(lc.id AS TEXT)`.as('id'),
+            sql<string>`CAST(lc.learning_id AS TEXT)`.as('learning_id'),
+            'lc.name',
+            'lc.title',
+          ])
+          .whereRef('lc.learning_id', '=', 'lm.id')
+      ).as('learning_credits'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_tags as lt')
+          .leftJoin('tags', 'lt.tag_id', 'tags.id')
+          .select([
+            'tags.tag_name as tag',
+            sql<string>`CAST(lt.id AS TEXT)`.as('id'),
+          ])
+          .whereRef('lt.learning_id', '=', 'lm.id')
+          .groupBy(['lt.id', 'lt.learning_id', 'tags.tag_name'])
+          .orderBy('lt.id')
+      ).as('tags'),
+    ])
+    .where('id', '=', id)
+    .where('lm.status', '=', 'published')
+    .where('is_archived', '=', false)
+
+  return await query.executeTakeFirst()
+}
+
+export async function findRelatedLearningMaterials(tags: string[] | string) {
+  let query = db
+    .selectFrom('learning_materials as lm')
+    .leftJoin('learning_tags as lt', 'lm.id', 'lt.learning_id')
+    .leftJoin('tags as t', 'lt.tag_id', 't.id')
+    .select(({ eb }) => [
+      'lm.id',
+      'lm.title',
+      'lm.content',
+      'lm.type',
+      'lm.language',
+      'lm.status',
+      'lm.published_date',
+      'lm.is_archived',
+      'lm.createdat',
+      'lm.updatedat',
+      jsonObjectFrom(
+        eb
+          .selectFrom('learning_resource as lr')
+          .select([
+            sql<string>`CAST(lr.id AS TEXT)`.as('id'),
+            'lr.resource',
+            'lr.type',
+          ])
+          .whereRef('lm.id', '=', 'lr.learning_id')
+          .where('is_featured', '=', true)
+      ).as('thumbnail'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_tags as lt')
+          .leftJoin('tags as t', 'lt.tag_id', 't.id')
+          .select(['t.tag_name as tag'])
+          .whereRef('lt.learning_id', '=', 'lm.id')
+          .groupBy(['lt.id', 't.tag_name'])
+          .orderBy('lt.id')
+      ).as('tags'),
+    ])
+    .where('status', '=', 'published')
+    .where('is_archived', '=', false)
+
+  if (tags.length) {
+    if (typeof tags === 'string') {
+      query = query.where('t.tag_name', '=', tags)
+    } else {
+      query = query.where((eb) =>
+        eb.or(tags.map((tag) => eb('t.tag_name', '=', tag)))
+      )
+    }
+  }
+
+  return await query.limit(3).execute()
 }
 
 export async function findLearningMaterialByTags(tags: string[]) {
@@ -231,6 +342,7 @@ export async function getTotalDraftLearningMaterials() {
     .selectFrom('learning_materials')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('status', '=', 'draft')
+    .where('is_archived', '=', false)
     .executeTakeFirst()
 }
 
@@ -240,8 +352,39 @@ export async function findPublishedLearningMaterials(
   perpage: number
 ) {
   let query = db
-    .selectFrom('learning_materials')
-    .selectAll()
+    .selectFrom('learning_materials as lm')
+    .select(({ eb }) => [
+      'lm.id',
+      'lm.title',
+      'lm.content',
+      'lm.type',
+      'lm.language',
+      'lm.status',
+      'lm.published_date',
+      'lm.is_archived',
+      'lm.createdat',
+      'lm.updatedat',
+      jsonObjectFrom(
+        eb
+          .selectFrom('learning_resource as lr')
+          .select([
+            sql<string>`CAST(lr.id AS TEXT)`.as('id'),
+            'lr.resource',
+            'lr.type',
+          ])
+          .whereRef('lm.id', '=', 'lr.learning_id')
+          .where('is_featured', '=', true)
+      ).as('thumbnail'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('learning_tags as lt')
+          .leftJoin('tags as t', 'lt.tag_id', 't.id')
+          .select(['t.tag_name as tag'])
+          .whereRef('lt.learning_id', '=', 'lm.id')
+          .groupBy(['lt.id', 't.tag_name'])
+          .orderBy('lt.id')
+      ).as('tags'),
+    ])
     .where('status', '=', 'published')
     .where('is_archived', '=', false)
 
@@ -262,6 +405,7 @@ export async function getTotalPublishedLearningMaterials() {
     .selectFrom('learning_materials')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('status', '=', 'published')
+    .where('is_archived', '=', false)
     .executeTakeFirst()
 }
 

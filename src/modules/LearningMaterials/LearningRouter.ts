@@ -11,6 +11,13 @@ LearningRouter.get(
   LearningController.viewLearningMaterial
 )
 
+LearningRouter.get(
+  '/view/published/:id',
+  LearningController.viewLearningMaterial
+)
+
+LearningRouter.get('/related', LearningController.listRelatedLearningMaterials)
+
 LearningRouter.post(
   '/create/draft',
   UserGuard(['admin', 'asst_admin']),
@@ -81,7 +88,6 @@ LearningRouter.get(
 
 LearningRouter.get(
   '/published',
-  UserGuard(['admin', 'asst_admin']),
   LearningController.listPublishedLearningMaterials
 )
 
