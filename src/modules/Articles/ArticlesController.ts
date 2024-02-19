@@ -47,25 +47,3 @@ export async function deleteArticle(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
-
-export async function viewArticle(req: SessionRequest, res: Response) {
-  try {
-    const { id } = req.params
-    const articles = await Interactor.viewArticle(id)
-    res.status(200).json(articles)
-  } catch (error) {
-    errorHandler(res, error)
-  }
-}
-
-export async function listArticle(req: SessionRequest, res: Response) {
-  try {
-    const { query } = await zParse(Schema.ListArticle, req)
-    const searchKey = String(query.search)
-
-    const article = await Interactor.listArticle(searchKey)
-    res.status(200).json(article)
-  } catch (error) {
-    errorHandler(res, error)
-  }
-}
