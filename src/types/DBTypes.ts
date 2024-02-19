@@ -4,7 +4,6 @@ import {
   Users,
   Articles,
   AboutCms,
-  Blogs,
   CommunityEvents,
   EmailToken,
   UserTags,
@@ -34,6 +33,9 @@ import {
   EventSpeaker,
   Events,
   EventTags,
+  Blogs,
+  BlogImages,
+  BlogTags,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -55,10 +57,6 @@ export type NewArticle = Insertable<Articles>
 export type UpdateArticle = Updateable<Articles>
 
 export type UserTag = Insertable<UserTags>
-
-//Blogs
-export type NewBlog = Insertable<Blogs>
-export type UpdateBlogs = Updateable<Blogs>
 
 //About
 export type UpdateAbout = Updateable<AboutCms>
@@ -151,3 +149,12 @@ export type NewEventSpeaker = Insertable<EventSpeaker>
 export type UpdateEventSpeaker = Updateable<EventSpeaker>
 
 export type NewEventTag = Insertable<EventTags>
+
+// blogs
+export type NewBlog = Insertable<Blogs>
+export type UpdateBlog = Updateable<Blogs>
+
+export type NewBlogImage = Insertable<BlogImages>
+export type UpdateBlogImage = Insertable<BlogImages>
+
+export type NewBlogTags = Insertable<BlogTags>

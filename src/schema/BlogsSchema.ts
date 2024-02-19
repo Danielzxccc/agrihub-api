@@ -2,24 +2,22 @@ import { z } from 'zod'
 
 export const NewBlog = z.object({
   body: z.object({
-    bg_image: z.string({ required_error: 'background image is required' }),
-    title: z.string({ required_error: 'title is required' }),
-    author: z.string({ required_error: 'author is required' }),
-    description: z.string({ required_error: 'description is required' }),
+    title: z.string(),
   }),
 })
 
-export const UpdateBlogs = z.object({
+export const UpdateBlog = z.object({
   body: z.object({
-    bg_image: z.string().optional(),
-    title: z.string().optional(),
-    author: z.string().optional(),
-    description: z.string().optional(),
+    title: z.string(),
+    category: z.string(),
+    content: z.string(),
+    author: z.string(),
+    author_title: z.string(),
   }),
 })
 
-export const ListBlogs = z.object({
-  query: z.object({
-    search: z.string().optional().default(''),
+export const NewBlogImage = z.object({
+  file: z.object({
+    filename: z.string(),
   }),
 })
