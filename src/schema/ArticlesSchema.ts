@@ -15,3 +15,9 @@ export const ArticleSchema = z.object({
     imagesrc: z.string().optional(),
   }),
 })
+
+export const ListArticle = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+  }),
+})

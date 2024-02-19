@@ -14,6 +14,7 @@ import { ReportsRouter } from './modules/Reports/ReportsRouter'
 import { NotificationRouter } from './modules/Notifications/NotificationRouter'
 import { LearningRouter } from './modules/LearningMaterials/LearningRouter'
 import { UploaderRouter } from './modules/Uploader/UploaderRouter'
+import { LandingRouter } from './modules/LandingPage/LandingRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -30,6 +31,7 @@ function routes(app: Express) {
   app.use('/api/articles', ArticlesRouter)
   app.use('/api/events', EventsRouter)
   app.use('/api/cms/about', AboutRouter)
+  app.use('/api/cms/landing', LandingRouter)
   app.use('/api/blogs', BlogsRouter)
   app.use('/api/notification', NotificationRouter)
   app.use('/api/learning', LearningRouter)

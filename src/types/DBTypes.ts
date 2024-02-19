@@ -4,6 +4,7 @@ import {
   Users,
   Articles,
   AboutCms,
+  LandingImages,
   CommunityEvents,
   EmailToken,
   UserTags,
@@ -36,6 +37,8 @@ import {
   Blogs,
   BlogImages,
   BlogTags,
+  Landing,
+  Approach,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -57,6 +60,11 @@ export type NewArticle = Insertable<Articles>
 export type UpdateArticle = Updateable<Articles>
 
 export type UserTag = Insertable<UserTags>
+
+//LandingPage & Approach
+export type AddImageLanding = Insertable<LandingImages>
+export type UpdateLanding = Updateable<Landing>
+export type UpdateApproach = Updateable<Approach>
 
 //About
 export type UpdateAbout = Updateable<AboutCms>
