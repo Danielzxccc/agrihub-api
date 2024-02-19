@@ -1,36 +1,74 @@
-import { NewBlog, UpdateBlogs } from '../../types/DBTypes'
+import { NewBlog, UpdateBlog } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
+import dbErrorHandler from '../../utils/dbErrorHandler'
+import { deleteFile } from '../../utils/file'
+import { deleteFileCloud, uploadFiles } from '../AWS-Bucket/UploadService'
 import * as Service from './BlogsService'
 
-export async function createBlogs(blogs: NewBlog) {
-  if (!blogs) {
-    throw new HttpError('Session Expired', 401)
-  }
-  const newBlog = await Service.createBlog(blogs)
+export async function createDraftBlog(blog: NewBlog) {
+  const newBlog = await Service.insertNewBlog(blog)
 
   return newBlog
 }
 
-export async function listBlogs(searchKey: string) {
-  const [data] = await Promise.all([Service.findBlogs(searchKey)])
-  return { data }
+export async function updateDraftBlog(id: string, blog: UpdateBlog) {
+  const findBlog = await Service.findBlogById(id)
+
+  if (!findBlog) {
+    throw new HttpError("Can't find blog", 404)
+  }
+
+  const updatedBlog = await Service.updateBlog(id, {
+    ...blog,
+    updatedat: new Date(),
+  })
+
+  return updatedBlog
 }
 
-export async function viewBlogs(id: string) {
-  const blogs = await Service.viewBlogs(id)
+export async function removeDraftBlog(id: string) {
+  const blog = await Service.findBlogById(id)
 
-  if (!blogs) throw new HttpError('Blog does not exist', 404)
+  if (!blog) {
+    throw new HttpError('Blog not found', 404)
+  }
 
-  return blogs
+  if (blog.status !== 'draft') {
+    throw new HttpError("You can't delete published blogs", 401)
+  }
+
+  await Service.deleteDraftBlog(id)
 }
 
-export async function updateBlogs(id: string, body: UpdateBlogs) {
-  const blogs = await Service.updateBlogs(id, body)
+export async function createBlogImage(id: string, image: Express.Multer.File) {
+  try {
+    if (!image.filename) {
+      throw new HttpError('image is required', 400)
+    }
 
-  if (!blogs) throw new HttpError('Blogs not found', 400)
-  return blogs
+    await uploadFiles([image])
+
+    const newBlogImage = await Service.insertBlogImage({
+      blog_id: id,
+      image: image.filename,
+    })
+
+    deleteFile(image.filename)
+
+    return newBlogImage
+  } catch (error) {
+    deleteFile(image?.filename)
+    dbErrorHandler(error)
+  }
 }
 
-export async function deleteBlogs(id: string) {
-  await Service.deleteBlogs(id)
+export async function removeBlogImage(id: string) {
+  const image = await Service.findBlogImage(id)
+
+  if (!image) {
+    throw new HttpError('Blog not found', 404)
+  }
+
+  await Service.deleteBlogImage(id)
+  await deleteFileCloud(image.image)
 }

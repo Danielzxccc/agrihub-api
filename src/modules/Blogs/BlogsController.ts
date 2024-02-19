@@ -1,62 +1,67 @@
 import { Request, Response } from 'express'
-import { SessionRequest } from '../../types/AuthType'
 import errorHandler from '../../utils/httpErrorHandler'
+import * as Schema from '../../schema/BlogsSchema'
 import zParse from '../../utils/zParse'
 import * as Interactor from './BlogsInteractor'
-import * as Schema from '../../schema/BlogsSchema'
 
-export async function createBlogs(req: SessionRequest, res: Response) {
+export async function createDraftBlog(req: Request, res: Response) {
   try {
     const { body } = await zParse(Schema.NewBlog, req)
 
-    const newBlog = await Interactor.createBlogs(body)
-    res.status(201).json({ message: 'Blog created successfully', newBlog })
+    const newBlog = await Interactor.createDraftBlog(body)
+
+    res.status(201).json({ message: 'Created Successfully', data: newBlog })
   } catch (error) {
     errorHandler(res, error)
   }
 }
 
-export async function listBlogs(req: SessionRequest, res: Response) {
-  try {
-    const { query } = await zParse(Schema.ListBlogs, req)
-
-    const searchKey = String(query.search)
-
-    const blogs = await Interactor.listBlogs(searchKey)
-    res.status(200).json(blogs)
-  } catch (error) {
-    errorHandler(res, error)
-  }
-}
-
-export async function viewBlogs(req: SessionRequest, res: Response) {
+export async function updateDraftBlog(req: Request, res: Response) {
   try {
     const { id } = req.params
-    const blogs = await Interactor.viewBlogs(id)
-    res.status(200).json(blogs)
+    const { body } = await zParse(Schema.UpdateBlog, req)
+
+    const updatedBlog = await Interactor.updateDraftBlog(id, body)
+
+    res.status(200).json({ message: 'Updated Successfuly', data: updatedBlog })
   } catch (error) {
     errorHandler(res, error)
   }
 }
 
-export async function updateBlogs(req: SessionRequest, res: Response) {
-  try {
-    const { id } = req.params
-    const { body } = await zParse(Schema.UpdateBlogs, req)
-
-    const blogs = await Interactor.updateBlogs(id, body)
-    res.status(200).json({ message: 'Update Success', blogs })
-  } catch (error) {
-    errorHandler(res, error)
-  }
-}
-
-export async function removeBlogs(req: SessionRequest, res: Response) {
+export async function removeDraftBlog(req: Request, res: Response) {
   try {
     const { id } = req.params
 
-    await Interactor.deleteBlogs(id)
-    res.status(200).json({ message: 'Delete Success' })
+    await Interactor.removeDraftBlog(id)
+
+    res.status(200).json({ message: 'Deleted Successfuly' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function createBlogImage(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await zParse(Schema.NewBlogImage, req)
+    const image = req.file
+
+    const newBlogImage = await Interactor.createBlogImage(id, image)
+
+    res.status(201).json({ message: 'Created Successfuly', data: newBlogImage })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function removeBlogImage(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.removeBlogImage(id)
+
+    res.status(200).json({ message: 'Deleted Successfuly' })
   } catch (error) {
     errorHandler(res, error)
   }
