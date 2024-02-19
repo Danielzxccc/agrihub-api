@@ -29,3 +29,66 @@ BlogsRouter.post(
   upload.single('image'),
   BlogsController.createBlogImage
 )
+
+BlogsRouter.delete(
+  '/remove/image/:id',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.removeBlogImage
+)
+
+BlogsRouter.post(
+  '/create/tags/:id',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.createBlogTags
+)
+
+BlogsRouter.delete(
+  '/remove/tags/:id',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.deleteBlogTag
+)
+
+BlogsRouter.get(
+  '/draft/list',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.listDraftBlogs
+)
+
+BlogsRouter.get(
+  '/view/:id',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.viewBlog
+)
+
+BlogsRouter.delete(
+  '/archive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.archiveBlog
+)
+
+BlogsRouter.put(
+  '/unarchive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.unArchiveBlog
+)
+
+BlogsRouter.get(
+  '/archived/list',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.listArchivedBlogs
+)
+
+BlogsRouter.put(
+  '/publish/:id',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.publishBlog
+)
+
+BlogsRouter.put(
+  '/unpublish/:id',
+  UserGuard(['admin', 'asst_admin']),
+  BlogsController.unpublishBlog
+)
+
+BlogsRouter.get('/published/list', BlogsController.listPublishedBlogs)
+BlogsRouter.get('/published/:id', BlogsController.viewPublishedBlog)
