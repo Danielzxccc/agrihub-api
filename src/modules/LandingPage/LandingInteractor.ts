@@ -31,9 +31,6 @@ export async function listImages(landing_id: string) {
   const images = await Service.listImages(landing_id)
 
   if (!images) throw new HttpError('No images found', 400)
-  for (const image of images) {
-    image.images = getObjectUrl(image.images)
-  }
   return images
 }
 

@@ -25,8 +25,8 @@ export async function listImages(id: string) {
   return await db
     .selectFrom('landing_images')
     .selectAll()
-    .where('landing_id', '=', id)
-    .execute()
+    .where('landing_images.landing_id', '=', id)
+    .executeTakeFirst()
 }
 
 export async function updateApproach(update: UpdateApproach) {
