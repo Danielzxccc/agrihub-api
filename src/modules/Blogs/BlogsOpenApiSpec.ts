@@ -374,3 +374,678 @@
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
+
+/**
+ * @openapi
+ * /api/blogs/create/tags/{id}:
+ *   post:
+ *     summary: Add tags to a blog
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Tags added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CreateBlogTagsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CreateBlogTagsResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               blog_id:
+ *                 type: string
+ *               tag_id:
+ *                 type: string
+ *       required:
+ *         - message
+ *         - data
+ */
+
+/**
+ * @openapi
+ * /api/blogs/remove/tags/{id}:
+ *   delete:
+ *     summary: Remove a tag from blog
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Tag deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/blogs/draft/list:
+ *   get:
+ *     summary: Retrieve a list of draft blogs
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page
+ *     responses:
+ *       "200":
+ *         description: List of draft blogs retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/DraftBlogListResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/blogs/archived/list:
+ *   get:
+ *     summary: Retrieve a list of archived blogs
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page
+ *     responses:
+ *       "200":
+ *         description: List of archived blogs retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/DraftBlogListResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     DraftBlogListResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/Blog"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     Blog:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         title:
+ *           type: string
+ *         category:
+ *           type: string
+ *         content:
+ *           type: string
+ *         author:
+ *           type: string
+ *         author_title:
+ *           type: string
+ *         status:
+ *           type: string
+ *         userid:
+ *           type: string
+ *         is_archived:
+ *           type: boolean
+ *         createdat:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/blogs/view/{id}:
+ *   get:
+ *     summary: Retrieve a specific blog by ID
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the blog to retrieve
+ *     responses:
+ *       "200":
+ *         description: Blog retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BlogViewResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     BlogViewResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         title:
+ *           type: string
+ *         category:
+ *           type: string
+ *         content:
+ *           type: string
+ *         author:
+ *           type: string
+ *         author_title:
+ *           type: string
+ *         status:
+ *           type: string
+ *         userid:
+ *           type: string
+ *         is_archived:
+ *           type: boolean
+ *         createdat:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *         images:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/BlogImage"
+ *         tags:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/BlogTag"
+ *     BlogImage:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         image:
+ *           type: string
+ *         thumbnail:
+ *           type: boolean
+ *     BlogTag:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         tag:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/blogs/archive/{id}:
+ *   delete:
+ *     summary: Archive a blog
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Blog Archive successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/blogs/unarchive/{id}:
+ *   put:
+ *     summary: Unarchive a blog
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Blog Unarchive successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/blogs/publish/{id}:
+ *   put:
+ *     summary: Publish a blog
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Blog Published Successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/blogs/unpublish/{id}:
+ *   put:
+ *     summary: Unpublish a blog
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Blog Unpublished Successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/blogs/published/{id}:
+ *   get:
+ *     summary: Retrieve a specific published blog by ID
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the published blog to retrieve
+ *     responses:
+ *       "200":
+ *         description: Published blog retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/PublishedBlogResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PublishedBlogResponse:
+ *       type: object
+ *       required:
+ *         - id
+ *         - title
+ *         - status
+ *         - content
+ *         - author_title
+ *         - status
+ *         - createdat
+ *         - updatedat
+ *         - images
+ *         - tags
+ *       properties:
+ *         id:
+ *           type: string
+ *         title:
+ *           type: string
+ *         category:
+ *           type: string
+ *         content:
+ *           type: string
+ *         author:
+ *           type: string
+ *         author_title:
+ *           type: string
+ *         status:
+ *           type: string
+ *         userid:
+ *           type: string
+ *         is_archived:
+ *           type: boolean
+ *         createdat:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *         images:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/BlogImage"
+ *         tags:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/BlogTag"
+ *     BlogImage:
+ *       type: object
+ *       required:
+ *         - id
+ *         - image
+ *         - thumbnail
+ *       properties:
+ *         id:
+ *           type: string
+ *         image:
+ *           type: string
+ *         thumbnail:
+ *           type: boolean
+ *     BlogTag:
+ *       type: object
+ *       required:
+ *         - id
+ *         - tag
+ *       properties:
+ *         id:
+ *           type: string
+ *         tag:
+ *           type: string
+ */

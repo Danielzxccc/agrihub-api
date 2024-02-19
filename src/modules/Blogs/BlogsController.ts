@@ -66,3 +66,182 @@ export async function removeBlogImage(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function createBlogTags(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.NewBlogTags, req)
+
+    const newEventTags = await Interactor.createBlogTags(id, body.tags)
+    res
+      .status(201)
+      .json({ message: 'Created Successfully', data: newEventTags })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteBlogTag(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    const newEventTags = await Interactor.deleteBlogTag(id)
+    res
+      .status(200)
+      .json({ message: 'Deleted Successfully', data: newEventTags })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listDraftBlogs(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListDraftBlogs, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const events = await Interactor.listDraftBlogs(offset, searchKey, perPage)
+
+    const totalPages = Math.ceil(Number(events.total.count) / perPage)
+    res.status(200).json({
+      data: events.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(events.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewBlog(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    const blog = await Interactor.viewBlog(id)
+    res.status(200).json(blog)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function archiveBlog(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.archiveBlog(id)
+    res.status(200).json({ message: 'Archived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function unArchiveBlog(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.unArchiveBlog(id)
+    res.status(200).json({ message: 'Unarchived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listArchivedBlogs(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListDraftBlogs, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const events = await Interactor.listArchivedBlogs(
+      offset,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(Number(events.total.count) / perPage)
+    res.status(200).json({
+      data: events.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(events.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listPublishedBlogs(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListDraftBlogs, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const events = await Interactor.listPublishedBlogs(
+      offset,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(Number(events.total.count) / perPage)
+    res.status(200).json({
+      data: events.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(events.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function publishBlog(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.publishBlog(id)
+    res.status(200).json({ message: 'Published Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function unpublishBlog(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.unpublishBlog(id)
+    res.status(200).json({ message: 'Unpublished Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewPublishedBlog(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    const blog = await Interactor.viewPublishedBlog(id)
+    res.status(200).json(blog)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
