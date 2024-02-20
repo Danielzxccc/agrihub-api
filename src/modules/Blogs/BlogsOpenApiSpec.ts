@@ -1049,3 +1049,108 @@
  *         tag:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/blogs/published/list:
+ *   get:
+ *     summary: Retrieve a list of published blogs
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page
+ *     responses:
+ *       "200":
+ *         description: List of published blogs retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/PublishedBlogListResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PublishedBlogListResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/PublishedBlog"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     PublishedBlog:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         title:
+ *           type: string
+ *         category:
+ *           type: string
+ *         content:
+ *           type: string
+ *         author:
+ *           type: string
+ *         author_title:
+ *           type: string
+ *         status:
+ *           type: string
+ *         userid:
+ *           type: string
+ *         is_archived:
+ *           type: boolean
+ *         createdat:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               tag:
+ *                 type: string
+ */

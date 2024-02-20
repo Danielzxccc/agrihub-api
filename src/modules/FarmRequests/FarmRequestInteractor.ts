@@ -1,6 +1,6 @@
 import { NewSeedlingRequest, UpdateSeedlingRequest } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
-import { findCrop } from '../Farm/FarmService'
+import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
 import { emitNotificationToAdmin } from '../Socket/SocketController'
 import { findUser } from '../Users/UserService'
@@ -90,6 +90,14 @@ export async function acceptSeedlingRequest(
     status: 'accepted',
   }
 
+  const farm = await findCommunityFarmById(findRequest.farm_id)
+
+  await emitPushNotification(
+    farm.farm_head,
+    'Request Accepted',
+    `Your seedling request has been accepted`
+  )
+
   await Service.updateSeedlingRequest(id, updateObject)
 }
 
@@ -103,6 +111,14 @@ export async function rejectSeedlingRequest(id: string) {
   const updateObject: UpdateSeedlingRequest = {
     status: 'rejected',
   }
+
+  const farm = await findCommunityFarmById(findRequest.farm_id)
+
+  await emitPushNotification(
+    farm.farm_head,
+    'Request Accepted',
+    `Your seedling request has been rejected`
+  )
 
   await Service.updateSeedlingRequest(id, updateObject)
 }
