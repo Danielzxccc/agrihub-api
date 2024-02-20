@@ -39,8 +39,6 @@ export async function updateDraftEvent(
       deleteFileCloud(findEvent.banner)
     }
 
-    await uploadFiles([image])
-
     const updateObject: UpdateEvent = {
       ...event,
       banner: image?.filename ? image?.filename : findEvent.banner,
@@ -48,7 +46,10 @@ export async function updateDraftEvent(
 
     const updatedEvent = await Service.updateEvent(id, updateObject)
 
-    deleteFile(image?.filename)
+    if (image?.filename) {
+      await uploadFiles([image])
+      deleteFile(image?.filename)
+    }
 
     return updatedEvent
   } catch (error) {
