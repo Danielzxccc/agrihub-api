@@ -35,7 +35,7 @@ export async function updateDraftEvent(
       throw new HttpError('Event not found', 404)
     }
 
-    if (findEvent.banner && image.filename) {
+    if (findEvent.banner && image?.filename) {
       deleteFileCloud(findEvent.banner)
     }
 
@@ -43,16 +43,16 @@ export async function updateDraftEvent(
 
     const updateObject: UpdateEvent = {
       ...event,
-      banner: image.filename,
+      banner: image?.filename,
     }
 
     const updatedEvent = await Service.updateEvent(id, updateObject)
 
-    deleteFile(image.filename)
+    deleteFile(image?.filename)
 
     return updatedEvent
   } catch (error) {
-    deleteFile(image.filename)
+    deleteFile(image?.filename)
     dbErrorHandler(error)
   }
 }
