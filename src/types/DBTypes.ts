@@ -39,6 +39,7 @@ import {
   BlogTags,
   Landing,
   Approach,
+  SeedlingRequests,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -166,3 +167,7 @@ export type NewBlogImage = Insertable<BlogImages>
 export type UpdateBlogImage = Insertable<BlogImages>
 
 export type NewBlogTags = Insertable<BlogTags>
+
+// seedling requests
+export type NewSeedlingRequest = Insertable<SeedlingRequests>
+export type UpdateSeedlingRequest = Updateable<SeedlingRequests>

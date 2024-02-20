@@ -1,6 +1,9 @@
 import { UpdateUserNotification } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
-import { emitNotification } from '../Socket/SocketController'
+import {
+  emitNotification,
+  emitNotificationToAdmin,
+} from '../Socket/SocketController'
 import { findUser } from '../Users/UserService'
 import * as Service from './NotificationService'
 import PushService from './WebPush'
@@ -25,23 +28,27 @@ export async function emitPushNotification(
     },
   }
 
-  // create notification
-  await Service.createNotification({
-    emitted_to: userid,
-    body,
-    redirect_to: redirect_to,
-  })
+  if (userid === 'admin') {
+    emitNotificationToAdmin(body)
+  } else {
+    // create notification
+    await Service.createNotification({
+      emitted_to: userid,
+      body,
+      redirect_to: redirect_to,
+    })
 
-  emitNotification(userid, body)
+    emitNotification(userid, body)
 
-  const subscription = await Service.findSubscription(userid)
+    const subscription = await Service.findSubscription(userid)
 
-  if (!subscription) return
+    // if (!subscription) return
 
-  await PushService.sendNotification(
-    subscription.payload as any,
-    JSON.stringify(notificationPayload)
-  )
+    await PushService.sendNotification(
+      subscription.payload as any,
+      JSON.stringify(notificationPayload)
+    )
+  }
 }
 
 export async function listUserNotifications(
