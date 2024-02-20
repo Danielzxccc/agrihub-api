@@ -43,7 +43,7 @@ export async function updateDraftEvent(
 
     const updateObject: UpdateEvent = {
       ...event,
-      banner: image?.filename,
+      banner: image?.filename ? image?.filename : findEvent.banner,
     }
 
     const updatedEvent = await Service.updateEvent(id, updateObject)
