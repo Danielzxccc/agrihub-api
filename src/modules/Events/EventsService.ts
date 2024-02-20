@@ -197,9 +197,9 @@ export async function findUnpublishedEvent(id: string) {
 export async function findPublishedEvent(id: string) {
   return await db
     .selectFrom('events as e')
-    .select(({ eb }) => [
+    .select(({ eb, fn, val }) => [
       'e.id',
-      'e.banner',
+      fn<string>('concat', [val(returnObjectUrl()), 'e.banner']).as('banner'),
       'e.event_start',
       'e.event_end',
       'e.location',
