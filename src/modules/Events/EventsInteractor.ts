@@ -98,7 +98,7 @@ export async function updateEventPartnership(
       throw new HttpError('Event not found', 404)
     }
 
-    const updatedEventPartnership = await Service.updateEventPartnership({
+    const updatedEventPartnership = await Service.updateEventPartnership(id, {
       ...partnership,
       logo: image?.filename ? image?.filename : findPartnership.logo,
     })

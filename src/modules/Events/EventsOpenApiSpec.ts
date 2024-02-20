@@ -789,6 +789,8 @@
  *         published_date:
  *           type: string
  *           format: date-time
+ *         type:
+ *           type: string
  *         createdat:
  *           type: string
  *           format: date-time

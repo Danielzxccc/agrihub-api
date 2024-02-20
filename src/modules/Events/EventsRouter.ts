@@ -33,7 +33,7 @@ EventsRouter.put(
 )
 
 EventsRouter.delete(
-  '/remove/partnership/:id',
+  '/delete/partnership/:id',
   UserGuard(['admin', 'asst_admin']),
   EventsController.removeEventPartnership
 )

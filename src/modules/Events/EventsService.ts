@@ -57,11 +57,13 @@ export async function insertNewEventPartnership(
 }
 
 export async function updateEventPartnership(
+  id: string,
   partnership: UpdateEventPartnership
 ) {
   return await db
     .updateTable('event_partnership')
     .set(partnership)
+    .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
 }
@@ -147,6 +149,7 @@ export async function findUnpublishedEvent(id: string) {
       'e.published_date',
       'e.createdat',
       'e.updatedat',
+      'e.type',
       jsonArrayFrom(
         eb
           .selectFrom('event_partnership as ep')
@@ -208,6 +211,7 @@ export async function findPublishedEvent(id: string) {
       'e.published_date',
       'e.createdat',
       'e.updatedat',
+      'e.type',
       jsonArrayFrom(
         eb
           .selectFrom('event_partnership as ep')

@@ -8,17 +8,19 @@ export const NewDraftEvent = z.object({
 
 export const UpdateDraftEvent = z.object({
   body: z.object({
-    event_start: z.string(),
-    event_end: z.string(),
-    location: z.string(),
+    event_start: z.string().optional(),
+    event_end: z.string().optional(),
+    location: z.string().optional(),
     title: z.string(),
-    about: z.string(),
-    type: z.string(),
-    guide: z.string(),
+    about: z.string().optional(),
+    type: z.string().optional(),
+    guide: z.string().optional(),
   }),
-  file: z.object({
-    filename: z.string(),
-  }),
+  file: z
+    .object({
+      filename: z.string(),
+    })
+    .optional(),
 })
 
 export const NewEventPartnership = z.object({
