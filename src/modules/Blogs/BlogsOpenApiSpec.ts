@@ -116,7 +116,7 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/BlogUpdateSuccess"
+ *               $ref: "#/components/schemas/UpdateBlogResponse"
  *       "401":
  *         description: Unauthorized
  *         content:
