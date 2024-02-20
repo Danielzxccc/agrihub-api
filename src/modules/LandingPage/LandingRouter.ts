@@ -5,34 +5,37 @@ import { UserGuard } from '../AuthGuard/UserGuard'
 
 export const LandingRouter = express.Router()
 
-//get
-LandingRouter.get('/image/:id', LandingController.listImages)
-LandingRouter.get('/approach-details/:id', LandingController.listApproach)
-LandingRouter.get(
-  '/landing-details/:id',
-  LandingController.listLandingPageDetails
-)
+// //get
 
-//update content
+// LandingRouter.get('/approach-details/:id', LandingController.listApproach)
+LandingRouter.get('/details', LandingController.listLandingPageDetails)
+
 LandingRouter.put(
-  '/',
+  '/update',
   UserGuard(['admin', 'asst_admin']),
   LandingController.updateLanding
 )
 
-//update content approach
-LandingRouter.put(
-  '/approach',
+LandingRouter.post(
+  '/create/image',
+  UserGuard(['admin', 'asst_admin']),
+  upload.single('image'),
+  LandingController.addImage
+)
+
+// LandingRouter.get('/images', LandingController.listImages)
+
+LandingRouter.delete('/delete/image/:id', LandingController.deleteImage)
+
+LandingRouter.delete('/delete/approach/:id', LandingController.removeApproach)
+
+// //update content
+
+// //update content approach
+LandingRouter.post(
+  '/update/approach',
   UserGuard(['admin', 'asst_admin']),
   LandingController.updateApproach
 )
 
-//images
-LandingRouter.post(
-  '/landing_images',
-  upload.single('images'),
-  UserGuard(['admin', 'asst_admin']),
-  LandingController.addImage
-)
-
-LandingRouter.delete('/landing_images/:id', LandingController.deleteImage)
+// //images

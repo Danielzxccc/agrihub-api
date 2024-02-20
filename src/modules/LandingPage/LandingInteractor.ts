@@ -15,29 +15,10 @@ import {
 } from '../../types/DBTypes'
 import * as Service from './LandingService'
 
-export async function listLandingPageDetails(id: string) {
-  const details = await Service.listLandingPageDetails(id)
+export async function listLandingPageDetails() {
+  const details = await Service.listLandingPageDetails()
   if (!details) throw new HttpError('Not found', 400)
   return details
-}
-
-export async function listApproach(id: string) {
-  const details = await Service.listApproach(id)
-  if (!details) throw new HttpError('Not found', 400)
-  return details
-}
-
-export async function listImages(landing_id: string) {
-  const images = await Service.listImages(landing_id)
-
-  if (!images) throw new HttpError('No images found', 400)
-  return images
-}
-
-export async function updateApproach(body: UpdateApproach) {
-  const update = await Service.updateApproach(body)
-  if (!update) throw new HttpError('Missing or not found, check syntax', 400)
-  return update
 }
 
 export async function updateLanding(body: UpdateLanding) {
@@ -55,12 +36,16 @@ export async function addImage(
     const fileKey = image.filename
     const stream: fs.ReadStream = await readFileAsStream(image.path)
     await uploadFile(stream, fileKey, image.mimetype)
-    const data = { ...body, images: image.filename }
-    const addImage = await Service.addImage(data)
+    const data: AddImageLanding = {
+      ...body,
+      landing_id: 1,
+      images: image.filename,
+    }
+    const addImage = await Service.InsertImage(data)
 
     deleteFile(image.filename)
 
-    if (!addImage) throw new HttpError('Failed: Empty or not found', 400)
+    if (!addImage) throw new HttpError('Failed: Empty or not found', 404)
     return { ...addImage, imagesrc: getObjectUrl(fileKey) }
   } catch (error) {
     deleteFile(image.filename)
@@ -69,10 +54,36 @@ export async function addImage(
 }
 
 export async function deleteImage(id: string) {
+  const image = await Service.findImage(id)
+
+  if (!image) throw new HttpError('Image not found', 404)
   const deleteImage = await Service.deleteImage(id)
 
-  deleteFileCloud(deleteImage.images)
+  await deleteFileCloud(deleteImage.images)
+}
 
-  if (!deleteImage) throw new HttpError('Image currently does not exist', 400)
-  return deleteImage
+export async function listImages(landing_id: string) {
+  const images = await Service.listImages(landing_id)
+
+  return images
+}
+
+// export async function listApproach(id: string) {
+//   const details = await Service.listApproach(id)
+//   if (!details) throw new HttpError('Not found', 400)
+//   return details
+// }
+
+export async function updateApproach(body: UpdateApproach) {
+  const update = await Service.upsertApproach(body)
+  if (!update) throw new HttpError('Missing or not found, check syntax', 400)
+  return update
+}
+
+export async function removeApproach(id: string) {
+  const approach = await Service.deleteApproach(id)
+
+  if (!approach) throw new HttpError('Approach not found', 404)
+
+  return
 }
