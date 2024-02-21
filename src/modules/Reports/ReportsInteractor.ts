@@ -1,6 +1,11 @@
 import HttpError from '../../utils/HttpError'
 import { NewCommunityFarmReport } from '../../types/DBTypes'
-import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
+import {
+  createCrop,
+  findCommunityFarmById,
+  findCrop,
+  insertCommunityFarmCrop,
+} from '../Farm/FarmService'
 import * as Service from './ReportsService'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { deleteFile } from '../../utils/file'
@@ -9,13 +14,16 @@ import { uploadFiles } from '../AWS-Bucket/UploadService'
 import log, { getMonthByIndex } from '../../utils/utils'
 import axios from 'axios'
 import { findLearningMaterialByTags } from '../LearningMaterials/LearningService'
+import { NewCommunityCropReportT } from '../../schema/ReportsSchema'
 
 export async function createCommunityCropReport(
   userid: string,
-  report: NewCommunityFarmReport,
+  reportRequest: NewCommunityCropReportT,
   images: Express.Multer.File[]
 ) {
   try {
+    const report = reportRequest.body
+
     const user = await findUser(userid)
     if (!userid) throw new HttpError('Unathorized', 401)
 
@@ -24,11 +32,48 @@ export async function createCommunityCropReport(
     if (!farm) throw new HttpError("Can't find farm", 404)
     if (userid !== farm.farm_head) throw new HttpError('Unathorized', 401)
 
-    const crop = await Service.findCommunityFarmCrop(report.crop_id as string)
-    if (!crop) throw new HttpError("Can't find crop", 404)
+    // id of crops that are available in admin
+    let cropIdToFind
+    if (report.crop_id) {
+      const crop = await Service.findCommunityFarmCrop(report.crop_id as string)
+      if (!crop) throw new HttpError("Can't find crop", 404)
+      cropIdToFind = crop.crop_id
+    }
 
-    const [parentCrop] = await findCrop(crop.crop_id)
+    const [parent] = await findCrop(cropIdToFind)
 
+    let parentCrop = parent
+
+    if (report.is_other) {
+      try {
+        var newCropObject = await createCrop({
+          name: report.c_name,
+          is_other: true,
+          description: '',
+          isyield: report.isyield,
+        })
+      } catch (error) {
+        throw new HttpError(
+          'Crop is available on options or Add a unique name for your crop. ex: (farm_name + name of the crop)',
+          400
+        )
+      }
+
+      const newCommunityCrop = await insertCommunityFarmCrop({
+        farm_id: user.farm_id,
+        crop_id: newCropObject.id,
+      })
+
+      parentCrop = newCropObject
+
+      report.crop_id = newCommunityCrop.id
+    }
+
+    delete report.is_other
+    delete report.c_name
+    delete report.isyield
+
+    console.log(report, 'REPORT OBJECT')
     const newReport = await Service.insertCommunityCropReport({
       ...report,
       farmid: user.farm_id,

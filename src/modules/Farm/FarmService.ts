@@ -170,7 +170,11 @@ export async function findCropByName(name: string) {
 }
 
 export async function listCrops(): Promise<Crop[]> {
-  return await db.selectFrom('crops').selectAll().execute()
+  return await db
+    .selectFrom('crops')
+    .selectAll()
+    .where('is_other', '=', false)
+    .execute()
 }
 
 export async function updateCrop(crop: UpdateCrop, id: string) {

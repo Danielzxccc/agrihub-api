@@ -3,7 +3,16 @@ import { z } from 'zod'
 // add transform if there's an image input
 export const NewCommunityCropReport = z.object({
   body: z.object({
-    crop_id: z.string(),
+    crop_id: z.string().optional(),
+    is_other: z
+      .string()
+      .transform((arg) => Boolean(arg))
+      .optional(),
+    isyield: z
+      .string()
+      .transform((arg) => Boolean(arg))
+      .optional(),
+    c_name: z.string().optional(),
     planted_qty: z.string().transform((arg) => Number(arg)),
     harvested_qty: z.string().transform((arg) => Number(arg)),
     withered_crops: z.string().transform((arg) => Number(arg)),
@@ -12,6 +21,7 @@ export const NewCommunityCropReport = z.object({
     notes: z.string().optional(),
   }),
 })
+export type NewCommunityCropReportT = z.infer<typeof NewCommunityCropReport>
 
 export const CommunityCropReports = z.object({
   params: z.object({

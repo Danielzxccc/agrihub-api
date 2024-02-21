@@ -91,6 +91,8 @@ CREATE TABLE crops(
     image TEXT,
     seedling_season INT, -- 0 - 11,
     planting_season INT, -- 0 - 11,
+    p_season INT[],
+    is_other BOOLEAN default FALSE,
     harvest_season INT, -- 0 - 11,
     isyield BOOLEAN default FALSE, 
     growth_span INT,

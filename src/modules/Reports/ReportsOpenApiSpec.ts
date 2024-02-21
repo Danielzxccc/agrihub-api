@@ -55,6 +55,12 @@
  *           type: string
  *         planted_qty:
  *           type: number
+ *         is_other:
+ *           type: boolean
+ *         isyield:
+ *           type: boolean
+ *         c_name:
+ *           type: string
  *         harvested_qty:
  *           type: number
  *         withered_crops:

@@ -19,7 +19,7 @@ export async function createCommunityCropReport(
 
     const newReport = await Interactor.createCommunityCropReport(
       userid,
-      body,
+      { body },
       images
     )
 
