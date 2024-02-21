@@ -51,6 +51,10 @@ export async function createCommunityCropReport(
           is_other: true,
           description: '',
           isyield: report.isyield,
+          planting_season: null,
+          growth_span: null,
+          harvest_season: null,
+          seedling_season: null,
         })
       } catch (error) {
         throw new HttpError(
