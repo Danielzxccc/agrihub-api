@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { Int8 } from 'kysely-codegen'
 
 export const ListFarmSchema = z.object({
   query: z.object({
@@ -52,6 +53,10 @@ export const NewCropSchema = z.object({
     seedling_season: z.string({ required_error: 'seedling_season is requred' }),
     planting_season: z.string({ required_error: 'planting_season is requred' }),
     harvest_season: z.string({ required_error: 'harvest_season is requred' }),
+    p_season: z.union([
+      z.array(z.string().transform((arg) => arg as unknown as Int8)),
+      z.string().transform((arg) => [arg as unknown as Int8]),
+    ]),
     isyield: z
       .string({ required_error: 'harvest_season is requred' })
       .transform((arg) => Boolean(arg)),
@@ -60,6 +65,32 @@ export const NewCropSchema = z.object({
   file: z.object({
     filename: z.string({ required_error: 'image is required' }),
   }),
+})
+
+export const UpdateCropSchema = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    description: z.string().optional(),
+    seedling_season: z.string().optional(),
+    planting_season: z.string().optional(),
+    harvest_season: z.string().optional(),
+    p_season: z
+      .union([
+        z.array(z.string().transform((arg) => arg as unknown as Int8)),
+        z.string().transform((arg) => [arg as unknown as Int8]),
+      ])
+      .optional(),
+    isyield: z
+      .string({ required_error: 'harvest_season is requred' })
+      .transform((arg) => Boolean(arg))
+      .optional(),
+    growth_span: z.string().optional(),
+  }),
+  file: z
+    .object({
+      filename: z.string({ required_error: 'image is required' }),
+    })
+    .optional(),
 })
 
 export const NewCropReportSchema = z.object({
@@ -328,6 +359,10 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *         isyield:
  *           type: boolean
  *           description: Indicates whether the crop yields
+ *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
  *         image:
  *           type: string
  *           format: binary
@@ -341,6 +376,40 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *         - growth_span
  *         - image
  *         - isyield
+ *         - p_season
+ *
+ *     UpdateCropRequest:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The name of the crop
+ *         description:
+ *           type: string
+ *           description: A description of the crop
+ *         seedling_season:
+ *           type: string
+ *           description: The seedling season of the crop
+ *         planting_season:
+ *           type: string
+ *           description: The planting season of the crop
+ *         harvest_season:
+ *           type: string
+ *           description: The harvest season of the crop
+ *         growth_span:
+ *           type: string
+ *           description: The growth span of the crop
+ *         isyield:
+ *           type: boolean
+ *           description: Indicates whether the crop yields
+ *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
+ *         image:
+ *           type: string
+ *           format: binary
+ *           description: Binary data of the crop image
  *
  *     NewCropResponse:
  *       type: object
@@ -542,6 +611,11 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *         userid:
  *           type: string
  *           description: The ID of the user who created the crop report
+ *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: An array of actual farm image files
  *         crop_name:
  *           type: string
  *           description: The name of the crop (null if not set)

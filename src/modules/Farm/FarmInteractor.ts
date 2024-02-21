@@ -12,6 +12,7 @@ import {
   NewFarmerInvitation,
   NewSubFarm,
   UpdateCommunityFarm,
+  UpdateCrop,
   UpdateUser,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
@@ -802,4 +803,43 @@ export async function listArchivedCommunityCrops(userid: string) {
   }
 
   return crops
+}
+
+export async function updateCrop(
+  id: string,
+  updateObject: UpdateCrop,
+  file: Express.Multer.File
+) {
+  try {
+    const [foundCrop] = await Service.findCrop(id)
+
+    if (!foundCrop) throw new HttpError('crop not found', 400)
+
+    if (file?.filename) {
+      await uploadFiles([file])
+      await deleteFileCloud(foundCrop.image)
+      deleteFile(file?.filename)
+    }
+
+    const updatedCrop = await Service.updateCrop(
+      {
+        ...updateObject,
+        image: file?.filename ? file?.filename : foundCrop.image,
+        updatedat: new Date(),
+      },
+      id
+    )
+    return updatedCrop
+  } catch (error) {
+    deleteFile(file?.filename)
+    dbErrorHandler(error)
+  }
+}
+
+export async function viewCropDetails(id: string) {
+  const [crop] = await Service.findCrop(id)
+
+  if (!crop) throw new HttpError('Crop not found', 404)
+
+  return crop
 }

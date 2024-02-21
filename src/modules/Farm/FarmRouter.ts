@@ -196,3 +196,12 @@ FarmRouter.get(
   UserGuard(['farm_head']),
   FarmController.listArchivedCommunityCrops
 )
+
+FarmRouter.put(
+  '/crop/update/:id',
+  UserGuard(['admin', 'asst_admin']),
+  upload.single('image'),
+  FarmController.updateCrop
+)
+
+FarmRouter.get('/crop/view/:id', FarmController.viewCropDetails)

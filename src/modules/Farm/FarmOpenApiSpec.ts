@@ -786,7 +786,7 @@
  *   post:
  *     summary: Create a new crop
  *     tags:
- *       - Farm
+ *       - Crop
  *     requestBody:
  *       required: true
  *       content:
@@ -800,6 +800,94 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/NewCropResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/crop/update/{id}:
+ *   put:
+ *     summary: Create a new crop report
+ *     tags:
+ *       - Crop
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the crop
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateCropRequest"
+ *     responses:
+ *       "200":
+ *         description: Crop report created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NewCropResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/crop/view/{id}:
+ *   get:
+ *     summary: Create a new crop report
+ *     tags:
+ *       - Crop
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the crop
+ *     responses:
+ *       "200":
+ *         description: Crop report created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UpdateCropRequest"
  *       "401":
  *         description: Unauthorized
  *         content:

@@ -650,3 +650,32 @@ export async function listArchivedCommunityCrops(
     errorHandler(res, error)
   }
 }
+
+export async function updateCrop(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+    const { body } = await zParse(Schema.UpdateCropSchema, req)
+
+    const file = req.file
+    const cropData = await Interactor.updateCrop(id, body, file)
+
+    res.status(200).json({
+      message: 'Updated successfully',
+      data: cropData,
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewCropDetails(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+
+    const cropData = await Interactor.viewCropDetails(id)
+
+    res.status(200).json(cropData)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
