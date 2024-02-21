@@ -92,3 +92,5 @@ BlogsRouter.put(
 
 BlogsRouter.get('/published/list', BlogsController.listPublishedBlogs)
 BlogsRouter.get('/published/:id', BlogsController.viewPublishedBlog)
+
+BlogsRouter.put('/thumbnail/:id/:blog_id', BlogsController.setBlogThumbnail)

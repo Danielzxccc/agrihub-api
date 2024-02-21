@@ -296,3 +296,21 @@ export async function getTotalPublishedBlogs() {
     .where('status', '=', 'published')
     .executeTakeFirst()
 }
+
+export async function setBlogThumbnail(id: string, blog_id: string) {
+  await db.transaction().execute(async (trx) => {
+    await trx
+      .updateTable('blog_images')
+      .set({ thumbnail: true })
+      .where('id', '=', id)
+      .where('blog_id', '=', blog_id)
+      .execute()
+
+    await trx
+      .updateTable('blog_images')
+      .set({ thumbnail: false })
+      .where('id', '!=', id)
+      .where('blog_id', '=', blog_id)
+      .execute()
+  })
+}

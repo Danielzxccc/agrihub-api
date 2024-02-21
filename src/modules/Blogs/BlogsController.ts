@@ -245,3 +245,14 @@ export async function viewPublishedBlog(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function setBlogThumbnail(req: Request, res: Response) {
+  try {
+    const { id, blog_id } = req.params
+
+    await Interactor.setBlogThumbnail(id, blog_id)
+    res.status(200).json({ message: 'Set Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

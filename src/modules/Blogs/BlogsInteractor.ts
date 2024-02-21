@@ -234,3 +234,7 @@ export async function listPublishedBlogs(
 
   return { data, total }
 }
+
+export async function setBlogThumbnail(id: string, blog_id: string) {
+  await Service.setBlogThumbnail(id, blog_id)
+}

@@ -1160,3 +1160,56 @@
  *               tag:
  *                 type: string
  */
+
+/**
+ * @openapi
+ * /api/blogs/thumbnail/{id}/{blog_id}:
+ *   put:
+ *     summary: Update thumbnail for a blog
+ *     tags:
+ *       - Blogs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the thumbnail to update
+ *       - in: path
+ *         name: blog_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the blog associated with the thumbnail
+ *     responses:
+ *       "200":
+ *         description: Thumbnail updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
