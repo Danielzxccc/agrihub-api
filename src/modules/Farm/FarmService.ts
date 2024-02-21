@@ -63,7 +63,11 @@ export async function listFarms(
 }
 
 export async function findAllCrops() {
-  return await db.selectFrom('crops').selectAll().execute()
+  return await db
+    .selectFrom('crops')
+    .selectAll()
+    .where('is_other', '=', false)
+    .execute()
 }
 
 export async function viewFarm(id: string) {
