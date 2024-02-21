@@ -246,13 +246,15 @@ export async function getAverageGrowthRate(userid: string) {
 
   const data = await Service.getAverageGrowthRate(user.farm_id)
 
+  // yieldable growth rate=((harvestedqty/(harvestedqty+witheredqty))x100
+  // ((parseFloat(plant.harvested_qty as string) / parseFloat(plant.planted_qty as string)) / parseFloat(plant.planted_qty as string)) *100
   console.log(data, 'CHECK DATA')
   const [plant] = data
   const latestGrowthRate =
     plant.type === '1'
-      ? ((parseFloat(plant.harvested_qty as string) -
-          parseFloat(plant.planted_qty as string)) /
-          parseFloat(plant.planted_qty as string)) *
+      ? (parseFloat(plant.harvested_qty as string) /
+          (parseFloat(plant.harvested_qty as string) +
+            parseFloat(plant.withered_crops as string))) *
         100
       : (parseFloat(plant.harvested_qty as string) /
           parseFloat(plant.planted_qty as string)) *

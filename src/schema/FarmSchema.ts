@@ -281,6 +281,10 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *         harvest_season:
  *           type: string
  *           description: The harvest season of the crop
+ *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
  *         isyield:
  *           type: boolean
  *           description: Indicates whether the crop yields
