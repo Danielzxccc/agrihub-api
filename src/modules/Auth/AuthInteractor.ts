@@ -147,21 +147,24 @@ export async function setupUsernameAndTags(
     const stream: fs.ReadStream = await readFileAsStream(image.path)
     await uploadFile(stream, fileKey, image.mimetype)
 
-    const usertags = tags.map((tag) => {
-      return {
-        userid: session,
-        tagid: String(tag),
-      }
-    })
-
     // update user's username and avatar
     const updatedUser = await Service.updateUser(session, {
       username,
       avatar: fileKey,
       verification_level: '4',
     })
-    // create user tags
-    await createUserTags(usertags)
+
+    if (tags?.length) {
+      const usertags = tags?.map((tag) => {
+        return {
+          userid: session,
+          tagid: String(tag),
+        }
+      })
+
+      // create user tags
+      await createUserTags(usertags)
+    }
 
     // delete the file in local storage after updating the user
     deleteFile(image.filename)
