@@ -241,7 +241,7 @@ export const verifyLevelTwo = z.object({
 export const SetupUsernameTags = z.object({
   body: z.object({
     username: z.string().min(4),
-    tags: z.string().array(),
+    tags: z.string().array().optional(),
   }),
 })
 export type RegisterUser = z.infer<typeof UserRegisterSchema>
