@@ -1030,6 +1030,9 @@
  *         farm_name:
  *           type: string
  *           description: Name of the farm
+ *         avatar:
+ *           type: string
+ *           description: Image of the farm
  *         avg_growth_rate:
  *           type: string
  *           description: Average growth rate of the farm
