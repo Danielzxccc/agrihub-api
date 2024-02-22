@@ -89,3 +89,19 @@ export async function readUserNotifications(
     errorHandler(res, error)
   }
 }
+
+export async function testEmit(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.emitPushNotification(
+      id,
+      'THIS IS A TEST NOTIF',
+      'TEST NOTIFICATION'
+    )
+
+    res.status(200).json({ message: 'success' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

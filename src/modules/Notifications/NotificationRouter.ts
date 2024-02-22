@@ -39,3 +39,9 @@ NotificationRouter.put(
   UserGuard(['farm_head', 'farmer', 'member', 'user']),
   NotificationController.readUserNotifications
 )
+
+NotificationRouter.post(
+  '/emit/test/:id',
+  UserGuard(['admin']),
+  NotificationController.testEmit
+)
