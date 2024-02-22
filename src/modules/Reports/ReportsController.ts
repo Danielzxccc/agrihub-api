@@ -241,3 +241,12 @@ export async function getSuggestedLearningMaterials(
     errorHandler(res, error)
   }
 }
+
+export async function listFavouriteCrops(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.listFavouriteCrops()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

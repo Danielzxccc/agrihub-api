@@ -448,3 +448,67 @@ export async function getTotalWitheredHarvestEachMonth(
       `.compile(db)
   )
 }
+
+export async function getFavouriteCrops() {
+  return await db
+    .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .select(({ fn, val }) => [
+      'ccr.crop_id',
+      'c.name as crop_name',
+      fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
+      sql`SUM(ccr.planted_qty)`.as('total_planted'),
+      sql`SUM(ccr.harvested_qty)`.as('total_harvested'),
+      sql`SUM(ccr.withered_crops)`.as('total_withered'),
+    ])
+    .groupBy(['ccr.crop_id', 'ccr.planted_qty', 'c.name', 'c.image'])
+    .where('ccr.is_archived', '=', false)
+    .where('c.is_other', '=', false)
+    .orderBy('total_planted desc')
+    .limit(5)
+    .execute()
+}
+
+export async function getLowestGrowthRates() {
+  return await db.executeQuery(
+    sql`
+        WITH GrowthRates AS (
+          SELECT 
+              cf.id AS farm_id,
+              AVG(
+                  CASE 
+                      WHEN crops.isyield THEN 
+                          (cr.harvested_qty::numeric / NULLIF(cr.harvested_qty + cr.withered_crops, 0)) * 100
+                      ELSE 
+                          (cr.harvested_qty::numeric / NULLIF(cr.planted_qty, 0)) * 100
+                  END
+              ) AS avg_growth_rate
+          FROM 
+              community_farms cf
+          JOIN 
+              community_crop_reports cr ON cf.id = cr.farmid
+          JOIN 
+              community_farms_crops cfc ON cf.id = cfc.farm_id
+          JOIN 
+              crops ON cfc.crop_id = crops.id
+          WHERE 
+              NOT cr.is_archived
+          GROUP BY 
+              cf.id
+      )
+      SELECT 
+          cf.id AS farm_id,
+          cf.farm_name,
+          gr.avg_growth_rate
+      FROM 
+          community_farms cf
+      JOIN 
+          GrowthRates gr ON cf.id = gr.farm_id
+      ORDER BY 
+          gr.avg_growth_rate ASC
+      LIMIT 
+          5;
+  `.compile(db)
+  )
+}

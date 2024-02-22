@@ -149,7 +149,7 @@ export async function listAllWitheredHarvestedCrops(
     'December',
   ]
 
-  if ((start !== 1 && end !== 12) || start === 1) {
+  if ((start !== 1 && end !== 12) || start === 1 || end === 12) {
     const startIndex = start - 1
     const endIndex = end - 1
 
@@ -305,7 +305,6 @@ export async function getAverageGrowthRate(userid: string) {
 
   // yieldable growth rate=((harvestedqty/(harvestedqty+witheredqty))x100
   // ((parseFloat(plant.harvested_qty as string) / parseFloat(plant.planted_qty as string)) / parseFloat(plant.planted_qty as string)) *100
-  console.log(data, 'CHECK DATA')
   const [plant] = data
   const latestGrowthRate =
     plant.type === '1'
@@ -334,7 +333,7 @@ export async function getAverageGrowthRate(userid: string) {
   //     return acc + growthRate
   //   }, 0) / data.length
   let sum = 0
-  for (let i = 1; i < data.length; i++) {
+  for (let i = 0; i < data.length; i++) {
     const plant = data[i]
     const growthRate =
       plant.type === '1'
@@ -382,4 +381,10 @@ export async function getSuggestedLearningMaterials(userid: string) {
   const suggestedLearningMaterials = await findLearningMaterialByTags(dataSet)
 
   return suggestedLearningMaterials
+}
+
+export async function listFavouriteCrops() {
+  const data = await Service.getFavouriteCrops()
+
+  return data
 }

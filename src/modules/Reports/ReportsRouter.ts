@@ -89,3 +89,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.listAllWitheredHarvestedCrops
 )
+
+ReportsRouter.get(
+  '/admin/favourite/crops',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listFavouriteCrops
+)
