@@ -390,3 +390,9 @@ export async function listFavouriteCrops() {
 
   return data
 }
+
+export async function getLowestGrowthRates() {
+  const data = await Service.getLowestGrowthRates()
+
+  return data.rows
+}

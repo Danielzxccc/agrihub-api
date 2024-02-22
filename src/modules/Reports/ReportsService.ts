@@ -498,6 +498,7 @@ export async function getLowestGrowthRates() {
       )
       SELECT 
           cf.id AS farm_id,
+          CONCAT(${returnObjectUrl()}, cf.avatar) AS avatar,
           cf.farm_name,
           gr.avg_growth_rate
       FROM 

@@ -95,3 +95,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.listFavouriteCrops
 )
+
+ReportsRouter.get(
+  '/admin/lowest/growth-rate',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getLowestGrowthRates
+)

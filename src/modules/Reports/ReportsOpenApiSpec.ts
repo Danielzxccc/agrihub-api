@@ -1001,3 +1001,36 @@
  *         total_withered:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/reports/admin/lowest/growth-rate:
+ *   get:
+ *     summary: Get farms with the lowest average growth rate
+ *     tags: [Reports]
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmWithGrowthRate"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmWithGrowthRate:
+ *       type: object
+ *       properties:
+ *         farm_id:
+ *           type: string
+ *           description: Unique identifier of the farm
+ *         farm_name:
+ *           type: string
+ *           description: Name of the farm
+ *         avg_growth_rate:
+ *           type: string
+ *           description: Average growth rate of the farm
+ */
