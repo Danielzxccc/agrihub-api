@@ -327,6 +327,12 @@ export async function publishLearningMaterial(id: string) {
     throw new HttpError('You must have at least one learning tags.', 400)
   }
 
+  if (
+    !learningMaterial.learning_resource.some((resource) => resource.is_featured)
+  ) {
+    throw new HttpError('Set atleast one featured resource', 400)
+  }
+
   const validation = z.object({
     title: z.string({ required_error: 'title is required' }),
     content: z.string({ required_error: 'content is required' }),
