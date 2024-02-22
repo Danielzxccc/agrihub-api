@@ -182,6 +182,10 @@ export async function publishBlog(id: string) {
     throw new HttpError('At least one image is required.', 400)
   }
 
+  if (!blog.images.some((image) => image.thumbnail)) {
+    throw new HttpError('Assign a thumbnail to one of the images.', 400)
+  }
+
   const validation = z.object({
     title: z.string(),
     category: z.string(),
