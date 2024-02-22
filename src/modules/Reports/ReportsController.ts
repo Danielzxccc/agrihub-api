@@ -55,7 +55,13 @@ export async function listAllWitheredHarvestedCrops(
   res: Response
 ) {
   try {
-    const data = await Interactor.listAllWitheredHarvestedCrops()
+    const { query } = await zParse(Schema.FilterWitheredHarvested, req)
+
+    const data = await Interactor.listAllWitheredHarvestedCrops(
+      query.year,
+      query.start,
+      query.end
+    )
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)

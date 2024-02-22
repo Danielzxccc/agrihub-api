@@ -870,9 +870,25 @@
  * @openapi
  * /api/reports/admin/graph/harvested-withered:
  *   get:
- *     summary: Update harvested and withered data for each month
+ *     summary: Retrieve harvested and withered data for a specific period
  *     tags:
  *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *         description: The year for which data is requested
+ *       - in: query
+ *         name: start
+ *         schema:
+ *           type: string
+ *         description: The start date for the period
+ *       - in: query
+ *         name: end
+ *         schema:
+ *           type: string
+ *         description: The end date for the period
  *     responses:
  *       "200":
  *         description: Array of harvested and withered data for each month

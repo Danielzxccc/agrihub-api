@@ -39,3 +39,20 @@ export const CommunityCropReports = z.object({
     sort: z.string().optional().default('date_harvested'),
   }),
 })
+
+export const FilterWitheredHarvested = z.object({
+  query: z.object({
+    year: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
+    start: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
+    end: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
+  }),
+})

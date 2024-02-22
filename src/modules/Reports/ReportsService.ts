@@ -390,7 +390,11 @@ export async function getAverageGrowthRate(farmid: string) {
     .execute()
 }
 
-export async function getTotalWitheredHarvestEachMonth() {
+export async function getTotalWitheredHarvestEachMonth(
+  year: number,
+  start: number,
+  end: number
+) {
   return await db.executeQuery(
     sql`
       SELECT
@@ -427,7 +431,13 @@ export async function getTotalWitheredHarvestEachMonth() {
             FROM
                 community_crop_reports
             WHERE
-                date_harvested IS NOT NULL
+                date_harvested IS NOT NULL 
+                AND
+                EXTRACT(YEAR FROM date_harvested) = ${String(year)}
+                AND
+                EXTRACT(MONTH FROM date_harvested) BETWEEN ${String(
+                  start
+                )} AND ${String(end)}
             GROUP BY
                 year, month
         ) AS source

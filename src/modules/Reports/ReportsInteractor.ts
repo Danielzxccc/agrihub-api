@@ -121,8 +121,16 @@ export async function listWitheredHarvestedCrops(userid: string) {
   return data
 }
 
-export async function listAllWitheredHarvestedCrops() {
-  const rawData = await Service.getTotalWitheredHarvestEachMonth()
+export async function listAllWitheredHarvestedCrops(
+  year = new Date().getFullYear(),
+  start = 1,
+  end = 12
+) {
+  const rawData = await Service.getTotalWitheredHarvestEachMonth(
+    year,
+    start,
+    end
+  )
 
   const data = rawData.rows[0]
 
@@ -141,7 +149,18 @@ export async function listAllWitheredHarvestedCrops() {
     'December',
   ]
 
-  const dataKeys = Object.keys(data)
+  if ((start !== 1 && end !== 12) || start === 1) {
+    const startIndex = start - 1
+    const endIndex = end - 1
+
+    months.splice(endIndex + 1)
+
+    if (startIndex > 0) {
+      months.splice(0, startIndex)
+    }
+  }
+
+  const dataKeys = Object.keys(data ?? {})
 
   const transformedData = months.map((month) => {
     const harvestedIndex = dataKeys.findIndex((e) => e === month.toLowerCase())
@@ -151,8 +170,8 @@ export async function listAllWitheredHarvestedCrops() {
 
     return {
       month: month,
-      harvested: Number(Object.values(data)[harvestedIndex]),
-      withered: Number(Object.values(data)[witheredIndex]),
+      harvested: Number(Object.values(data ?? {})[harvestedIndex]),
+      withered: Number(Object.values(data ?? {})[witheredIndex]),
     }
   })
 
