@@ -259,6 +259,16 @@ export async function findPublishedBlogs(
       'b.is_archived',
       'b.createdat',
       'b.updatedat',
+      eb
+        .selectFrom('blog_images as bi')
+        .select(({ fn, val }) => [
+          fn<string>('concat', [val(returnObjectUrl()), 'bi.image']).as(
+            'image'
+          ),
+        ])
+        .whereRef('bi.blog_id', '=', 'b.id')
+        .where('bi.thumbnail', '=', true)
+        .as('thumbnail'),
       jsonArrayFrom(
         eb
           .selectFrom('blog_tags as bt')

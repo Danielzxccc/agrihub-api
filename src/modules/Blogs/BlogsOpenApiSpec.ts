@@ -1150,6 +1150,8 @@
  *           type: string
  *         updatedat:
  *           type: string
+ *         thumbnail:
+ *           type: string
  *         tags:
  *           type: array
  *           items:
