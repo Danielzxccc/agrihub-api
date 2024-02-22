@@ -179,7 +179,6 @@ export async function viewFarmApplication(id: string) {
   )
   data.farm_actual_images = formattedActualImages
   data.selfie = getObjectUrl(data.selfie)
-  data.proof = getObjectUrl(data.proof)
   data.valid_id = getObjectUrl(data.valid_id)
   data.createdat = data.createdat.toString().slice(0, -3) + 'Z'
   data.updatedat = data.updatedat.toString().slice(0, -3) + 'Z'

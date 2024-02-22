@@ -50,6 +50,18 @@ export async function listWitheredHarvestedCrops(
   }
 }
 
+export async function listAllWitheredHarvestedCrops(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.listAllWitheredHarvestedCrops()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function listTotalHarvestedCrops(
   req: SessionRequest,
   res: Response

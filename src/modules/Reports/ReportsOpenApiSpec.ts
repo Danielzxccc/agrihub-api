@@ -865,3 +865,60 @@
  */
 
 // rebuild
+
+/**
+ * @openapi
+ * /api/reports/admin/graph/harvested-withered:
+ *   get:
+ *     summary: Update harvested and withered data for each month
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Array of harvested and withered data for each month
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/HarvestedWitheredData"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     HarvestedWitheredData:
+ *       type: object
+ *       properties:
+ *         month:
+ *           type: string
+ *         harvested:
+ *           type: integer
+ *         withered:
+ *           type: integer
+ */

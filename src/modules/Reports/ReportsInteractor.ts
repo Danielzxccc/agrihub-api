@@ -121,6 +121,44 @@ export async function listWitheredHarvestedCrops(userid: string) {
   return data
 }
 
+export async function listAllWitheredHarvestedCrops() {
+  const rawData = await Service.getTotalWitheredHarvestEachMonth()
+
+  const data = rawData.rows[0]
+
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+
+  const dataKeys = Object.keys(data)
+
+  const transformedData = months.map((month) => {
+    const harvestedIndex = dataKeys.findIndex((e) => e === month.toLowerCase())
+    const witheredIndex = dataKeys.findIndex(
+      (e) => e === month.toLowerCase() + '_w'
+    )
+
+    return {
+      month: month,
+      harvested: Number(Object.values(data)[harvestedIndex]),
+      withered: Number(Object.values(data)[witheredIndex]),
+    }
+  })
+
+  return transformedData
+}
+
 export async function listTotalHarvestedCrops(userid: string) {
   const user = await findUser(userid)
   if (!user) throw new HttpError('Unauthorized', 401)

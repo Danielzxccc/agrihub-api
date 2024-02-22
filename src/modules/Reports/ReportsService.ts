@@ -219,6 +219,23 @@ export async function getTotalHarvestEachMonth(farmid: string) {
   )
 }
 
+export async function getAllHarvestedAndWitheredCrops() {
+  return await db
+    .selectFrom('community_farms_crops as cfc')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .leftJoin('community_crop_reports as ccr', 'cfc.id', 'ccr.crop_id')
+    .select([
+      'cfc.id as community_farms_crops_id',
+      'cfc.farm_id',
+      'cfc.crop_id',
+      'c.name as crop_name',
+      sql`COALESCE(SUM(ccr.harvested_qty), 0)`.as('total_harvested'),
+      sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('total_withered'),
+    ])
+    .groupBy(['cfc.id', 'cfc.farm_id', 'cfc.crop_id', 'c.name'])
+    .execute()
+}
+
 export async function getCropStatistics(name: string, farmid: string) {
   return await db
     .selectFrom('community_crop_reports as ccr')
@@ -371,4 +388,53 @@ export async function getAverageGrowthRate(farmid: string) {
     .where('ccr.is_archived', '=', false)
     .orderBy('ccr.createdat desc')
     .execute()
+}
+
+export async function getTotalWitheredHarvestEachMonth() {
+  return await db.executeQuery(
+    sql`
+      SELECT
+        COALESCE(SUM(CASE WHEN month = 1 THEN total_harvested_qty END), 0) AS January,
+        COALESCE(SUM(CASE WHEN month = 1 THEN total_withered_qty END), 0) AS January_w,
+        COALESCE(SUM(CASE WHEN month = 2 THEN total_harvested_qty END), 0) AS February,
+        COALESCE(SUM(CASE WHEN month = 2 THEN total_withered_qty END), 0) AS February_w,
+        COALESCE(SUM(CASE WHEN month = 3 THEN total_harvested_qty END), 0) AS March,
+        COALESCE(SUM(CASE WHEN month = 3 THEN total_withered_qty END), 0) AS March_w,
+        COALESCE(SUM(CASE WHEN month = 4 THEN total_harvested_qty END), 0) AS April,
+        COALESCE(SUM(CASE WHEN month = 4 THEN total_withered_qty END), 0) AS April_w,
+        COALESCE(SUM(CASE WHEN month = 5 THEN total_harvested_qty END), 0) AS May,
+        COALESCE(SUM(CASE WHEN month = 5 THEN total_withered_qty END), 0) AS May_w,
+        COALESCE(SUM(CASE WHEN month = 6 THEN total_harvested_qty END), 0) AS June,
+        COALESCE(SUM(CASE WHEN month = 6 THEN total_withered_qty END), 0) AS June_w,
+        COALESCE(SUM(CASE WHEN month = 7 THEN total_harvested_qty END), 0) AS July,
+        COALESCE(SUM(CASE WHEN month = 7 THEN total_withered_qty END), 0) AS July_w,
+        COALESCE(SUM(CASE WHEN month = 8 THEN total_harvested_qty END), 0) AS August,
+        COALESCE(SUM(CASE WHEN month = 8 THEN total_withered_qty END), 0) AS August_w,
+        COALESCE(SUM(CASE WHEN month = 9 THEN total_harvested_qty END), 0) AS September,
+        COALESCE(SUM(CASE WHEN month = 9 THEN total_withered_qty END), 0) AS September_w,
+        COALESCE(SUM(CASE WHEN month = 10 THEN total_harvested_qty END), 0) AS October,
+        COALESCE(SUM(CASE WHEN month = 10 THEN total_withered_qty END), 0) AS October_w,
+        COALESCE(SUM(CASE WHEN month = 11 THEN total_harvested_qty END), 0) AS November,
+        COALESCE(SUM(CASE WHEN month = 11 THEN total_withered_qty END), 0) AS November_w,
+        COALESCE(SUM(CASE WHEN month = 12 THEN total_harvested_qty END), 0) AS December,
+        COALESCE(SUM(CASE WHEN month = 12 THEN total_withered_qty END), 0) AS December_w
+        FROM (
+            SELECT
+                EXTRACT(MONTH FROM date_harvested) AS month,
+                EXTRACT(YEAR FROM date_harvested) AS year,
+                SUM(harvested_qty) AS total_harvested_qty,
+                SUM(withered_crops) AS total_withered_qty
+            FROM
+                community_crop_reports
+            WHERE
+                date_harvested IS NOT NULL
+            GROUP BY
+                year, month
+        ) AS source
+        GROUP BY
+            year
+        ORDER BY
+            year;
+      `.compile(db)
+  )
 }

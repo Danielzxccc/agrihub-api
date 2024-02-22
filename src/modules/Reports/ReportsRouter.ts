@@ -83,3 +83,9 @@ ReportsRouter.get(
   UserGuard(['farm_head', 'farmer']),
   ReportsController.getSuggestedLearningMaterials
 )
+
+ReportsRouter.get(
+  '/admin/graph/harvested-withered',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listAllWitheredHarvestedCrops
+)
