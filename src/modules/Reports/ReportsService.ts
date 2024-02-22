@@ -385,7 +385,6 @@ export async function getAverageGrowthRate(farmid: string) {
       'c.isyield',
     ])
     .where('ccr.farmid', '=', farmid)
-    .where('ccr.is_archived', '=', false)
     .orderBy('ccr.createdat desc')
     .execute()
 }

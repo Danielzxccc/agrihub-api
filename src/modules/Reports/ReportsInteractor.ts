@@ -333,13 +333,15 @@ export async function getAverageGrowthRate(userid: string) {
   //     return acc + growthRate
   //   }, 0) / data.length
   let sum = 0
+
+  console.log(data)
   for (let i = 0; i < data.length; i++) {
     const plant = data[i]
     const growthRate =
       plant.type === '1'
-        ? ((parseFloat(plant.harvested_qty as string) -
-            parseFloat(plant.planted_qty as string)) /
-            parseFloat(plant.planted_qty as string)) *
+        ? (parseFloat(plant.harvested_qty as string) /
+            (parseFloat(plant.harvested_qty as string) +
+              parseFloat(plant.withered_crops as string))) *
           100
         : (parseFloat(plant.harvested_qty as string) /
             parseFloat(plant.planted_qty as string)) *
