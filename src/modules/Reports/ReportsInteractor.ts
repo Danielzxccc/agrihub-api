@@ -335,7 +335,7 @@ export async function getAverageGrowthRate(userid: string) {
   let sum = 0
 
   console.log(data)
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 1; i < data.length; i++) {
     const plant = data[i]
     const growthRate =
       plant.type === '1'
