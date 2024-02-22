@@ -36,7 +36,7 @@ NotificationRouter.get('/user', NotificationController.listUserNotifications)
 
 NotificationRouter.put(
   '/user/read/:id',
-  UserGuard(['farm_head', 'farmer', 'member', 'user']),
+  UserGuard(['admin', 'asst_admin', 'farm_head', 'farmer', 'member', 'user']),
   NotificationController.readUserNotifications
 )
 
