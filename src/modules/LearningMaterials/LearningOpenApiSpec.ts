@@ -1244,7 +1244,7 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/ListPublishedLearningMaterialsResponse"
+ *               $ref: "#/components/schemas/ListRelatedLearningMaterialsResponse"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -1322,6 +1322,11 @@
  *       required:
  *         - data
  *         - pagination
+ *
+ *     ListRelatedLearningMaterialsResponse:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/PublishedLearningMaterial"
  *
  *     ListPublishedLearningMaterials:
  *       type: object
