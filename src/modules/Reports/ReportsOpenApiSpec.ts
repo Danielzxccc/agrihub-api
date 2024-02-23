@@ -1014,7 +1014,9 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/FarmWithGrowthRate"
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/FarmWithGrowthRate"
  */
 
 /**
