@@ -179,7 +179,7 @@ export async function publishBlog(id: string) {
   }
 
   if (!blog.tags.length) {
-    throw new HttpError('At least one image is required.', 400)
+    throw new HttpError('At least one tags is required.', 400)
   }
 
   if (!blog.images.some((image) => image.thumbnail)) {
