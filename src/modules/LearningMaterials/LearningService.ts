@@ -180,9 +180,24 @@ export async function findRelatedLearningMaterials(tags: string[] | string) {
 export async function findLearningMaterialByTags(tags: string[]) {
   return await db
     .selectFrom('learning_materials as lm')
-    .selectAll()
     .leftJoin('learning_tags as lt', 'lm.id', 'lt.learning_id')
     .leftJoin('tags as t', 'lt.tag_id', 't.id')
+    .select([
+      'lm.id',
+      'lm.title',
+      'lm.content',
+      'lm.type',
+      'lm.language',
+      'lm.status',
+      'lm.published_date',
+      'lm.createdat',
+      'lm.updatedat',
+      'lm.is_archived',
+      'lt.learning_id',
+      'lt.tag_id',
+      't.details',
+      't.tag_name',
+    ])
     .where('lm.status', '=', 'published')
     .where('is_archived', '=', false)
     .where((eb) => eb.or(tags.map((item) => eb('t.tag_name', '=', item))))
