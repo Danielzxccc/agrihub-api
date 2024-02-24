@@ -37,7 +37,7 @@ export async function sendMail(toEmail: string, token: string) {
 
     <div style="background-color: white; width: 50%; border-radius: 10px; margin: auto;">
 
-        <img src="https://res.cloudinary.com/dssodjqpe/image/upload/v1699793014/avg63hiii2mekqpwlvii.png" width="200px"
+        <img src="https://agrihub-bucket.s3.ap-southeast-1.amazonaws.com/rrsu2rlpqtcddu9zlk9c(1).svg" width="200px"
             height="120px" style="margin: auto; margin-left: 30px; margin-bottom: -30px;" />
 
         <div class="alignments" style="display: flex; align-items: center; margin-top: 20px">
@@ -72,5 +72,32 @@ export async function sendMail(toEmail: string, token: string) {
 </body>
 </html>
     `,
+  })
+}
+
+export async function sendResetTokenEmail(toEmail: string, token: string) {
+  await transporter.sendMail({
+    from: 'agrihub26@gmail.com',
+    to: toEmail,
+    subject: 'Password Reset',
+    html: `
+        <html>
+        <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&family=Montserrat&display=swap"
+            rel="stylesheet">
+        </head>
+
+        <body style="align-items: center; background-color: #E8E8E8;">
+        <a href="${process.env.CLIENT}/${token}">Reset Password Here </a>
+        </body>
+        </html>
+         `,
   })
 }

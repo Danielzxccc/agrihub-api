@@ -1,3 +1,4 @@
+import { P } from 'pino'
 import { z } from 'zod'
 
 /**
@@ -244,5 +245,24 @@ export const SetupUsernameTags = z.object({
     tags: z.string().array().optional(),
   }),
 })
+
+export const SendResetToken = z.object({
+  body: z.object({
+    email: z.string(),
+  }),
+})
+
+export const ResetPassword = z.object({
+  body: z
+    .object({
+      password: z.string(),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ['confirmPassword'], // path of error
+    }),
+})
+
 export type RegisterUser = z.infer<typeof UserRegisterSchema>
 export type ProfileCompletion = z.infer<typeof verifyLevelTwo>

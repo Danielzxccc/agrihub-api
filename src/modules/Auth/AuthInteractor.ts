@@ -1,9 +1,16 @@
 import * as Service from '../Users/UserService'
-import { deleteToken, findToken, generateToken } from './AuthService'
+import {
+  deleteResetToken,
+  deleteToken,
+  findResetToken,
+  findToken,
+  generateResetToken,
+  generateToken,
+} from './AuthService'
 import HttpError from '../../utils/HttpError'
 import bcrypt from 'bcrypt'
 import { ProfileCompletion, RegisterUser } from '../../schema/AuthSchema'
-import { sendMail } from '../../utils/email'
+import { sendMail, sendResetTokenEmail } from '../../utils/email'
 import { createUserTags } from '../Tags/TagsService'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
@@ -176,4 +183,36 @@ export async function setupUsernameAndTags(
     deleteFile(image.filename)
     dbErrorHandler(error)
   }
+}
+
+export async function sendResetToken(email: string) {
+  const user = await Service.findUserByEmail(email)
+
+  if (!user) {
+    throw new HttpError('No user by that email', 400)
+  }
+
+  const resetToken = await generateResetToken(user.id)
+
+  await sendResetTokenEmail(user.email, resetToken.id)
+}
+
+export async function resetPassword(token: string, password: string) {
+  const findToken = await findResetToken(token)
+
+  if (!findToken) {
+    throw new HttpError('Token Expired', 401)
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10)
+
+  await Service.updateUser(findToken.userid, { password: hashedPassword })
+
+  await deleteResetToken(findToken.id)
+}
+
+export async function checkResetTokenExpiration(token: string) {
+  const findToken = await findResetToken(token)
+
+  if (!findToken) throw new HttpError('Token Expired', 400)
 }
