@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const NewSeedlingRequest = z.object({
   body: z.object({
-    crop_id: z.string(),
+    crop_id: z.string().optional(),
     other: z.string().optional(),
     quantity_request: z.number(),
     note: z.string().optional(),
