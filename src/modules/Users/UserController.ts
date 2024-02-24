@@ -49,7 +49,7 @@ export async function updateUserProfile(req: SessionRequest, res: Response) {
   try {
     const { params, body } = await zParse(Schema.UpdateProfile, req)
     const sessionId = req.session.userid
-    const avatar = req.file?.filename
+    const avatar = req.file
 
     const updatedUser = await Interactor.updateUserProfile(
       params.id,

@@ -128,10 +128,6 @@ import { z } from 'zod'
  *         avatar:
  *           type: string
  *           format: binary
- *         username:
- *           type: string
- *         email:
- *           type: string
  *         firstname:
  *           type: string
  *         lastname:
@@ -146,8 +142,6 @@ import { z } from 'zod'
  *         district:
  *           type: string
  *         municipality:
- *           type: string
- *         verification_level:
  *           type: string
  *         bio:
  *           type: string

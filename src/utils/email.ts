@@ -81,22 +81,108 @@ export async function sendResetTokenEmail(toEmail: string, token: string) {
     to: toEmail,
     subject: 'Password Reset',
     html: `
-        <html>
+       <!DOCTYPE html>
+        <html lang="en">
         <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&family=Montserrat&display=swap"
-            rel="stylesheet">
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                    padding: 20px;
+                    margin: 0;
+                    display: flex;
+                    justify-content: center;
+                    height: 100vh;
+                }
+
+                h2 {
+                    color: #333333;
+                    text-align: left;
+                }
+
+                h4 {
+                    color: #333333;
+                }
+
+                .image-container {
+                    text-align: center;
+                }
+
+                .button-container {
+                    text-align: center;
+                    padding: 20px;
+
+                }
+
+                img.centered-image {
+                    width: 100px;
+                    /* Adjust the width as needed */
+                    height: 100px;
+                    /* Maintain aspect ratio */
+                }
+
+                .content {
+                    margin-top: 50px;
+                    max-width: 630px;
+                    background-color: #ffffff;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    position: relative;
+                    padding: 20px;
+                }
+
+                .request {
+                    border-top: 2px solid #333333;
+                }
+
+                .btn {
+                    padding: 15px 30px;
+                    background-color: #639a47;
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    text-decoration: none;
+                    color: #ffffff;
+                }
+
+                .contact-link {
+
+                    color: #3498db;
+                    text-decoration: underline;
+                }
+
+                p {
+                    text-align: left;
+                    color: #7f857f;
+                }
+            </style>
         </head>
 
-        <body style="align-items: center; background-color: #E8E8E8;">
-        <a href="${process.env.CLIENT}/${token}">Reset Password Here </a>
+        <body>
+            <div class="image-container">
+                <img src="https://agrihub-bucket.s3.ap-southeast-1.amazonaws.com/rrsu2rlpqtcddu9zlk9c(1).svg"
+                    alt="Centered Image" class="centered-image">
+                <div class="content">
+                    <h2>Hello User,</h2>
+                    <div class="request">
+                        <h4>A request has been received to change the password for your AgriHub account.</h4>
+                        <div class="button-container">
+                            <a type="button" class="btn" href="${process.env.CLIENT}/${token}">Reset Password</a>
+                        </div>
+                        <p>If you did not initiate this request, please contact us immediately at <a href=""
+                                class="contact-link">link.</a></p>
+                        <br>
+                        <p>Thank you, <br> AgriHub Team
+                        </p>
+                    </div>
+                </div>
         </body>
+
         </html>
          `,
   })

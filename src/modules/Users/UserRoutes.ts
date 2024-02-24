@@ -104,7 +104,7 @@ UserRouter.get('/profile/:username', UserController.findUserProfile)
 
 // TODO: fix edit profile
 /**
- * @openap
+ * @openapi
  * /api/user/profile/{id}:
  *   put:
  *     tags:
@@ -129,7 +129,7 @@ UserRouter.get('/profile/:username', UserController.findUserProfile)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/TagsSchema"
+ *               $ref: "#/components/schemas/MessageResponse"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -146,7 +146,7 @@ UserRouter.get('/profile/:username', UserController.findUserProfile)
 
 UserRouter.put(
   '/profile/:id',
-  UserGuard(['user']),
+  UserGuard(['member', 'farmer', 'farm_head']),
   upload.single('avatar'),
   UserController.updateUserProfile
 )
