@@ -349,7 +349,11 @@ export async function findDraftLearningMaterials(
     )
   }
 
-  return await query.limit(perpage).offset(offset).execute()
+  return await query
+    .orderBy('createdat desc')
+    .limit(perpage)
+    .offset(offset)
+    .execute()
 }
 
 export async function getTotalDraftLearningMaterials() {
@@ -412,7 +416,11 @@ export async function findPublishedLearningMaterials(
     )
   }
 
-  return await query.limit(perpage).offset(offset).execute()
+  return await query
+    .orderBy('createdat desc')
+    .limit(perpage)
+    .offset(offset)
+    .execute()
 }
 
 export async function getTotalPublishedLearningMaterials() {
@@ -473,7 +481,11 @@ export async function findArchivedLearningMaterials(
     )
   }
 
-  return await query.limit(perpage).offset(offset).execute()
+  return await query
+    .orderBy('createdat desc')
+    .limit(perpage)
+    .offset(offset)
+    .execute()
 }
 
 export async function getTotalArchivedLearningMaterials() {
