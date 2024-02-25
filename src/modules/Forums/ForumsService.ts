@@ -89,6 +89,94 @@ export async function findQuestions(
   return await query.limit(perpage).offset(offset).execute()
 }
 
+export async function findSavedQuestions(
+  offset: number,
+  searchQuery: string,
+  filterKey: string,
+  perpage: number,
+  userid: string
+) {
+  let query = db
+    .selectFrom('saved_questions')
+    .leftJoin('forums', 'saved_questions.forumid', 'forums.id')
+    .leftJoin('forums_answers', 'forums_answers.forumid', 'forums.id')
+    .leftJoin('forums_ratings', 'forums_ratings.questionid', 'forums.id')
+    .select(({ fn, eb }) => [
+      'forums.id',
+      'saved_questions.id as saved_id',
+      jsonObjectFrom(
+        eb
+          .selectFrom('users')
+          .select([
+            'avatar',
+            'username',
+            sql<string>`CAST(id AS TEXT)`.as('id'),
+          ])
+          .whereRef('forums.userid', '=', 'users.id')
+      ).as('user'),
+      jsonArrayFrom(
+        eb
+          .selectFrom('forums_tags')
+          .leftJoin('tags', 'forums_tags.tagid', 'tags.id')
+          .select(['tags.tag_name as tag'])
+          .whereRef('forums_tags.forumid', '=', 'forums.id')
+          .groupBy(['forums_tags.id', 'forums_tags.forumid', 'tags.tag_name'])
+          .orderBy('forums_tags.id')
+      ).as('tags'),
+      'forums.title',
+      'forums.question',
+      'forums.imagesrc',
+      'forums.createdat',
+      'forums.updatedat',
+      'forums.views',
+      sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
+      fn
+        .count<number>('forums_ratings.id')
+        .filterWhere('type', '=', 'upvote')
+        .distinct()
+        .as('vote_count'),
+      // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
+      // fn.count<number>('forums_ratings.id').as('vote_count'),
+      fn.max('forums_answers.createdat').as('latest_answer_createdat'),
+      jsonObjectFrom(
+        eb
+          .selectFrom('forums_ratings')
+          .select([sql<string>`CAST(id AS TEXT)`.as('id'), 'type'])
+          .where('forums_ratings.userid', '=', userid)
+          .whereRef('forums.id', '=', 'forums_ratings.questionid')
+      ).as('vote'),
+      // fn.max<number>('')
+    ])
+    .groupBy([
+      'forums.id',
+      'saved_questions.id',
+      'forums.userid',
+      'forums.createdat',
+    ])
+
+  if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
+  if (filterKey === 'active')
+    query = query.orderBy('latest_answer_createdat', 'desc')
+  if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
+
+  if (searchQuery.length)
+    query = query.where('forums.title', 'ilike', `${searchQuery}%`)
+
+  return await query
+    .where('saved_questions.userid', '=', userid)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalSavedQuestion(userid: string) {
+  return await db
+    .selectFrom('saved_questions')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('saved_questions.userid', '=', userid)
+    .executeTakeFirst()
+}
+
 export async function viewQuestion(
   id: string,
   offset: number,
@@ -365,6 +453,31 @@ export async function findAnswerVote(id: string) {
     .selectAll()
     .where('id', '=', id)
     .executeTakeFirst()
+}
+
+export async function saveQuestion(userid: string, forumid: string) {
+  return await db
+    .insertInto('saved_questions')
+    .values({ userid, forumid })
+    .onConflict((oc) => oc.column('userid').column('forumid').doNothing())
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findSavedQuestion(id: string) {
+  return await db
+    .selectFrom('saved_questions')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function unsaveQuestion(id: string) {
+  return await db.deleteFrom('saved_questions').where('id', '=', id).execute()
+}
+
+export async function deleteQuestion(id: string) {
+  return await db.deleteFrom('forums').where('id', '=', id).execute()
 }
 
 // export async function findVoteByUserId(userid: string) {

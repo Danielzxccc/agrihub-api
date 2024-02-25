@@ -219,6 +219,17 @@ CREATE TABLE forums_comments(
     FOREIGN KEY (answerid) REFERENCES forums_answers(id) ON DELETE CASCADE
 );
 
+CREATE TABLE saved_questions(
+    id SERIAL PRIMARY KEY,
+    userid INT NOT NULL,
+    forumid INT NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(userid, forumid),
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (forumid) REFERENCES forums(id) ON DELETE CASCADE
+);
+
 CREATE TABLE forums_tags(
     id SERIAL PRIMARY KEY,
     forumid INT REFERENCES forums(id) ON DELETE CASCADE,

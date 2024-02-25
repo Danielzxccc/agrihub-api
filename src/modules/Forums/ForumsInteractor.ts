@@ -4,12 +4,14 @@ import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
 import { ForumsContent } from './../../schema/ForumsSchema'
 import {
+  deleteFileCloud,
   getObjectUrl,
   replaceAvatarsWithUrls,
   uploadFiles,
 } from '../AWS-Bucket/UploadService'
 import { deleteFile } from '../../utils/file'
 import { viewsLimitter } from '../../middleware/ViewsLimitter'
+import { findUser } from '../Users/UserService'
 
 export async function viewQuestion(
   id: string,
@@ -67,6 +69,33 @@ export async function listQuestions(
       profile
     ),
     Service.getTotalCount(profile),
+  ])
+  for (let question of data) {
+    question.user.avatar = question.user.avatar
+      ? getObjectUrl(question.user.avatar)
+      : question.user.avatar
+    for (let i = 0; i < question.imagesrc.length; i++) {
+      question.imagesrc[i] = getObjectUrl(question.imagesrc[i])
+    }
+  }
+
+  return { data, total }
+}
+
+export async function listSavedQuestions(
+  offset: number,
+  searchKey: string,
+  filterKey: string,
+  perpage: number,
+  userid: string
+) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const [data, total] = await Promise.all([
+    Service.findSavedQuestions(offset, searchKey, filterKey, perpage, userid),
+    Service.getTotalSavedQuestion(userid),
   ])
   for (let question of data) {
     question.user.avatar = question.user.avatar
@@ -197,4 +226,49 @@ export async function deleteAnswerVote(id: string, userid: string) {
   if (vote.userid !== userid) throw new HttpError('Unauthorized', 401)
 
   await Service.deleteAnswerVote(id)
+}
+
+export async function saveQuestion(userid: string, forumid: string) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const question = await Service.findQuestionById(forumid)
+  if (!question) {
+    throw new HttpError('Question Not Found', 404)
+  }
+
+  await Service.saveQuestion(userid, forumid)
+}
+
+export async function removeSavedQuestion(userid: string, id: string) {
+  const savedQuestion = await Service.findSavedQuestion(id)
+
+  if (!savedQuestion) {
+    throw new HttpError('Question Not Found', 404)
+  }
+
+  if (savedQuestion.userid !== userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.unsaveQuestion(id)
+}
+
+export async function deleteQuestion(userid: string, id: string) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const question = await Service.findQuestionById(id)
+
+  if (question.userid !== userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  for (const image of question.imagesrc) {
+    await deleteFileCloud(image || '')
+  }
+
+  await Service.deleteQuestion(id)
 }
