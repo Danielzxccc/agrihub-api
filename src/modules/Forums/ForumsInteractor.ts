@@ -241,6 +241,25 @@ export async function saveQuestion(userid: string, forumid: string) {
   await Service.saveQuestion(userid, forumid)
 }
 
+export async function reportQuestion(
+  userid: string,
+  forumid: string,
+  reason: string
+) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  if (!reason) throw new HttpError('Reason is required', 400)
+
+  const question = await Service.reportQuestion(userid, forumid, reason)
+  if (!question) {
+    throw new HttpError('Question Not Found', 404)
+  }
+
+  await Service.saveQuestion(userid, forumid)
+}
+
 export async function removeSavedQuestion(userid: string, id: string) {
   const savedQuestion = await Service.findSavedQuestion(id)
 

@@ -554,6 +554,9 @@ ForumsRouter.delete(
 )
 
 ForumsRouter.post('/save/question/:id', ForumsController.saveQuestion)
+
+ForumsRouter.post('/report/question/:id', ForumsController.reportQuestion)
+
 ForumsRouter.delete(
   '/remove/saved/question/:id',
   ForumsController.removeSavedQuestion

@@ -480,6 +480,19 @@ export async function deleteQuestion(id: string) {
   return await db.deleteFrom('forums').where('id', '=', id).execute()
 }
 
+export async function reportQuestion(
+  userid: string,
+  forumid: string,
+  reason: string
+) {
+  return await db
+    .insertInto('reported_questions')
+    .values({ userid, forumid, reason })
+    .onConflict((oc) => oc.column('userid').column('forumid').doNothing())
+    .returningAll()
+    .executeTakeFirst()
+}
+
 // export async function findVoteByUserId(userid: string) {
 //   return await db
 //     .selectFrom('forums_ratings')

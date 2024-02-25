@@ -229,6 +229,22 @@ export async function saveQuestion(req: SessionRequest, res: Response) {
   }
 }
 
+export async function reportQuestion(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+
+    const { body } = await zParse(Schema.ReportQuestion, req)
+
+    await Interactor.reportQuestion(userid, id, body.reason)
+
+    res.status(200).json({ message: 'Reported Successfully' })
+  } catch (error) {
+    console.log(error.stack)
+    errorHandler(res, error)
+  }
+}
+
 export async function removeSavedQuestion(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params

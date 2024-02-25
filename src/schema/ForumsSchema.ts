@@ -529,3 +529,9 @@ export type ForumsContent = z.infer<typeof ForumsSchema>
  *       required:
  *         - message # Making the 'message' property required
  */
+
+export const ReportQuestion = z.object({
+  body: z.object({
+    reason: z.string(),
+  }),
+})
