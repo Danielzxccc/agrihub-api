@@ -172,7 +172,7 @@ export async function sendResetTokenEmail(toEmail: string, token: string) {
                     <div class="request">
                         <h4>A request has been received to change the password for your AgriHub account.</h4>
                         <div class="button-container">
-                            <a type="button" class="btn" href="${process.env.CLIENT}/${token}">Reset Password</a>
+                            <a type="button" class="btn" href="${process.env.CLIENT}/account/reset-password/${token}">Reset Password</a>
                         </div>
                         <p>If you did not initiate this request, please contact us immediately at <a href=""
                                 class="contact-link">link.</a></p>
