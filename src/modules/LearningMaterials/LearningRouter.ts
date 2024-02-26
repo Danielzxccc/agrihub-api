@@ -5,6 +5,7 @@ import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 
 export const LearningRouter = express.Router()
 
+// public
 LearningRouter.get(
   '/published',
   LearningController.listPublishedLearningMaterials

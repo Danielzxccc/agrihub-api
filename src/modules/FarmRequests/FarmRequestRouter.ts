@@ -31,12 +31,12 @@ FarmRequestRouter.get(
 
 FarmRequestRouter.put(
   '/seedling/accept/:id',
-  UserGuard(['farm_head']),
+  UserGuard(['admin', 'asst_admin']),
   FarmRequestController.acceptSeedlingRequest
 )
 
 FarmRequestRouter.delete(
   '/seedling/reject/:id',
-  UserGuard(['farm_head']),
+  UserGuard(['admin', 'asst_admin']),
   FarmRequestController.rejectSeedlingRequest
 )
