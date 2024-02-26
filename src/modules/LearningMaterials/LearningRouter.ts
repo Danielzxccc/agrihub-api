@@ -1,14 +1,13 @@
 import express from 'express'
 import * as LearningController from './LearningController'
 import upload from '../../config/multer'
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 
 export const LearningRouter = express.Router()
 
 LearningRouter.get(
-  '/view/:id',
-  UserGuard(['admin', 'asst_admin']),
-  LearningController.viewLearningMaterial
+  '/published',
+  LearningController.listPublishedLearningMaterials
 )
 
 LearningRouter.get(
@@ -17,6 +16,14 @@ LearningRouter.get(
 )
 
 LearningRouter.get('/related', LearningController.listRelatedLearningMaterials)
+
+LearningRouter.use(AccessGuard('learning'))
+
+LearningRouter.get(
+  '/view/:id',
+  UserGuard(['admin', 'asst_admin']),
+  LearningController.viewLearningMaterial
+)
 
 LearningRouter.post(
   '/create/draft',
@@ -84,11 +91,6 @@ LearningRouter.get(
   '/draft',
   UserGuard(['admin', 'asst_admin']),
   LearningController.listDraftLearningMaterials
-)
-
-LearningRouter.get(
-  '/published',
-  LearningController.listPublishedLearningMaterials
 )
 
 LearningRouter.put(

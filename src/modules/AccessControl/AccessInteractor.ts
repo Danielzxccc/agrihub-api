@@ -14,7 +14,7 @@ export async function createNewAdmin(user: NewUser, access: NewAccessControl) {
     ...user,
     password: hashedPassword,
     role: 'asst_admin',
-    verification_level: '2',
+    verification_level: '4',
   }
 
   const newAdmin = await createUser(adminObject)

@@ -114,9 +114,10 @@ export async function getTotalUsers() {
 
 export async function findUser(id: string) {
   return await db
-    .selectFrom('users')
+    .selectFrom('admin_access')
+    .rightJoin('users', 'users.id', 'admin_access.userid')
     .selectAll()
-    .where('id', '=', id)
+    .where('users.id', '=', id)
     .executeTakeFirst()
 }
 

@@ -1,9 +1,14 @@
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import express from 'express'
 import * as BlogsController from './BlogsController'
 import upload from '../../config/multer'
 
 export const BlogsRouter = express.Router()
+
+BlogsRouter.get('/published/list', BlogsController.listPublishedBlogs)
+BlogsRouter.get('/published/:id', BlogsController.viewPublishedBlog)
+
+BlogsRouter.use(AccessGuard('blog'))
 
 BlogsRouter.post(
   '/create/draft',
@@ -89,8 +94,5 @@ BlogsRouter.put(
   UserGuard(['admin', 'asst_admin']),
   BlogsController.unpublishBlog
 )
-
-BlogsRouter.get('/published/list', BlogsController.listPublishedBlogs)
-BlogsRouter.get('/published/:id', BlogsController.viewPublishedBlog)
 
 BlogsRouter.put('/thumbnail/:id/:blog_id', BlogsController.setBlogThumbnail)

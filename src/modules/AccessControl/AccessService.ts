@@ -20,3 +20,11 @@ export async function updateAccessControl(
     .where('id', '=', id)
     .executeTakeFirst()
 }
+
+export async function findUserAccess(userid: string) {
+  return await db
+    .selectFrom('admin_access')
+    .selectAll()
+    .where('userid', '=', userid)
+    .executeTakeFirst()
+}

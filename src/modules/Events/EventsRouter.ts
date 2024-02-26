@@ -1,9 +1,14 @@
 import * as EventsController from './EventsController'
 import express from 'express'
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import upload from '../../config/multer'
 
 export const EventsRouter = express.Router()
+
+EventsRouter.get('/published/list', EventsController.listPublishedEvents)
+EventsRouter.get('/published/:id', EventsController.viewUnpublishedEvent)
+
+EventsRouter.use(AccessGuard('event'))
 
 EventsRouter.post(
   '/create/draft',
@@ -117,6 +122,3 @@ EventsRouter.put(
   UserGuard(['admin', 'asst_admin']),
   EventsController.unpublishEvent
 )
-
-EventsRouter.get('/published/list', EventsController.listPublishedEvents)
-EventsRouter.get('/published/:id', EventsController.viewUnpublishedEvent)

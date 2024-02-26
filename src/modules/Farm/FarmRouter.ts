@@ -1,7 +1,7 @@
 import express from 'express'
 import * as FarmController from './FarmController'
 import upload from '../../config/multer'
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 export const FarmRouter = express.Router()
 
 // apply farms
@@ -22,12 +22,14 @@ FarmRouter.get('/community-farm', FarmController.listCommunityFarms)
 
 FarmRouter.put(
   '/applications/accept/:id',
+  AccessGuard('farms'),
   UserGuard(['admin', 'asst_admin']),
   FarmController.acceptFarmApplication
 )
 
 FarmRouter.put(
   '/applications/reject/:id',
+  AccessGuard('farms'),
   UserGuard(['admin', 'asst_admin']),
   FarmController.rejectFarmApplication
 )
@@ -47,12 +49,14 @@ FarmRouter.get(
 // list farm applications
 FarmRouter.get(
   '/applications',
+  AccessGuard('farms'),
   UserGuard(['admin', 'asst_admin']),
   FarmController.listFarmApplications
 )
 
 FarmRouter.get(
   '/applications/:id',
+  AccessGuard('farms'),
   UserGuard(['admin', 'asst_admin']),
   FarmController.viewFarmApplication
 )
@@ -199,6 +203,7 @@ FarmRouter.get(
 
 FarmRouter.put(
   '/crop/update/:id',
+  AccessGuard('farms'),
   UserGuard(['admin', 'asst_admin']),
   upload.single('image'),
   FarmController.updateCrop
