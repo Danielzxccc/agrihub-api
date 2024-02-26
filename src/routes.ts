@@ -16,6 +16,7 @@ import { LearningRouter } from './modules/LearningMaterials/LearningRouter'
 import { UploaderRouter } from './modules/Uploader/UploaderRouter'
 import { LandingRouter } from './modules/LandingPage/LandingRouter'
 import { FarmRequestRouter } from './modules/FarmRequests/FarmRequestRouter'
+import { AccessRouter } from './modules/AccessControl/AcessRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -38,6 +39,7 @@ function routes(app: Express) {
   app.use('/api/learning', LearningRouter)
   app.use('/api/upload', UploaderRouter)
   app.use('/api/request', FarmRequestRouter)
+  app.use('/api/access', AccessRouter)
 
   // upload error messages
   app.use(multerLimitter)

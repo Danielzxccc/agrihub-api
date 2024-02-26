@@ -40,6 +40,7 @@ import {
   Landing,
   Approach,
   SeedlingRequests,
+  AdminAccess,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -171,3 +172,7 @@ export type NewBlogTags = Insertable<BlogTags>
 // seedling requests
 export type NewSeedlingRequest = Insertable<SeedlingRequests>
 export type UpdateSeedlingRequest = Updateable<SeedlingRequests>
+
+//access control
+export type NewAccessControl = Insertable<AdminAccess>
+export type UpdateAccessControl = Updateable<AdminAccess>
