@@ -286,7 +286,7 @@
 
 /**
  * @openapi
- * /api/report/question/{id}:
+ * /api/forums/report/question/{id}:
  *   post:
  *     summary: Report a question
  *     tags:
@@ -327,7 +327,7 @@
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  *       "404":
- *         description: Validation Error
+ *         description: Not Found Error
  *         content:
  *           application/json:
  *             schema:
