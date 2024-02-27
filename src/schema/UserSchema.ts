@@ -45,6 +45,17 @@ export const ListUserSchema = z.object({
   }),
 })
 
+export const ListAdminSchema = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z
+      .union([z.literal('banned'), z.literal('active')])
+      .default('active'),
+  }),
+})
+
 export const UserProfile = z.object({
   params: z.object({
     username: z.string({ required_error: 'id is required' }),

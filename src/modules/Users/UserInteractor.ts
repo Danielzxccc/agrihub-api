@@ -80,3 +80,17 @@ export async function listMembers(
 
   return { data, total }
 }
+
+export async function listAdmins(
+  offset: number,
+  perpage: number,
+  searchKey: string,
+  filterKey: 'banned' | 'active'
+) {
+  const [data, total] = await Promise.all([
+    Service.findAdmins(offset, perpage, searchKey, filterKey),
+    Service.getTotalAdmins(filterKey),
+  ])
+
+  return { data, total }
+}

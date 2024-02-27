@@ -1,5 +1,5 @@
 import upload from '../../config/multer'
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import * as UserController from './UserController'
 import express from 'express'
 
@@ -205,4 +205,11 @@ UserRouter.get(
   '/search/members',
   UserGuard(['farm_head']),
   UserController.listMembers
+)
+
+UserRouter.get(
+  '/admins',
+  AccessGuard('admin'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.listAdmins
 )

@@ -25,6 +25,10 @@ export async function authenticateUser(credentials: string, password: string) {
     throw new HttpError('No user by that email/user', 401)
   }
 
+  if (user.isbanned) {
+    throw new HttpError('Your account has been banned.', 401)
+  }
+
   const compare = await bcrypt.compare(password, user.password)
 
   if (!compare) throw new HttpError('Unauthorized', 401)

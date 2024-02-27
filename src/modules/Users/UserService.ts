@@ -161,3 +161,52 @@ export async function createUser(user: NewUser) {
     .returning(['id', 'email'])
     .executeTakeFirst()
 }
+
+export async function findAdmins(
+  offset: number,
+  perpage: number,
+  searchKey?: string,
+  filterKey?: 'banned' | 'active'
+) {
+  let query = db
+    .selectFrom('users as u')
+    .selectAll()
+    .where('u.role', '=', 'asst_admin')
+
+  if (searchKey.length >= 1) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.username', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filterKey === 'active') {
+    query = query.where('u.isbanned', '=', false)
+  }
+
+  if (filterKey === 'banned') {
+    query = query.where('u.isbanned', '=', true)
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalAdmins(filterKey: 'banned' | 'active') {
+  let query = db
+    .selectFrom('users as u')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('u.role', '=', 'asst_admin')
+
+  if (filterKey === 'active') {
+    query = query.where('u.isbanned', '=', false)
+  }
+
+  if (filterKey === 'banned') {
+    query = query.where('u.isbanned', '=', true)
+  }
+
+  return await query.executeTakeFirst()
+}
