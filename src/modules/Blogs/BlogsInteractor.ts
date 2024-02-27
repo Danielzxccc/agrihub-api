@@ -229,10 +229,11 @@ export async function viewPublishedBlog(id: string) {
 export async function listPublishedBlogs(
   offset: number,
   searchKey: string,
-  perpage: number
+  perpage: number,
+  filterKey: string
 ) {
   const [data, total] = await Promise.all([
-    Service.findPublishedBlogs(offset, searchKey, perpage),
+    Service.findPublishedBlogs(offset, searchKey, perpage, filterKey),
     Service.getTotalPublishedBlogs(),
   ])
 

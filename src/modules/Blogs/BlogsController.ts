@@ -191,11 +191,13 @@ export async function listPublishedBlogs(req: Request, res: Response) {
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
+    const filterKey = query.filter
 
     const events = await Interactor.listPublishedBlogs(
       offset,
       searchKey,
-      perPage
+      perPage,
+      filterKey
     )
 
     const totalPages = Math.ceil(Number(events.total.count) / perPage)
