@@ -66,6 +66,7 @@ export type AdminAccess = {
   cuai: boolean
   home: boolean
   about: boolean
+  users: boolean
   privacy_policy: boolean
   terms_and_conditions: boolean
   user_feedback: boolean

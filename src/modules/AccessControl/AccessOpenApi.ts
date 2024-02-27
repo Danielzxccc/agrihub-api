@@ -82,6 +82,8 @@
  *               type: boolean
  *             about:
  *               type: boolean
+ *             users:
+ *               type: boolean
  *             privacy_policy:
  *               type: boolean
  *             terms_and_conditions:
