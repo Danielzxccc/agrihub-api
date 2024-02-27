@@ -8,5 +8,18 @@ export function startSocket() {
       console.log(socket)
       io.emit('message', 'test')
     })
+
+    socket.on('join_room', (socket) => {
+      console.log(socket)
+      io.emit('join_room', 'joined room')
+    })
   })
+}
+
+export function emitNotification(id: string, payload: string) {
+  io.emit(id, payload)
+}
+
+export function emitNotificationToAdmin(payload: string) {
+  io.emit('admin', payload)
 }

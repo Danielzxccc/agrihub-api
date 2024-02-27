@@ -4,7 +4,25 @@ import HttpError from '../../utils/HttpError'
 import * as Service from './UserService'
 import { deleteFile } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
-import { getObjectUrl } from '../AWS-Bucket/UploadService'
+import {
+  deleteFileCloud,
+  getObjectUrl,
+  uploadFiles,
+} from '../AWS-Bucket/UploadService'
+
+export async function listUsers(
+  offset: number,
+  perpage: number,
+  filterKey?: string,
+  searchKey?: string
+) {
+  const [data, total] = await Promise.all([
+    Service.listUsers(offset, perpage, filterKey, searchKey),
+    Service.getTotalUsers(),
+  ])
+
+  return { data, total }
+}
 
 export async function listUsers(
   offset: number,
@@ -33,7 +51,7 @@ export async function updateUserProfile(
   userId: string,
   sessionid: string,
   user: UpdateUser,
-  avatar: string
+  avatar: Express.Multer.File
 ) {
   try {
     const foundUser = await Service.findUser(userId)
@@ -44,18 +62,35 @@ export async function updateUserProfile(
       throw new HttpError('Unauthorized', 401)
     }
 
-    if (avatar) {
-      if (foundUser.avatar) deleteFile(foundUser.avatar)
+    if (avatar?.filename) {
+      if (foundUser.avatar) deleteFileCloud(foundUser.avatar)
+      await uploadFiles([avatar])
     }
 
     const updateUser = await Service.updateUser(userId, {
       ...user,
-      avatar: avatar ? avatar : foundUser.avatar,
+      avatar: avatar?.filename ? avatar?.filename : foundUser.avatar,
     })
     delete updateUser.password
     return updateUser
   } catch (error) {
-    deleteFile(avatar)
+    deleteFile(avatar?.filename)
     dbErrorHandler(error)
   }
+}
+
+export async function listMembers(
+  offset: number,
+  perpage: number,
+  searchKey: string,
+  userid: string
+) {
+  const farmhead = await Service.findUser(userid)
+
+  const [data, total] = await Promise.all([
+    Service.findMembers(offset, perpage, searchKey, farmhead.farm_id),
+    Service.getTotalMembers(farmhead.farm_id),
+  ])
+
+  return { data, total }
 }

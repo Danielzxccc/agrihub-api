@@ -49,7 +49,7 @@ export async function updateUserProfile(req: SessionRequest, res: Response) {
   try {
     const { params, body } = await zParse(Schema.UpdateProfile, req)
     const sessionId = req.session.userid
-    const avatar = req.file?.filename
+    const avatar = req.file
 
     const updatedUser = await Interactor.updateUserProfile(
       params.id,
@@ -60,6 +60,38 @@ export async function updateUserProfile(req: SessionRequest, res: Response) {
     res
       .status(200)
       .json({ message: 'Profile updated successfully', user: updatedUser })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listMembers(req: SessionRequest, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListUserSchema, req)
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const { userid } = req.session
+
+    const members = await Interactor.listMembers(
+      offset,
+      perPage,
+      searchKey,
+      userid
+    )
+
+    const totalPages = Math.ceil(Number(members.total.count) / perPage)
+    res.status(200).json({
+      members: members.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(members.total.count),
+      },
+    })
   } catch (error) {
     errorHandler(res, error)
   }

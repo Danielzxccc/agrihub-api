@@ -4,6 +4,7 @@ import { Request, Response } from 'express'
 import { SessionRequest } from '../../types/AuthType'
 import zParse from '../../utils/zParse'
 import * as Schema from '../../schema/ArticlesSchema'
+import { Session } from 'express-session'
 
 export async function createArticle(req: Request, res: Response) {
   try {

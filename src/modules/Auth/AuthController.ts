@@ -111,3 +111,44 @@ export async function setupUsernameAndTags(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function sendResetToken(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.SendResetToken, req)
+
+    await Interactor.sendResetToken(body.email)
+
+    res.status(200).json({ message: 'Successfully Sent' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function resetPassword(req: SessionRequest, res: Response) {
+  try {
+    const { token } = req.params
+
+    const { body } = await zParse(Schema.ResetPassword, req)
+
+    await Interactor.resetPassword(token, body.password)
+
+    res.status(200).json({ message: 'Success' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function checkResetTokenExpiration(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { token } = req.params
+
+    await Interactor.checkResetTokenExpiration(token)
+
+    res.status(200).json({ message: 'Valid Token' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

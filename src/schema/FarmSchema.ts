@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { Int8 } from 'kysely-codegen'
 
 export const ListFarmSchema = z.object({
   query: z.object({
@@ -52,6 +53,10 @@ export const NewCropSchema = z.object({
     seedling_season: z.string({ required_error: 'seedling_season is requred' }),
     planting_season: z.string({ required_error: 'planting_season is requred' }),
     harvest_season: z.string({ required_error: 'harvest_season is requred' }),
+    p_season: z.union([
+      z.array(z.string().transform((arg) => arg as unknown as Int8)),
+      z.string().transform((arg) => [arg as unknown as Int8]),
+    ]),
     isyield: z
       .string({ required_error: 'harvest_season is requred' })
       .transform((arg) => Boolean(arg)),
@@ -60,6 +65,32 @@ export const NewCropSchema = z.object({
   file: z.object({
     filename: z.string({ required_error: 'image is required' }),
   }),
+})
+
+export const UpdateCropSchema = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    description: z.string().optional(),
+    seedling_season: z.string().optional(),
+    planting_season: z.string().optional(),
+    harvest_season: z.string().optional(),
+    p_season: z
+      .union([
+        z.array(z.string().transform((arg) => arg as unknown as Int8)),
+        z.string().transform((arg) => [arg as unknown as Int8]),
+      ])
+      .optional(),
+    isyield: z
+      .string({ required_error: 'harvest_season is requred' })
+      .transform((arg) => Boolean(arg))
+      .optional(),
+    growth_span: z.string().optional(),
+  }),
+  file: z
+    .object({
+      filename: z.string({ required_error: 'image is required' }),
+    })
+    .optional(),
 })
 
 export const NewCropReportSchema = z.object({
@@ -90,10 +121,62 @@ export const NewFarmApplication = z.object({
     district: z.string(),
     id_type: z.string(),
     location: z.string(),
+    proof: z.string(),
+    type_of_farm: z.string(),
+  }),
+})
+
+export const UpdateFarmApplication = z.object({
+  body: z.object({
+    farm_name: z.string().optional(),
+    farm_size: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
+    district: z.string().optional(),
+    original_farm_images: z.string().array().optional(),
+    deleted_farm_images: z.string().array().optional(),
+    id_type: z.string().optional(),
+    location: z.string().optional(),
   }),
 })
 
 export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
+export type UpdateFarmApplicationT = z.infer<typeof UpdateFarmApplication>
+
+export const NewCommunityFarmGallery = z.object({
+  body: z.object({
+    description: z.string().optional().default(''),
+  }),
+})
+
+export const CommunityFarms = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z.string().optional().default(''),
+  }),
+})
+
+export const NewFarmerInvitaion = z.object({
+  body: z.object({
+    userid: z.string(),
+    expiresat: z.string(),
+  }),
+})
+
+export const UpdateCommunityFarm = z.object({
+  body: z.object({
+    farm_name: z.string().optional(),
+    location: z.string().optional(),
+    description: z.string().optional(),
+    district: z.string().optional(),
+    size: z.string().optional(),
+  }),
+})
+
+export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
 
 /**@LIST_FAMRS */
 /**
@@ -229,6 +312,10 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         harvest_season:
  *           type: string
  *           description: The harvest season of the crop
+ *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
  *         isyield:
  *           type: boolean
  *           description: Indicates whether the crop yields
@@ -269,6 +356,13 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         growth_span:
  *           type: string
  *           description: The growth span of the crop
+ *         isyield:
+ *           type: boolean
+ *           description: Indicates whether the crop yields
+ *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
  *         image:
  *           type: string
  *           format: binary
@@ -281,6 +375,41 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         - harvest_season
  *         - growth_span
  *         - image
+ *         - isyield
+ *         - p_season
+ *
+ *     UpdateCropRequest:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The name of the crop
+ *         description:
+ *           type: string
+ *           description: A description of the crop
+ *         seedling_season:
+ *           type: string
+ *           description: The seedling season of the crop
+ *         planting_season:
+ *           type: string
+ *           description: The planting season of the crop
+ *         harvest_season:
+ *           type: string
+ *           description: The harvest season of the crop
+ *         growth_span:
+ *           type: string
+ *           description: The growth span of the crop
+ *         isyield:
+ *           type: boolean
+ *           description: Indicates whether the crop yields
+ *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
+ *         image:
+ *           type: string
+ *           format: binary
+ *           description: Binary data of the crop image
  *
  *     NewCropResponse:
  *       type: object
@@ -482,6 +611,11 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         userid:
  *           type: string
  *           description: The ID of the user who created the crop report
+ *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: An array of actual farm image files
  *         crop_name:
  *           type: string
  *           description: The name of the crop (null if not set)
@@ -537,6 +671,15 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *   schemas:
  *     NewFarmApplication:
  *       type: object
+ *       required:
+ *         - farm_name
+ *         - farm_size
+ *         - district
+ *         - proof
+ *         - farm_actual_images
+ *         - id_type
+ *         - valid_id
+ *         - location
  *       properties:
  *         farm_name:
  *           type: string
@@ -550,18 +693,19 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         id_type:
  *           type: string
  *           description: The type of ID used for application
- *         selfie:
+ *         location:
  *           type: string
- *           format: binary
- *           description: The selfie image file
+ *           description: The type of ID used for application
  *         valid_id:
  *           type: string
  *           format: binary
  *           description: The proof image file
  *         proof:
  *           type: string
- *           format: binary
- *           description: The proof image file
+ *           description: Type of farm
+ *         type_of_farm:
+ *           type: string
+ *           description: Type of farm community
  *         farm_actual_images:
  *           type: array
  *           items:
@@ -580,6 +724,7 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         - farm_actual_images
  *         - id_type
  *         - valid_id
+ *         - location
  *         - selfie
  *         - applicant
  *         - status
@@ -610,6 +755,9 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         valid_id:
  *           type: string
  *           description: The image of the valid ID
+ *         location:
+ *           type: string
+ *           description: The location of the Farm
  *         selfie:
  *           type: string
  *           description: The selfie image of the applicant
@@ -762,4 +910,691 @@ export type NewFarmApplicationT = z.infer<typeof NewFarmApplication>
  *         total_records:
  *           type: integer
  *           description: The total number of records
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CheckExistingApplicationResponse:
+ *       type: object
+ *       required:
+ *         - message
+ *         - data
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A success message
+ *         data:
+ *           $ref: "#/components/schemas/FarmApplicationData"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AcceptFarmApplicationResponse:
+ *       type: object
+ *       required:
+ *         - message
+ *         - data
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A success message
+ *         data:
+ *           $ref: "#/components/schemas/AcceptedFarmApplicationData"
+ *
+ *     AcceptedFarmApplicationData:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - location
+ *         - farm_head
+ *         - district
+ *         - size
+ *         - application_id
+ *         - createdat
+ *         - updatedat
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the accepted farm application
+ *         farm_name:
+ *           type: string
+ *           description: The name of the farm
+ *         location:
+ *           type: string
+ *           description: The location of the farm
+ *         description:
+ *           type: string
+ *           description: The description of the farm
+ *         farm_head:
+ *           type: string
+ *           description: The ID of the farm head
+ *         district:
+ *           type: string
+ *           description: The district of the farm
+ *         size:
+ *           type: string
+ *           description: The size of the farm
+ *         avatar:
+ *           type: string
+ *           description: The URL of the farm's avatar
+ *         cover_photo:
+ *           type: string
+ *           description: The URL of the farm's cover photo
+ *         application_id:
+ *           type: string
+ *           description: The ID of the associated farm application
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the farm was created
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the farm was last updated
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AddFarmCropResponse:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_id
+ *         - crop_id
+ *         - createdat
+ *         - updatedat
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the added crop in the community farm
+ *         farm_id:
+ *           type: string
+ *           description: The ID of the community farm
+ *         crop_id:
+ *           type: string
+ *           description: The ID of the crop
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the crop was added
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the crop was last updated
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommunityFarmResponse:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - location
+ *         - farm_head
+ *         - district
+ *         - size
+ *         - application_id
+ *         - createdat
+ *         - updatedat
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the community farm
+ *         farm_name:
+ *           type: string
+ *           description: The name of the community farm
+ *         location:
+ *           type: string
+ *           description: The location of the community farm
+ *         description:
+ *           type: string
+ *           description: The description of the community farm
+ *         farm_head:
+ *           type: string
+ *           description: The ID of the farm head
+ *         district:
+ *           type: string
+ *           description: The district of the community farm
+ *         size:
+ *           type: string
+ *           description: The size of the community farm
+ *         avatar:
+ *           type: string
+ *           description: The URL of the farm's avatar
+ *         cover_photo:
+ *           type: string
+ *           description: The URL of the farm's cover photo
+ *         application_id:
+ *           type: string
+ *           description: The ID of the farm's application
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the community farm was created
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the community farm was last updated
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CropItem:
+ *       type: object
+ *       required:
+ *         - id
+ *         - updatedat
+ *         - createdat
+ *         - name
+ *         - description
+ *         - image
+ *         - seedling_season
+ *         - planting_season
+ *         - harvest_season
+ *         - isyield
+ *         - growth_span
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the crop
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the crop was last updated
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the crop was created
+ *         name:
+ *           type: string
+ *           description: The name of the crop
+ *         description:
+ *           type: string
+ *           description: The description of the crop
+ *         image:
+ *           type: string
+ *           description: The URL of the crop's image
+ *         seedling_season:
+ *           type: string
+ *           description: The seedling season of the crop
+ *         planting_season:
+ *           type: string
+ *           description: The planting season of the crop
+ *         harvest_season:
+ *           type: string
+ *           description: The harvest season of the crop
+ *         isyield:
+ *           type: boolean
+ *           description: Indicates whether the crop is a yield
+ *         growth_span:
+ *           type: string
+ *           description: The growth span of the crop
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CropGalleryItem:
+ *       type: object
+ *       required:
+ *         - id
+ *         - farm_id
+ *         - imagesrc
+ *         - description
+ *         - createdat
+ *         - updatedat
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the gallery item
+ *         farm_id:
+ *           type: string
+ *           description: The ID of the community farm
+ *         imagesrc:
+ *           type: string
+ *           description: The URL of the image
+ *         description:
+ *           type: string
+ *           description: The description of the gallery item
+ *         createdat:
+ *           type: string
+ *           description: The timestamp when the gallery item was created
+ *         updatedat:
+ *           type: string
+ *           description: The timestamp when the gallery item was last updated
+ *
+ *     NewCommunityFarmGallery:
+ *       type: object
+ *       properties:
+ *         description:
+ *           type: string
+ *           description: The description of the gallery item
+ *           optional: true
+ *           default: ""
+ *         image:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: binary
+ *             optional: true
+ *
+ *     DeleteSuccessMessage:
+ *       type: object
+ *       required:
+ *         - message
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A message indicating the success of the deletion
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommunityFarmsResponse:
+ *       type: object
+ *       properties:
+ *         farms:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/CommunityFarmData"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *
+ *     CommunityFarmData:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         farm_name:
+ *           type: string
+ *         location:
+ *           type: string
+ *         description:
+ *           type: string
+ *         farm_head:
+ *           type: string
+ *         district:
+ *           type: string
+ *         size:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         cover_photo:
+ *           type: string
+ *         application_id:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewFarmerInvitationRequest:
+ *       type: object
+ *       properties:
+ *         userid:
+ *           type: string
+ *           description: ID of the user being invited
+ *         expiresat:
+ *           type: string
+ *           description: Expiry date and time of the invitation
+ *       required:
+ *         - userid
+ *         - expiresat
+ *
+ *     FarmerInvitationResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Success message
+ *         invitation:
+ *           $ref: "#/components/schemas/FarmerInvitation"
+ *       required:
+ *         - message
+ *         - invitation
+ *
+ *     FarmerInvitation:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID of the invitation
+ *         farmid:
+ *           type: string
+ *           description: ID of the farm
+ *         userid:
+ *           type: string
+ *           description: ID of the user being invited
+ *         expiresat:
+ *           type: string
+ *           description: Expiry date and time of the invitation
+ *         isaccepted:
+ *           type: boolean
+ *           description: Flag indicating whether the invitation is accepted
+ *         createdat:
+ *           type: string
+ *           description: Date and time of creation
+ *         updatedat:
+ *           type: string
+ *           description: Date and time of last update
+ *       required:
+ *         - id
+ *         - farmid
+ *         - userid
+ *         - expiresat
+ *         - isaccepted
+ *         - createdat
+ *         - updatedat
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CancelInvitationResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ViewInvitationResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         expiresat:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         userid:
+ *           type: string
+ *         farm_name:
+ *           type: string
+ *         community_farm_id:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *       required:
+ *         - id
+ *         - expiresat
+ *         - createdat
+ *         - updatedat
+ *         - userid
+ *         - farm_name
+ *         - avatar
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListInvitationsResponse:
+ *       type: object
+ *       properties:
+ *         invitations:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/InvitationItem"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     InvitationItem:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         email:
+ *           type: string
+ *         userid:
+ *           type: string
+ *       required:
+ *         - id
+ *         - firstname
+ *         - lastname
+ *         - avatar
+ *         - email
+ *         - userid
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListFarmMembersResponse:
+ *       type: object
+ *       properties:
+ *         members:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/FarmMember"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     FarmMember:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         birthdate:
+ *           type: string
+ *           format: date-time
+ *         present_address:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         zipcode:
+ *           type: string
+ *         district:
+ *           type: string
+ *         municipality:
+ *           type: string
+ *         verification_level:
+ *           type: string
+ *         bio:
+ *           type: string
+ *         role:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         isbanned:
+ *           type: boolean
+ *         farm_id:
+ *           type: string
+ *       required:
+ *         - id
+ *         - username
+ *         - email
+ *         - firstname
+ *         - lastname
+ *         - birthdate
+ *         - present_address
+ *         - avatar
+ *         - zipcode
+ *         - district
+ *         - municipality
+ *         - verification_level
+ *         - role
+ *         - createdat
+ *         - updatedat
+ *         - isbanned
+ *         - farm_id
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateCommunityFarmRequest:
+ *       type: object
+ *       properties:
+ *         farm_name:
+ *           type: string
+ *         location:
+ *           type: string
+ *         description:
+ *           type: string
+ *         district:
+ *           type: string
+ *         size:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *           format: binary
+ *         cover_photo:
+ *           type: string
+ *           format: binary
+ *
+ *     UpdateCommunityFarmResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: "#/components/schemas/CommunityFarm"
+ *       required:
+ *         - message
+ *         - data
+ *
+ *     CommunityFarm:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         farm_name:
+ *           type: string
+ *         location:
+ *           type: string
+ *         description:
+ *           type: string
+ *         farm_head:
+ *           type: string
+ *         district:
+ *           type: string
+ *         size:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         cover_photo:
+ *           type: string
+ *         application_id:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *       required:
+ *         - id
+ *         - farm_name
+ *         - location
+ *         - description
+ *         - farm_head
+ *         - district
+ *         - size
+ *         - avatar
+ *         - cover_photo
+ *         - application_id
+ *         - createdat
+ *         - updatedat
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ArchiveCropResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *       required:
+ *         - message
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ArchivedCrop:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         image:
+ *           type: string
+ *         seedling_season:
+ *           type: string
+ *         planting_season:
+ *           type: string
+ *         harvest_season:
+ *           type: string
+ *         isyield:
+ *           type: boolean
+ *         growth_span:
+ *           type: string
+ *       required:
+ *         - id
+ *         - updatedat
+ *         - createdat
+ *         - name
+ *         - description
+ *         - image
+ *         - seedling_season
+ *         - planting_season
+ *         - harvest_season
+ *         - isyield
+ *         - growth_span
  */

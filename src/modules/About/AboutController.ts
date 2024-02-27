@@ -10,7 +10,7 @@ export async function updateAbout(req: SessionRequest, res: Response) {
     const { body } = await zParse(Schema.UpdateAbout, req)
 
     const updateAbout = await Interactor.updateAbout(body)
-    res.status(200).json({ message: 'Update Sucessful', updateAbout })
+    res.status(200).json({ message: 'Update Successful', updateAbout })
   } catch (error) {
     errorHandler(res, error)
   }

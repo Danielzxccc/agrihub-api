@@ -1,3 +1,4 @@
+import { P } from 'pino'
 import { z } from 'zod'
 
 /**
@@ -57,54 +58,6 @@ import { z } from 'zod'
  *         municipality:
  *           type: string
  *
- *     UserSchema:
- *       type: object
- *       required:
- *         - id
- *         - username
- *         - email
- *         - firstname
- *         - lastname
- *         - district
- *         - verification_level
- *         - createdat
- *         - updatedat
- *         - avatar
- *         - role
- *         - bio
- *       properties:
- *         id:
- *           type: string
- *         username:
- *           type: string
- *         email:
- *           type: string
- *         firstname:
- *           type: string
- *         lastname:
- *           type: string
- *         birthdate:
- *           type: string
- *         present_address:
- *           type: string
- *         zipcode:
- *           type: string
- *         district:
- *           type: string
- *         municipality:
- *           type: string
- *         verification_level:
- *           type: string
- *         createdat:
- *           type: string
- *         updatedat:
- *           type: string
- *         avatar:
- *           type: string
- *         role:
- *           type: string
- *         bio:
- *           type: string
  *
  *     UserProfile:
  *       type: object
@@ -125,10 +78,6 @@ import { z } from 'zod'
  *         avatar:
  *           type: string
  *           format: binary
- *         username:
- *           type: string
- *         email:
- *           type: string
  *         firstname:
  *           type: string
  *         lastname:
@@ -143,8 +92,6 @@ import { z } from 'zod'
  *         district:
  *           type: string
  *         municipality:
- *           type: string
- *         verification_level:
  *           type: string
  *         bio:
  *           type: string
@@ -197,6 +144,88 @@ import { z } from 'zod'
  *           default: Server Error
  */
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UserSchema:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         userid:
+ *           type: string
+ *           format: uuid
+ *         farms:
+ *           type: boolean
+ *         learning:
+ *           type: boolean
+ *         event:
+ *           type: boolean
+ *         blog:
+ *           type: boolean
+ *         forums:
+ *           type: boolean
+ *         admin:
+ *           type: boolean
+ *         cuai:
+ *           type: boolean
+ *         home:
+ *           type: boolean
+ *         about:
+ *           type: boolean
+ *         privacy_policy:
+ *           type: boolean
+ *         terms_and_conditions:
+ *           type: boolean
+ *         user_feedback:
+ *           type: boolean
+ *         crops:
+ *           type: boolean
+ *         help_center:
+ *           type: boolean
+ *         activity_logs:
+ *           type: boolean
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *           format: email
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         birthdate:
+ *           type: string
+ *           format: date-time
+ *         present_address:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         zipcode:
+ *           type: string
+ *         district:
+ *           type: string
+ *         municipality:
+ *           type: string
+ *         verification_level:
+ *           type: string
+ *         bio:
+ *           type: null
+ *         role:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         isbanned:
+ *           type: boolean
+ *         farm_id:
+ *           type: string
+ *           nullable: true
+ */
 export const UserAuthSchema = z.object({
   body: z.object({
     user: z.string(),
@@ -239,8 +268,27 @@ export const verifyLevelTwo = z.object({
 export const SetupUsernameTags = z.object({
   body: z.object({
     username: z.string().min(4),
-    tags: z.string().array(),
+    tags: z.string().array().optional(),
   }),
 })
+
+export const SendResetToken = z.object({
+  body: z.object({
+    email: z.string(),
+  }),
+})
+
+export const ResetPassword = z.object({
+  body: z
+    .object({
+      password: z.string(),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ['confirmPassword'], // path of error
+    }),
+})
+
 export type RegisterUser = z.infer<typeof UserRegisterSchema>
 export type ProfileCompletion = z.infer<typeof verifyLevelTwo>

@@ -22,7 +22,8 @@ CREATE TABLE users(
     isbanned BOOLEAN DEFAULT TRUE,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (username, email)
+    farm_id INT REFERENCES community_farms(id) ON DELETE CASCADE,
+    UNIQUE (username, email),
 );
 
 CREATE INDEX email_index
@@ -90,6 +91,8 @@ CREATE TABLE crops(
     image TEXT,
     seedling_season INT, -- 0 - 11,
     planting_season INT, -- 0 - 11,
+    p_season INT[],
+    is_other BOOLEAN default FALSE,
     harvest_season INT, -- 0 - 11,
     isyield BOOLEAN default FALSE, 
     growth_span INT,
@@ -216,6 +219,29 @@ CREATE TABLE forums_comments(
     FOREIGN KEY (answerid) REFERENCES forums_answers(id) ON DELETE CASCADE
 );
 
+CREATE TABLE saved_questions(
+    id SERIAL PRIMARY KEY,
+    userid INT NOT NULL,
+    forumid INT NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(userid, forumid),
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (forumid) REFERENCES forums(id) ON DELETE CASCADE
+);
+
+CREATE TABLE reported_questions(
+    id SERIAL PRIMARY KEY,
+    userid INT NOT NULL,
+    forumid INT NOT NULL,
+    reason TEXT NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(userid, forumid),
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (forumid) REFERENCES forums(id) ON DELETE CASCADE
+);
+
 CREATE TABLE forums_tags(
     id SERIAL PRIMARY KEY,
     forumid INT REFERENCES forums(id) ON DELETE CASCADE,
@@ -298,3 +324,10 @@ CREATE TABLE IF NOT EXISTS public.session (
   expire timestamp(6) NOT NULL,
   CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
 );CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON public.session ("expire");
+
+
+SELECT lm.id, lm.title, lm.content, lm.type, lm.language, lm.status, lm.published_date
+FROM learning_materials lm
+JOIN learning_tags lt ON lm.id = lt.learning_id
+JOIN tags t ON lt.tag_id = t.id
+WHERE t.tag_name = 'foodsecurity';

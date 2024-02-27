@@ -30,3 +30,31 @@ export async function findToken(token: string) {
 export async function deleteToken(id: string) {
   return await db.deleteFrom('email_token').where('id', '=', id).execute()
 }
+
+export async function generateResetToken(userid: string) {
+  const generatedTimestamp = moment()
+    .add(5, 'minutes')
+    .format('YYYY-MM-DD HH:mm:ss.SSSSSS')
+
+  return await db
+    .insertInto('reset_token')
+    .values({
+      userid,
+      expiresat: generatedTimestamp,
+    })
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findResetToken(token: string) {
+  return await db
+    .selectFrom('reset_token')
+    .selectAll()
+    .where('id', '=', token)
+    .where('expiresat', '>=', sql`CURRENT_TIMESTAMP`)
+    .executeTakeFirst()
+}
+
+export async function deleteResetToken(id: string) {
+  return await db.deleteFrom('reset_token').where('id', '=', id).execute()
+}

@@ -56,17 +56,58 @@ export const UpdateProfile = z.object({
     id: z.string({ required_error: 'id parameter is required' }),
   }),
   body: z.object({
-    username: z.string().optional(),
-    email: z.string().email().optional(),
     firstname: z.string().optional(),
     lastname: z.string().optional(),
-    birthdate: z.date().optional(),
+    birthdate: z
+      .string()
+      .transform((arg) => new Date(arg))
+      .optional(),
     present_address: z.string().optional(),
     zipcode: z.string().optional(),
     district: z.string().optional(),
     municipality: z.string().optional(),
-    verification_level: z.string().optional(),
     avatar: z.string().optional(),
     bio: z.string().optional(),
   }),
 })
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListMemberResponse:
+ *       type: object
+ *       properties:
+ *         members:
+ *           $ref: "#/components/schemas/Members"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     Members:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/Member"
+ *     Member:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *           format: uri
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *           format: email
+ *       required:
+ *         - id
+ *         - avatar
+ *         - firstname
+ *         - lastname
+ *         - username
+ *         - email
+ */

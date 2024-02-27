@@ -8,37 +8,24 @@ import { UserRouter } from './modules/Users/UserRoutes'
 import { FarmRouter } from './modules/Farm/FarmRouter'
 import { EventsRouter } from './modules/Events/EventsRouter'
 import { AboutRouter } from './modules/About/AboutRouter'
-import upload from './config/multer'
 import { multerLimitter } from './middleware/UploadMiddleware'
-import path from 'path'
 import { BlogsRouter } from './modules/Blogs/BlogsRouter'
+import { ReportsRouter } from './modules/Reports/ReportsRouter'
+import { NotificationRouter } from './modules/Notifications/NotificationRouter'
+import { LearningRouter } from './modules/LearningMaterials/LearningRouter'
+import { UploaderRouter } from './modules/Uploader/UploaderRouter'
+import { LandingRouter } from './modules/LandingPage/LandingRouter'
+import { FarmRequestRouter } from './modules/FarmRequests/FarmRequestRouter'
+import { AccessRouter } from './modules/AccessControl/AcessRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
     res.sendStatus(200)
   })
 
-  app.post('/upload', upload.single('image'), (req: Request, res: Response) => {
-    res.json({ data: req.file })
-  })
-
-  app.get('/image/:filename', (req, res) => {
-    const imageFolderPath = path.join(__dirname, '../', 'uploads')
-    const { filename } = req.params
-    const imagePath = path.join(
-      process.env.NODE_ENV === 'development'
-        ? imageFolderPath
-        : process.env.STORAGE_URL,
-      filename
-    )
-
-    if (!imagePath) res.status(404).json({ message: "Can't find image" })
-    // Send the image as a response
-    res.sendFile(imagePath)
-  })
-
   app.use('/api/auth', AuthRouter)
   app.use('/api/farm', FarmRouter)
+  app.use('/api/reports', ReportsRouter)
   app.use('/api/account', AccountRouter)
   app.use('/api/user', UserRouter)
   app.use('/api/forums', ForumsRouter)
@@ -46,7 +33,13 @@ function routes(app: Express) {
   app.use('/api/articles', ArticlesRouter)
   app.use('/api/events', EventsRouter)
   app.use('/api/cms/about', AboutRouter)
+  app.use('/api/cms/landing', LandingRouter)
   app.use('/api/blogs', BlogsRouter)
+  app.use('/api/notification', NotificationRouter)
+  app.use('/api/learning', LearningRouter)
+  app.use('/api/upload', UploaderRouter)
+  app.use('/api/request', FarmRequestRouter)
+  app.use('/api/access', AccessRouter)
 
   // upload error messages
   app.use(multerLimitter)

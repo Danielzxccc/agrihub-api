@@ -18,6 +18,7 @@
     "@aws-sdk/s3-request-presigner": "^3.451.0",
     "@types/cors": "^2.8.15",
     "@types/nodemailer": "^6.4.13",
+    "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "connect-redis": "^7.1.0",
     "cors": "^2.8.5",
@@ -34,7 +35,8 @@
     "socket.io": "^4.7.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -45,6 +47,7 @@
     "@types/pg": "^8.10.4",
     "@types/swagger-jsdoc": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.5",
+    "@types/web-push": "^3.6.3",
     "@types/yamljs": "^0.2.33",
     "connect-pg-simple": "^9.0.1",
     "dotenv": "^16.3.1",

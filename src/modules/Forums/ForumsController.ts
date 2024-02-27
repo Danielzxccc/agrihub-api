@@ -71,6 +71,38 @@ export async function listQuestions(req: SessionRequest, res: Response) {
   }
 }
 
+export async function listSavedQuestions(req: SessionRequest, res: Response) {
+  try {
+    const { query } = await zParse(Schema.SearchForums, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const questions = await Interactor.listSavedQuestions(
+      offset,
+      searchKey,
+      filterKey,
+      perPage,
+      req.session.userid || '0'
+    )
+    const totalPages = Math.ceil(Number(questions.total.count) / perPage)
+    res.status(200).json({
+      questions: questions.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(questions.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function createNewQuestion(req: SessionRequest, res: Response) {
   try {
     const userid = req.session.userid
@@ -178,6 +210,61 @@ export async function deleteVoteAnswer(req: SessionRequest, res: Response) {
     const userid = req.session.userid
     await Interactor.deleteAnswerVote(id, userid)
     res.status(200).json({ message: 'deleted Successfully' })
+  } catch (error) {
+    console.log(error.stack)
+    errorHandler(res, error)
+  }
+}
+
+export async function saveQuestion(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.saveQuestion(userid, id)
+
+    res.status(200).json({ message: 'Saved Successfully' })
+  } catch (error) {
+    console.log(error.stack)
+    errorHandler(res, error)
+  }
+}
+
+export async function reportQuestion(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+
+    const { body } = await zParse(Schema.ReportQuestion, req)
+
+    await Interactor.reportQuestion(userid, id, body.reason)
+
+    res.status(200).json({ message: 'Reported Successfully' })
+  } catch (error) {
+    console.log(error.stack)
+    errorHandler(res, error)
+  }
+}
+
+export async function removeSavedQuestion(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.removeSavedQuestion(userid, id)
+
+    res.status(200).json({ message: 'Removed Successfully' })
+  } catch (error) {
+    console.log(error.stack)
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteQuestion(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.deleteQuestion(userid, id)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
     console.log(error.stack)
     errorHandler(res, error)

@@ -1,9 +1,16 @@
 import * as Service from '../Users/UserService'
-import { deleteToken, findToken, generateToken } from './AuthService'
+import {
+  deleteResetToken,
+  deleteToken,
+  findResetToken,
+  findToken,
+  generateResetToken,
+  generateToken,
+} from './AuthService'
 import HttpError from '../../utils/HttpError'
 import bcrypt from 'bcrypt'
 import { ProfileCompletion, RegisterUser } from '../../schema/AuthSchema'
-import { sendMail } from '../../utils/email'
+import { sendMail, sendResetTokenEmail } from '../../utils/email'
 import { createUserTags } from '../Tags/TagsService'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
@@ -56,6 +63,23 @@ export async function getCurrentUser(session: string) {
   const user = await Service.findUser(session)
 
   if (!user) throw new HttpError('User not found', 401)
+
+  if (user.role === 'admin') {
+    user.farms = true
+    user.learning = true
+    user.event = true
+    user.blog = true
+    user.forums = true
+    user.admin = true
+    user.cuai = true
+    user.home = true
+    user.about = true
+    user.privacy_policy = true
+    user.terms_and_conditions = true
+    user.user_feedback = true
+    user.help_center = true
+    user.activity_logs = true
+  }
 
   delete user.password
   return { ...user, avatar: user.avatar ? getObjectUrl(user.avatar) : null }
@@ -147,21 +171,24 @@ export async function setupUsernameAndTags(
     const stream: fs.ReadStream = await readFileAsStream(image.path)
     await uploadFile(stream, fileKey, image.mimetype)
 
-    const usertags = tags.map((tag) => {
-      return {
-        userid: session,
-        tagid: String(tag),
-      }
-    })
-
     // update user's username and avatar
     const updatedUser = await Service.updateUser(session, {
       username,
       avatar: fileKey,
       verification_level: '4',
     })
-    // create user tags
-    await createUserTags(usertags)
+
+    if (tags?.length) {
+      const usertags = tags?.map((tag) => {
+        return {
+          userid: session,
+          tagid: String(tag),
+        }
+      })
+
+      // create user tags
+      await createUserTags(usertags)
+    }
 
     // delete the file in local storage after updating the user
     deleteFile(image.filename)
@@ -173,4 +200,36 @@ export async function setupUsernameAndTags(
     deleteFile(image.filename)
     dbErrorHandler(error)
   }
+}
+
+export async function sendResetToken(email: string) {
+  const user = await Service.findUserByEmail(email)
+
+  if (!user) {
+    throw new HttpError('No user by that email', 400)
+  }
+
+  const resetToken = await generateResetToken(user.id)
+
+  await sendResetTokenEmail(user.email, resetToken.id)
+}
+
+export async function resetPassword(token: string, password: string) {
+  const findToken = await findResetToken(token)
+
+  if (!findToken) {
+    throw new HttpError('Token Expired', 401)
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10)
+
+  await Service.updateUser(findToken.userid, { password: hashedPassword })
+
+  await deleteResetToken(findToken.id)
+}
+
+export async function checkResetTokenExpiration(token: string) {
+  const findToken = await findResetToken(token)
+
+  if (!findToken) throw new HttpError('Token Expired', 400)
 }

@@ -1,6 +1,5 @@
 import { Response } from 'express'
 import HttpError from './HttpError'
-import log from './utils'
 
 function errorHandler(
   res: Response,
@@ -8,6 +7,7 @@ function errorHandler(
   message?: string,
   status?: number
 ) {
+  console.log(error)
   if (error instanceof HttpError) {
     return res.status(error.httpCode || 500).json({
       error: true,

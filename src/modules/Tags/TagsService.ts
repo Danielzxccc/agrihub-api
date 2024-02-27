@@ -14,7 +14,7 @@ export async function findTags(tag: string) {
 
   if (tag) query = query.where('tag_name', 'ilike', `${tag}%`)
 
-  return await query.limit(5).execute()
+  return await query.limit(20).execute()
 }
 
 export async function getTotalCount() {

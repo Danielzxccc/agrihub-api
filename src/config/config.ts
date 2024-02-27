@@ -31,13 +31,14 @@ export const sessionConfig: SessionOptions = {
 }
 
 // hard coded for now
-const allowedOrigins = [
+export const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',
   'https://qc-agrihub.xyz',
   'https://agrihub.vercel.app',
   'https://agrihub-6vw7t76z8-wolfcarves.vercel.app',
+  'https://65d9fede4e315f028eaf14bb--subtle-toffee-a853e7.netlify.app',
 ]
 export const corsOptions = {
   origin: (origin: any, callback: any) => {
