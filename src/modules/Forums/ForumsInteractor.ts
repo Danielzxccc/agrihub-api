@@ -267,7 +267,7 @@ export async function removeSavedQuestion(userid: string, id: string) {
     throw new HttpError('Question Not Found', 404)
   }
 
-  if (savedQuestion.userid !== userid) {
+  if (savedQuestion?.userid !== userid) {
     throw new HttpError('Unauthorized', 401)
   }
 
@@ -281,7 +281,7 @@ export async function deleteQuestion(userid: string, id: string) {
 
   const question = await Service.findQuestionById(id)
 
-  if (question.userid !== userid) {
+  if (question?.userid !== userid) {
     throw new HttpError('Unauthorized', 401)
   }
 
