@@ -64,6 +64,23 @@ export async function getCurrentUser(session: string) {
 
   if (!user) throw new HttpError('User not found', 401)
 
+  if (user.role === 'admin') {
+    user.farms = true
+    user.learning = true
+    user.event = true
+    user.blog = true
+    user.forums = true
+    user.admin = true
+    user.cuai = true
+    user.home = true
+    user.about = true
+    user.privacy_policy = true
+    user.terms_and_conditions = true
+    user.user_feedback = true
+    user.help_center = true
+    user.activity_logs = true
+  }
+
   delete user.password
   return { ...user, avatar: user.avatar ? getObjectUrl(user.avatar) : null }
 }
