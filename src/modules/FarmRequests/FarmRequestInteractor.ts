@@ -12,13 +12,18 @@ export async function createtSeedlingRequest(
 ) {
   const user = await findUser(id)
 
-  const [crop] = await findCrop(String(request.crop_id) || '1')
+  const [crop] = await findCrop(String(request?.crop_id) ?? '1')
 
-  if (!crop) {
-    throw new HttpError('crop not found', 404)
+  if (request?.other) {
+    if (!crop) {
+      throw new HttpError('crop not found', 404)
+    }
   }
 
-  const checkRequests = await Service.findSeedlingRequest(user.farm_id, crop.id)
+  const checkRequests = await Service.findSeedlingRequest(
+    user.farm_id,
+    crop?.id || '1'
+  )
 
   if (checkRequests) {
     throw new HttpError(
