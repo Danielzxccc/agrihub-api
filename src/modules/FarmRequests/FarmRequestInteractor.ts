@@ -44,7 +44,9 @@ export async function createtSeedlingRequest(
   await emitPushNotification(
     'admin',
     'New Seedling Request',
-    `Farm head ${user.firstname} ${user.lastname} requested ${crop.name} seedlings`
+    `Farm head ${user.firstname} ${user.lastname} requested ${
+      crop?.name ? crop?.name : request?.other
+    } seedlings`
   )
 
   return newSeedlingRequest
