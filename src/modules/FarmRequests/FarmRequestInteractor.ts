@@ -12,7 +12,7 @@ export async function createtSeedlingRequest(
 ) {
   const user = await findUser(id)
 
-  const [crop] = await findCrop(String(request.crop_id))
+  const [crop] = await findCrop(String(request.crop_id) || '1')
 
   if (!crop) {
     throw new HttpError('crop not found', 404)
