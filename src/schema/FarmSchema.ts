@@ -318,6 +318,10 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *           type: array
  *           items:
  *             type: string
+ *         companion:
+ *           type: array
+ *           items:
+ *             type: string
  *         isyield:
  *           type: boolean
  *           description: Indicates whether the crop yields
