@@ -220,3 +220,10 @@ UserRouter.delete(
   UserGuard(['admin', 'asst_admin']),
   UserController.disableAdminAccount
 )
+
+UserRouter.post(
+  '/admin/enable/:id',
+  AccessGuard('admin'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.enableAdminAccount
+)

@@ -229,6 +229,7 @@ export async function resetPassword(token: string, password: string) {
 
   await Service.updateUser(findToken.userid, { password: hashedPassword })
 
+  await Service.clearUserSession(findToken.userid)
   await deleteResetToken(findToken.id)
 }
 

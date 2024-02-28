@@ -137,3 +137,14 @@ export async function disableAdminAccount(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function enableAdminAccount(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await Interactor.enableAdminAccount(id)
+
+    res.status(200).json({ message: 'Enabled Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

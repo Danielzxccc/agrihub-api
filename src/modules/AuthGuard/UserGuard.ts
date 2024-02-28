@@ -28,6 +28,10 @@ export function UserGuard(allowedRoles: AllowedRoles[]) {
 
       const user = await findUser(userid)
 
+      if (user.isbanned) {
+        throw new HttpError('Your account has been disabled', 401)
+      }
+
       const verificationLevel = getVerificationLevel(user.verification_level)
       if (verificationLevel !== 4) {
         throw new HttpError('Incomplete Profile Setup', 401)

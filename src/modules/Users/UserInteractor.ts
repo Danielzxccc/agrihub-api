@@ -112,5 +112,24 @@ export async function disableAdminAccount(id: string) {
 
   await Service.updateUser(id, updateObject)
 
-  await Service.clearUserSession(id)
+  const sess = await Service.clearUserSession(id)
+  console.log(sess, 'TESTIFy')
+}
+
+export async function enableAdminAccount(id: string) {
+  const user = await Service.findUser(id)
+
+  if (!user) {
+    throw new HttpError('User not found', 404)
+  }
+
+  if (user.role !== 'asst_admin') {
+    throw new HttpError('Account is not admin', 400)
+  }
+
+  const updateObject: UpdateUser = {
+    isbanned: false,
+  }
+
+  await Service.updateUser(id, updateObject)
 }

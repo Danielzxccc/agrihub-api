@@ -213,6 +213,6 @@ export async function getTotalAdmins(filterKey: 'banned' | 'active') {
 
 export async function clearUserSession(id: string) {
   return await db.executeQuery(
-    sql`DELETE FROM session WHERE sess->>'userid' > ${id}`.compile(db)
+    sql`DELETE FROM session WHERE sess->>'userid' = ${id};`.compile(db)
   )
 }
