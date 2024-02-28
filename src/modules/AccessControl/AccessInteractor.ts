@@ -1,6 +1,6 @@
 import { NewAccessControl, NewUser } from '../../types/DBTypes'
 import bcrypt from 'bcrypt'
-import { createUser, findUserByEmail } from '../Users/UserService'
+import { createUser, findAdmin, findUserByEmail } from '../Users/UserService'
 import * as Service from './AccessService'
 import HttpError from '../../utils/HttpError'
 
@@ -25,4 +25,24 @@ export async function createNewAdmin(user: NewUser, access: NewAccessControl) {
   })
 
   return newAdmin
+}
+
+export async function updateAdminAccess(id: string, access: NewAccessControl) {
+  const adminAccess = await Service.findUserAccess(id)
+
+  if (!adminAccess) {
+    throw new HttpError('Access Control List Not Found', 404)
+  }
+
+  await Service.updateAdminAcessByUserId(id, access)
+}
+
+export async function viewAdminAccess(id: string) {
+  const admin = await findAdmin(id)
+
+  if (!admin) {
+    throw new HttpError('Admin Not Found', 404)
+  }
+
+  return admin
 }

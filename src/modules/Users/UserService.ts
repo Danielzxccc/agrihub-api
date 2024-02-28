@@ -216,3 +216,13 @@ export async function clearUserSession(id: string) {
     sql`DELETE FROM session WHERE sess->>'userid' = ${id};`.compile(db)
   )
 }
+
+export async function findAdmin(id: string) {
+  return await db
+    .selectFrom('admin_access')
+    .rightJoin('users', 'users.id', 'admin_access.userid')
+    .selectAll()
+    .where('users.id', '=', id)
+    .where('users.role', '=', 'asst_admin')
+    .executeTakeFirst()
+}
