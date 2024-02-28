@@ -29,18 +29,18 @@ httpServer.listen(3000, () => {
   routes(app)
   swaggerDocs(app)
 
-  if (process.env.NODE_ENV === 'production') {
-    const __dirname = path.resolve()
-    app.use(express.static(path.join(__dirname, '/dist_fr')))
+  // if (process.env.NODE_ENV === 'development') {
+  //   const __dirname = path.resolve()
+  //   app.use(express.static(path.join(__dirname, '/dist_fr')))
 
-    app.get('*', (req, res) =>
-      res.sendFile(path.resolve(__dirname, 'dist_fr', 'index.html'))
-    )
-  } else {
-    app.get('/', (req, res) => {
-      res.send('API is running....')
-    })
-  }
+  //   app.get('*', (req, res) =>
+  //     res.sendFile(path.resolve(__dirname, 'dist_fr', 'index.html'))
+  //   )
+  // } else {
+  //   app.get('/', (req, res) => {
+  //     res.send('API is running....')
+  //   })
+  // }
 })
 
 export { io }
