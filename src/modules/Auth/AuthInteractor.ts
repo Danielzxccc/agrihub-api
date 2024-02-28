@@ -22,7 +22,7 @@ export async function authenticateUser(credentials: string, password: string) {
   const user = await Service.findByEmailOrUsername(credentials)
 
   if (!user) {
-    throw new HttpError('No user by that email/user', 401)
+    throw new HttpError('Invalid username or password', 401)
   }
 
   if (user.isbanned) {
