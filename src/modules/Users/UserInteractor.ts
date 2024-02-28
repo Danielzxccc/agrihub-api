@@ -107,7 +107,7 @@ export async function disableAdminAccount(id: string) {
   }
 
   const updateObject: UpdateUser = {
-    role: 'asst_admin',
+    isbanned: true,
   }
 
   await Service.updateUser(id, updateObject)
