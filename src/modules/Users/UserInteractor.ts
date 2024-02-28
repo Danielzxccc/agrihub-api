@@ -94,3 +94,23 @@ export async function listAdmins(
 
   return { data, total }
 }
+
+export async function disableAdminAccount(id: string) {
+  const user = await Service.findUser(id)
+
+  if (!user) {
+    throw new HttpError('User not found', 404)
+  }
+
+  if (user.role !== 'asst_admin') {
+    throw new HttpError('Account is not admin', 400)
+  }
+
+  const updateObject: UpdateUser = {
+    role: 'asst_admin',
+  }
+
+  await Service.updateUser(id, updateObject)
+
+  await Service.clearUserSession(id)
+}

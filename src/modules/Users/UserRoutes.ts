@@ -213,3 +213,10 @@ UserRouter.get(
   UserGuard(['admin', 'asst_admin']),
   UserController.listAdmins
 )
+
+UserRouter.delete(
+  '/admin/disable/:id',
+  AccessGuard('admin'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.disableAdminAccount
+)

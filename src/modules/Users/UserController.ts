@@ -126,3 +126,14 @@ export async function listAdmins(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function disableAdminAccount(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await Interactor.disableAdminAccount(id)
+
+    res.status(200).json({ message: 'Disabled Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
