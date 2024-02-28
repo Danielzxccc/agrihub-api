@@ -47,7 +47,7 @@ const swaggerSpec = swaggerJsdoc(options)
 
 function swaggerDocs(app: Express) {
   // Swagger page
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
   // Docs in JSON format
   app.get('/docs.json', (req: Request, res: Response) => {
