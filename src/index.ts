@@ -29,7 +29,7 @@ httpServer.listen(3000, () => {
   routes(app)
   swaggerDocs(app)
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'production') {
     const __dirname = path.resolve()
     app.use(express.static(path.join(__dirname, '/dist_fr')))
 
