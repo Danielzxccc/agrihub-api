@@ -83,6 +83,7 @@ export async function getCurrentUser(session: string) {
     user.user_feedback = true
     user.help_center = true
     user.activity_logs = true
+    user.crops = true
   }
 
   delete user.password
