@@ -78,6 +78,7 @@ export async function getCurrentUser(session: string) {
     user.cuai = true
     user.home = true
     user.about = true
+    user.users = true
     user.privacy_policy = true
     user.terms_and_conditions = true
     user.user_feedback = true
