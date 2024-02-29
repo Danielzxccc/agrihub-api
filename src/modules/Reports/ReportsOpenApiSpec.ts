@@ -1017,6 +1017,30 @@
  *               type: array
  *               items:
  *                 $ref: "#/components/schemas/FarmWithGrowthRate"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */
 
 /**
@@ -1038,4 +1062,96 @@
  *         avg_growth_rate:
  *           type: string
  *           description: Average growth rate of the farm
+ */
+
+/**
+ * @openapi
+ * /api/reports/admin/growth-rate/monthly:
+ *   get:
+ *     summary: Get monthly growth rate
+ *     tags:
+ *       - Report
+ *     parameters:
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *         description: The year to filter the data
+ *         required: false
+ *       - in: query
+ *         name: start
+ *         schema:
+ *           type: string
+ *         description: The start date to filter the data
+ *         required: false
+ *       - in: query
+ *         name: end
+ *         schema:
+ *           type: string
+ *         description: The end date to filter the data
+ *         required: false
+ *     responses:
+ *       "200":
+ *         description: Monthly growth rate data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MonthlyGrowthRate"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     MonthlyGrowthRate:
+ *       type: object
+ *       properties:
+ *         January:
+ *           type: string
+ *         February:
+ *           type: string
+ *         March:
+ *           type: string
+ *         April:
+ *           type: string
+ *         May:
+ *           type: string
+ *         June:
+ *           type: string
+ *         July:
+ *           type: string
+ *         August:
+ *           type: string
+ *         September:
+ *           type: string
+ *         October:
+ *           type: string
+ *         November:
+ *           type: string
+ *         December:
+ *           type: string
  */

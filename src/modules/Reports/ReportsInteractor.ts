@@ -398,24 +398,24 @@ export async function getLowestGrowthRates() {
 }
 
 type MonthlyData = {
-  january?: number
-  february?: number
-  march?: number
-  april?: number
-  may?: number
-  june?: number
-  july?: number
-  august?: number
-  september?: number
-  october?: number
-  november?: number
-  december?: number
+  january?: number | string
+  february?: number | string
+  march?: number | string
+  april?: number | string
+  may?: number | string
+  june?: number | string
+  july?: number | string
+  august?: number | string
+  september?: number | string
+  october?: number | string
+  november?: number | string
+  december?: number | string
 }
 
 export async function getGrowthRatePerMonth(
-  year: number,
-  start: number,
-  end: number
+  year = new Date().getFullYear(),
+  start = 1,
+  end = 12
 ) {
   const monthlyData = await Service.getGrowthRatePerMonth(year, start, end)
 
@@ -448,13 +448,14 @@ export async function getGrowthRatePerMonth(
   }
 
   const dataKeys = Object.keys(data ?? {})
+  console.log(monthlyData)
 
   const formattedData: MonthlyData = {}
 
   months.map((month: keyof MonthlyData) => {
     const monthIndex = dataKeys.findIndex((e) => e === month.toLowerCase())
 
-    formattedData[month] = Object.values(data ?? {})[monthIndex]
+    formattedData[month] = Object.values(data ?? {})[monthIndex] ?? '0'
   })
 
   return formattedData
