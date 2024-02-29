@@ -250,9 +250,27 @@ export async function listFavouriteCrops(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
 export async function getLowestGrowthRates(req: SessionRequest, res: Response) {
   try {
     const data = await Interactor.getLowestGrowthRates()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getGrowthRatePerMonth(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.FilterWitheredHarvested, req)
+    const data = await Interactor.getGrowthRatePerMonth(
+      query.year,
+      query.start,
+      query.end
+    )
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)

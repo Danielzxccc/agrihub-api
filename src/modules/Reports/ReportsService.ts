@@ -512,3 +512,56 @@ export async function getLowestGrowthRates() {
   `.compile(db)
   )
 }
+
+export async function getGrowthRatePerMonth(
+  year: number,
+  start: number,
+  end: number
+) {
+  return await db.executeQuery(
+    sql`
+      SELECT
+        COALESCE(AVG(CASE WHEN month = 1 THEN growth_rate END), 0) AS January,
+        COALESCE(AVG(CASE WHEN month = 2 THEN growth_rate END), 0) AS February,
+        COALESCE(AVG(CASE WHEN month = 3 THEN growth_rate END), 0) AS March,
+        COALESCE(AVG(CASE WHEN month = 4 THEN growth_rate END), 0) AS April,
+        COALESCE(AVG(CASE WHEN month = 5 THEN growth_rate END), 0) AS May,
+        COALESCE(AVG(CASE WHEN month = 6 THEN growth_rate END), 0) AS June,
+        COALESCE(AVG(CASE WHEN month = 7 THEN growth_rate END), 0) AS July,
+        COALESCE(AVG(CASE WHEN month = 8 THEN growth_rate END), 0) AS August,
+        COALESCE(AVG(CASE WHEN month = 9 THEN growth_rate END), 0) AS September,
+        COALESCE(AVG(CASE WHEN month = 10 THEN growth_rate END), 0) AS October,
+        COALESCE(AVG(CASE WHEN month = 11 THEN growth_rate END), 0) AS November,
+        COALESCE(AVG(CASE WHEN month = 12 THEN growth_rate END), 0) AS December
+    FROM (
+        SELECT
+            EXTRACT(MONTH FROM cr.date_harvested) AS month,
+            EXTRACT(YEAR FROM cr.date_harvested) AS year,
+            CASE 
+                WHEN c.isyield THEN 
+                    (cr.harvested_qty::numeric / NULLIF(cr.harvested_qty + cr.withered_crops, 0)) * 100
+                ELSE 
+                    (cr.harvested_qty::numeric / NULLIF(cr.planted_qty, 0)) * 100
+            END AS growth_rate
+        FROM
+            community_crop_reports cr
+        JOIN
+            community_farms_crops cfc ON cr.farmid = cfc.farm_id
+        JOIN
+            crops c ON cfc.crop_id = c.id
+        WHERE
+            cr.date_harvested IS NOT NULL
+            AND
+            EXTRACT(YEAR FROM cr.date_harvested) = ${String(year)}
+            AND
+            EXTRACT(MONTH FROM cr.date_harvested) BETWEEN ${String(
+              start
+            )} AND ${String(end)}
+    ) AS source
+    GROUP BY
+        year
+    ORDER BY
+        year;
+  `.compile(db)
+  )
+}

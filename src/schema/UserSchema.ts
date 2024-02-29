@@ -20,21 +20,45 @@ import { z } from 'zod'
  *         id:
  *           type: string
  *           description: The ID of the user
- *         createdat:
+ *         username:
  *           type: string
- *           description: The timestamp when the user was created
- *         fullname:
- *           type: string
- *           description: The full name of the user
  *         email:
  *           type: string
- *           description: The email address of the user
- *         name:
+ *           format: email
+ *         firstname:
  *           type: string
- *           description: The name of the user
+ *         lastname:
+ *           type: string
+ *         birthdate:
+ *           type: string
+ *           format: date-time
+ *         present_address:
+ *           type: string
+ *         avatar:
+ *           type: string
+ *         zipcode:
+ *           type: string
+ *         district:
+ *           type: string
+ *         municipality:
+ *           type: string
  *         verification_level:
  *           type: string
- *           description: The verification level of the user
+ *         bio:
+ *           type: null
+ *         role:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         isbanned:
+ *           type: boolean
+ *         farm_id:
+ *           type: string
+ *           nullable: true
  */
 export const ListUserSchema = z.object({
   query: z.object({
@@ -80,6 +104,14 @@ export const UpdateProfile = z.object({
     avatar: z.string().optional(),
     bio: z.string().optional(),
   }),
+})
+
+export const NewReportedUser = z.object({
+  body: z.object({
+    reported: z.string(),
+    reason: z.string(),
+  }),
+  files: z.array(z.any()),
 })
 
 /**

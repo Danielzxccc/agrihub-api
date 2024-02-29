@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import { createUser, findAdmin, findUserByEmail } from '../Users/UserService'
 import * as Service from './AccessService'
 import HttpError from '../../utils/HttpError'
+import { createAuditLog } from '../AuditLogs/AuditLogsService'
 
 export async function createNewAdmin(user: NewUser, access: NewAccessControl) {
   const hashedPassword = await bcrypt.hash(user.password, 10)
@@ -35,6 +36,7 @@ export async function updateAdminAccess(id: string, access: NewAccessControl) {
   }
 
   await Service.updateAdminAcessByUserId(id, access)
+  // await createAuditLog({})
 }
 
 export async function viewAdminAccess(id: string) {

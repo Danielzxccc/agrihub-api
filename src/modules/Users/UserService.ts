@@ -1,7 +1,8 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
-import { NewUser, UpdateUser, User } from '../../types/DBTypes'
+import { NewReportedUser, NewUser, UpdateUser, User } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
+import { jsonObjectFrom } from 'kysely/helpers/postgres'
 
 export async function listUsers(
   offset: number,
@@ -9,23 +10,7 @@ export async function listUsers(
   filterKey?: string,
   searchKey?: string
 ) {
-  let query = db
-    .selectFrom('users as u')
-    .leftJoin('farm_members as fm', 'u.id', 'fm.userid')
-    .leftJoin('sub_farms as sf', 'fm.farmid', 'sf.id')
-    .leftJoin('farms as f', 'sf.farmid', 'f.id')
-    .select(({ fn, val }) => [
-      'u.id',
-      'u.createdat',
-      fn<string>('concat', ['u.firstname', val(' '), 'u.lastname']).as(
-        'fullname'
-      ),
-      'u.email',
-      'f.name',
-      'u.verification_level',
-    ])
-    .groupBy(['u.id', 'f.name', 'u.username'])
-    .orderBy('u.id')
+  let query = db.selectFrom('users as u').selectAll()
 
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
@@ -41,6 +26,14 @@ export async function listUsers(
     .limit(perpage)
     .offset(offset)
     .execute()
+}
+
+export async function getTotalUsers() {
+  return await db
+    .selectFrom('users')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('isbanned', '=', false)
+    .executeTakeFirst()
 }
 
 export async function findMembers(
@@ -102,13 +95,6 @@ export async function getTotalMembers(farmid: string) {
       LEFT JOIN farmer_invitations fi ON u.id = fi.userid
       WHERE fi.farmid = ${farmid})`
     )
-    .executeTakeFirst()
-}
-
-export async function getTotalUsers() {
-  return await db
-    .selectFrom('users')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
     .executeTakeFirst()
 }
 
@@ -224,5 +210,111 @@ export async function findAdmin(id: string) {
     .selectAll()
     .where('users.id', '=', id)
     .where('users.role', '=', 'asst_admin')
+    .executeTakeFirst()
+}
+
+export async function createReportedUser(report: NewReportedUser) {
+  return await db
+    .insertInto('reported_users')
+    .values(report)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findReportedUsers(
+  offset: number,
+  perpage: number,
+  searchKey?: string
+) {
+  let query = db
+    .selectFrom('reported_users as ru')
+    .leftJoin('users as u', 'u.id', 'ru.reported')
+    .select(({ eb }) => [
+      'ru.id',
+      'ru.reason',
+      'ru.evidence',
+      'ru.notes',
+      'ru.createdat',
+      jsonObjectFrom(
+        eb
+          .selectFrom('users')
+          .select([
+            sql<string>`CAST(id AS TEXT)`.as('id'),
+            'firstname',
+            'lastname',
+            'email',
+          ])
+          .whereRef('users.id', '=', 'ru.reported')
+      ).as('reported'),
+      jsonObjectFrom(
+        eb
+          .selectFrom('users')
+          .select([
+            sql<string>`CAST(id AS TEXT)`.as('id'),
+            'firstname',
+            'lastname',
+            'email',
+          ])
+          .whereRef('users.id', '=', 'ru.reported_by')
+      ).as('reported_by'),
+    ])
+
+  if (searchKey.length >= 1) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.username', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalReportedUsers() {
+  return await db
+    .selectFrom('reported_users')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
+
+export async function findBannedUsers(
+  offset: number,
+  perpage: number,
+  searchKey?: string
+) {
+  let query = db.selectFrom('users as u').selectAll()
+
+  if (searchKey.length >= 1) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.username', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query
+    .where('u.isbanned', '=', true)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalBannedUsers() {
+  return await db
+    .selectFrom('users')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('users.isbanned', '=', true)
+    .executeTakeFirst()
+}
+
+export async function findReportedUser(id: string) {
+  return await db
+    .selectFrom('reported_users')
+    .selectAll()
+    .where('id', '=', id)
     .executeTakeFirst()
 }

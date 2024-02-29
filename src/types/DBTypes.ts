@@ -41,6 +41,7 @@ import {
   Approach,
   SeedlingRequests,
   AdminAccess,
+  ReportedUsers,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -176,3 +177,7 @@ export type UpdateSeedlingRequest = Updateable<SeedlingRequests>
 //access control
 export type NewAccessControl = Insertable<AdminAccess>
 export type UpdateAccessControl = Updateable<AdminAccess>
+
+// report user
+export type NewReportedUser = Insertable<ReportedUsers>
+export type UpdateReportedUser = Updateable<ReportedUsers>

@@ -227,3 +227,45 @@ UserRouter.post(
   UserGuard(['admin', 'asst_admin']),
   UserController.enableAdminAccount
 )
+
+UserRouter.post(
+  '/report',
+  UserGuard(['admin', 'asst_admin', 'farmer', 'farm_head', 'member']),
+  upload.array('evidence'),
+  UserController.reportUser
+)
+
+UserRouter.get(
+  '/reported',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.listReportedUsers
+)
+
+UserRouter.post(
+  '/ban/:id',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.banUserAccount
+)
+
+UserRouter.post(
+  '/unban/:id',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.unbanUserAccount
+)
+
+UserRouter.get(
+  '/banned',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.listBannedUsers
+)
+
+UserRouter.post(
+  '/warn/:id',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.sendingWarningToUser
+)

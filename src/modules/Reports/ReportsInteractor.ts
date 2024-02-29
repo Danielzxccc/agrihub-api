@@ -396,3 +396,66 @@ export async function getLowestGrowthRates() {
 
   return data.rows
 }
+
+type MonthlyData = {
+  january?: number
+  february?: number
+  march?: number
+  april?: number
+  may?: number
+  june?: number
+  july?: number
+  august?: number
+  september?: number
+  october?: number
+  november?: number
+  december?: number
+}
+
+export async function getGrowthRatePerMonth(
+  year: number,
+  start: number,
+  end: number
+) {
+  const monthlyData = await Service.getGrowthRatePerMonth(year, start, end)
+
+  const data = monthlyData.rows[0] as MonthlyData
+
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+
+  if ((start !== 1 && end !== 12) || start === 1 || end === 12) {
+    const startIndex = start - 1
+    const endIndex = end - 1
+
+    months.splice(endIndex + 1)
+
+    if (startIndex > 0) {
+      months.splice(0, startIndex)
+    }
+  }
+
+  const dataKeys = Object.keys(data ?? {})
+
+  const formattedData: MonthlyData = {}
+
+  months.map((month: keyof MonthlyData) => {
+    const monthIndex = dataKeys.findIndex((e) => e === month.toLowerCase())
+
+    formattedData[month] = Object.values(data ?? {})[monthIndex]
+  })
+
+  return formattedData
+}

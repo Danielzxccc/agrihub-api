@@ -101,3 +101,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getLowestGrowthRates
 )
+
+ReportsRouter.get(
+  '/admin/growth-rate/monthly',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getGrowthRatePerMonth
+)

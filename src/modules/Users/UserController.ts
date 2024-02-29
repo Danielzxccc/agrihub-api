@@ -4,6 +4,7 @@ import * as Interactor from './UserInteractor'
 import * as Schema from '../../schema/UserSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
+import { deleteFile } from '../../utils/file'
 
 export async function listUsers(req: Request, res: Response) {
   try {
@@ -144,6 +145,109 @@ export async function enableAdminAccount(req: Request, res: Response) {
     await Interactor.enableAdminAccount(id)
 
     res.status(200).json({ message: 'Enabled Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function reportUser(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.NewReportedUser, req)
+    const { userid } = req.session
+    const evidence = req.files as Express.Multer.File[]
+
+    console.log(evidence)
+
+    const data = await Interactor.reportUser(userid, body, evidence)
+
+    res.status(200).json({ message: 'Reported Successfully', data })
+  } catch (error) {
+    const evidence = req.files as Express.Multer.File[]
+    if (evidence?.length) {
+      for (const file of evidence) {
+        deleteFile(file.filename)
+      }
+    }
+    errorHandler(res, error)
+  }
+}
+
+export async function listReportedUsers(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListAdminSchema, req)
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const users = await Interactor.listReportedUsers(offset, perPage, searchKey)
+    const totalPages = Math.ceil(Number(users.total.count) / perPage)
+    res.status(200).json({
+      users: users.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(users.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function banUserAccount(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await Interactor.banUserAccount(id)
+
+    res.status(200).json({ message: 'Banned Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function unbanUserAccount(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await Interactor.unbanUserAccount(id)
+
+    res.status(200).json({ message: 'Unbanned Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listBannedUsers(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListAdminSchema, req)
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const users = await Interactor.listBannedUsers(offset, perPage, searchKey)
+    const totalPages = Math.ceil(Number(users.total.count) / perPage)
+    res.status(200).json({
+      users: users.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(users.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function sendingWarningToUser(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await Interactor.sendingWarningToUser(id)
+
+    res.status(200).json({ message: 'Warning Sent Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
