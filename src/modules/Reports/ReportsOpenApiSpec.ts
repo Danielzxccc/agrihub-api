@@ -1007,6 +1007,14 @@
  * /api/reports/admin/lowest/growth-rate:
  *   get:
  *     summary: Get farms with the lowest average growth rate
+ *     parameters:
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - asc
+ *            - desc
  *     tags: [Reports]
  *     responses:
  *       "200":
@@ -1070,7 +1078,7 @@
  *   get:
  *     summary: Get monthly growth rate
  *     tags:
- *       - Report
+ *       - Reports
  *     parameters:
  *       - in: query
  *         name: year
@@ -1153,5 +1161,182 @@
  *         November:
  *           type: string
  *         December:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/admin/resources/count:
+ *   get:
+ *     summary: Get count of resources
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Count of resources
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ResourceCount"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ResourceCount:
+ *       type: object
+ *       properties:
+ *         learning_materials:
+ *           type: string
+ *         events:
+ *           type: string
+ *         blogs:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/admin/resources/count/detailed:
+ *   get:
+ *     summary: Get detailed count of resources
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Detailed count of resources
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/DetailedResourceCount"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     DetailedResourceCount:
+ *       type: object
+ *       properties:
+ *         all_learning_materials:
+ *           type: string
+ *         draft_learning_material:
+ *           type: string
+ *         archived_learning_material:
+ *           type: string
+ *         events:
+ *           type: string
+ *         upcoming_events:
+ *           type: string
+ *         blogs:
+ *           type: string
+ *         draft_blogs:
+ *           type: string
+ *         archived_blogs:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/admin/farms/district:
+ *   get:
+ *     summary: Get farms count and total harvest by district
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Farms count and total harvest by district
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/DistrictFarmData"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     DistrictFarmData:
+ *       type: object
+ *       properties:
+ *         district_name:
+ *           type: string
+ *         total_farms:
+ *           type: string
+ *         total_harvest:
  *           type: string
  */

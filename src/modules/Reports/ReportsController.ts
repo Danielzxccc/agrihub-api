@@ -253,7 +253,8 @@ export async function listFavouriteCrops(req: SessionRequest, res: Response) {
 
 export async function getLowestGrowthRates(req: SessionRequest, res: Response) {
   try {
-    const data = await Interactor.getLowestGrowthRates()
+    const { query } = await zParse(Schema.GetHarvestRanking, req)
+    const data = await Interactor.getLowestGrowthRates(query.order)
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)
@@ -271,6 +272,39 @@ export async function getGrowthRatePerMonth(
       query.start,
       query.end
     )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listResourcesCount(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.listResourcesCount()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listResourcesCountDetails(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.listResourcesCountDetails()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listTotalHarvestPerDistrict(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.listTotalHarvestPerDistrict()
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)

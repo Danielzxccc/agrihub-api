@@ -391,8 +391,8 @@ export async function listFavouriteCrops() {
   return data
 }
 
-export async function getLowestGrowthRates() {
-  const data = await Service.getLowestGrowthRates()
+export async function getLowestGrowthRates(order: 'desc' | 'asc') {
+  const data = await Service.getLowestGrowthRates(order)
 
   return data.rows
 }
@@ -459,4 +459,20 @@ export async function getGrowthRatePerMonth(
   })
 
   return formattedData
+}
+
+export async function listResourcesCount() {
+  const data = await Service.getResourcesCount()
+  return data
+}
+
+export async function listResourcesCountDetails() {
+  const data = await Service.getResourcesCountDetails()
+  return data
+}
+
+export async function listTotalHarvestPerDistrict() {
+  const data = await Service.getTotalHarvestPerDistrict()
+
+  return data.rows
 }

@@ -107,3 +107,21 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getGrowthRatePerMonth
 )
+
+ReportsRouter.get(
+  '/admin/resources/count',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listResourcesCount
+)
+
+ReportsRouter.get(
+  '/admin/resources/count/detailed',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listResourcesCountDetails
+)
+
+ReportsRouter.get(
+  '/admin/farms/district',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listTotalHarvestPerDistrict
+)

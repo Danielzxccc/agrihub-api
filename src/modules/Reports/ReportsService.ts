@@ -469,7 +469,7 @@ export async function getFavouriteCrops() {
     .execute()
 }
 
-export async function getLowestGrowthRates() {
+export async function getLowestGrowthRates(order: 'desc' | 'asc') {
   return await db.executeQuery(
     sql`
         WITH GrowthRates AS (
@@ -505,8 +505,9 @@ export async function getLowestGrowthRates() {
           community_farms cf
       JOIN 
           GrowthRates gr ON cf.id = gr.farm_id
-      ORDER BY 
-          gr.avg_growth_rate ASC
+      ORDER BY
+        CASE WHEN ${order} = 'desc' THEN gr.avg_growth_rate END DESC,
+        CASE WHEN ${order} = 'asc' THEN gr.avg_growth_rate END ASC
       LIMIT 
           5;
   `.compile(db)
@@ -567,6 +568,117 @@ export async function getGrowthRatePerMonth(
         year
     ORDER BY
         year;
+  `.compile(db)
+  )
+}
+
+export async function getResourcesCount() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('learning_materials'),
+      eb
+        .selectFrom('events')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('events'),
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('blogs'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getResourcesCountDetails() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('all_learning_materials'),
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'draft')
+        .as('draft_learning_material'),
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('is_archived', '=', true)
+        .as('archived_learning_material'),
+
+      eb
+        .selectFrom('events')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('events'),
+      eb
+        .selectFrom('events')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('event_end', '>', new Date())
+        .as('upcoming_events'),
+
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('blogs'),
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'draft')
+        .as('draft_blogs'),
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('is_archived', '=', true)
+        .as('archived_blogs'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getTotalHarvestPerDistrict() {
+  return await db.executeQuery(
+    sql`
+    SELECT
+        all_districts.district_name,
+        COALESCE(cf.total_farms, 0) AS total_farms,
+        COALESCE(SUM(ccr.harvested_qty), 0) AS total_harvest
+    FROM
+        (
+            SELECT 'District 1' AS district_name
+            UNION ALL
+            SELECT 'District 2'
+            UNION ALL
+            SELECT 'District 3'
+            UNION ALL
+            SELECT 'District 4'
+            UNION ALL
+            SELECT 'District 5'
+            UNION ALL
+            SELECT 'District 6'
+            -- Add more districts here if needed
+        ) AS all_districts
+    LEFT JOIN
+        (
+            SELECT district, COUNT(*) AS total_farms 
+            FROM community_farms 
+            GROUP BY district
+        ) AS cf ON all_districts.district_name = cf.district
+    LEFT JOIN
+        community_farms farms ON all_districts.district_name = farms.district
+    LEFT JOIN
+        community_crop_reports ccr ON farms.id = ccr.farmid
+    GROUP BY
+        all_districts.district_name, cf.total_farms
+    ORDER BY
+        all_districts.district_name;
+
   `.compile(db)
   )
 }

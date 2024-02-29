@@ -56,3 +56,9 @@ export const FilterWitheredHarvested = z.object({
       .optional(),
   }),
 })
+
+export const GetHarvestRanking = z.object({
+  query: z.object({
+    order: z.union([z.literal('asc'), z.literal('desc')]).optional(),
+  }),
+})
