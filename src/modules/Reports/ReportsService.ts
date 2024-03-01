@@ -709,3 +709,59 @@ export async function getFarmOverview() {
     ])
     .executeTakeFirst()
 }
+
+export async function getForumOverview(
+  year: number,
+  start: number,
+  end: number
+) {
+  return db.executeQuery(
+    sql`
+    WITH Months AS (
+        SELECT generate_series(1, 12) AS month_number
+    ),
+    QuestionsPerMonth AS (
+        SELECT
+            EXTRACT(MONTH FROM f.createdat) AS month,
+            COUNT(*) AS num_questions
+        FROM
+            forums f
+        WHERE
+            EXTRACT(YEAR FROM f.createdat) = ${String(year)}
+        AND
+            EXTRACT(MONTH FROM f.createdat) BETWEEN ${String(
+              start
+            )} and ${String(end)}
+        GROUP BY
+            EXTRACT(MONTH FROM f.createdat)
+    ),
+    AnswersPerMonth AS (
+        SELECT
+            EXTRACT(MONTH FROM fa.createdat) AS month,
+            COUNT(*) AS num_answers
+        FROM
+            forums_answers fa
+        WHERE
+            EXTRACT(YEAR FROM fa.createdat) = ${String(year)}
+        AND
+            EXTRACT(MONTH FROM fa.createdat) BETWEEN ${String(
+              start
+            )} and ${String(end)}
+        GROUP BY
+            EXTRACT(MONTH FROM fa.createdat)
+    )
+    SELECT
+        m.month_number AS month,
+        COALESCE(qpm.num_questions, 0) AS num_questions,
+        COALESCE(apm.num_answers, 0) AS num_answers
+    FROM
+        Months m
+    LEFT JOIN
+        QuestionsPerMonth qpm ON m.month_number = qpm.month
+    LEFT JOIN
+        AnswersPerMonth apm ON m.month_number = apm.month
+    ORDER BY
+        m.month_number;
+  `.compile(db)
+  )
+}

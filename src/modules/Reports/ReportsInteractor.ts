@@ -481,3 +481,39 @@ export async function getFarmOverview() {
   const data = Service.getFarmOverview()
   return data
 }
+
+export async function getForumOverview(
+  year = new Date().getFullYear(),
+  start = 1,
+  end = 12
+) {
+  const data = await Service.getForumOverview(year, start, end)
+
+  type MonthlyData = {
+    month: string
+    num_questions: string
+    num_answers: string
+  }
+
+  const monthlyData = data.rows as MonthlyData[]
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+
+  for (const month of monthlyData) {
+    month.month = months[parseInt(month.month) - 1]
+  }
+
+  return monthlyData
+}

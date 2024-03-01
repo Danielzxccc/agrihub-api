@@ -131,3 +131,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getFarmOverview
 )
+
+ReportsRouter.get(
+  '/forums/overview',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getForumOverview
+)
