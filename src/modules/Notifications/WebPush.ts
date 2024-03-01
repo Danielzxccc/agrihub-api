@@ -10,7 +10,7 @@ const vapidKeys = {
 }
 
 PushService.setVapidDetails(
-  'https://agrihub.vercel.app',
+  'https://qc-agrihub.xyz',
   vapidKeys.publicKey,
   vapidKeys.privateKey
 )
