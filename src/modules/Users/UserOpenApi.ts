@@ -521,15 +521,6 @@
  *         schema:
  *           type: string
  *         description: Number of items per page
- *       - in: query
- *         name: filter
- *         schema:
- *           type: string
- *           enum:
- *            - active
- *            - banned
- *         description: Filter by banned or active administrators
- *         default: active
  *     responses:
  *       "200":
  *         description: A list of banned users

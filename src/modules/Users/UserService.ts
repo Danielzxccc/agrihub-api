@@ -298,6 +298,13 @@ export async function findBannedUsers(
 
   return await query
     .where('u.isbanned', '=', true)
+    .where((eb) =>
+      eb.or([
+        eb('u.role', '=', 'member'),
+        eb('u.role', '=', 'farm_head'),
+        eb('u.role', '=', 'farmer'),
+      ])
+    )
     .limit(perpage)
     .offset(offset)
     .execute()
