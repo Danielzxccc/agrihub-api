@@ -385,6 +385,8 @@
  *               type: string
  *             lastname:
  *               type: string
+ *             username:
+ *               type: string
  *         reported_by:
  *           type: object
  *           properties:
@@ -395,6 +397,8 @@
  *             firstname:
  *               type: string
  *             lastname:
+ *               type: string
+ *             username:
  *               type: string
  */
 

@@ -243,6 +243,7 @@ export async function findReportedUsers(
             'firstname',
             'lastname',
             'email',
+            'username',
           ])
           .whereRef('users.id', '=', 'ru.reported')
       ).as('reported'),
@@ -254,6 +255,7 @@ export async function findReportedUsers(
             'firstname',
             'lastname',
             'email',
+            'username',
           ])
           .whereRef('users.id', '=', 'ru.reported_by')
       ).as('reported_by'),
