@@ -14,7 +14,7 @@ export async function subscribeToNotification(
     const payload = req.body
 
     const subscription = await Interactor.subscribeToNotification(
-      userid,
+      '936967351635410945',
       JSON.stringify(payload)
     )
     res.status(201).json({ message: 'successfully subscribe', subscription })
