@@ -32,11 +32,11 @@ export async function emitPushNotification(
     emitNotificationToAdmin(body)
   } else {
     // create notification
-    await Service.createNotification({
-      emitted_to: userid,
-      body,
-      redirect_to: redirect_to,
-    })
+    // await Service.createNotification({
+    //   emitted_to: userid,
+    //   body,
+    //   redirect_to: redirect_to,
+    // })
 
     emitNotification(userid, body)
 
