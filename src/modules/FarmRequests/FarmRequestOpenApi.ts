@@ -404,3 +404,56 @@
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
+
+/**
+ * @openapi
+ * /api/request/count:
+ *   get:
+ *     summary: Get count of pending and accepted requests
+ *     tags:
+ *       - FarmRequest
+ *     responses:
+ *       "200":
+ *         description: Count of pending and accepted requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/RequestCount"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     RequestCount:
+ *       type: object
+ *       properties:
+ *         pending_requests:
+ *           type: string
+ *         accepted_requests:
+ *           type: string
+ */

@@ -310,3 +310,12 @@ export async function listTotalHarvestPerDistrict(
     errorHandler(res, error)
   }
 }
+
+export async function getFarmOverview(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.getFarmOverview()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

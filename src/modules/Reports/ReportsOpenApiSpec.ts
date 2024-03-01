@@ -1340,3 +1340,58 @@
  *         total_harvest:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/reports/farms/overview:
+ *   get:
+ *     summary: Get overview of farm reports
+ *     tags:
+ *       - FarmRequest
+ *     responses:
+ *       "200":
+ *         description: Overview of farm reports
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmOverview"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmOverview:
+ *       type: object
+ *       properties:
+ *         pending_farm_applications:
+ *           type: string
+ *         accepted_requests:
+ *           type: string
+ *         total_farmers:
+ *           type: string
+ */

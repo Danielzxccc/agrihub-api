@@ -133,3 +133,9 @@ export async function rejectSeedlingRequest(id: string) {
 
   await Service.updateSeedlingRequest(id, updateObject)
 }
+
+export async function listFarmRequestsCount() {
+  const data = await Service.getFarmRequestsCount()
+
+  return data
+}

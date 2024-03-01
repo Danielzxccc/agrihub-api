@@ -40,3 +40,9 @@ FarmRequestRouter.delete(
   UserGuard(['admin', 'asst_admin']),
   FarmRequestController.rejectSeedlingRequest
 )
+
+FarmRequestRouter.get(
+  '/count',
+  UserGuard(['admin', 'asst_admin']),
+  FarmRequestController.listFarmRequestsCount
+)

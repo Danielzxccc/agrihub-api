@@ -476,3 +476,8 @@ export async function listTotalHarvestPerDistrict() {
 
   return data.rows
 }
+
+export async function getFarmOverview() {
+  const data = Service.getFarmOverview()
+  return data
+}

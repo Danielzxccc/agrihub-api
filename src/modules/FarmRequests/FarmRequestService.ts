@@ -124,3 +124,20 @@ export async function getTotalSeedlingRequests() {
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .executeTakeFirst()
 }
+
+export async function getFarmRequestsCount() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_requests'),
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'accepted')
+        .as('accepted_requests'),
+    ])
+    .executeTakeFirst()
+}

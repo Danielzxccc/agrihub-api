@@ -682,3 +682,30 @@ export async function getTotalHarvestPerDistrict() {
   `.compile(db)
   )
 }
+
+export async function getFarmOverview() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('farm_applications')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_farm_applications'),
+      eb
+        .selectFrom('community_farms')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('accepted_requests'),
+      eb
+        .selectFrom('users')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where((eb) =>
+          eb.or([
+            eb('users.role', '=', 'farmer'),
+            eb('users.role', '=', 'farm_head'),
+          ])
+        )
+        .where('isbanned', '=', false)
+        .as('total_farmers'),
+    ])
+    .executeTakeFirst()
+}

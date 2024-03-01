@@ -105,3 +105,13 @@ export async function rejectSeedlingRequest(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function listFarmRequestsCount(req: Request, res: Response) {
+  try {
+    const data = await Interactor.listFarmRequestsCount()
+
+    res.status(201).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

@@ -125,3 +125,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.listTotalHarvestPerDistrict
 )
+
+ReportsRouter.get(
+  '/farms/overview',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getFarmOverview
+)
