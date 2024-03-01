@@ -229,10 +229,12 @@ export async function findReportedUsers(
   let query = db
     .selectFrom('reported_users as ru')
     .leftJoin('users as u', 'u.id', 'ru.reported')
-    .select(({ eb }) => [
+    .select(({ eb, fn, val }) => [
       'ru.id',
       'ru.reason',
-      'ru.evidence',
+      fn<string>('concat', [val(returnObjectUrl()), 'ru.evidence']).as(
+        'evidence'
+      ),
       'ru.notes',
       'ru.createdat',
       jsonObjectFrom(
