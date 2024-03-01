@@ -181,6 +181,7 @@ export async function sendingWarningToUser(id: string) {
   if (!report) {
     throw new HttpError('Report not found', 404)
   }
+  await Service.updateReportedUser(id, { status: 'warned' })
 
   await emitPushNotification(
     report.reported,
@@ -192,10 +193,11 @@ export async function sendingWarningToUser(id: string) {
 export async function listReportedUsers(
   offset: number,
   perpage: number,
-  searchKey: string
+  searchKey: string,
+  filterKey: 'pending' | 'warned'
 ) {
   const [data, total] = await Promise.all([
-    Service.findReportedUsers(offset, perpage, searchKey),
+    Service.findReportedUsers(offset, perpage, searchKey, filterKey),
     Service.getTotalReportedUsers(),
   ])
 

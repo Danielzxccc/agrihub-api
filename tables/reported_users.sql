@@ -6,6 +6,7 @@ CREATE TABLE reported_users(
     evidence TEXT[] NOT NULL,
     notes TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status TEXT default "pending",
     FOREIGN KEY (reported) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE CASCADE
 );

@@ -315,6 +315,15 @@
  *           type: string
  *         required: false
  *         description: Number of items per page
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - pending
+ *            - warned
+ *         description: Filter by banned or active administrators
+ *         default: pending
  *     responses:
  *       "200":
  *         description: List of reported users
@@ -374,6 +383,8 @@
  *         createdat:
  *           type: string
  *           format: date-time
+ *         status:
+ *           type: string
  *         reported:
  *           type: object
  *           properties:

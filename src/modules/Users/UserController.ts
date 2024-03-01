@@ -174,13 +174,19 @@ export async function reportUser(req: SessionRequest, res: Response) {
 
 export async function listReportedUsers(req: Request, res: Response) {
   try {
-    const { query } = await zParse(Schema.ListAdminSchema, req)
+    const { query } = await zParse(Schema.ListReportedUsers, req)
     const perPage = Number(query.perpage)
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
+    const filterKey = query.filter
 
-    const users = await Interactor.listReportedUsers(offset, perPage, searchKey)
+    const users = await Interactor.listReportedUsers(
+      offset,
+      perPage,
+      searchKey,
+      filterKey
+    )
     const totalPages = Math.ceil(Number(users.total.count) / perPage)
     res.status(200).json({
       users: users.data,

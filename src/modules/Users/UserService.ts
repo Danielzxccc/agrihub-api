@@ -1,6 +1,12 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
-import { NewReportedUser, NewUser, UpdateUser, User } from '../../types/DBTypes'
+import {
+  NewReportedUser,
+  NewUser,
+  UpdateReportedUser,
+  UpdateUser,
+  User,
+} from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { jsonObjectFrom } from 'kysely/helpers/postgres'
 
@@ -224,7 +230,8 @@ export async function createReportedUser(report: NewReportedUser) {
 export async function findReportedUsers(
   offset: number,
   perpage: number,
-  searchKey?: string
+  searchKey?: string,
+  filterKey?: 'pending' | 'warned'
 ) {
   let query = db
     .selectFrom('reported_users as ru')
@@ -234,7 +241,9 @@ export async function findReportedUsers(
       'ru.reason',
       'ru.evidence',
       'ru.notes',
+      'ru.status',
       'ru.createdat',
+      'ru.status',
       jsonObjectFrom(
         eb
           .selectFrom('users')
@@ -260,6 +269,7 @@ export async function findReportedUsers(
           .whereRef('users.id', '=', 'ru.reported_by')
       ).as('reported_by'),
     ])
+    .where('u.isbanned', '=', false)
 
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
@@ -269,6 +279,10 @@ export async function findReportedUsers(
         eb('u.username', 'ilike', `${searchKey}%`),
       ])
     )
+  }
+
+  if (filterKey.length > 1) {
+    query = query.where('ru.status', '=', filterKey)
   }
 
   return await query.limit(perpage).offset(offset).execute()
@@ -324,6 +338,17 @@ export async function findReportedUser(id: string) {
   return await db
     .selectFrom('reported_users')
     .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function updateReportedUser(
+  id: string,
+  report: UpdateReportedUser
+) {
+  return await db
+    .updateTable('reported_users')
+    .set(report)
     .where('id', '=', id)
     .executeTakeFirst()
 }

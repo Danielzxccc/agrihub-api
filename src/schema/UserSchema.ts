@@ -79,6 +79,16 @@ export const ListAdminSchema = z.object({
       .default('active'),
   }),
 })
+export const ListReportedUsers = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z
+      .union([z.literal('pending'), z.literal('warned')])
+      .default('pending'),
+  }),
+})
 
 export const UserProfile = z.object({
   params: z.object({
