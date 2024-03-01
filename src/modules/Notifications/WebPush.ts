@@ -10,7 +10,7 @@ const vapidKeys = {
 }
 
 PushService.setVapidDetails(
-  'mailto:user@example.org',
+  'https://agrihub.vercel.app',
   vapidKeys.publicKey,
   vapidKeys.privateKey
 )
