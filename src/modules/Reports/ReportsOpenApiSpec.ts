@@ -1395,3 +1395,58 @@
  *         total_farmers:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/reports/forums/count:
+ *   get:
+ *     summary: Get count of forums, forum answers, and forum tags
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Count of forums, forum answers, and forum tags
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ForumCount"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ForumCount:
+ *       type: object
+ *       properties:
+ *         forums:
+ *           type: string
+ *         forums_answers:
+ *           type: string
+ *         forums_tags:
+ *           type: string
+ */

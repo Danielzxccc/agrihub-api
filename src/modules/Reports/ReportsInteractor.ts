@@ -517,3 +517,8 @@ export async function getForumOverview(
 
   return monthlyData
 }
+
+export async function getForumsCount() {
+  const data = await Service.getForumsCount()
+  return data
+}

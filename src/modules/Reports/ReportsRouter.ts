@@ -137,3 +137,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getForumOverview
 )
+
+ReportsRouter.get(
+  '/forums/count',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getForumsCount
+)

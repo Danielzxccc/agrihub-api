@@ -333,3 +333,12 @@ export async function getForumOverview(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function getForumsCount(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.getForumsCount()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

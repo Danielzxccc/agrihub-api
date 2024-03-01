@@ -765,3 +765,22 @@ export async function getForumOverview(
   `.compile(db)
   )
 }
+
+export async function getForumsCount() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('forums')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('forums'),
+      eb
+        .selectFrom('forums_answers')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('forums_answers'),
+      eb
+        .selectFrom('forums_tags')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('forums_tags'),
+    ])
+    .executeTakeFirst()
+}
