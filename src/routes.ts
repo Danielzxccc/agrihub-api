@@ -17,6 +17,7 @@ import { UploaderRouter } from './modules/Uploader/UploaderRouter'
 import { LandingRouter } from './modules/LandingPage/LandingRouter'
 import { FarmRequestRouter } from './modules/FarmRequests/FarmRequestRouter'
 import { AccessRouter } from './modules/AccessControl/AcessRouter'
+import { FarmProblemRouter } from './modules/FarmProblems/FarmProblemRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -25,6 +26,7 @@ function routes(app: Express) {
 
   app.use('/api/auth', AuthRouter)
   app.use('/api/farm', FarmRouter)
+  app.use('/api/farm/problems', FarmProblemRouter)
   app.use('/api/reports', ReportsRouter)
   app.use('/api/account', AccountRouter)
   app.use('/api/user', UserRouter)

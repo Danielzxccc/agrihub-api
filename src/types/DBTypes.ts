@@ -42,6 +42,9 @@ import {
   SeedlingRequests,
   AdminAccess,
   ReportedUsers,
+  FarmProblems,
+  FarmProblemMaterials,
+  ReportedProblems,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -181,3 +184,12 @@ export type UpdateAccessControl = Updateable<AdminAccess>
 // report user
 export type NewReportedUser = Insertable<ReportedUsers>
 export type UpdateReportedUser = Updateable<ReportedUsers>
+
+export type NewFarmProblem = Insertable<FarmProblems>
+export type UpdateFarmProblem = Insertable<FarmProblems>
+
+export type NewFarmProblemMaterial = Insertable<FarmProblemMaterials>
+export type UpdateFarmProblemMaterial = Updateable<FarmProblemMaterials>
+
+export type NewFarmProblemReport = Insertable<ReportedProblems>
+export type UpdateFarmProblemReport = Updateable<ReportedProblems>
