@@ -11,11 +11,19 @@ FarmProblemRouter.post(
   UserGuard(['admin', 'asst_admin']),
   FarmProblemController.upsertFarmProblem
 )
+
 FarmProblemRouter.get(
   '/list',
   AccessGuard('farms'),
   UserGuard(['admin', 'asst_admin']),
   FarmProblemController.listFarmProblems
+)
+
+FarmProblemRouter.get(
+  '/archived/list',
+  AccessGuard('farms'),
+  UserGuard(['admin', 'asst_admin']),
+  FarmProblemController.listArchivedFarmProblems
 )
 
 FarmProblemRouter.get(

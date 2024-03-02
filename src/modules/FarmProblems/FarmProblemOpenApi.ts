@@ -392,6 +392,67 @@
 
 /**
  * @openapi
+ * /api/farm/problems/archived/list:
+ *   get:
+ *     summary: Get a list of farm problems
+ *     tags:
+ *       - FarmProblems
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Filter problems by search keyword
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *         description: Apply additional filters
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmProblemListResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
  * components:
  *   schemas:
  *     FarmProblemListResponse:

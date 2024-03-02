@@ -96,3 +96,35 @@ export async function listFarmProblems(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function listArchivedFarmProblems(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListFarmProblems, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const problems = await Interactor.listArchivedFarmProblems(
+      offset,
+      perPage,
+      searchKey,
+      filterKey
+    )
+
+    const totalPages = Math.ceil(Number(problems.total.count) / perPage)
+    res.status(200).json({
+      data: problems.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(problems.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

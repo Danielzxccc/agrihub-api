@@ -152,3 +152,39 @@ export async function getTotalFarmProblems() {
     .where('is_archived', '=', false)
     .executeTakeFirst()
 }
+
+export async function findArchivedFarmProblems(
+  offset: number,
+  perpage: number,
+  searchKey?: string,
+  filterKey?: boolean
+) {
+  let query = db.selectFrom('farm_problems as fp').selectAll()
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('fp.description', 'ilike', `${searchKey}%`),
+        eb('fp.problem', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filterKey) {
+    query = query.where('common', '=', false)
+  }
+
+  return await query
+    .where('is_archived', '=', true)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalFarmArchivedProblems() {
+  return await db
+    .selectFrom('farm_problems')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('is_archived', '=', true)
+    .executeTakeFirst()
+}

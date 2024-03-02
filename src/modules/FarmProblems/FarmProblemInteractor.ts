@@ -42,3 +42,17 @@ export async function listFarmProblems(
 
   return { data, total }
 }
+
+export async function listArchivedFarmProblems(
+  offset: number,
+  perpage: number,
+  searchKey: string,
+  filterKey: boolean
+) {
+  const [data, total] = await Promise.all([
+    Service.findArchivedFarmProblems(offset, perpage, searchKey, filterKey),
+    Service.getTotalFarmArchivedProblems(),
+  ])
+
+  return { data, total }
+}
