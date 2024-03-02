@@ -1,5 +1,9 @@
+import { promise } from 'zod'
+import { SendReportProblemT } from '../../schema/FarmProblemSchema'
 import { NewFarmProblem } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
+import { emitPushNotification } from '../Notifications/NotificationInteractor'
+import { findUser } from '../Users/UserService'
 import * as Service from './FarmProblemService'
 
 export async function upsertFarmProblem(
@@ -7,7 +11,24 @@ export async function upsertFarmProblem(
   materials: string[] | string
 ) {
   const data = await Service.upsertFarmProblem(problem, materials)
-  return data
+
+  const newProblem = data.newProblem
+
+  if (!newProblem.common && data.material.length) {
+    console.log('test fire condition')
+    const uncommonProblems = await Service.findUncommonProblems(newProblem.id)
+    console.log(uncommonProblems, 'TEST ARRAY UNCOMMON')
+    const notificationPromises = uncommonProblems.map((item) =>
+      emitPushNotification(
+        item.userid,
+        "New potential solutions to your farm's challenges.",
+        'An admin has provided or modified learning materials or solutions for your specific problem.'
+      )
+    )
+    await Promise.all(notificationPromises)
+  }
+
+  return newProblem
 }
 
 export async function viewFarmProblem(id: string) {
@@ -55,4 +76,40 @@ export async function listArchivedFarmProblems(
   ])
 
   return { data, total }
+}
+
+export async function sendFarmProblemReport(
+  userid: string,
+  report: SendReportProblemT
+) {
+  const user = await findUser(userid)
+
+  const reportObject = report.body
+  let problem_id: string | undefined
+
+  if (reportObject.is_other) {
+    const { description, problem } = reportObject
+    const newFarmProblem = await Service.upsertFarmProblem({
+      description,
+      problem,
+      common: false,
+    })
+    problem_id = newFarmProblem.newProblem.id
+  }
+
+  const farmProblemReport = await Service.createReportedProblem({
+    community_farm: user.farm_id,
+    userid: user.id,
+    problem_id: problem_id ? problem_id : reportObject.problem_id,
+  })
+
+  if (reportObject.is_other) {
+    await emitPushNotification(
+      'admin',
+      'A new uncommon problem has been reported.',
+      `Farm Head ${user.firstname} ${user.lastname} has submitted a new uncommon farm/crop problem requiring attention.`
+    )
+  }
+
+  return farmProblemReport
 }

@@ -352,3 +352,16 @@ export async function updateReportedUser(
     .where('id', '=', id)
     .executeTakeFirst()
 }
+
+export async function findAllAdmins() {
+  return await db
+    .selectFrom('users')
+    .selectAll()
+    .where((eb) =>
+      eb.or([
+        eb('users.role', '=', 'admin'),
+        eb('users.role', '=', 'asst_admin'),
+      ])
+    )
+    .execute()
+}

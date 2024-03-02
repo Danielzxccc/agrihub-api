@@ -3,13 +3,15 @@ import { db } from '../../config/database'
 import {
   NewFarmProblem,
   NewFarmProblemMaterial,
+  NewFarmProblemReport,
   UpdateFarmProblem,
 } from '../../types/DBTypes'
 import { sql } from 'kysely'
+// import { NewLearningMaterial } from '../../schema/LearningMaterialSchema'
 
 export async function upsertFarmProblem(
   problem: NewFarmProblem,
-  materials: string[] | string
+  materials?: string[] | string
 ) {
   return await db.transaction().execute(async (trx) => {
     const newProblem = await trx
@@ -19,32 +21,35 @@ export async function upsertFarmProblem(
       .returningAll()
       .executeTakeFirstOrThrow()
 
-    let newMaterials: NewFarmProblemMaterial[] | NewFarmProblemMaterial
+    let createdMaterials
+    if (materials?.length) {
+      let newMaterials: NewFarmProblemMaterial[] | NewFarmProblemMaterial
 
-    if (Array.isArray(materials)) {
-      newMaterials = materials.map((item) => {
-        return {
+      if (Array.isArray(materials)) {
+        newMaterials = materials.map((item) => {
+          return {
+            farm_problem_id: newProblem.id,
+            learning_id: item,
+          }
+        })
+      } else {
+        newMaterials = {
           farm_problem_id: newProblem.id,
-          learning_id: item,
+          learning_id: materials,
         }
-      })
-    } else {
-      newMaterials = {
-        farm_problem_id: newProblem.id,
-        learning_id: materials,
       }
+
+      createdMaterials = await trx
+        .insertInto('farm_problem_materials')
+        .values(newMaterials)
+        .onConflict((oc) =>
+          oc.column('farm_problem_id').column('learning_id').doNothing()
+        )
+        .returningAll()
+        .execute()
     }
 
-    await trx
-      .insertInto('farm_problem_materials')
-      .values(newMaterials)
-      .onConflict((oc) =>
-        oc.column('farm_problem_id').column('learning_id').doNothing()
-      )
-      .returningAll()
-      .executeTakeFirst()
-
-    return newProblem
+    return { newProblem, material: createdMaterials }
   })
 }
 
@@ -187,4 +192,33 @@ export async function getTotalFarmArchivedProblems() {
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('is_archived', '=', true)
     .executeTakeFirst()
+}
+
+export async function createReportedProblem(report: NewFarmProblemReport) {
+  return await db
+    .insertInto('reported_problems')
+    .values(report)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function updateReportedProblem(
+  id: string,
+  report: UpdateFarmProblem
+) {
+  return await db
+    .updateTable('reported_problems')
+    .set(report)
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findUncommonProblems(problem_id: string) {
+  return await db
+    .selectFrom('reported_problems')
+    .selectAll()
+    .where('problem_id', '=', problem_id)
+    .where('status', '=', 'pending')
+    .execute()
 }

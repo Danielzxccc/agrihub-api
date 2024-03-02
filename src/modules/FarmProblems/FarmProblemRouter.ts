@@ -53,3 +53,9 @@ FarmProblemRouter.delete(
   UserGuard(['admin', 'asst_admin']),
   FarmProblemController.deleteFarmProblemMaterial
 )
+
+FarmProblemRouter.post(
+  '/report',
+  UserGuard(['farm_head']),
+  FarmProblemController.sendFarmProblemReport
+)

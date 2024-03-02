@@ -21,6 +21,7 @@ CREATE TYPE IF NOT EXISTS problem_status AS ENUM ('resolved', 'pending');
 CREATE TABLE reported_problems(
     id SERIAL PRIMARY KEY,
     community_farm INT NOT NULL,
+    userid INT NOT NULL,
     problem_id INT NOT NULL,
     status problem_status DEFAULT 'pending',
     date_noticed TIMESTAMP,
@@ -28,5 +29,6 @@ CREATE TABLE reported_problems(
     is_helpful BOOLEAN,
     feedback TEXT,
     FOREIGN KEY (community_farm) REFERENCES community_farms(id) ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (problem_id) REFERENCES farm_problems(id) ON DELETE CASCADE
 );

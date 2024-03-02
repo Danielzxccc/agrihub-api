@@ -1,10 +1,11 @@
 import { UpdateUserNotification } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
+import log from '../../utils/utils'
 import {
   emitNotification,
   emitNotificationToAdmin,
 } from '../Socket/SocketController'
-import { findUser } from '../Users/UserService'
+import { findAllAdmins, findUser } from '../Users/UserService'
 import * as Service from './NotificationService'
 import PushService from './WebPush'
 
@@ -13,25 +14,21 @@ export async function subscribeToNotification(userid: string, payload: string) {
   return newSubscription
 }
 
-export async function emitPushNotification(
+async function sendPushNotification(
   userid: string,
   title: string,
   body: string,
   redirect_to = ''
 ) {
-  const notificationPayload = {
-    title,
-    body,
-    icon: 'https://agrihub-bucket.s3.ap-southeast-1.amazonaws.com/agrihub-logo.svg',
-    data: {
-      url: 'https://example.com',
-    },
-  }
-
-  if (userid === 'admin') {
-    emitNotificationToAdmin(body)
-  } else {
-    // create notification
+  try {
+    const notificationPayload = {
+      title,
+      body,
+      icon: 'https://agrihub-bucket.s3.ap-southeast-1.amazonaws.com/agrihub-logo.svg',
+      data: {
+        url: 'https://example.com',
+      },
+    }
     await Service.createNotification({
       emitted_to: userid,
       body,
@@ -42,12 +39,31 @@ export async function emitPushNotification(
 
     const subscription = await Service.findSubscription(userid)
 
-    // if (!subscription) return
-
+    if (!subscription) return
     await PushService.sendNotification(
       subscription.payload as any,
       JSON.stringify(notificationPayload)
     )
+  } catch (error) {
+    log.warn('failed to send notification')
+  }
+}
+
+export async function emitPushNotification(
+  userid: string,
+  title: string,
+  body: string,
+  redirect_to = ''
+) {
+  if (userid === 'admin') {
+    const admins = await findAllAdmins()
+    const notificationPromises = admins.map((item) =>
+      sendPushNotification(item.id, title, body, redirect_to)
+    )
+
+    await Promise.all(notificationPromises)
+  } else {
+    await sendPushNotification(userid, title, body, redirect_to)
   }
 }
 

@@ -154,6 +154,8 @@
  *           type: string
  *         description:
  *           type: string
+ *         common:
+ *           type: boolean
  *         materials:
  *           oneOf:
  *             - type: array
@@ -483,4 +485,94 @@
  *           format: date-time
  *         is_archived:
  *           type: boolean
+ */
+
+/**
+ * @openapi
+ * /api/farm/problems/report:
+ *   post:
+ *     summary: Report a farm problem
+ *     tags:
+ *       - FarmProblems
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/ReportRequestBody"
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ReportResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ReportRequestBody:
+ *       type: object
+ *       properties:
+ *         problem_id:
+ *           type: string
+ *         date_noticed:
+ *           type: string
+ *         is_other:
+ *           type: boolean
+ *         problem:
+ *           type: string
+ *         description:
+ *           type: string
+ *     ReportResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         community_farm:
+ *           type: string
+ *         userid:
+ *           type: string
+ *         problem_id:
+ *           type: string
+ *         status:
+ *           type: string
+ *         date_noticed:
+ *           type: string
+ *           nullable: true
+ *         date_solved:
+ *           type: string
+ *           nullable: true
+ *         is_helpful:
+ *           type: string
+ *           nullable: true
+ *         feedback:
+ *           type: string
+ *           nullable: true
  */

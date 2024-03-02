@@ -3,14 +3,15 @@ import * as Schema from '../../schema/FarmProblemSchema'
 import { Request, Response } from 'express'
 import errorHandler from '../../utils/httpErrorHandler'
 import zParse from '../../utils/zParse'
+import { SessionRequest } from '../../types/AuthType'
 
 export async function upsertFarmProblem(req: Request, res: Response) {
   try {
     const { body } = await zParse(Schema.NewFarmProblem, req)
-    const { id, problem, description, materials } = body
+    const { id, problem, description, materials, common } = body
 
     const data = await Interactor.upsertFarmProblem(
-      { id, problem, description },
+      { id, problem, description, common },
       materials
     )
 
@@ -53,6 +54,7 @@ export async function unarchiveProblem(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
 export async function deleteFarmProblemMaterial(req: Request, res: Response) {
   try {
     const { id } = req.params
@@ -124,6 +126,22 @@ export async function listArchivedFarmProblems(req: Request, res: Response) {
         total_records: Number(problems.total.count),
       },
     })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function sendFarmProblemReport(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.SendReportProblem, req)
+
+    const data = await Interactor.sendFarmProblemReport(userid, { body })
+
+    res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)
   }
