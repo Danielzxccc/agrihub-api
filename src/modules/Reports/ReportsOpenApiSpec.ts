@@ -1450,3 +1450,66 @@
  *         forums_tags:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/reports/forums/overview:
+ *   get:
+ *     summary: Get overview of forum questions and answers by month
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *         description: The year to filter the overview
+ *     responses:
+ *       "200":
+ *         description: Overview of forum questions and answers by month
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/ForumOverview"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ForumOverview:
+ *       type: object
+ *       properties:
+ *         month:
+ *           type: string
+ *         num_questions:
+ *           type: string
+ *         num_answers:
+ *           type: string
+ */
