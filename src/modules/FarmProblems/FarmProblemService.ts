@@ -151,12 +151,15 @@ export async function findFarmProblems(
     .execute()
 }
 
-export async function getTotalFarmProblems() {
-  return await db
+export async function getTotalFarmProblems(filterKey?: boolean) {
+  let query = db
     .selectFrom('farm_problems')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .where('is_archived', '=', false)
-    .executeTakeFirst()
+
+  if (filterKey) {
+    query = query.where('common', '=', filterKey)
+  }
+  return await query.where('is_archived', '=', false).executeTakeFirst()
 }
 
 export async function findArchivedFarmProblems(
