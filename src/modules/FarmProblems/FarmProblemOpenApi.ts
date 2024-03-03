@@ -64,6 +64,8 @@
  *         updatedat:
  *           type: string
  *           format: date-time
+ *         common:
+ *           type: boolean
  *         learning_materials:
  *           type: array
  *           items:

@@ -62,6 +62,7 @@ export async function viewFarmProblem(id: string) {
       'fp.description',
       'fp.createdat',
       'fp.updatedat',
+      'fp.common',
       jsonArrayFrom(
         eb
           .selectFrom('farm_problem_materials as fpm')
@@ -140,7 +141,7 @@ export async function findFarmProblems(
   }
 
   if (filterKey) {
-    query = query.where('common', '=', false)
+    query = query.where('common', '=', filterKey)
   }
 
   return await query
