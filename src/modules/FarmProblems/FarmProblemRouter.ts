@@ -14,8 +14,8 @@ FarmProblemRouter.post(
 
 FarmProblemRouter.get(
   '/list',
-  AccessGuard('farms'),
-  UserGuard(['admin', 'asst_admin']),
+  // AccessGuard('farms'),
+  // UserGuard(['admin', 'asst_admin']),
   FarmProblemController.listFarmProblems
 )
 
