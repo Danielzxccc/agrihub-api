@@ -416,6 +416,10 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *           type: array
  *           items:
  *             type: string
+ *         companion:
+ *           type: array
+ *           items:
+ *             type: string
  *         image:
  *           type: string
  *           format: binary
