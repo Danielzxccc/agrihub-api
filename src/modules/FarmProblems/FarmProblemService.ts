@@ -222,3 +222,51 @@ export async function findUncommonProblems(problem_id: string) {
     .where('status', '=', 'pending')
     .execute()
 }
+
+export async function findCommunityFarmProblems(
+  farmid: string,
+  offset: number,
+  perpage: number,
+  searchKey?: string,
+  filterKey?: 'pending' | 'resolved'
+) {
+  let query = db
+    .selectFrom('reported_problems as rp')
+    .leftJoin('farm_problems as fp', 'rp.problem_id', 'fp.id')
+    .select(['rp.id', 'rp.status', 'fp.problem', 'fp.description'])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('fp.description', 'ilike', `${searchKey}%`),
+        eb('fp.problem', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filterKey?.length) {
+    query = query.where('rp.status', '=', filterKey)
+  }
+
+  return await query
+    .where('rp.community_farm', '=', farmid)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalCommunityFarmProblems(
+  farmid: string,
+  filterKey?: 'pending' | 'resolved'
+) {
+  let query = db
+    .selectFrom('reported_problems')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('community_farm', '=', farmid)
+
+  if (filterKey?.length) {
+    query = query.where('status', '=', filterKey)
+  }
+
+  return await query.executeTakeFirst()
+}

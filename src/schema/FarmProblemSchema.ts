@@ -23,6 +23,15 @@ export const ListFarmProblems = z.object({
   }),
 })
 
+export const ListCommunityFarmProblems = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z.union([z.literal('pending'), z.literal('resolved')]).optional(),
+  }),
+})
+
 export const SendReportProblem = z.object({
   body: z
     .object({
@@ -51,3 +60,10 @@ export const SendReportProblem = z.object({
 })
 
 export type SendReportProblemT = z.infer<typeof SendReportProblem>
+
+export const MarkProblemAsResolved = z.object({
+  body: z.object({
+    is_helpful: z.boolean(),
+    feedback: z.string(),
+  }),
+})

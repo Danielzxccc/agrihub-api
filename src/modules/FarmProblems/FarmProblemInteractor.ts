@@ -1,6 +1,6 @@
 import { promise } from 'zod'
 import { SendReportProblemT } from '../../schema/FarmProblemSchema'
-import { NewFarmProblem } from '../../types/DBTypes'
+import { NewFarmProblem, UpdateFarmProblemReport } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
 import { findUser } from '../Users/UserService'
@@ -112,4 +112,44 @@ export async function sendFarmProblemReport(
   }
 
   return farmProblemReport
+}
+
+export async function listCommunityFarmProblems(
+  userid: string,
+  offset: number,
+  perpage: number,
+  searchKey: string,
+  filterKey: 'pending' | 'resolved'
+) {
+  const { farm_id } = await findUser(userid)
+
+  const [data, total] = await Promise.all([
+    Service.findCommunityFarmProblems(
+      farm_id,
+      offset,
+      perpage,
+      searchKey,
+      filterKey
+    ),
+    Service.getTotalCommunityFarmProblems(farm_id, filterKey),
+  ])
+
+  return { data, total }
+}
+
+export async function markProblemAsResolved(
+  id: string,
+  is_helpful: boolean,
+  feedback: string
+) {
+  const updateObject: UpdateFarmProblemReport = {
+    date_solved: new Date(),
+    is_helpful,
+    feedback,
+    status: 'resolved',
+  }
+
+  const resolvedProblem = await Service.updateReportedProblem(id, updateObject)
+
+  if (!resolvedProblem) throw new HttpError('problem not found', 404)
 }

@@ -146,3 +146,53 @@ export async function sendFarmProblemReport(
     errorHandler(res, error)
   }
 }
+
+export async function listCommunityFarmProblems(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.ListCommunityFarmProblems, req)
+    const { userid } = req.session
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const problems = await Interactor.listCommunityFarmProblems(
+      userid,
+      offset,
+      perPage,
+      searchKey,
+      filterKey
+    )
+
+    const totalPages = Math.ceil(Number(problems.total.count) / perPage)
+    res.status(200).json({
+      data: problems.data,
+      pagination: {
+        page: pageNumber,
+        per_page: 20,
+        total_pages: totalPages,
+        total_records: Number(problems.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function markProblemAsResolved(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+    const { body } = await zParse(Schema.MarkProblemAsResolved, req)
+
+    await Interactor.markProblemAsResolved(id, body.is_helpful, body.feedback)
+
+    res.status(200).json({ message: 'Resolved Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

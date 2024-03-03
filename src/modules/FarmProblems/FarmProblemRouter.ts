@@ -28,8 +28,8 @@ FarmProblemRouter.get(
 
 FarmProblemRouter.get(
   '/:id',
-  AccessGuard('farms'),
-  UserGuard(['admin', 'asst_admin']),
+  // AccessGuard('farms'),
+  // UserGuard(['admin', 'asst_admin']),
   FarmProblemController.viewFarmProblem
 )
 
@@ -58,4 +58,16 @@ FarmProblemRouter.post(
   '/report',
   UserGuard(['farm_head']),
   FarmProblemController.sendFarmProblemReport
+)
+
+FarmProblemRouter.get(
+  '/community/list',
+  UserGuard(['farm_head']),
+  FarmProblemController.listCommunityFarmProblems
+)
+
+FarmProblemRouter.post(
+  '/community/resolve/:id',
+  UserGuard(['farm_head']),
+  FarmProblemController.markProblemAsResolved
 )
