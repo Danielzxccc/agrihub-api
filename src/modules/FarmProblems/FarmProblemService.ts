@@ -151,11 +151,22 @@ export async function findFarmProblems(
     .execute()
 }
 
-export async function getTotalFarmProblems(filterKey?: boolean) {
+export async function getTotalFarmProblems(
+  searchKey?: string,
+  filterKey?: boolean
+) {
   let query = db
     .selectFrom('farm_problems')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
 
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('description', 'ilike', `${searchKey}%`),
+        eb('problem', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
   if (filterKey) {
     query = query.where('common', '=', filterKey)
   }

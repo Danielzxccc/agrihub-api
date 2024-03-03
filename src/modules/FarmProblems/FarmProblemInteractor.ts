@@ -58,7 +58,7 @@ export async function listFarmProblems(
 ) {
   const [data, total] = await Promise.all([
     Service.findFarmProblems(offset, perpage, searchKey, filterKey),
-    Service.getTotalFarmProblems(filterKey),
+    Service.getTotalFarmProblems(searchKey, filterKey),
   ])
 
   return { data, total }
