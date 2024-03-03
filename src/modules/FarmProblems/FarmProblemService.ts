@@ -140,11 +140,8 @@ export async function findFarmProblems(
     )
   }
 
-  if (filterKey) {
-    query = query.where('common', '=', filterKey)
-  }
-
   return await query
+    .where('common', '=', filterKey)
     .where('is_archived', '=', false)
     .limit(perpage)
     .offset(offset)

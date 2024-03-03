@@ -18,7 +18,6 @@ export const ListFarmProblems = z.object({
     filter: z
       .string()
       .optional()
-      .default('')
       .transform((arg) => Boolean(arg)),
   }),
 })
