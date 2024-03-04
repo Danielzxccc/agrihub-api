@@ -1,4 +1,4 @@
-import { UserTag } from '../../types/DBTypes'
+import { NewTag, UserTag } from '../../types/DBTypes'
 import { db } from '../../config/database'
 
 export async function createUserTags(tags: UserTag[]) {
@@ -7,6 +7,23 @@ export async function createUserTags(tags: UserTag[]) {
     .values(tags)
     .onConflict((oc) => oc.column('tagid').column('userid').doNothing())
     .execute()
+}
+
+export async function createTag(tag: NewTag) {
+  return await db
+    .insertInto('tags')
+    .onConflict((oc) => oc.column('id').doUpdateSet(tag))
+    .values(tag)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function viewTag(id: string) {
+  return await db
+    .selectFrom('tags')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
 }
 
 export async function findTags(tag: string) {

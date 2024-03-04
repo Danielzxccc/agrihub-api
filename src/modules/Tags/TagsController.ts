@@ -42,3 +42,26 @@ export async function getTags(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function createTag(req: Request, res: Response) {
+  try {
+    const { body } = await zParse(Schema.NewTag, req)
+
+    const { details, tag_name } = body
+    const data = await Interactor.createTag({ details, tag_name })
+    res.status(200).json({ message: 'Created Tag Successfully', data })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewTag(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const data = await Interactor.viewTag(id)
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

@@ -1,5 +1,6 @@
 import * as Service from './TagsService'
 import HttpError from '../../utils/HttpError'
+import { NewTag } from '../../types/DBTypes'
 
 export async function findTags(tag: string) {
   const tags = await Service.findTags(tag)
@@ -22,4 +23,20 @@ export async function getTags(
   }
 
   return { data, total }
+}
+
+export async function createTag(tag: NewTag) {
+  const data = await Service.createTag(tag)
+
+  return data
+}
+
+export async function viewTag(id: string) {
+  const data = await Service.viewTag(id)
+
+  if (!data) {
+    throw new HttpError('Tag Not Found', 404)
+  }
+
+  return data
 }

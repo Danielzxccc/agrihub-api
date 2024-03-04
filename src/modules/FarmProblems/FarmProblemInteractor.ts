@@ -15,9 +15,7 @@ export async function upsertFarmProblem(
   const newProblem = data.newProblem
 
   if (!newProblem.common && data.material.length) {
-    console.log('test fire condition')
     const uncommonProblems = await Service.findUncommonProblems(newProblem.id)
-    console.log(uncommonProblems, 'TEST ARRAY UNCOMMON')
     const notificationPromises = uncommonProblems.map((item) =>
       emitPushNotification(
         item.userid,

@@ -80,3 +80,11 @@ export const SearchTags = z.object({
     filter: z.string().optional().default('name'),
   }),
 })
+
+export const NewTag = z.object({
+  body: z.object({
+    id: z.string().optional(),
+    details: z.string(),
+    tag_name: z.string(),
+  }),
+})
