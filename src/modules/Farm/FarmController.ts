@@ -679,3 +679,31 @@ export async function viewCropDetails(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function leaveCommunityFarm(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+
+    await Interactor.leaveCommunityFarm(userid)
+
+    res.status(200).json({ message: 'Left Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function kickCommunityFarmMember(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.kickCommunityFarmMember(userid, id)
+
+    res.status(200).json({ message: 'Kicked Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

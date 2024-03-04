@@ -35,17 +35,26 @@ async function sendPushNotification(
       redirect_to: redirect_to,
     })
 
-    emitNotification(userid, body)
+    const asyncEmitNotif = () => {
+      return new Promise((resolve) => {
+        resolve(emitNotification(userid, body))
+      })
+    }
+
+    await asyncEmitNotif()
 
     const subscription = await Service.findSubscription(userid)
 
     if (!subscription) return
-    await PushService.sendNotification(
-      subscription.payload as any,
-      JSON.stringify(notificationPayload)
-    )
+    try {
+      await PushService.sendNotification(
+        subscription.payload as any,
+        JSON.stringify(notificationPayload)
+      )
+    } catch (error) {}
   } catch (error) {
     log.warn('failed to send notification')
+    console.log(error, 'NOTIF ERROR')
   }
 }
 

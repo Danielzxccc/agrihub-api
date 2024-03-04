@@ -842,3 +842,34 @@ export async function viewCropDetails(id: string) {
 
   return crop
 }
+
+export async function leaveCommunityFarm(id: string) {
+  const user = await findUser(id)
+  const community_farm = await Service.findCommunityFarmById(user.farm_id)
+
+  await updateUser(id, { farm_id: null, role: 'member' })
+
+  await emitPushNotification(
+    community_farm.farm_head,
+    'A member has left your community farm.',
+    `${user.firstname} ${user.lastname} has left your farm`
+  )
+}
+
+export async function kickCommunityFarmMember(userid: string, id: string) {
+  const [user, farmHead] = await Promise.all([findUser(id), findUser(userid)])
+
+  const community_farm = await Service.findCommunityFarmById(farmHead.farm_id)
+
+  if (user.farm_id !== farmHead.farm_id) {
+    throw new HttpError('Unathorized', 401)
+  }
+
+  await updateUser(user.id, { role: 'member', farm_id: null })
+  await emitPushNotification(
+    user.id,
+    `You have been kicked`,
+    `You have been kicked from ${community_farm.farm_name}`,
+    `/community/explore/${farmHead.farm_id}`
+  )
+}

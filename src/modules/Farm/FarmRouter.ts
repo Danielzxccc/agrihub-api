@@ -210,3 +210,14 @@ FarmRouter.put(
 )
 
 FarmRouter.get('/crop/view/:id', FarmController.viewCropDetails)
+
+FarmRouter.post(
+  '/community/leave',
+  UserGuard(['farmer']),
+  FarmController.leaveCommunityFarm
+)
+FarmRouter.post(
+  '/community/kick/:id',
+  UserGuard(['farm_head']),
+  FarmController.kickCommunityFarmMember
+)
