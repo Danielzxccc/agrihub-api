@@ -47,8 +47,8 @@ export async function createTag(req: Request, res: Response) {
   try {
     const { body } = await zParse(Schema.NewTag, req)
 
-    const { details, tag_name } = body
-    const data = await Interactor.createTag({ details, tag_name })
+    const { id, details, tag_name } = body
+    const data = await Interactor.createTag({ id, details, tag_name })
     res.status(200).json({ message: 'Created Tag Successfully', data })
   } catch (error) {
     errorHandler(res, error)
