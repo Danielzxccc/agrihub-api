@@ -66,6 +66,8 @@
  *           format: date-time
  *         common:
  *           type: boolean
+ *         is_archived:
+ *           type: boolean
  *         learning_materials:
  *           type: array
  *           items:

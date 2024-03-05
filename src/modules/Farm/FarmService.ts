@@ -70,6 +70,13 @@ export async function findAllCrops() {
     .execute()
 }
 
+export async function getTotalCrops() {
+  return await db
+    .selectFrom('crops')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
+
 export async function viewFarm(id: string) {
   return await db
     .selectFrom('farms')

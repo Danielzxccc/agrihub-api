@@ -63,6 +63,7 @@ export async function viewFarmProblem(id: string) {
       'fp.createdat',
       'fp.updatedat',
       'fp.common',
+      'fp.is_archived',
       jsonArrayFrom(
         eb
           .selectFrom('farm_problem_materials as fpm')
