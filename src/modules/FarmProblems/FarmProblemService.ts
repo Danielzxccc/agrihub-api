@@ -282,3 +282,44 @@ export async function getTotalCommunityFarmProblems(
 
   return await query.executeTakeFirst()
 }
+
+export async function findReportedProblems(
+  offset: number,
+  perpage: number,
+  searchKey?: string,
+  filterKey?: 'pending' | 'resolved'
+) {
+  let query = db
+    .selectFrom('reported_problems as rp')
+    .leftJoin('farm_problems as fp', 'rp.problem_id', 'fp.id')
+    .select(['rp.id', 'rp.status', 'fp.problem', 'fp.description'])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('fp.description', 'ilike', `${searchKey}%`),
+        eb('fp.problem', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filterKey?.length) {
+    query = query.where('rp.status', '=', filterKey)
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalReportedProblems(
+  filterKey?: 'pending' | 'resolved'
+) {
+  let query = db
+    .selectFrom('reported_problems')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+
+  if (filterKey?.length) {
+    query = query.where('status', '=', filterKey)
+  }
+
+  return await query.executeTakeFirst()
+}

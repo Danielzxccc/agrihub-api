@@ -71,3 +71,9 @@ FarmProblemRouter.post(
   UserGuard(['farm_head']),
   FarmProblemController.markProblemAsResolved
 )
+
+FarmProblemRouter.get(
+  '/reported/list',
+  UserGuard(['admin', 'asst_admin']),
+  FarmProblemController.findReportedProblems
+)

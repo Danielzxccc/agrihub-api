@@ -174,7 +174,7 @@ export async function listCommunityFarmProblems(
       data: problems.data,
       pagination: {
         page: pageNumber,
-        per_page: 20,
+        per_page: perPage,
         total_pages: totalPages,
         total_records: Number(problems.total.count),
       },
@@ -192,6 +192,38 @@ export async function markProblemAsResolved(req: Request, res: Response) {
     await Interactor.markProblemAsResolved(id, body.is_helpful, body.feedback)
 
     res.status(200).json({ message: 'Resolved Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function findReportedProblems(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListCommunityFarmProblems, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const problems = await Interactor.findReportedProblems(
+      offset,
+      perPage,
+      searchKey,
+      filterKey
+    )
+
+    const totalPages = Math.ceil(Number(problems.total.count) / perPage)
+    res.status(200).json({
+      data: problems.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(problems.total.count),
+      },
+    })
   } catch (error) {
     errorHandler(res, error)
   }

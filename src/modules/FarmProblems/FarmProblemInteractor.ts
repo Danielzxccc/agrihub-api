@@ -105,7 +105,8 @@ export async function sendFarmProblemReport(
     await emitPushNotification(
       'admin',
       'A new uncommon problem has been reported.',
-      `Farm Head ${user.firstname} ${user.lastname} has submitted a new uncommon farm/crop problem requiring attention.`
+      `Farm Head ${user.firstname} ${user.lastname} has submitted a new uncommon farm/crop problem requiring attention.`,
+      `/admin/farm/problems/view/${problem_id}`
     )
   }
 
@@ -150,4 +151,18 @@ export async function markProblemAsResolved(
   const resolvedProblem = await Service.updateReportedProblem(id, updateObject)
 
   if (!resolvedProblem) throw new HttpError('problem not found', 404)
+}
+
+export async function findReportedProblems(
+  offset: number,
+  perpage: number,
+  searchKey: string,
+  filterKey: 'pending' | 'resolved'
+) {
+  const [data, total] = await Promise.all([
+    Service.findReportedProblems(offset, perpage, searchKey, filterKey),
+    Service.getTotalReportedProblems(filterKey),
+  ])
+
+  return { data, total }
 }
