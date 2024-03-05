@@ -723,6 +723,8 @@
  *       properties:
  *         id:
  *           type: string
+ *         fp_id:
+ *           type: string
  *         status:
  *           type: string
  *         problem:

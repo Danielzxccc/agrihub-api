@@ -85,7 +85,7 @@ CREATE TABLE community_crop_reports_images(
     report_id INT NOT NULL,
     crop_name TEXT NOT NULL,
     imagesrc TEXT NOT NULL,
-    FOREIGN KEY (crop_name) REFERENCES crops(name) ON DELETE CASCADE,
+    FOREIGN KEY (crop_name) REFERENCES crops(name) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (report_id) REFERENCES community_crop_reports(id) ON DELETE CASCADE
 );
 
