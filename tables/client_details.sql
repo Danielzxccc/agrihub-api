@@ -34,6 +34,7 @@ CREATE TABLE client_members(
     image TEXT,
     position TEXT NOT NULL,
     description TEXT,
+    index INT DEFAULT 0,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
 );

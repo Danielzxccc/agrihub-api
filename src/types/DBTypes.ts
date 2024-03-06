@@ -46,6 +46,9 @@ import {
   FarmProblemMaterials,
   ReportedProblems,
   Tags,
+  ClientSocials,
+  ClientPartners,
+  ClientMembers,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -197,3 +200,8 @@ export type UpdateFarmProblemReport = Updateable<ReportedProblems>
 
 export type NewTag = Insertable<Tags>
 export type UpdateTag = Updateable<Tags>
+
+//CUAI
+export type NewClientSocials = Insertable<ClientSocials>
+export type NewClientPartners = Insertable<ClientPartners>
+export type NewClientMembers = Insertable<ClientMembers>
