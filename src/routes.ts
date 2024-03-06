@@ -18,6 +18,7 @@ import { LandingRouter } from './modules/LandingPage/LandingRouter'
 import { FarmRequestRouter } from './modules/FarmRequests/FarmRequestRouter'
 import { AccessRouter } from './modules/AccessControl/AcessRouter'
 import { FarmProblemRouter } from './modules/FarmProblems/FarmProblemRouter'
+import { CmsRouter } from './modules/CMS/CmsRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -34,6 +35,7 @@ function routes(app: Express) {
   app.use('/api/tags', TagsRouter)
   app.use('/api/articles', ArticlesRouter)
   app.use('/api/events', EventsRouter)
+  app.use('/api/cms', CmsRouter)
   app.use('/api/cms/about', AboutRouter)
   app.use('/api/cms/landing', LandingRouter)
   app.use('/api/blogs', BlogsRouter)
