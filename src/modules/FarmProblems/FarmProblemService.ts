@@ -246,7 +246,13 @@ export async function findCommunityFarmProblems(
   let query = db
     .selectFrom('reported_problems as rp')
     .leftJoin('farm_problems as fp', 'rp.problem_id', 'fp.id')
-    .select(['rp.id', 'rp.status', 'fp.problem', 'fp.description'])
+    .select([
+      'rp.id',
+      'fp.id as fp_id',
+      'rp.status',
+      'fp.problem',
+      'fp.description',
+    ])
 
   if (searchKey.length) {
     query = query.where((eb) =>
