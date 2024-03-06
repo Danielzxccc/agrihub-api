@@ -31,7 +31,7 @@ export async function authenticateUser(credentials: string, password: string) {
 
   const compare = await bcrypt.compare(password, user.password)
 
-  if (!compare) throw new HttpError('Unauthorized', 401)
+  if (!compare) throw new HttpError('Invalid Credentials', 401)
   delete user.password
   return user
 }

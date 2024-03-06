@@ -249,6 +249,8 @@ export async function findCommunityFarmProblems(
     .select([
       'rp.id',
       'fp.id as fp_id',
+      'rp.date_noticed',
+      'rp.date_solved',
       'rp.status',
       'fp.problem',
       'fp.description',

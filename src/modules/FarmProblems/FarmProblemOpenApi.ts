@@ -725,6 +725,10 @@
  *           type: string
  *         fp_id:
  *           type: string
+ *         date_noticed:
+ *           type: string
+ *         date_solved:
+ *           type: string
  *         status:
  *           type: string
  *         problem:
