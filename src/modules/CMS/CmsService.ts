@@ -97,43 +97,49 @@ export async function updateClientDetails(data: ClientDetails) {
       .returningAll()
       .execute()
 
-    await trx
-      .insertInto('client_socials')
-      .values(socials as NewClientSocials)
-      .onConflict((oc) =>
-        oc.column('id').doUpdateSet((eb) => ({
-          link: eb.ref('excluded.link'),
-          name: eb.ref('excluded.name'),
-          updatedat: new Date(),
-        }))
-      )
-      .execute()
+    if (socials.length) {
+      await trx
+        .insertInto('client_socials')
+        .values(socials as NewClientSocials)
+        .onConflict((oc) =>
+          oc.column('id').doUpdateSet((eb) => ({
+            link: eb.ref('excluded.link'),
+            name: eb.ref('excluded.name'),
+            updatedat: new Date(),
+          }))
+        )
+        .execute()
+    }
 
-    await trx
-      .insertInto('client_partners')
-      .values(partners as NewClientPartners)
-      .onConflict((oc) =>
-        oc.column('id').doUpdateSet((eb) => ({
-          logo: eb.ref('excluded.logo'),
-          description: eb.ref('excluded.description'),
-          name: eb.ref('excluded.name'),
-          updatedat: new Date(),
-        }))
-      )
-      .execute()
+    if (partners.length) {
+      await trx
+        .insertInto('client_partners')
+        .values(partners as NewClientPartners)
+        .onConflict((oc) =>
+          oc.column('id').doUpdateSet((eb) => ({
+            logo: eb.ref('excluded.logo'),
+            description: eb.ref('excluded.description'),
+            name: eb.ref('excluded.name'),
+            updatedat: new Date(),
+          }))
+        )
+        .execute()
+    }
 
-    await trx
-      .insertInto('client_members')
-      .values(members as NewClientMembers)
-      .onConflict((oc) =>
-        oc.column('id').doUpdateSet((eb) => ({
-          name: eb.ref('excluded.name'),
-          image: eb.ref('excluded.image'),
-          position: eb.ref('excluded.position'),
-          description: eb.ref('excluded.description'),
-        }))
-      )
-      .execute()
+    if (members.length) {
+      await trx
+        .insertInto('client_members')
+        .values(members as NewClientMembers)
+        .onConflict((oc) =>
+          oc.column('id').doUpdateSet((eb) => ({
+            name: eb.ref('excluded.name'),
+            image: eb.ref('excluded.image'),
+            position: eb.ref('excluded.position'),
+            description: eb.ref('excluded.description'),
+          }))
+        )
+        .execute()
+    }
   })
 }
 
