@@ -146,7 +146,7 @@ UserRouter.get('/profile/:username', UserController.findUserProfile)
 
 UserRouter.put(
   '/profile/:id',
-  UserGuard(['member', 'farmer', 'farm_head']),
+  UserGuard(['admin', 'asst_admin', 'member', 'farmer', 'farm_head']),
   upload.single('avatar'),
   UserController.updateUserProfile
 )
