@@ -97,7 +97,7 @@ export async function updateClientDetails(data: ClientDetails) {
       .returningAll()
       .execute()
 
-    if (socials.length) {
+    if (socials?.length) {
       await trx
         .insertInto('client_socials')
         .values(socials as NewClientSocials)
@@ -111,7 +111,7 @@ export async function updateClientDetails(data: ClientDetails) {
         .execute()
     }
 
-    if (partners.length) {
+    if (partners?.length) {
       await trx
         .insertInto('client_partners')
         .values(partners as NewClientPartners)
@@ -126,7 +126,7 @@ export async function updateClientDetails(data: ClientDetails) {
         .execute()
     }
 
-    if (members.length) {
+    if (members?.length) {
       await trx
         .insertInto('client_members')
         .values(members as NewClientMembers)
