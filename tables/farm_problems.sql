@@ -32,3 +32,10 @@ CREATE TABLE reported_problems(
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (problem_id) REFERENCES farm_problems(id) ON DELETE CASCADE
 );
+
+CREATE TABLE farm_problem_attachments(
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    filename TEXT NOT NULL,
+    farm_problem_id INT REFERENCES farm_problems(id) ON DELETE CASCADE
+);

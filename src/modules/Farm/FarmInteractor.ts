@@ -318,7 +318,7 @@ export async function createCommunityGallery(
   description: string
 ) {
   try {
-    if (!images.length) throw new HttpError('Image is required', 400)
+    if (!images?.length) throw new HttpError('Image is required', 400)
     const user = await findUser(userid)
 
     const newImages = []
@@ -731,12 +731,12 @@ export async function updateCommunityFarm(
       updatedCommunityFarm
     )
 
-    if (updatedFarm.cover_photo !== communityFarm.cover_photo) {
-      await deleteFileCloud(communityFarm.cover_photo)
+    if (updatedFarm?.cover_photo !== communityFarm?.cover_photo) {
+      await deleteFileCloud(communityFarm.cover_photo ?? '')
     }
 
-    if (updatedFarm.avatar !== communityFarm.avatar) {
-      await deleteFileCloud(communityFarm.avatar)
+    if (updatedFarm?.avatar !== communityFarm?.avatar) {
+      await deleteFileCloud(communityFarm.avatar ?? '')
     }
 
     if (avatar?.filename) {
