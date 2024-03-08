@@ -152,3 +152,28 @@ export async function checkResetTokenExpiration(
     errorHandler(res, error)
   }
 }
+
+export async function verifyOTP(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.VerifyOTP, req)
+
+    await Interactor.verifyOTP(userid, body.code)
+
+    res.status(200).json({ message: 'Verified Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function sendOTP(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+
+    await Interactor.sendOTP(userid)
+
+    res.status(200).json({ message: 'Sent Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

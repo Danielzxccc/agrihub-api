@@ -8,6 +8,7 @@ CREATE TABLE users(
     username TEXT,
     email TEXT NOT NULL,
     password TEXT NOT NULL,
+    contact_number TEXT DEFAULT '',
     firstname TEXT,
     lastname TEXT,
     birthdate DATE,

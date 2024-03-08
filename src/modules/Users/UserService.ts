@@ -133,7 +133,13 @@ export async function findByEmailOrUsername(user: string): Promise<User> {
   return await db
     .selectFrom('users')
     .selectAll()
-    .where((eb) => eb.or([eb('username', '=', user), eb('email', '=', user)]))
+    .where((eb) =>
+      eb.or([
+        eb('username', '=', user),
+        eb('email', '=', user),
+        eb('contact_number', '=', user),
+      ])
+    )
     .executeTakeFirst()
 }
 
@@ -364,4 +370,12 @@ export async function findAllAdmins() {
       ])
     )
     .execute()
+}
+
+export async function findUserByPhoneNumber(number: string) {
+  return await db
+    .selectFrom('users')
+    .selectAll()
+    .where('contact_number', '=', number)
+    .executeTakeFirst()
 }

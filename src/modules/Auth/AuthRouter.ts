@@ -1,3 +1,4 @@
+import { rateLimiter } from '../../middleware/RateLimitter'
 import * as AuthController from './AuthController'
 import express from 'express'
 
@@ -280,3 +281,13 @@ AuthRouter.get('/check-token/:token', AuthController.checkResetTokenExpiration)
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
+
+AuthRouter.post('/verify-otp', AuthController.verifyOTP)
+AuthRouter.post(
+  '/send-otp',
+  rateLimiter({
+    endpoint: '/api/auth/send-otp',
+    rate_limit: { limit: 1, time: 60 },
+  }),
+  AuthController.sendOTP
+)

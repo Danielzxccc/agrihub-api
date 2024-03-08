@@ -58,3 +58,36 @@ export async function findResetToken(token: string) {
 export async function deleteResetToken(id: string) {
   return await db.deleteFrom('reset_token').where('id', '=', id).execute()
 }
+
+export async function generateOTPcode(userid: string, code: number) {
+  const generatedTimestamp = moment()
+    .add(5, 'minutes')
+    .format('YYYY-MM-DD HH:mm:ss.SSSSSS')
+  return await db
+    .insertInto('otp')
+    .values({
+      userid,
+      otp_code: code,
+      expiresat: generatedTimestamp,
+    })
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findOTPCode(userid: string, code: number) {
+  return await db
+    .selectFrom('otp')
+    .selectAll()
+    .where('userid', '=', userid)
+    .where('otp_code', '=', String(code))
+    .where('expiresat', '>=', sql`CURRENT_TIMESTAMP`)
+    .executeTakeFirst()
+}
+
+export async function deleteOTPCode(id: string) {
+  return await db
+    .deleteFrom('otp')
+    .returningAll()
+    .where('userid', '=', id)
+    .execute()
+}

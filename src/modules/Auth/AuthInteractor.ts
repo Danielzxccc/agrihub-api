@@ -1,9 +1,12 @@
 import * as Service from '../Users/UserService'
 import {
+  deleteOTPCode,
   deleteResetToken,
   deleteToken,
+  findOTPCode,
   findResetToken,
   findToken,
+  generateOTPcode,
   generateResetToken,
   generateToken,
 } from './AuthService'
@@ -37,26 +40,55 @@ export async function authenticateUser(credentials: string, password: string) {
 }
 
 export async function registerUser(credentials: RegisterUser) {
-  const { email, password, confirmPassword } = credentials.body
+  const { phone_number, email, password, confirmPassword } = credentials.body
+
+  if (!phone_number && !email) {
+    throw new HttpError(
+      'Please select one registration mode: either email or phone number.',
+      400
+    )
+  }
+
+  if (phone_number && email) {
+    throw new HttpError(
+      'Please select one registration mode: either email or phone number.',
+      400
+    )
+  }
+
+  if (email) {
+    const emailResult = await Service.findUserByEmail(email)
+    if (emailResult) throw new HttpError('Email Already Exists', 409)
+  }
+
+  if (phone_number) {
+    const phoneNumberResult = await Service.findUserByPhoneNumber(phone_number)
+    if (phoneNumberResult)
+      throw new HttpError('Phone Number Already Exists', 409)
+  }
 
   if (password !== confirmPassword) {
     throw new HttpError('Password does not match', 400)
   }
 
-  const emailResult = await Service.findUserByEmail(email)
-  if (emailResult) throw new HttpError('Email Already Exists', 409)
-
   const hashedPassword = await bcrypt.hash(password, 10)
 
   const userObject = {
-    email,
+    email: email ? email : '',
+    contact_number: phone_number,
     password: hashedPassword,
     verification_level: '1',
   }
 
   const createdUser = await Service.createUser(userObject)
 
-  await sendEmailVerification(createdUser.id)
+  if (email) {
+    await sendEmailVerification(createdUser.id)
+  }
+
+  if (phone_number) {
+    await sendOTP(createdUser.id)
+  }
 
   return createdUser
 }
@@ -89,6 +121,40 @@ export async function getCurrentUser(session: string) {
 
   delete user.password
   return { ...user, avatar: user.avatar ? getObjectUrl(user.avatar) : null }
+}
+
+export async function sendOTP(session: string) {
+  if (!session) throw new HttpError('No Auth', 401)
+  const user = await Service.findUser(session)
+
+  if (!user) throw new HttpError('No Auth', 401)
+  if (getVerificationLevel(user.verification_level) > 1) {
+    throw new HttpError('Already Verified', 400)
+  }
+  // generate code here for production
+  const OTPCode = 424242
+
+  await generateOTPcode(session, OTPCode)
+  // sms gateway logic here later
+}
+
+export async function verifyOTP(session: string, code: number) {
+  if (!session) throw new HttpError('No Auth', 401)
+  const user = await Service.findUser(session)
+  if (!user) throw new HttpError('No Auth', 401)
+
+  if (getVerificationLevel(user.verification_level) > 1) {
+    throw new HttpError('Already Verified', 400)
+  }
+
+  const OTPCode = await findOTPCode(session, code)
+  if (!OTPCode) throw new HttpError('Invalid Code', 400)
+
+  await deleteOTPCode(user.id)
+
+  await Service.updateUser(user.id, {
+    verification_level: '2',
+  })
 }
 
 export async function sendEmailVerification(session: string): Promise<void> {
