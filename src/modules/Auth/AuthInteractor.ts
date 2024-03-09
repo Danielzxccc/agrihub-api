@@ -20,6 +20,7 @@ import dbErrorHandler from '../../utils/dbErrorHandler'
 import { generateOTP, getVerificationLevel } from '../../utils/utils'
 import { getObjectUrl, uploadFile } from '../AWS-Bucket/UploadService'
 import fs from 'fs'
+import sendSMS from '../../utils/sendSMS'
 
 export async function authenticateUser(credentials: string, password: string) {
   const user = await Service.findByEmailOrUsername(credentials)
@@ -132,10 +133,11 @@ export async function sendOTP(session: string) {
     throw new HttpError('Already Verified', 400)
   }
   // generate code here for production
-  const OTPCode = 424242
+  const OTPCode = generateOTP()
 
   await generateOTPcode(session, OTPCode, user.contact_number)
   // sms gateway logic here later
+  await sendSMS(user.contact_number, `OTP CODE: ${OTPCode}`)
 }
 
 export async function verifyOTP(session: string, code: number) {
