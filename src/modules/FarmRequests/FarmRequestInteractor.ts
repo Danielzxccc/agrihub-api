@@ -80,7 +80,7 @@ export async function listAllSeedlingRequests(
 ) {
   const [data, total] = await Promise.all([
     Service.findAllSeedlingRequest(offset, searchKey, perpage, filter),
-    Service.getTotalSeedlingRequests(),
+    Service.getTotalSeedlingRequests(searchKey, filter),
   ])
 
   return { data, total }

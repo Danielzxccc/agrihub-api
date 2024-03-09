@@ -273,6 +273,20 @@ export async function findFarmApplications(
   return await query.limit(perpage).offset(offset).execute()
 }
 
+export async function getTotalFarmApplications(
+  filterKey: FarmApplicationStatus
+) {
+  let query = db
+    .selectFrom('farm_applications')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+
+  if (filterKey) {
+    query = query.where('status', '=', filterKey)
+  }
+
+  return await query.executeTakeFirst()
+}
+
 export async function findOneFarmApplication(id: string) {
   return await db
     .selectFrom('farm_applications')
@@ -314,13 +328,6 @@ export async function findExistingApplication(userid: string) {
     .selectAll()
     .where('applicant', '=', userid)
     .where('status', '=', 'pending')
-    .executeTakeFirst()
-}
-
-export async function getTotalFarmApplications() {
-  return await db
-    .selectFrom('farm_applications')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
     .executeTakeFirst()
 }
 

@@ -139,7 +139,7 @@ export async function listFarmApplication(
 ) {
   const [data, total] = await Promise.all([
     Service.findFarmApplications(offset, filterKey, searchKey, perpage),
-    Service.getTotalFarmApplications(),
+    Service.getTotalFarmApplications(filterKey),
   ])
 
   const formattedDates = data.map((item) => ({
