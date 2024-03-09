@@ -15,7 +15,7 @@ export async function findClientDetails() {
     .select(({ eb, val, fn }) => [
       'cd.id',
       'cd.name',
-      fn<string>('concat', [val(returnObjectUrl()), 'cd.logo']).as('logo'),
+      'cd.logo',
       'cd.email',
       'cd.contact_number',
       'cd.address',
@@ -39,9 +39,7 @@ export async function findClientDetails() {
           .selectFrom('client_partners as cp')
           .select(({ fn, val }) => [
             sql<string>`CAST(cp.id AS TEXT)`.as('id'),
-            fn<string>('concat', [val(returnObjectUrl()), 'cp.logo']).as(
-              'logo'
-            ),
+            'cp.logo',
             'cp.name',
             'cp.description',
             'cp.createdat',
@@ -54,9 +52,7 @@ export async function findClientDetails() {
           .select(({ fn, val }) => [
             sql<string>`CAST(cm.id AS TEXT)`.as('id'),
             'cm.name',
-            fn<string>('concat', [val(returnObjectUrl()), 'cm.image']).as(
-              'image'
-            ),
+            'cm.image',
             'cm.position',
             'cm.description',
           ])
