@@ -228,6 +228,9 @@ import { z } from 'zod'
  *         farm_id:
  *           type: string
  *           nullable: true
+ *         contact_number:
+ *           type: string
+ *           nullable: true
  */
 export const UserAuthSchema = z.object({
   body: z.object({
