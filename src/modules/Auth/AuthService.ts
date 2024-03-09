@@ -59,7 +59,11 @@ export async function deleteResetToken(id: string) {
   return await db.deleteFrom('reset_token').where('id', '=', id).execute()
 }
 
-export async function generateOTPcode(userid: string, code: number) {
+export async function generateOTPcode(
+  userid: string,
+  code: number,
+  phone_number: string
+) {
   const generatedTimestamp = moment()
     .add(5, 'minutes')
     .format('YYYY-MM-DD HH:mm:ss.SSSSSS')
@@ -69,6 +73,7 @@ export async function generateOTPcode(userid: string, code: number) {
       userid,
       otp_code: code,
       expiresat: generatedTimestamp,
+      phone_number,
     })
     .returningAll()
     .executeTakeFirst()
@@ -84,10 +89,24 @@ export async function findOTPCode(userid: string, code: number) {
     .executeTakeFirst()
 }
 
-export async function deleteOTPCode(id: string) {
+export async function deleteOTPCode(id: string, code: string, number: string) {
   return await db
     .deleteFrom('otp')
     .returningAll()
-    .where('userid', '=', id)
+    .where((eb) =>
+      eb.or([
+        eb('userid', '=', id),
+        eb('otp_code', '=', code),
+        eb('phone_number', '=', number),
+      ])
+    )
+    .execute()
+}
+
+export async function removeUnverifiedPhoneNumber(phone: string) {
+  return await db
+    .deleteFrom('users')
+    .where('contact_number', '=', phone)
+    .where('verification_level', '>', '1')
     .execute()
 }

@@ -52,7 +52,7 @@
  *       type: object
  *       properties:
  *         code:
- *           type: integer
+ *           type: number
  */
 
 /**

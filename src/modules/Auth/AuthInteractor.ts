@@ -17,7 +17,7 @@ import { sendMail, sendResetTokenEmail } from '../../utils/email'
 import { createUserTags } from '../Tags/TagsService'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
-import { getVerificationLevel } from '../../utils/utils'
+import { generateOTP, getVerificationLevel } from '../../utils/utils'
 import { getObjectUrl, uploadFile } from '../AWS-Bucket/UploadService'
 import fs from 'fs'
 
@@ -134,7 +134,7 @@ export async function sendOTP(session: string) {
   // generate code here for production
   const OTPCode = 424242
 
-  await generateOTPcode(session, OTPCode)
+  await generateOTPcode(session, OTPCode, user.contact_number)
   // sms gateway logic here later
 }
 
@@ -150,7 +150,7 @@ export async function verifyOTP(session: string, code: number) {
   const OTPCode = await findOTPCode(session, code)
   if (!OTPCode) throw new HttpError('Invalid Code', 400)
 
-  await deleteOTPCode(user.id)
+  await deleteOTPCode(user.id, OTPCode.otp_code, user.contact_number)
 
   await Service.updateUser(user.id, {
     verification_level: '2',
