@@ -1,5 +1,6 @@
 import { ClientDetails } from '../../schema/CmsSchema'
 import HttpError from '../../utils/HttpError'
+import { deleteFileCloud } from '../AWS-Bucket/UploadService'
 import * as Service from './CmsService'
 
 export async function findClientDetails() {
@@ -19,9 +20,12 @@ export async function deleteClientSocial(id: string) {
 export async function deleteClientPartner(id: string) {
   const deletedData = await Service.deleteClientPartner(id)
   if (!deletedData) throw new HttpError('Item not found', 404)
+  await deleteFileCloud(deletedData?.logo ?? '')
 }
 
 export async function deleteClientMember(id: string) {
   const deletedData = await Service.deleteClientMember(id)
   if (!deletedData) throw new HttpError('Item not found', 404)
+
+  await deleteFileCloud(deletedData?.image ?? '')
 }
