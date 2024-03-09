@@ -1,4 +1,5 @@
 import upload from '../../config/multer'
+import { rateLimiter } from '../../middleware/RateLimitter'
 import * as AuthController from './AuthController'
 import express from 'express'
 
@@ -53,7 +54,14 @@ export const AccountRouter = express.Router()
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
-AccountRouter.post('/signup', AuthController.registerUser)
+AccountRouter.post(
+  '/signup',
+  rateLimiter({
+    endpoint: '/api/auth/send-otp',
+    rate_limit: { limit: 1, time: 60 },
+  }),
+  AuthController.registerUser
+)
 
 /**
  * @openapi
