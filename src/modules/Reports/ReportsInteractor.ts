@@ -306,6 +306,10 @@ export async function getAverageGrowthRate(userid: string) {
   // yieldable growth rate=((harvestedqty/(harvestedqty+witheredqty))x100
   // ((parseFloat(plant.harvested_qty as string) / parseFloat(plant.planted_qty as string)) / parseFloat(plant.planted_qty as string)) *100
   const [plant] = data
+  // const latestGrowthRate =
+  //   (parseFloat(plant.net_yield as string) /
+  //     parseFloat(plant.planted_qty as string)) *
+  //   100
   const latestGrowthRate =
     plant.type === '1'
       ? (parseFloat(plant.harvested_qty as string) /
@@ -334,8 +338,8 @@ export async function getAverageGrowthRate(userid: string) {
   //   }, 0) / data.length
   let sum = 0
 
-  console.log(data)
-  for (let i = 1; i < data.length; i++) {
+  console.log(data, 'DATA NI NIKKI')
+  for (let i = 0; i < data.length; i++) {
     const plant = data[i]
     const growthRate =
       plant.type === '1'
@@ -346,6 +350,10 @@ export async function getAverageGrowthRate(userid: string) {
         : (parseFloat(plant.harvested_qty as string) /
             parseFloat(plant.planted_qty as string)) *
           100
+    // const growthRate =
+    //   parseFloat(plant.crop_yield as string) +
+    //   parseFloat(plant.net_yield as string) -
+    //   parseFloat(plant.withered_crops as string)
 
     console.log(growthRate)
     sum += growthRate
