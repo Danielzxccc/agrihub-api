@@ -264,18 +264,23 @@ export async function getCropStatistics(name: string, farmid: string) {
       jsonArrayFrom(
         eb
           .selectFrom('community_crop_reports_images as ccri')
+          .leftJoin(
+            'community_crop_reports as ccrs',
+            'ccrs.id',
+            'ccri.report_id'
+          )
+          .leftJoin('community_farms as cfs', 'cfs.id', 'ccrs.farmid')
           .select(({ fn }) => [
             fn<string>('concat', [val(returnObjectUrl()), 'ccri.imagesrc']).as(
               'image'
             ),
           ])
           .whereRef('ccri.crop_name', '=', 'c.name')
-          .where('ccr.farmid', '=', farmid)
+          .where('cfs.id', '=', farmid)
       ).as('images'),
     ])
     .groupBy([
       'ccr.crop_id',
-      'ccr.farmid',
       'c.name',
       'c.image',
       'c.description',
