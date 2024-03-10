@@ -385,9 +385,15 @@ export async function getAverageGrowthRate(farmid: string) {
       'c.isyield',
     ])
     .where('ccr.farmid', '=', farmid)
+    // .where(sql`EXTRACT(MONTH FROM date_harvested)`, "", )
+    .limit(20)
     .orderBy('ccr.createdat desc')
     .execute()
 }
+
+// EXTRACT(MONTH FROM date_harvested) BETWEEN ${String(
+//   start
+// )} AND ${String(end)}
 
 export async function getTotalWitheredHarvestEachMonth(
   year: number,

@@ -359,7 +359,7 @@ export async function getAverageGrowthRate(userid: string) {
     sum += growthRate
   }
 
-  const averageGrowthRate = sum / (data.length - 1)
+  const averageGrowthRate = sum / data.length
 
   const results = await axios.post(`${process.env.PYTHON_API}/growth-rate`, {
     average_growth: Number(averageGrowthRate.toFixed(2)),
