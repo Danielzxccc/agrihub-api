@@ -285,9 +285,9 @@ AuthRouter.get('/check-token/:token', AuthController.checkResetTokenExpiration)
 AuthRouter.post('/verify-otp', AuthController.verifyOTP)
 AuthRouter.post(
   '/send-otp',
-  rateLimiter({
-    endpoint: '/api/auth/send-otp',
-    rate_limit: { limit: 1, time: 60 },
-  }),
+  // rateLimiter({
+  //   endpoint: '/api/auth/send-otp',
+  //   rate_limit: { limit: 1, time: 60 },
+  // }),
   AuthController.sendOTP
 )
