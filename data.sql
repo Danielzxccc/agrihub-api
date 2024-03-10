@@ -103,6 +103,21 @@ CREATE TABLE crops(
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE available_companion_crops(
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+);
+
+CREATE TABLE companion_crops(
+    id SERIAL PRIMARY KEY,
+    crop_id INT NOT NULL,
+    category_id INT NOT NULL,
+    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (crop_id) REFERENCES crops(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES available_companion_crops(id) ON DELETE CASCADE
+);
+
 CREATE TABLE crop_reports(
     id SERIAL PRIMARY KEY,
     farmid INT NOT NULL,
