@@ -275,6 +275,7 @@ export async function getCropStatistics(name: string, farmid: string) {
     ])
     .groupBy([
       'ccr.crop_id',
+      'ccr.farmid',
       'c.name',
       'c.image',
       'c.description',
