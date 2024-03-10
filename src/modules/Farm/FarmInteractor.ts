@@ -33,7 +33,7 @@ import {
   emitNotification,
   emitNotificationToAdmin,
 } from '../Socket/SocketController'
-import { getMonthByIndex } from '../../utils/utils'
+import log, { getMonthByIndex } from '../../utils/utils'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
 
 export async function createFarmApplication({
@@ -216,9 +216,15 @@ export async function acceptFarmApplication(id: string) {
     role: 'farm_head',
   })
 
-  emitNotification(
+  // emitNotification(
+  //   farm.applicant.id,
+  //   'Your Farm Application has been successfully accepted.'
+  // )
+  await emitPushNotification(
     farm.applicant.id,
-    'Your Farm Application has been successfully accepted.'
+    'Farm Application Accepted',
+    'Your Farm Application has been successfully accepted.',
+    `/community/my-community/${newCommunityFarm.id}`
   )
 
   return newCommunityFarm
@@ -732,11 +738,19 @@ export async function updateCommunityFarm(
     )
 
     if (updatedFarm?.cover_photo !== communityFarm?.cover_photo) {
-      await deleteFileCloud(communityFarm.cover_photo ?? '')
+      try {
+        await deleteFileCloud(communityFarm.cover_photo ?? 'filekey')
+      } catch (error) {
+        log.info('ERROR DELETING IMAGE')
+      }
     }
 
     if (updatedFarm?.avatar !== communityFarm?.avatar) {
-      await deleteFileCloud(communityFarm.avatar ?? '')
+      try {
+        await deleteFileCloud(communityFarm.avatar ?? 'filekey')
+      } catch (error) {
+        log.info('ERROR DELETING IMAGE')
+      }
     }
 
     if (avatar?.filename) {
