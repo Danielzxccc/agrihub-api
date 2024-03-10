@@ -274,10 +274,10 @@ export async function removeCommunityCropReport(id: string) {
 }
 
 export async function viewCommunityCropReport(id: string, userid: string) {
-  const report = await Service.findCommunityReportById(id)
-  if (!report) throw new HttpError("Can't find report", 404)
-
   const user = await findUser(userid)
+
+  const report = await Service.findCommunityReportById(id, user.farm_id)
+  if (!report) throw new HttpError("Can't find report", 404)
 
   if (user.farm_id !== report.farmid) {
     throw new HttpError('Unathorized', 401)

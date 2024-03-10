@@ -14,7 +14,7 @@ export async function insertCommunityCropReport(
     .executeTakeFirstOrThrow()
 }
 
-export async function findCommunityReportById(id: string) {
+export async function findCommunityReportById(id: string, farm_id?: string) {
   return await db
     .selectFrom('community_crop_reports as ccr')
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
@@ -31,12 +31,23 @@ export async function findCommunityReportById(id: string) {
       jsonArrayFrom(
         eb
           .selectFrom('community_crop_reports_images as ccri')
+          .leftJoin(
+            'community_crop_reports as ccrs',
+            'ccrs.id',
+            'ccri.report_id'
+          )
+          .leftJoin('community_farms as cfs', 'cfs.id', 'ccrs.farmid')
           .select(({ fn }) => [
             fn<string>('concat', [val(returnObjectUrl()), 'ccri.imagesrc']).as(
               'image'
             ),
           ])
           .whereRef('ccri.crop_name', '=', 'c.name')
+          .where((eb) => {
+            if (farm_id) {
+              return eb('cfs.id', '=', farm_id)
+            }
+          })
       ).as('images'),
     ])
     .groupBy([
