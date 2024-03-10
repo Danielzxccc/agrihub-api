@@ -270,6 +270,7 @@ export async function getCropStatistics(name: string, farmid: string) {
             ),
           ])
           .whereRef('ccri.crop_name', '=', 'c.name')
+          .where('ccr.farmid', '=', farmid)
       ).as('images'),
     ])
     .groupBy([
