@@ -39,7 +39,7 @@ export const allowedOrigins = [
   'https://agrihub.vercel.app',
   'https://agrihub-6vw7t76z8-wolfcarves.vercel.app',
   'https://agrihub-frontend-fork.vercel.app',
-  'https://65d9fede4e315f028eaf14bb--subtle-toffee-a853e7.netlify.app',
+  'https://app.qc-agrihub.xyz',
 ]
 export const corsOptions = {
   origin: (origin: any, callback: any) => {
