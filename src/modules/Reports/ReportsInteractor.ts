@@ -372,13 +372,19 @@ export async function getSuggestedLearningMaterials(userid: string) {
   const [data] = await Service.getAverageGrowthRate(user.farm_id)
 
   // get suggested tags from python
-  const suggestedTags = await axios.post(
-    `${process.env.PYTHON_API}/suggested-tags`,
-    [data]
-  )
+  try {
+    var suggestedTags = await axios.post(
+      `${process.env.PYTHON_API}/suggested-tags`,
+      [data]
+    )
+  } catch (error) {
+    log.error('Failed Getting Learning Resource')
+  }
+
+  console.log(suggestedTags.data.tags, 'REPORTED TAGS FROM ANALYTICS SERVICE')
 
   // feed dataset from python to our database for query
-  const dataSet = suggestedTags.data.suggested_tags[0].tags
+  const dataSet = suggestedTags.data.tags[0]
 
   const suggestedLearningMaterials = await findLearningMaterialByTags(dataSet)
 
