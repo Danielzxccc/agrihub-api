@@ -56,10 +56,10 @@ export const AccountRouter = express.Router()
  */
 AccountRouter.post(
   '/signup',
-  rateLimiter({
-    endpoint: '/api/auth/signup',
-    rate_limit: { limit: 1, time: 60 },
-  }),
+  // rateLimiter({
+  //   endpoint: '/api/auth/signup',
+  //   rate_limit: { limit: 1, time: 60 },
+  // }),
   AuthController.registerUser
 )
 
