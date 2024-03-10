@@ -353,7 +353,7 @@
  *           type: number
  *         delivery_date:
  *           type: string
- *         notes:
+ *         note:
  *           type: string
  */
 

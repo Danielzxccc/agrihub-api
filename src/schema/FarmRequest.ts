@@ -29,6 +29,6 @@ export const AcceptSeedlingRequest = z.object({
   body: z.object({
     quantity_approve: z.number(),
     delivery_date: z.string(),
-    notes: z.string().optional(),
+    note: z.string().optional(),
   }),
 })
