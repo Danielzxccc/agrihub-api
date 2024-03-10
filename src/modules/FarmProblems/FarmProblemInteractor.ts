@@ -98,6 +98,7 @@ export async function sendFarmProblemReport(
   const farmProblemReport = await Service.createReportedProblem({
     community_farm: user.farm_id,
     userid: user.id,
+    date_noticed: reportObject.date_noticed,
     problem_id: problem_id ? problem_id : reportObject.problem_id,
   })
 
