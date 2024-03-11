@@ -9,6 +9,7 @@ import {
 } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { jsonObjectFrom } from 'kysely/helpers/postgres'
+import { findCommunityFarmById } from '../Farm/FarmService'
 
 export async function listUsers(
   offset: number,
@@ -105,12 +106,21 @@ export async function getTotalMembers(farmid: string) {
 }
 
 export async function findUser(id: string) {
-  return await db
+  const user = await db
     .selectFrom('admin_access')
     .rightJoin('users', 'users.id', 'admin_access.userid')
     .selectAll()
     .where('users.id', '=', id)
     .executeTakeFirst()
+
+  if (user.role === 'farm_head' || user.role === 'farmer') {
+    const community = await findCommunityFarmById(user.farm_id)
+
+    if (community.is_archived) {
+      user.role = 'member'
+    }
+  }
+  return user
 }
 
 export async function findUserByUsername(username: string): Promise<User> {

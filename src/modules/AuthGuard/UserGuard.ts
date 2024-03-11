@@ -4,6 +4,7 @@ import { findUser } from '../Users/UserService'
 import HttpError from '../../utils/HttpError'
 import { getVerificationLevel } from '../../utils/utils'
 import { findUserAccess } from '../AccessControl/AccessService'
+import { findCommunityFarmById } from '../Farm/FarmService'
 
 type AllowedRoles =
   | 'user'
