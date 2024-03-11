@@ -118,6 +118,7 @@ export async function findUser(id: string) {
 
     if (community.is_archived) {
       user.role = 'member'
+      user.farm_id = null
     }
   }
   return user
