@@ -38,6 +38,7 @@ export async function findQuestions(
           .select([
             'avatar',
             'username',
+            'role',
             sql<string>`CAST(id AS TEXT)`.as('id'),
           ])
           .whereRef('forums.userid', '=', 'users.id')

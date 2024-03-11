@@ -23,6 +23,8 @@ import { z } from 'zod'
  *                     type: string
  *                   username:
  *                     type: string
+ *                   role:
+ *                     type: string
  *               tags:
  *                 type: array
  *                 items:
