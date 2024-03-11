@@ -116,10 +116,11 @@ export async function findUser(id: string) {
   if (user.role === 'farm_head' || user.role === 'farmer') {
     const community = await findCommunityFarmById(user.farm_id)
 
+    const newObj = user as typeof user & { isFarmBanned: boolean }
     if (community.is_archived) {
-      user.role = 'member'
-      user.farm_id = null
+      newObj.isFarmBanned = true
     }
+    return newObj
   }
   return user
 }

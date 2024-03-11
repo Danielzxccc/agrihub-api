@@ -231,6 +231,8 @@ import { z } from 'zod'
  *         contact_number:
  *           type: string
  *           nullable: true
+ *         isFarmBanned:
+ *           type: boolean
  */
 export const UserAuthSchema = z.object({
   body: z.object({
