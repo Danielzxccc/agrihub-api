@@ -79,6 +79,62 @@ export async function listCommunityFarms(req: Request, res: Response) {
   }
 }
 
+export async function listArchivedCommunityFarms(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.CommunityFarms, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const farms = await Interactor.listArchivedCommunityFarms(
+      perPage,
+      offset,
+      searchKey,
+      filterKey
+    )
+
+    const totalPages = Math.ceil(Number(farms.total.count) / perPage)
+    res.status(200).json({
+      farms: farms.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(farms.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function archiveCommunityFarm(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+
+    await Interactor.archiveCommunityFarm(id)
+
+    res.status(200).json({ message: 'Archived successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function restoreCommunityFarm(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+
+    await Interactor.restoreCommunityFarm(id)
+
+    res.status(200).json({ message: 'Restored successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function acceptFarmApplication(req: Request, res: Response) {
   try {
     const id = req.params.id

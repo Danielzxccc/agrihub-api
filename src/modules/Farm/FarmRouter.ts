@@ -20,6 +20,27 @@ FarmRouter.post(
 
 FarmRouter.get('/community-farm', FarmController.listCommunityFarms)
 
+FarmRouter.get(
+  '/community-farm/archived',
+  AccessGuard('farms'),
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.listArchivedCommunityFarms
+)
+
+FarmRouter.delete(
+  '/community-farm/archived/:id',
+  AccessGuard('farms'),
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.archiveCommunityFarm
+)
+
+FarmRouter.put(
+  '/community-farm/restore/:id',
+  AccessGuard('farms'),
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.restoreCommunityFarm
+)
+
 FarmRouter.put(
   '/applications/accept/:id',
   AccessGuard('farms'),

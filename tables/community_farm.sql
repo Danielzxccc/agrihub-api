@@ -34,6 +34,7 @@ CREATE TABLE community_farms(
     application_id INT NOT NULL, -- relation ng application niya
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+    is_archived BOOLEAN DEFAULT FALSE,
     UNIQUE (farm_head, name),
     FOREIGN KEY (farm_head) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (application_id) REFERENCES farm_applications(id) ON DELETE CASCADE

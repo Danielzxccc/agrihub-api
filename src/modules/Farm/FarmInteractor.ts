@@ -100,7 +100,7 @@ export async function listCommunityFarms(
 ) {
   const [data, total] = await Promise.all([
     Service.findAllCommunityFarms(perpage, offset, search, filter),
-    Service.getTotalCommunityFarms(),
+    Service.getTotalCommunityFarms(search, filter),
   ])
 
   for (const farm of data) {
@@ -111,6 +111,35 @@ export async function listCommunityFarms(
   }
 
   return { data, total }
+}
+
+export async function listArchivedCommunityFarms(
+  perpage: number,
+  offset: number,
+  search: string,
+  filter: string
+) {
+  const [data, total] = await Promise.all([
+    Service.findArchivedCommunityFarms(perpage, offset, search, filter),
+    Service.getTotalArchivedCommunityFarms(search, filter),
+  ])
+
+  for (const farm of data) {
+    farm.avatar = farm.avatar ? getObjectUrl(farm.avatar) : farm.avatar
+    farm.cover_photo = farm.cover_photo
+      ? getObjectUrl(farm.cover_photo)
+      : farm.cover_photo
+  }
+
+  return { data, total }
+}
+
+export async function archiveCommunityFarm(id: string) {
+  await Service.archiveCommunityFarm(id)
+}
+
+export async function restoreCommunityFarm(id: string) {
+  await Service.restoreCommunityFarm(id)
 }
 
 export async function checkExistingApplication(userid: string) {

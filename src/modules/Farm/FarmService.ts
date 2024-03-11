@@ -423,14 +423,70 @@ export async function findAllCommunityFarms(
   if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
   if (filter.length) query = query.where('district', '=', filter)
 
-  return await query.limit(perpage).offset(offset).execute()
+  return await query
+    .where('is_archived', '=', false)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
 }
 
-export async function getTotalCommunityFarms() {
-  return await db
+export async function getTotalCommunityFarms(search: string, filter: string) {
+  let query = db
     .selectFrom('community_farms')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .executeTakeFirst()
+
+  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (filter.length) query = query.where('district', '=', filter)
+
+  return await query.where('is_archived', '=', false).executeTakeFirst()
+}
+
+export async function findArchivedCommunityFarms(
+  perpage: number,
+  offset: number,
+  search: string,
+  filter: string
+) {
+  let query = db.selectFrom('community_farms').selectAll()
+
+  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (filter.length) query = query.where('district', '=', filter)
+
+  return await query
+    .where('is_archived', '=', true)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalArchivedCommunityFarms(
+  search: string,
+  filter: string
+) {
+  let query = db
+    .selectFrom('community_farms')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+
+  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (filter.length) query = query.where('district', '=', filter)
+
+  return await query.where('is_archived', '=', true).executeTakeFirst()
+}
+
+export async function archiveCommunityFarm(id: string) {
+  return await db
+    .updateTable('community_farms')
+    .set({ is_archived: true })
+    .where('id', '=', id)
+    .execute()
+}
+
+export async function restoreCommunityFarm(id: string) {
+  return await db
+    .updateTable('community_farms')
+    .set({ is_archived: false })
+    .where('id', '=', id)
+    .execute()
 }
 
 export async function insertFarmerInvitation(farm: NewFarmerInvitation) {
