@@ -57,10 +57,6 @@ export function getMonthByIndex(index: number) {
 
 export function generateOTP() {
   // Generate a random 3-byte buffer
-  const buffer = crypto.randomBytes(3)
 
-  // Convert the buffer to a 6-digit number
-  const otp = buffer.readUIntBE(0, 3) % 1000000
-
-  return otp
+  return Math.floor(100000 + Math.random() * 900000)
 }
