@@ -133,7 +133,7 @@ export async function sendOTP(session: string) {
     throw new HttpError('Already Verified', 400)
   }
   // generate code here for production
-  const OTPCode = generateOTP()
+  const OTPCode = 411411
 
   await generateOTPcode(session, OTPCode, user.contact_number)
   // sms gateway logic here later
