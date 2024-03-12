@@ -55,7 +55,7 @@ export async function sendMail(toEmail: string, token: string) {
         <p
             style="font-family: 'Inter', sans-serif; text-align: center; font-size: 20px; margin-bottom: 40px; margin-top: 60px;">
             <a style="background-color: #638355; padding: 10px 130px 10px 130px; color: white; border-radius: 30px; text-decoration: none; cursor: pointer;"
-                href="${process.env.HOST}/api/account/verify-email/${token}">Verify</a>
+                href="${process.env.API_DOMAIN}/api/account/verify-email/${token}">Verify</a>
         </p>
         <p
             style="font-family: 'Montserrat', sans-serif;  text-align:justify; font-size: 15px; margin-left: 30px; margin-right: 30px;">
