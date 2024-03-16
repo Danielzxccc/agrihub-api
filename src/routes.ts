@@ -19,6 +19,7 @@ import { FarmRequestRouter } from './modules/FarmRequests/FarmRequestRouter'
 import { AccessRouter } from './modules/AccessControl/AcessRouter'
 import { FarmProblemRouter } from './modules/FarmProblems/FarmProblemRouter'
 import { CmsRouter } from './modules/CMS/CmsRouter'
+import { PrivacyPolicyRouter } from './modules/Privacy Policy/PrivacyPolicyRoute'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -44,6 +45,7 @@ function routes(app: Express) {
   app.use('/api/upload', UploaderRouter)
   app.use('/api/request', FarmRequestRouter)
   app.use('/api/access', AccessRouter)
+  app.use('/api/privacy-policy', PrivacyPolicyRouter)
 
   // upload error messages
   app.use(multerLimitter)
