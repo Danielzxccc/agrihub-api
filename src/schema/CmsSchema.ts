@@ -49,3 +49,18 @@ export const UpdateClientDetails = z.object({
 })
 
 export type ClientDetails = z.infer<typeof UpdateClientDetails>
+
+export const NewUserFeedback = z.object({
+  body: z.object({
+    feedback: z.string(),
+    rating: z.number().min(1).max(5),
+  }),
+})
+
+export const ListUserFeedbacks = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+  }),
+})

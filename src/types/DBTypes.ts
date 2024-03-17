@@ -51,6 +51,7 @@ import {
   ClientPartners,
   ClientMembers,
   Otp,
+  UserFeedbacks,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -214,3 +215,6 @@ export type NewClientMembers = Insertable<ClientMembers>
 
 // OTP
 export type NewOTPCode = Insertable<Otp>
+
+// User Feedbacks
+export type NewUserFeedback = Insertable<UserFeedbacks>

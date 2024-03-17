@@ -7,6 +7,7 @@ import {
   NewClientMembers,
   NewClientPartners,
   NewClientSocials,
+  NewUserFeedback,
 } from '../../types/DBTypes'
 
 export async function findClientDetails() {
@@ -161,4 +162,60 @@ export async function deleteClientMember(id: string) {
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
+}
+
+export async function createUserFeedback(feedback: NewUserFeedback) {
+  return await db
+    .insertInto('user_feedbacks')
+    .values(feedback)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findUserFeedbacks(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('user_feedbacks as uf')
+    .leftJoin('users as u', 'u.id', 'uf.userid')
+    .select([
+      'uf.id',
+      'uf.userid',
+      'uf.feedback',
+      'uf.rating',
+      'uf.createdat',
+      'uf.updatedat',
+      'u.firstname',
+      'u.lastname',
+    ])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('feedback', 'ilike', `${searchKey}%`),
+        eb('rating', '=', `${searchKey}`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalUserFeedbacks(searchKey: string) {
+  let query = db
+    .selectFrom('user_feedbacks')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('feedback', 'ilike', `${searchKey}%`),
+        eb('rating', '=', `${searchKey}`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }

@@ -113,7 +113,7 @@ export async function findUser(id: string) {
     .where('users.id', '=', id)
     .executeTakeFirst()
 
-  if (user.role === 'farm_head' || user.role === 'farmer') {
+  if (user?.role === 'farm_head' || user?.role === 'farmer') {
     const community = await findCommunityFarmById(user.farm_id)
 
     const newObj = user as typeof user & { isFarmBanned: boolean }

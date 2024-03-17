@@ -28,8 +28,9 @@ export function UserGuard(allowedRoles: AllowedRoles[]) {
       if (!userid) throw new HttpError('Unauthorized', 401)
 
       const user = await findUser(userid)
+      if (!user) throw new HttpError('Unauthorized', 401)
 
-      if (user.isbanned) {
+      if (user?.isbanned) {
         throw new HttpError('Your account has been disabled', 401)
       }
 
@@ -52,6 +53,7 @@ export function UserGuard(allowedRoles: AllowedRoles[]) {
 
       next()
     } catch (error) {
+      console.log(error)
       res.status(error.httpCode || 500).json({
         error: true,
         message: error.message,

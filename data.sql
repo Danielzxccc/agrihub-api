@@ -47,43 +47,43 @@ CREATE TABLE farm_application(
 
 CREATE INDEX farm_application_status_index ON farm_application (status);
 
-CREATE TABLE farms(
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    location TEXT NOT NULL,
-    description TEXT NOT NULL,
-    farm_head INT NOT NULL,
-    district TEXT NOT NULL,
-    size INT,
-    cover_photo TEXT,
-    avatar TEXT,
-    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (farm_head, name),
-    FOREIGN KEY (farm_head) REFERENCES users(id) ON DELETE CASCADE
-);
+-- CREATE TABLE farms(
+--     id SERIAL PRIMARY KEY,
+--     name TEXT NOT NULL,
+--     location TEXT NOT NULL,
+--     description TEXT NOT NULL,
+--     farm_head INT NOT NULL,
+--     district TEXT NOT NULL,
+--     size INT,
+--     cover_photo TEXT,
+--     avatar TEXT,
+--     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+--     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+--     UNIQUE (farm_head, name),
+--     FOREIGN KEY (farm_head) REFERENCES users(id) ON DELETE CASCADE
+-- );
 
--- sub farms
-CREATE TABLE sub_farms(
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    farmid INT NOT NULL,
-    farm_head INT NOT NULL,
-    UNIQUE (farm_head, name),
-    FOREIGN KEY (farmid) REFERENCES farms(id) ON DELETE CASCADE,
-    FOREIGN KEY (farm_head) REFERENCES users(id) ON DELETE CASCADE
-);
+-- -- sub farms
+-- CREATE TABLE sub_farms(
+--     id SERIAL PRIMARY KEY,
+--     name TEXT NOT NULL,
+--     farmid INT NOT NULL,
+--     farm_head INT NOT NULL,
+--     UNIQUE (farm_head, name),
+--     FOREIGN KEY (farmid) REFERENCES farms(id) ON DELETE CASCADE,
+--     FOREIGN KEY (farm_head) REFERENCES users(id) ON DELETE CASCADE
+-- );
 
-CREATE TABLE farm_members(
-    id SERIAL PRIMARY KEY,   
-    userid INT,
-    farmid INT NOT NULL,
-    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(userid, farmid),
-    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (farmid) REFERENCES sub_farms(id) ON DELETE CASCADE
-);
+-- CREATE TABLE farm_members(
+--     id SERIAL PRIMARY KEY,   
+--     userid INT,
+--     farmid INT NOT NULL,
+--     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+--     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
+--     UNIQUE(userid, farmid),
+--     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
+--     FOREIGN KEY (farmid) REFERENCES sub_farms(id) ON DELETE CASCADE
+-- );
 
 CREATE TABLE crops(
     id SERIAL PRIMARY KEY,
@@ -103,20 +103,6 @@ CREATE TABLE crops(
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE available_companion_crops(
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-);
-
-CREATE TABLE companion_crops(
-    id SERIAL PRIMARY KEY,
-    crop_id INT NOT NULL,
-    category_id INT NOT NULL,
-    createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (crop_id) REFERENCES crops(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES available_companion_crops(id) ON DELETE CASCADE
-);
 
 CREATE TABLE crop_reports(
     id SERIAL PRIMARY KEY,

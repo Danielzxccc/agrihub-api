@@ -34,3 +34,16 @@ CmsRouter.delete(
   UserGuard(['admin', 'asst_admin']),
   CmsController.deleteClientMember
 )
+
+CmsRouter.post(
+  '/user-feedback',
+  UserGuard(['farm_head', 'farmer', 'member', 'user']),
+  CmsController.createUserFeedback
+)
+
+CmsRouter.get(
+  '/user-feedbacks',
+  AccessGuard('user_feedback'),
+  UserGuard(['asst_admin', 'admin']),
+  CmsController.listUserFeedbacks
+)
