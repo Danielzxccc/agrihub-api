@@ -42,6 +42,13 @@ CmsRouter.post(
 )
 
 CmsRouter.get(
+  '/user-feedbacks/:id',
+  AccessGuard('user_feedback'),
+  UserGuard(['asst_admin', 'admin']),
+  CmsController.viewUserFeedback
+)
+
+CmsRouter.get(
   '/user-feedbacks',
   AccessGuard('user_feedback'),
   UserGuard(['asst_admin', 'admin']),

@@ -664,6 +664,29 @@
 
 /**
  * @openapi
+ * /api/cms/user-feedbacks/{id}:
+ *   get:
+ *     summary: Retrieve User Feedback by ID
+ *     tags:
+ *       - CMS
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user feedback to retrieve
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UserFeedback"
+ */
+
+/**
+ * @openapi
  * components:
  *   schemas:
  *     UserFeedbackListResponse:
@@ -699,6 +722,8 @@
  *         createdat:
  *           type: string
  *         updatedat:
+ *           type: string
+ *         is_read:
  *           type: string
  *         firstname:
  *           type: string

@@ -187,6 +187,7 @@ export async function findUserFeedbacks(
       'uf.rating',
       'uf.createdat',
       'uf.updatedat',
+      'uf.is_read',
       'u.firstname',
       'u.lastname',
     ])
@@ -218,4 +219,34 @@ export async function getTotalUserFeedbacks(searchKey: string) {
   }
 
   return await query.executeTakeFirst()
+}
+
+export async function viewUserFeedback(id: string) {
+  return await db.transaction().execute(async (trx) => {
+    const userFeedback = await trx
+      .selectFrom('user_feedbacks as uf')
+      .leftJoin('users as u', 'u.id', 'uf.userid')
+      .select([
+        'uf.id',
+        'uf.userid',
+        'uf.feedback',
+        'uf.rating',
+        'uf.createdat',
+        'uf.updatedat',
+        'uf.is_read',
+        'u.firstname',
+        'u.lastname',
+      ])
+      .where('uf.id', '=', id)
+      .executeTakeFirst()
+
+    await trx
+      .updateTable('user_feedbacks')
+      .set({ is_read: true })
+      .where('id', '=', id)
+      .returningAll()
+      .executeTakeFirst()
+
+    return userFeedback
+  })
 }

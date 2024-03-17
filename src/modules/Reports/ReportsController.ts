@@ -342,3 +342,39 @@ export async function getForumsCount(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function getCommonListOverview(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.getCommonListOverview()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getAnalyticsOverviewPieChart(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.getAnalyticsOverviewPieChart()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getUserFeedbackOverview(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.getUserFeedbackOverview()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

@@ -105,3 +105,15 @@ export async function listUserFeedbacks(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function viewUserFeedback(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+
+    const data = await Interactor.viewUserFeedback(id)
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

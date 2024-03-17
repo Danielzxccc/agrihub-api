@@ -49,3 +49,9 @@ export async function listUserFeedbacks(
 
   return { data, total }
 }
+
+export async function viewUserFeedback(id: string) {
+  const userFeedback = await Service.viewUserFeedback(id)
+  if (!userFeedback) throw new HttpError('Not Found', 404)
+  return userFeedback
+}

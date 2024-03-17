@@ -808,3 +808,90 @@ export async function getForumsCount() {
     ])
     .executeTakeFirst()
 }
+
+export async function getCommonListOverview() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('farm_applications')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_farm_applications'),
+
+      eb
+        .selectFrom('community_farms')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('community_farms'),
+
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('seedling_requests'),
+
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_seedling_requests'),
+
+      eb
+        .selectFrom('user_feedbacks')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('user_feedbacks'),
+
+      eb
+        .selectFrom('user_feedbacks')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('is_read', '=', false)
+        .as('unread_user_feedbacks'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getAnalyticsOverviewPieChart() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('seedling_requests'),
+
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_seedling_requests'),
+
+      eb
+        .selectFrom('reported_problems')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'resolved')
+        .as('solved_farm_problems'),
+
+      eb
+        .selectFrom('reported_problems')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_farm_problems'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getUserFeedbackOverview() {
+  return await db
+    .selectFrom('user_feedbacks')
+    .select(({ fn }) => [
+      fn
+        .count<number>('id')
+        .filterWhere('rating', '=', '5')
+        .as('very_satisfied'),
+      fn.count<number>('id').filterWhere('rating', '=', '4').as('satisfied'),
+      fn.count<number>('id').filterWhere('rating', '=', '3').as('neutral'),
+      fn.count<number>('id').filterWhere('rating', '=', '2').as('dissatisfied'),
+      fn
+        .count<number>('id')
+        .filterWhere('rating', '=', '1')
+        .as('very_dissatisfied'),
+    ])
+    .executeTakeFirst()
+}

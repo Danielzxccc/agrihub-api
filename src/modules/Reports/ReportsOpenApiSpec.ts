@@ -1513,3 +1513,181 @@
  *         num_answers:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/reports/common/overview:
+ *   get:
+ *     summary: Retrieve Common Overview Reports
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommonOverviewResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ *
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommonOverviewResponse:
+ *       type: object
+ *       properties:
+ *         pending_farm_applications:
+ *           type: string
+ *         community_farms:
+ *           type: string
+ *         seedling_requests:
+ *           type: string
+ *         pending_seedling_requests:
+ *           type: string
+ *         user_feedbacks:
+ *           type: string
+ *         unread_user_feedbacks:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/analytics/overview/piechart:
+ *   get:
+ *     summary: Retrieve Analytics Overview for Pie Chart
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AnalyticsOverviewPieChartResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AnalyticsOverviewPieChartResponse:
+ *       type: object
+ *       properties:
+ *         seedling_requests:
+ *           type: string
+ *         pending_seedling_requests:
+ *           type: string
+ *         solved_farm_problems:
+ *           type: string
+ *         pending_farm_problems:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/analytics/overview/user-feedback:
+ *   get:
+ *     summary: Retrieve Analytics Overview for User Feedback
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AnalyticsOverviewUserFeedbackResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AnalyticsOverviewUserFeedbackResponse:
+ *       type: object
+ *       properties:
+ *         very_satisfied:
+ *           type: string
+ *         satisfied:
+ *           type: string
+ *         neutral:
+ *           type: string
+ *         dissatisfied:
+ *           type: string
+ *         very_dissatisfied:
+ *           type: string
+ */

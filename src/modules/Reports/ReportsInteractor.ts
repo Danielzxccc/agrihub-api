@@ -536,3 +536,18 @@ export async function getForumsCount() {
   const data = await Service.getForumsCount()
   return data
 }
+
+export async function getCommonListOverview() {
+  const data = await Service.getCommonListOverview()
+  return data
+}
+
+export async function getAnalyticsOverviewPieChart() {
+  const data = await Service.getAnalyticsOverviewPieChart()
+  return data
+}
+
+export async function getUserFeedbackOverview() {
+  const data = await Service.getUserFeedbackOverview()
+  return data
+}

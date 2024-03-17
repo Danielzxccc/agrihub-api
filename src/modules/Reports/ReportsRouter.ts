@@ -143,3 +143,21 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getForumsCount
 )
+
+ReportsRouter.get(
+  '/common/overview',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getCommonListOverview
+)
+
+ReportsRouter.get(
+  '/analytics/overview/piechart',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getAnalyticsOverviewPieChart
+)
+
+ReportsRouter.get(
+  '/analytics/overview/user-feedback',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getUserFeedbackOverview
+)
