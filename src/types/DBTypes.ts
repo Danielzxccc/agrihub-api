@@ -5,6 +5,7 @@ import {
   Articles,
   AboutCms,
   LandingImages,
+  PrivacyPolicy,
   CommunityEvents,
   EmailToken,
   UserTags,
@@ -82,6 +83,10 @@ export type UpdateAbout = Updateable<AboutCms>
 export type AddImage = Insertable<AboutCms>
 export type Gallery = Insertable<AboutGallery>
 export type UpdateGallery = Updateable<AboutGallery>
+
+//PrivacyPolicy
+
+export type UpdatePrivacyPolicy = Updateable<PrivacyPolicy>
 
 //events
 // export type Events = Selectable<CommunityEvents>
