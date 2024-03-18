@@ -18,15 +18,15 @@ FarmRequestRouter.delete(
 )
 
 FarmRequestRouter.get(
-  '/seedling/list/:id',
-  UserGuard(['farm_head']),
-  FarmRequestController.listSeedlingRequestByFarm
-)
-
-FarmRequestRouter.get(
   '/seedling/list/all',
   UserGuard(['admin', 'asst_admin']),
   FarmRequestController.listAllSeedlingRequests
+)
+
+FarmRequestRouter.get(
+  '/seedling/list/:id',
+  UserGuard(['farm_head']),
+  FarmRequestController.listSeedlingRequestByFarm
 )
 
 FarmRequestRouter.put(
