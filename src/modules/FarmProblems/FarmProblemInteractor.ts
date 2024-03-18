@@ -115,23 +115,21 @@ export async function sendFarmProblemReport(
 }
 
 export async function listCommunityFarmProblems(
-  userid: string,
+  id: string,
   offset: number,
   perpage: number,
   searchKey: string,
   filterKey: 'pending' | 'resolved'
 ) {
-  const { farm_id } = await findUser(userid)
-
   const [data, total] = await Promise.all([
     Service.findCommunityFarmProblems(
-      farm_id,
+      id,
       offset,
       perpage,
       searchKey,
       filterKey
     ),
-    Service.getTotalCommunityFarmProblems(farm_id, filterKey),
+    Service.getTotalCommunityFarmProblems(id, filterKey),
   ])
 
   return { data, total }

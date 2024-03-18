@@ -40,8 +40,8 @@ export async function listSeedlingRequestByFarm(
   res: Response
 ) {
   try {
-    const { userid } = req.session
-    const requests = await Interactor.listSeedlingRequestByFarm(userid)
+    const { id } = req.params
+    const requests = await Interactor.listSeedlingRequestByFarm(id)
 
     res.status(201).json(requests)
   } catch (error) {

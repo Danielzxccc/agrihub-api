@@ -153,7 +153,7 @@ export async function listCommunityFarmProblems(
 ) {
   try {
     const { query } = await zParse(Schema.ListCommunityFarmProblems, req)
-    const { userid } = req.session
+    const { id } = req.params
 
     const perPage = Number(query.perpage)
     const pageNumber = Number(query.page) || 1
@@ -162,7 +162,7 @@ export async function listCommunityFarmProblems(
     const filterKey = query.filter
 
     const problems = await Interactor.listCommunityFarmProblems(
-      userid,
+      id,
       offset,
       perPage,
       searchKey,

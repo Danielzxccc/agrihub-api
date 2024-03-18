@@ -61,7 +61,7 @@ FarmProblemRouter.post(
 )
 
 FarmProblemRouter.get(
-  '/community/list',
+  '/community/list/:id',
   UserGuard(['farm_head']),
   FarmProblemController.listCommunityFarmProblems
 )

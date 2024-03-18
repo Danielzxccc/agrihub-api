@@ -18,7 +18,7 @@ FarmRequestRouter.delete(
 )
 
 FarmRequestRouter.get(
-  '/seedling/list',
+  '/seedling/list/:id',
   UserGuard(['farm_head']),
   FarmRequestController.listSeedlingRequestByFarm
 )

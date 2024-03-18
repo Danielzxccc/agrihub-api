@@ -141,11 +141,18 @@
 
 /**
  * @openapi
- * /api/request/seedling/list:
+ * /api/request/seedling/list/{id}:
  *   get:
  *     summary: Retrieve a list of seedling requests by community farm
  *     tags:
  *       - FarmRequest
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the seedling request to be deleted
+ *         required: true
  *     responses:
  *       "200":
  *         description: A list of seedling requests

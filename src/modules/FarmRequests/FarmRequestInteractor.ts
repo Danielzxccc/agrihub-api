@@ -64,10 +64,13 @@ export async function cancelSeedlingRequest(id: string, userid: string) {
   await Service.deleteSeedlingRequest(id)
 }
 
-export async function listSeedlingRequestByFarm(userid: string) {
-  const user = await findUser(userid)
+export async function listSeedlingRequestByFarm(id: string) {
+  // const user = await findUser(userid)
+  const communityFarm = await findCommunityFarmById(id)
 
-  const requests = await Service.findSeedlingRequestByFarm(user.farm_id)
+  if (!communityFarm) throw new HttpError('Farm Details Not Found', 404)
+
+  const requests = await Service.findSeedlingRequestByFarm(id)
 
   return requests
 }

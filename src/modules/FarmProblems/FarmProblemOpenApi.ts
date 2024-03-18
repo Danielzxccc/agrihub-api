@@ -583,12 +583,18 @@
 
 /**
  * @openapi
- * /api/farm/problems/community/list:
+ * /api/farm/problems/community/list/{id}:
  *   get:
  *     summary: List community farm problems
  *     tags:
  *       - FarmProblems
  *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the farm problem to retrieve
+ *         schema:
+ *           type: string
  *       - in: query
  *         name: search
  *         schema:
