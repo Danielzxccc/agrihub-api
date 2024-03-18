@@ -189,6 +189,7 @@ export async function findUserFeedbacks(
       'uf.updatedat',
       'uf.is_read',
       'u.firstname',
+      'u.avatar',
       'u.lastname',
     ])
 
@@ -235,6 +236,7 @@ export async function viewUserFeedback(id: string) {
         'uf.updatedat',
         'uf.is_read',
         'u.firstname',
+        'u.avatar',
         'u.lastname',
       ])
       .where('uf.id', '=', id)

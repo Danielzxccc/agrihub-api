@@ -39,7 +39,7 @@ export async function listLandingPageDetails() {
             'a.title',
             'a.description',
           ])
-      ).as('aproach_items'),
+      ).as('approach_items'),
     ])
     .executeTakeFirst()
 }

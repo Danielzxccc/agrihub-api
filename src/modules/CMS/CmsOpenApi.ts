@@ -751,6 +751,8 @@
  *           type: string
  *         firstname:
  *           type: string
+ *         avatar:
+ *           type: string
  *         lastname:
  *           type: string
  */
