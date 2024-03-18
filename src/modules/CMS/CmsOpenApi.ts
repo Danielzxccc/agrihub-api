@@ -683,6 +683,30 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/UserFeedback"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */
 
 /**
@@ -728,5 +752,62 @@
  *         firstname:
  *           type: string
  *         lastname:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/cms/vision-stats:
+ *   get:
+ *     summary: Retrieve Vision Statistics
+ *     tags:
+ *       - CMS
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/VisionStatsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     VisionStatsResponse:
+ *       type: object
+ *       properties:
+ *         community_farms:
+ *           type: string
+ *         registered_farmer:
+ *           type: string
+ *         forums_forums_answers:
+ *           type: string
+ *         total_resources:
  *           type: string
  */

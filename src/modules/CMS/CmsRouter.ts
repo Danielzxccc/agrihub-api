@@ -54,3 +54,5 @@ CmsRouter.get(
   UserGuard(['asst_admin', 'admin']),
   CmsController.listUserFeedbacks
 )
+
+CmsRouter.get('/vision-stats', CmsController.getVisionStatistics)

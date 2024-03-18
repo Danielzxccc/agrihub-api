@@ -55,3 +55,21 @@ export async function viewUserFeedback(id: string) {
   if (!userFeedback) throw new HttpError('Not Found', 404)
   return userFeedback
 }
+
+export async function getVisionStatistics() {
+  const stats = await Service.getVisionStatistics()
+  if (!stats) throw new HttpError('Not Found', 404)
+
+  const formattedStats = {
+    community_farms: stats.community_farms,
+    registered_farmer: stats.registered_farmer,
+    forums_forums_answers: stats.forums_answers,
+    total_resources: String(
+      parseInt(stats.learning_materials) +
+        parseInt(stats.events) +
+        parseInt(stats.blogs)
+    ),
+  }
+
+  return formattedStats
+}

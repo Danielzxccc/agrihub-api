@@ -250,3 +250,50 @@ export async function viewUserFeedback(id: string) {
     return userFeedback
   })
 }
+
+export async function getVisionStatistics() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('community_farms')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('community_farms'),
+
+      eb
+        .selectFrom('users')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where((eb) =>
+          eb.or([eb('role', '=', 'farmer'), eb('role', '=', 'farm_head')])
+        )
+        .as('registered_farmer'),
+
+      eb
+        .selectFrom('forums_answers')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('forums_answers'),
+
+      eb
+        .selectFrom('reported_problems')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_farm_problems'),
+
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<string>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('learning_materials'),
+
+      eb
+        .selectFrom('events')
+        .select(({ fn }) => [fn.count<string>('id').as('count')])
+        .as('events'),
+
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<string>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('blogs'),
+    ])
+    .executeTakeFirst()
+}

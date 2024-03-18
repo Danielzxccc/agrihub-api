@@ -117,3 +117,13 @@ export async function viewUserFeedback(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function getVisionStatistics(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.getVisionStatistics()
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
