@@ -988,8 +988,6 @@
  *     FavouriteCropData:
  *       type: object
  *       properties:
- *         crop_id:
- *           type: string
  *         crop_name:
  *           type: string
  *         image:

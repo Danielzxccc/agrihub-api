@@ -478,14 +478,13 @@ export async function getFavouriteCrops() {
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn, val }) => [
-      'ccr.crop_id',
       'c.name as crop_name',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
       sql`SUM(ccr.planted_qty)`.as('total_planted'),
       sql`SUM(ccr.harvested_qty)`.as('total_harvested'),
       sql`SUM(ccr.withered_crops)`.as('total_withered'),
     ])
-    .groupBy(['ccr.crop_id', 'ccr.planted_qty', 'c.name', 'c.image'])
+    .groupBy(['crop_name', 'c.image'])
     .where('ccr.is_archived', '=', false)
     .where('c.is_other', '=', false)
     .orderBy('total_planted desc')
