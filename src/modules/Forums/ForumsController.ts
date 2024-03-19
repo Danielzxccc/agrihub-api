@@ -211,7 +211,6 @@ export async function deleteVoteAnswer(req: SessionRequest, res: Response) {
     await Interactor.deleteAnswerVote(id, userid)
     res.status(200).json({ message: 'deleted Successfully' })
   } catch (error) {
-    console.log(error.stack)
     errorHandler(res, error)
   }
 }
@@ -224,7 +223,6 @@ export async function saveQuestion(req: SessionRequest, res: Response) {
 
     res.status(200).json({ message: 'Saved Successfully' })
   } catch (error) {
-    console.log(error.stack)
     errorHandler(res, error)
   }
 }
@@ -240,7 +238,6 @@ export async function reportQuestion(req: SessionRequest, res: Response) {
 
     res.status(200).json({ message: 'Reported Successfully' })
   } catch (error) {
-    console.log(error.stack)
     errorHandler(res, error)
   }
 }
@@ -253,7 +250,6 @@ export async function removeSavedQuestion(req: SessionRequest, res: Response) {
 
     res.status(200).json({ message: 'Removed Successfully' })
   } catch (error) {
-    console.log(error.stack)
     errorHandler(res, error)
   }
 }
@@ -266,7 +262,30 @@ export async function deleteQuestion(req: SessionRequest, res: Response) {
 
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
-    console.log(error.stack)
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteAnswer(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.deleteAnswer(userid, id)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteComment(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.deleteComment(userid, id)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
+  } catch (error) {
     errorHandler(res, error)
   }
 }

@@ -252,6 +252,8 @@ import { z } from 'zod'
  *           $ref: "#/components/schemas/UserObject"
  *         createdat:
  *           type: string
+ *         id:
+ *           type: string
  */
 
 export const SearchForums = z.object({

@@ -291,3 +291,31 @@ export async function deleteQuestion(userid: string, id: string) {
 
   await Service.deleteQuestion(id)
 }
+
+export async function deleteAnswer(userid: string, id: string) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const answer = await Service.findAnswer(id)
+
+  if (answer?.userid !== userid) {
+    throw new HttpError('Unauthorized s', 401)
+  }
+
+  await Service.deleteAnswer(id)
+}
+
+export async function deleteComment(userid: string, id: string) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const answer = await Service.findComment(id)
+
+  if (answer?.userid !== userid) {
+    throw new HttpError('Unauthorized s', 401)
+  }
+
+  await Service.deleteComment(id)
+}

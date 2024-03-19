@@ -263,6 +263,7 @@ export async function viewQuestion(
                       ])
                       .whereRef('userid', '=', 'users.id')
                   ).as('user'),
+                  sql<string>`CAST(forums_comments.id AS TEXT)`.as('id'),
                   'forums_comments.comment',
                   'forums_comments.createdat',
                 ])
@@ -493,6 +494,32 @@ export async function reportQuestion(
     .returningAll()
     .executeTakeFirst()
 }
+
+export async function findAnswer(id: string) {
+  return await db
+    .selectFrom('forums_answers')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function deleteAnswer(id: string) {
+  return await db.deleteFrom('forums_answers').where('id', '=', id).execute()
+}
+
+export async function findComment(id: string) {
+  return await db
+    .selectFrom('forums_comments')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function deleteComment(id: string) {
+  return await db.deleteFrom('forums_comments').where('id', '=', id).execute()
+}
+
+// export async function report
 
 // export async function findVoteByUserId(userid: string) {
 //   return await db

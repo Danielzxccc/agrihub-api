@@ -564,4 +564,8 @@ ForumsRouter.delete(
 
 ForumsRouter.delete('/delete/question/:id', ForumsController.deleteQuestion)
 
+ForumsRouter.delete('/delete/answer/:id', ForumsController.deleteAnswer)
+
+ForumsRouter.delete('/delete/comment/:id', ForumsController.deleteComment)
+
 ForumsRouter.get('/saved/questions', ForumsController.listSavedQuestions)
