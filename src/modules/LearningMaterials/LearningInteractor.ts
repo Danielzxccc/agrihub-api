@@ -298,11 +298,17 @@ export async function listDraftLearningMaterials(
 export async function listPublishedLearningMaterials(
   offset: number,
   searchKey: string,
-  perpage: number
+  perpage: number,
+  filterKey: string
 ) {
   const [data, total] = await Promise.all([
-    Service.findPublishedLearningMaterials(offset, searchKey, perpage),
-    Service.getTotalPublishedLearningMaterials(),
+    Service.findPublishedLearningMaterials(
+      offset,
+      searchKey,
+      perpage,
+      filterKey
+    ),
+    Service.getTotalPublishedLearningMaterials(searchKey, filterKey),
   ])
 
   return { data, total }

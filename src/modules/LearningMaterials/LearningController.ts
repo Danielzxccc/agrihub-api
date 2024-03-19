@@ -250,11 +250,13 @@ export async function listPublishedLearningMaterials(
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
+    const filterKey = String(query.filter)
 
     const learningMaterials = await Interactor.listPublishedLearningMaterials(
       offset,
       searchKey,
-      perPage
+      perPage,
+      filterKey
     )
 
     const totalPages = Math.ceil(
