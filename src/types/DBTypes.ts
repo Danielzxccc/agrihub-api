@@ -52,6 +52,7 @@ import {
   ClientMembers,
   Otp,
   UserFeedbacks,
+  TermsCondition,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -88,6 +89,9 @@ export type UpdateGallery = Updateable<AboutGallery>
 //PrivacyPolicy
 
 export type UpdatePrivacyPolicy = Updateable<PrivacyPolicy>
+
+//TermsConditions
+export type UpdateTermsConditions = Updateable<TermsCondition>
 
 //events
 // export type Events = Selectable<CommunityEvents>

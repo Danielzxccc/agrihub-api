@@ -19,7 +19,8 @@ import { FarmRequestRouter } from './modules/FarmRequests/FarmRequestRouter'
 import { AccessRouter } from './modules/AccessControl/AcessRouter'
 import { FarmProblemRouter } from './modules/FarmProblems/FarmProblemRouter'
 import { CmsRouter } from './modules/CMS/CmsRouter'
-import { PrivacyPolicyRouter } from './modules/Privacy Policy/PrivacyPolicyRoute'
+import { PrivacyPolicyRouter } from './modules/PrivacyPolicy/PrivacyPolicyRoute'
+import { TermsConditionsRouter } from './modules/Terms&Conditions/TermsConditionsRoute'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -46,6 +47,7 @@ function routes(app: Express) {
   app.use('/api/request', FarmRequestRouter)
   app.use('/api/access', AccessRouter)
   app.use('/api/privacy-policy', PrivacyPolicyRouter)
+  app.use('/api/terms-conditions', TermsConditionsRouter)
 
   // upload error messages
   app.use(multerLimitter)
