@@ -177,3 +177,30 @@ export async function sendOTP(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function sendResetTokenViaOTP(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.SendOTPByNumber, req)
+
+    await Interactor.sendResetTokenViaOTP(body.contact_number)
+
+    res.status(200).json({ message: 'Sent Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function verifyResetTokenViaOTP(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { body } = await zParse(Schema.VerifyOTP, req)
+
+    const token = await Interactor.verifyResetTokenViaOTP(body.code)
+
+    res.status(200).json({ token })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

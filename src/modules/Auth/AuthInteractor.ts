@@ -4,7 +4,9 @@ import {
   deleteResetToken,
   deleteToken,
   findOTPCode,
+  findOTPResetCode,
   findResetToken,
+  findResetTokenByUserId,
   findToken,
   generateOTPcode,
   generateResetToken,
@@ -131,6 +133,22 @@ export async function sendOTP(session: string) {
   if (!user) throw new HttpError('No Auth', 401)
   if (getVerificationLevel(user.verification_level) > 1) {
     throw new HttpError('Already Verified', 400)
+  }
+  // generate code here for production
+  const OTPCode = generateOTP()
+
+  await generateOTPcode(session, OTPCode, user.contact_number)
+  // sms gateway logic here later
+  await sendSMS(user.contact_number, `OTP CODE: ${OTPCode}`)
+}
+
+export async function sendResetOTP(session: string) {
+  if (!session) throw new HttpError('No Auth', 401)
+  const user = await Service.findUser(session)
+
+  if (!user) throw new HttpError('Invalid User', 401)
+  if (getVerificationLevel(user.verification_level) !== 4) {
+    throw new HttpError('Invalid User', 400)
   }
   // generate code here for production
   const OTPCode = generateOTP()
@@ -307,4 +325,34 @@ export async function checkResetTokenExpiration(token: string) {
   const findToken = await findResetToken(token)
 
   if (!findToken) throw new HttpError('Token Expired', 400)
+}
+
+export async function sendResetTokenViaOTP(contact_number: string) {
+  const user = await Service.findUserByNumber(contact_number)
+
+  if (!user) {
+    throw new HttpError('Invalid Contact Number', 404)
+  }
+
+  //generate new reset token
+  await generateResetToken(user.id)
+
+  //send new OTP for verification
+  await sendResetOTP(user.id)
+}
+
+export async function verifyResetTokenViaOTP(code: number) {
+  const OTPCode = await findOTPResetCode(code)
+
+  if (!OTPCode) {
+    throw new HttpError('Invalid Code', 404)
+  }
+
+  const findToken = await findResetTokenByUserId(OTPCode.userid)
+
+  if (!findToken) throw new HttpError('Token Expired', 400)
+
+  await deleteOTPCode(findToken.userid, OTPCode.otp_code, OTPCode.phone_number)
+
+  return findToken.id
 }

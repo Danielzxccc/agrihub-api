@@ -141,6 +141,14 @@ export async function findUserByEmail(email: string): Promise<User> {
     .executeTakeFirst()
 }
 
+export async function findUserByNumber(number: string): Promise<User> {
+  return await db
+    .selectFrom('users')
+    .selectAll()
+    .where('contact_number', '=', number)
+    .executeTakeFirst()
+}
+
 export async function findByEmailOrUsername(user: string): Promise<User> {
   return await db
     .selectFrom('users')

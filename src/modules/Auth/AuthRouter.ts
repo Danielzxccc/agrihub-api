@@ -291,3 +291,5 @@ AuthRouter.post(
   // }),
   AuthController.sendOTP
 )
+AuthRouter.post('/reset-token/otp', AuthController.sendResetTokenViaOTP)
+AuthRouter.post('/verify-token/otp', AuthController.verifyResetTokenViaOTP)

@@ -307,3 +307,9 @@ export const VerifyOTP = z.object({
     code: z.number(),
   }),
 })
+
+export const SendOTPByNumber = z.object({
+  body: z.object({
+    contact_number: z.string(),
+  }),
+})

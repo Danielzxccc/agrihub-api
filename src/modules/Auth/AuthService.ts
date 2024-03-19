@@ -55,6 +55,15 @@ export async function findResetToken(token: string) {
     .executeTakeFirst()
 }
 
+export async function findResetTokenByUserId(id: string) {
+  return await db
+    .selectFrom('reset_token')
+    .selectAll()
+    .where('userid', '=', id)
+    .where('expiresat', '>=', sql`CURRENT_TIMESTAMP`)
+    .executeTakeFirst()
+}
+
 export async function deleteResetToken(id: string) {
   return await db.deleteFrom('reset_token').where('id', '=', id).execute()
 }
@@ -84,6 +93,15 @@ export async function findOTPCode(userid: string, code: number) {
     .selectFrom('otp')
     .selectAll()
     .where('userid', '=', userid)
+    .where('otp_code', '=', String(code))
+    .where('expiresat', '>=', sql`CURRENT_TIMESTAMP`)
+    .executeTakeFirst()
+}
+
+export async function findOTPResetCode(code: number) {
+  return await db
+    .selectFrom('otp')
+    .selectAll()
     .where('otp_code', '=', String(code))
     .where('expiresat', '>=', sql`CURRENT_TIMESTAMP`)
     .executeTakeFirst()
