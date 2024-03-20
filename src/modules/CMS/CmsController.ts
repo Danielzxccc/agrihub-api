@@ -167,3 +167,13 @@ export async function updateAboutUs(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function viewAboutUs(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.viewAboutUs()
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

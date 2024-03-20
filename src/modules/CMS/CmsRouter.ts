@@ -56,6 +56,7 @@ CmsRouter.get(
 )
 
 CmsRouter.get('/vision-stats', CmsController.getVisionStatistics)
+CmsRouter.get('/about', CmsController.viewAboutUs)
 
 CmsRouter.put(
   '/about/update',

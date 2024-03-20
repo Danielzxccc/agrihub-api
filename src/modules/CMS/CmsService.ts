@@ -310,5 +310,31 @@ export async function updateAboutUs(about: UpdateAboutUs) {
 }
 
 export async function viewAboutUs() {
-  return await db.selectFrom('about_us').selectAll().executeTakeFirst()
+  return await db
+    .selectFrom('about_us as ab')
+    .select((eb) => [
+      'ab.about_us',
+      'ab.agrihub_user_logo',
+      'ab.banner',
+      'ab.city_commitment',
+      'ab.city_image',
+      'ab.city_image',
+      'ab.createdat',
+      'ab.id',
+      'ab.president_image',
+      'ab.president_message',
+      'ab.qcu_logo',
+      'ab.updatedat',
+      jsonArrayFrom(
+        eb
+          .selectFrom('about_us_carousel as auc')
+          .select([
+            'auc.image',
+            'auc.createdat',
+            'auc.updatedat',
+            sql<string>`CAST(auc.id AS TEXT)`.as('id'),
+          ])
+      ).as('images'),
+    ])
+    .executeTakeFirst()
 }

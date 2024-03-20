@@ -1023,3 +1023,94 @@
  *         message:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/cms/about:
+ *   get:
+ *     summary: Get About Us Details
+ *     tags:
+ *       - CMS
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AboutUsDetailsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AboutUsDetailsResponse:
+ *       type: object
+ *       properties:
+ *         about_us:
+ *           type: string
+ *         agrihub_user_logo:
+ *           type: string
+ *         banner:
+ *           type: string
+ *         city_commitment:
+ *           type: string
+ *         city_image:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         id:
+ *           type: string
+ *         president_image:
+ *           type: string
+ *         president_message:
+ *           type: string
+ *         qcu_logo:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         images:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/ImageDetails"
+ *
+ *     ImageDetails:
+ *       type: object
+ *       properties:
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         id:
+ *           type: string
+ *         image:
+ *           type: string
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ */

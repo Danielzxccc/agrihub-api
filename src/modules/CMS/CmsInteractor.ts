@@ -178,3 +178,8 @@ export async function updateAboutUs(data: AboutUsPayload) {
     dbErrorHandler(error)
   }
 }
+
+export async function viewAboutUs() {
+  const data = await Service.viewAboutUs()
+  return data
+}
