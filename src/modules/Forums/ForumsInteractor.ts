@@ -281,8 +281,13 @@ export async function deleteQuestion(userid: string, id: string) {
 
   const question = await Service.findQuestionById(id)
 
+  if (!question) throw new HttpError('Question Not Found', 404)
+
   if (question?.userid !== userid) {
-    throw new HttpError('Unauthorized', 401)
+    const isAdmin = user.role === 'admin' || user.role === 'asst_admin'
+    if (!isAdmin) {
+      throw new HttpError('Unauthorized', 401)
+    }
   }
 
   for (const image of question.imagesrc) {
