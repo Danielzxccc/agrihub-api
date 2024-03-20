@@ -200,6 +200,8 @@ import { z } from 'zod'
  *         username:
  *           type: string
  *           description: The username of the user
+ *         role:
+ *           type: string
  *
  *     QuestionTags:
  *       type: object

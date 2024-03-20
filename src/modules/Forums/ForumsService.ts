@@ -200,6 +200,7 @@ export async function viewQuestion(
           .select([
             'avatar',
             'username',
+            'role',
             sql<string>`CAST(id AS TEXT)`.as('id'),
           ])
           .whereRef('forums.userid', '=', 'users.id')
@@ -232,6 +233,7 @@ export async function viewQuestion(
                 .select([
                   'avatar',
                   'username',
+                  'role',
                   sql<string>`CAST(id AS TEXT)`.as('id'),
                 ])
                 .whereRef('forums_answers.userid', '=', 'users.id')
@@ -259,6 +261,7 @@ export async function viewQuestion(
                       .select([
                         'avatar',
                         'username',
+                        'role',
                         sql<string>`CAST(id AS TEXT)`.as('id'),
                       ])
                       .whereRef('userid', '=', 'users.id')
