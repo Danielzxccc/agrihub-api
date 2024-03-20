@@ -65,3 +65,14 @@ export async function viewTag(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function deleteTag(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    await Interactor.deleteTag(id)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

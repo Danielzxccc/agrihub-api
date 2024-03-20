@@ -15,7 +15,7 @@ export async function getTags(
 ) {
   const [data, total] = await Promise.all([
     Service.getTags(offset, filterKey, searchKey, perpage),
-    Service.getTotalCount(),
+    Service.getTotalCount(filterKey, searchKey),
   ])
 
   if (!data || data.length === 0) {
@@ -39,4 +39,12 @@ export async function viewTag(id: string) {
   }
 
   return data
+}
+
+export async function deleteTag(id: string) {
+  const deletedTag = await Service.deleteTag(id)
+
+  if (!deletedTag) {
+    throw new HttpError('Tag Not Found', 404)
+  }
 }

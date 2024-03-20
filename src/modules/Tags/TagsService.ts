@@ -34,11 +34,27 @@ export async function findTags(tag: string) {
   return await query.limit(20).execute()
 }
 
-export async function getTotalCount() {
-  return await db
+export async function getTotalCount(filterKey: string, searchKey: string) {
+  let query = db
     .selectFrom('tags')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .executeTakeFirst()
+    .select(({ fn }) => [fn.count<number>('tags.id').as('count')])
+    .leftJoin('forums_tags', 'forums_tags.tagid', 'tags.id')
+    .groupBy([
+      'tags.id',
+      'forums_tags.tagid',
+      'tags.tag_name',
+      'tags.createdat',
+    ])
+
+  if (searchKey.length) {
+    query = query.where('tag_name', 'ilike', `${searchKey}%`)
+  }
+
+  if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')
+  if (filterKey === 'popular') query = query.orderBy('count', 'desc')
+  if (filterKey === 'newest') query = query.orderBy('createdat', 'desc')
+
+  return await query.executeTakeFirst()
 }
 
 export async function getTags(
@@ -64,8 +80,20 @@ export async function getTags(
       'tags.createdat',
     ])
 
+  if (searchKey.length) {
+    query = query.where('tag_name', 'ilike', `${searchKey}%`)
+  }
+
   if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')
   if (filterKey === 'popular') query = query.orderBy('count', 'desc')
   if (filterKey === 'newest') query = query.orderBy('createdat', 'desc')
   return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function deleteTag(id: string) {
+  return await db
+    .deleteFrom('tags')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }

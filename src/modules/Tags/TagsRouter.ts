@@ -1,4 +1,4 @@
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import * as TagsController from './TagsController'
 import express from 'express'
 
@@ -85,5 +85,12 @@ TagsRouter.post(
 )
 
 TagsRouter.get('/:id', TagsController.viewTag)
+
+TagsRouter.delete(
+  '/:id',
+  AccessGuard('forums'),
+  UserGuard(['asst_admin', 'admin']),
+  TagsController.deleteTag
+)
 
 export default TagsRouter
