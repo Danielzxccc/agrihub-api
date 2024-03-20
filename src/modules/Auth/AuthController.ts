@@ -4,6 +4,7 @@ import * as Interactor from './AuthInteractor'
 import * as Schema from '../../schema/AuthSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
+import { verificationSuccessPage } from '../../utils/email_template'
 
 export async function authenticateUser(req: SessionRequest, res: Response) {
   try {
@@ -73,7 +74,7 @@ export async function verifyEmail(req: Request, res: Response) {
     // add data const here to pass in socket.io later
     await Interactor.verifyEmail(token.params.id)
 
-    res.status(200).json({ message: 'Verified Successfully' })
+    res.status(200).send(verificationSuccessPage)
   } catch (error) {
     errorHandler(res, error)
   }
