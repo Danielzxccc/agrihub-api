@@ -7,7 +7,6 @@ import { TagsRouter } from './modules/Tags/TagsRouter'
 import { UserRouter } from './modules/Users/UserRoutes'
 import { FarmRouter } from './modules/Farm/FarmRouter'
 import { EventsRouter } from './modules/Events/EventsRouter'
-import { AboutRouter } from './modules/About/AboutRouter'
 import { multerLimitter } from './middleware/UploadMiddleware'
 import { BlogsRouter } from './modules/Blogs/BlogsRouter'
 import { ReportsRouter } from './modules/Reports/ReportsRouter'
@@ -38,7 +37,6 @@ function routes(app: Express) {
   app.use('/api/articles', ArticlesRouter)
   app.use('/api/events', EventsRouter)
   app.use('/api/cms', CmsRouter)
-  app.use('/api/cms/about', AboutRouter)
   app.use('/api/cms/landing', LandingRouter)
   app.use('/api/blogs', BlogsRouter)
   app.use('/api/notification', NotificationRouter)

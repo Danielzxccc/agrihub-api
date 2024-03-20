@@ -56,3 +56,17 @@ CmsRouter.get(
 )
 
 CmsRouter.get('/vision-stats', CmsController.getVisionStatistics)
+
+CmsRouter.put(
+  '/about/update',
+  AccessGuard('about'),
+  UserGuard(['asst_admin', 'admin']),
+  upload.fields([
+    { name: 'banner', maxCount: 1 },
+    { name: 'city_image', maxCount: 1 },
+    { name: 'president_image', maxCount: 1 },
+    { name: 'qcu_logo', maxCount: 1 },
+    { name: 'agrihub_user_logo', maxCount: 1 },
+  ]),
+  CmsController.updateAboutUs
+)

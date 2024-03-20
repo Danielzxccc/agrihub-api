@@ -8,6 +8,7 @@ import {
   NewClientPartners,
   NewClientSocials,
   NewUserFeedback,
+  UpdateAboutUs,
 } from '../../types/DBTypes'
 
 export async function findClientDetails() {
@@ -298,4 +299,16 @@ export async function getVisionStatistics() {
         .as('blogs'),
     ])
     .executeTakeFirst()
+}
+
+export async function updateAboutUs(about: UpdateAboutUs) {
+  return await db
+    .updateTable('about_us')
+    .set(about)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function viewAboutUs() {
+  return await db.selectFrom('about_us').selectAll().executeTakeFirst()
 }

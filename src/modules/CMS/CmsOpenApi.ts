@@ -942,3 +942,84 @@
  *           type: string
  *           format: date-time
  */
+
+/**
+ * @openapi
+ * /api/cms/about/update:
+ *   put:
+ *     summary: Update About Us
+ *     tags:
+ *       - CMS
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateAboutUsRequest"
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UpdateAboutUsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateAboutUsRequest:
+ *       type: object
+ *       properties:
+ *         about_us:
+ *           type: string
+ *         city_commitment:
+ *           type: string
+ *         president_message:
+ *           type: string
+ *         banner:
+ *           type: string
+ *           format: binary
+ *         city_image:
+ *           type: string
+ *           format: binary
+ *         president_image:
+ *           type: string
+ *           format: binary
+ *         qcu_logo:
+ *           type: string
+ *           format: binary
+ *         agrihub_user_logo:
+ *           type: string
+ *           format: binary
+ *     UpdateAboutUsResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ */

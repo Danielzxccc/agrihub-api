@@ -1,12 +1,10 @@
-import { InsertType, Insertable, Selectable, Updateable } from 'kysely'
+import { Insertable, Selectable, Updateable } from 'kysely'
 import {
   Forums,
   Users,
   Articles,
-  AboutCms,
   LandingImages,
   PrivacyPolicy,
-  CommunityEvents,
   EmailToken,
   UserTags,
   ForumsComments,
@@ -16,7 +14,6 @@ import {
   Crops,
   CropReports,
   AnswerVotes,
-  AboutGallery,
   FarmApplications,
   CommunityFarms,
   CommunityFarmsCrops,
@@ -53,6 +50,7 @@ import {
   Otp,
   UserFeedbacks,
   TermsCondition,
+  AboutUs,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -79,12 +77,6 @@ export type UserTag = Insertable<UserTags>
 export type AddImageLanding = Insertable<LandingImages>
 export type UpdateLanding = Updateable<Landing>
 export type UpdateApproach = Updateable<Approach>
-
-//About
-export type UpdateAbout = Updateable<AboutCms>
-export type AddImage = Insertable<AboutCms>
-export type Gallery = Insertable<AboutGallery>
-export type UpdateGallery = Updateable<AboutGallery>
 
 //PrivacyPolicy
 
@@ -222,3 +214,6 @@ export type NewOTPCode = Insertable<Otp>
 
 // User Feedbacks
 export type NewUserFeedback = Insertable<UserFeedbacks>
+
+// Update
+export type UpdateAboutUs = Updateable<AboutUs>
