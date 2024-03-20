@@ -51,6 +51,7 @@ import {
   UserFeedbacks,
   TermsCondition,
   AboutUs,
+  AboutUsCarousel,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -217,3 +218,4 @@ export type NewUserFeedback = Insertable<UserFeedbacks>
 
 // Update
 export type UpdateAboutUs = Updateable<AboutUs>
+export type NewAboutUsCarousel = Insertable<AboutUsCarousel>

@@ -4,6 +4,7 @@ import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { sql } from 'kysely'
 import { ClientDetails } from '../../schema/CmsSchema'
 import {
+  NewAboutUsCarousel,
   NewClientMembers,
   NewClientPartners,
   NewClientSocials,
@@ -336,5 +337,21 @@ export async function viewAboutUs() {
           ])
       ).as('images'),
     ])
+    .executeTakeFirst()
+}
+
+export async function createAboutCarouselImage(image: NewAboutUsCarousel) {
+  return await db
+    .insertInto('about_us_carousel')
+    .values(image)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteAboutCarouselImage(id: string) {
+  return await db
+    .deleteFrom('about_us_carousel')
+    .where('id', '=', id)
+    .returningAll()
     .executeTakeFirst()
 }

@@ -64,3 +64,9 @@ export const ListUserFeedbacks = z.object({
     perpage: z.string().optional().default('20'),
   }),
 })
+
+export const CreateNewCarouselItem = z.object({
+  file: z.object({
+    filename: z.string(),
+  }),
+})

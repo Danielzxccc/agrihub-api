@@ -5,6 +5,7 @@ import * as Schema from '../../schema//CmsSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
 import { UpdateAboutUs } from '../../schema/AboutSchema'
+import { deleteFile } from '../../utils/file'
 
 export async function findClientDetails(req: Request, res: Response) {
   try {
@@ -174,6 +175,40 @@ export async function viewAboutUs(req: SessionRequest, res: Response) {
 
     res.status(200).json(data)
   } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function createAboutCarouselImage(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    await zParse(Schema.CreateNewCarouselItem, req)
+
+    const file = req.file
+
+    await Interactor.createAboutCarouselImage(file)
+
+    res.status(200).json({ message: 'Added Successfully' })
+  } catch (error) {
+    deleteFile(req.file?.filename)
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteAboutCarouselImage(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+
+    await Interactor.deleteAboutCarouselImage(id)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
+  } catch (error) {
+    deleteFile(req.file?.filename)
     errorHandler(res, error)
   }
 }

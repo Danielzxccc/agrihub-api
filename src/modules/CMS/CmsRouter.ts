@@ -58,6 +58,21 @@ CmsRouter.get(
 CmsRouter.get('/vision-stats', CmsController.getVisionStatistics)
 CmsRouter.get('/about', CmsController.viewAboutUs)
 
+CmsRouter.post(
+  '/about/add-carousel',
+  AccessGuard('about'),
+  UserGuard(['asst_admin', 'admin']),
+  upload.single('image'),
+  CmsController.createAboutCarouselImage
+)
+
+CmsRouter.delete(
+  '/about/delete-carousel/:id',
+  AccessGuard('about'),
+  UserGuard(['asst_admin', 'admin']),
+  CmsController.deleteAboutCarouselImage
+)
+
 CmsRouter.put(
   '/about/update',
   AccessGuard('about'),

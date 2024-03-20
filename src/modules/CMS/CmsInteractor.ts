@@ -183,3 +183,26 @@ export async function viewAboutUs() {
   const data = await Service.viewAboutUs()
   return data
 }
+
+export async function createAboutCarouselImage(image: Express.Multer.File) {
+  try {
+    await uploadFiles([image])
+
+    await Service.createAboutCarouselImage({ image: image.filename })
+
+    deleteFile(image.filename)
+  } catch (error) {
+    deleteFile(image.filename)
+    dbErrorHandler(error)
+  }
+}
+
+export async function deleteAboutCarouselImage(id: string) {
+  const deletedItem = await Service.deleteAboutCarouselImage(id)
+
+  if (!deletedItem) {
+    throw new HttpError('Image Not Found', 404)
+  }
+
+  await deleteFileCloud(deletedItem.image)
+}
