@@ -516,6 +516,8 @@ export async function getLowestGrowthRates(order: 'desc' | 'asc') {
               crops ON cfc.crop_id = crops.id
           WHERE 
               NOT cr.is_archived
+          AND 
+              cf.is_archived = false
           GROUP BY 
               cf.id
       )
