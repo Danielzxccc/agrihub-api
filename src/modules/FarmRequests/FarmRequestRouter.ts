@@ -25,7 +25,7 @@ FarmRequestRouter.get(
 
 FarmRequestRouter.get(
   '/seedling/list/:id',
-  UserGuard(['farm_head']),
+  UserGuard(['farm_head', 'admin', 'asst_admin']),
   FarmRequestController.listSeedlingRequestByFarm
 )
 

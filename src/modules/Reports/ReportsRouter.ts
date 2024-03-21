@@ -56,7 +56,7 @@ ReportsRouter.get(
 
 ReportsRouter.get(
   '/crop/report/:id',
-  UserGuard(['farm_head']),
+  UserGuard(['farm_head', 'admin', 'asst_admin']),
   ReportsController.listCommuntityCropReports
 )
 
