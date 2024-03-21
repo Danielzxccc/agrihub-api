@@ -522,6 +522,59 @@ export async function deleteComment(id: string) {
   return await db.deleteFrom('forums_comments').where('id', '=', id).execute()
 }
 
+export async function findReportedQuestions(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('reported_questions as rq')
+    .leftJoin('users as u', 'u.id', 'rq.userid')
+    .leftJoin('forums as f', 'f.id', 'rq.forumid')
+    .select([
+      'rq.id',
+      'rq.userid',
+      'rq.forumid',
+      'rq.reason',
+      'rq.createdat',
+      'rq.updatedat',
+      'f.question',
+      'u.firstname',
+      'u.lastname',
+    ])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('rq.reason', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalReportedQuestions(searchKey: string) {
+  let query = db
+    .selectFrom('reported_questions as rq')
+    .leftJoin('users as u', 'u.id', 'rq.userid')
+    .leftJoin('forums as f', 'f.id', 'rq.forumid')
+    .select(({ fn }) => [fn.count<number>('rq.id').as('count')])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('rq.reason', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+  return await query.executeTakeFirst()
+}
+
 // export async function report
 
 // export async function findVoteByUserId(userid: string) {

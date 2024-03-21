@@ -324,3 +324,16 @@ export async function deleteComment(userid: string, id: string) {
 
   await Service.deleteComment(id)
 }
+
+export async function listReportedQuestions(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findReportedQuestions(offset, searchKey, perpage),
+    Service.getTotalReportedQuestions(searchKey),
+  ])
+
+  return { data, total }
+}

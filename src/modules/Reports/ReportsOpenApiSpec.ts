@@ -1689,3 +1689,97 @@
  *         very_dissatisfied:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/forums/reported/questions:
+ *   get:
+ *     summary: Get Reported Questions in Forums
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: "#/components/schemas/ReportedQuestionList"
+ *                 pagination:
+ *                   $ref: "#/components/schemas/PaginationData"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ReportedQuestionList:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/ReportedQuestion"
+ *     ReportedQuestion:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         userid:
+ *           type: string
+ *         forumid:
+ *           type: string
+ *         reason:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         question:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ */
