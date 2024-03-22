@@ -107,7 +107,7 @@ export async function sendFarmProblemReport(
       'admin',
       'A new uncommon problem has been reported.',
       `Farm Head ${user.firstname} ${user.lastname} has submitted a new uncommon farm/crop problem requiring attention.`,
-      `/admin/farm/problems/view/${problem_id}`
+      `/admin/community/problems/view/${problem_id}`
     )
   }
 
