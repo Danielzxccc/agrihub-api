@@ -531,6 +531,7 @@ export async function findReportedQuestions(
     .selectFrom('reported_questions as rq')
     .leftJoin('users as u', 'u.id', 'rq.userid')
     .leftJoin('forums as f', 'f.id', 'rq.forumid')
+    .leftJoin('users as ru', 'f.userid', 'ru.id')
     .select([
       'rq.id',
       'rq.userid',
@@ -541,6 +542,10 @@ export async function findReportedQuestions(
       'f.question',
       'u.firstname',
       'u.lastname',
+      'u.id as userid',
+      'ru.username as reported_username',
+      'ru.firstname as reported_firstname',
+      'ru.id as reported_userid',
     ])
 
   if (searchKey.length) {

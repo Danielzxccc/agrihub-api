@@ -1782,4 +1782,10 @@
  *           type: string
  *         lastname:
  *           type: string
+ *         reported_username:
+ *           type: string
+ *         reported_firstname:
+ *           type: string
+ *         reported_userid:
+ *           type: string
  */
