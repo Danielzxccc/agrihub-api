@@ -80,6 +80,7 @@ export async function findCommunityReports(
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn, val }) => [
       'ccr.id as crop_id',
+      'cfc.id as cfc_id',
       'c.name as crop_name',
       'ccr.date_planted',
       'ccr.date_harvested',

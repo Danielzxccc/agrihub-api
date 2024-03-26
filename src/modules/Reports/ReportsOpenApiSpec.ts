@@ -738,6 +738,8 @@
  *       properties:
  *         crop_id:
  *           type: string
+ *         cfc_id:
+ *           type: string
  *         crop_name:
  *           type: string
  *         date_planted:
