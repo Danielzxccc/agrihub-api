@@ -43,6 +43,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
             ),
           ])
           .whereRef('ccri.crop_name', '=', 'c.name')
+          .whereRef('ccri.report_id', '=', 'ccr.id')
           .where((eb) => {
             if (farm_id) {
               return eb('cfs.id', '=', farm_id)
