@@ -64,15 +64,19 @@ export async function emitPushNotification(
   body: string,
   redirect_to = ''
 ) {
-  if (userid === 'admin') {
-    const admins = await findAllAdmins()
-    const notificationPromises = admins.map((item) =>
-      sendPushNotification(item.id, title, body, redirect_to)
-    )
+  try {
+    if (userid === 'admin') {
+      const admins = await findAllAdmins()
+      const notificationPromises = admins.map((item) =>
+        sendPushNotification(item.id, title, body, redirect_to)
+      )
 
-    await Promise.all(notificationPromises)
-  } else {
-    await sendPushNotification(userid, title, body, redirect_to)
+      await Promise.all(notificationPromises)
+    } else {
+      await sendPushNotification(userid, title, body, redirect_to)
+    }
+  } catch (error) {
+    log.warn('failed to send notification')
   }
 }
 
