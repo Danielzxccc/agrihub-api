@@ -139,7 +139,7 @@ export async function sendOTP(session: string) {
 
   await generateOTPcode(session, OTPCode, user.contact_number)
   // sms gateway logic here later
-  await sendSMS(user.contact_number, `OTP CODE: ${OTPCode}`)
+  await sendSMS(OTPCode, user.contact_number, `OTP CODE: {otp}`)
 }
 
 export async function sendResetOTP(session: string) {
@@ -155,7 +155,7 @@ export async function sendResetOTP(session: string) {
 
   await generateOTPcode(session, OTPCode, user.contact_number)
   // sms gateway logic here later
-  await sendSMS(user.contact_number, `OTP CODE: ${OTPCode}`)
+  await sendSMS(OTPCode, user.contact_number, `OTP CODE: {otp}`)
 }
 
 export async function verifyOTP(session: string, code: number) {
