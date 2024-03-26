@@ -61,9 +61,21 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
+  '/crop/report/existing/:id',
+  UserGuard(['farm_head', 'admin', 'asst_admin']),
+  ReportsController.listExistingCropReports
+)
+
+ReportsRouter.get(
   '/crop/report/view/:id',
   UserGuard(['farm_head']),
   ReportsController.viewCommunityCropReport
+)
+
+ReportsRouter.post(
+  '/crop/report/inactive/:id',
+  UserGuard(['farm_head']),
+  ReportsController.markReportAsInactive
 )
 
 ReportsRouter.put(

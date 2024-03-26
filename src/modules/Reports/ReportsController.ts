@@ -177,6 +177,44 @@ export async function listCommuntityCropReports(
   }
 }
 
+export async function listExistingCropReports(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query, params } = await zParse(Schema.CommunityCropReports, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+    const sortBy = query.sort
+
+    const reports = await Interactor.listExistingCropReports(
+      params.id,
+      offset,
+      filterKey,
+      searchKey,
+      perPage,
+      sortBy
+    )
+
+    const totalPages = Math.ceil(Number(reports.total.count) / perPage)
+    res.status(200).json({
+      reports: reports.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(reports.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function viewCommunityCropReport(
   req: SessionRequest,
   res: Response
@@ -187,6 +225,18 @@ export async function viewCommunityCropReport(
 
     const report = await Interactor.viewCommunityCropReport(id, userid)
     res.status(200).json(report)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function markReportAsInactive(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.markReportAsInactive(id, userid)
+    res.status(200).json({ message: 'Report successfully set to inactive.' })
   } catch (error) {
     errorHandler(res, error)
   }

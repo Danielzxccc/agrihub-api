@@ -247,6 +247,31 @@ export async function listCommuntityCropReports(
   filterKey: string[] | string,
   searchKey: string,
   perpage: number,
+  sortBy: string,
+  isExisting?: boolean
+) {
+  const [data, total] = await Promise.all([
+    Service.findCommunityReports(
+      id,
+      offset,
+      filterKey,
+      searchKey,
+      perpage,
+      sortBy,
+      isExisting
+    ),
+    Service.getTotalReportCount(id, filterKey, searchKey),
+  ])
+
+  return { data, total }
+}
+
+export async function listExistingCropReports(
+  id: string,
+  offset: number,
+  filterKey: string[] | string,
+  searchKey: string,
+  perpage: number,
   sortBy: string
 ) {
   const [data, total] = await Promise.all([
@@ -256,9 +281,10 @@ export async function listCommuntityCropReports(
       filterKey,
       searchKey,
       perpage,
-      sortBy
+      sortBy,
+      true
     ),
-    Service.getTotalReportCount(id, filterKey, searchKey),
+    Service.getTotalReportCount(id, filterKey, searchKey, true),
   ])
 
   return { data, total }
@@ -283,6 +309,18 @@ export async function viewCommunityCropReport(id: string, userid: string) {
   }
 
   return report
+}
+
+export async function markReportAsInactive(id: string, userid: string) {
+  const user = await findUser(userid)
+  const report = await Service.findCommunityReportById(id, user.farm_id)
+  if (!report) throw new HttpError("Can't find report", 404)
+
+  if (user.farm_id !== report.farmid) {
+    throw new HttpError('Unathorized', 401)
+  }
+
+  await Service.markReportAsInactive(id)
 }
 
 export async function listGrowthHarvestStats(userid: string) {

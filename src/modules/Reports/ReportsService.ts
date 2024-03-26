@@ -71,7 +71,8 @@ export async function findCommunityReports(
   filterKey: string[] | string,
   searchKey: string,
   perpage: number,
-  sortBy: string
+  sortBy: string,
+  isExisting?: boolean
 ) {
   let query = db
     .selectFrom('community_crop_reports as ccr')
@@ -113,6 +114,10 @@ export async function findCommunityReports(
   }
 
   query = query.orderBy('ccr.date_harvested', 'desc')
+
+  if (isExisting) {
+    query = query.where('ccr.is_first_report', '=', true)
+  }
   // if (sortBy.length) {
   //   query = query.orderBy('ccr.date_harvested', 'asc')
   // }
@@ -122,7 +127,8 @@ export async function findCommunityReports(
 export async function getTotalReportCount(
   farmid: string,
   filterKey: string[] | string,
-  searchKey: string
+  searchKey: string,
+  isExisting?: boolean
 ) {
   let query = db
     .selectFrom('community_crop_reports as ccr')
@@ -144,6 +150,11 @@ export async function getTotalReportCount(
   if (searchKey.length) {
     query = query.where('c.name', 'ilike', `${searchKey}%`)
   }
+
+  if (isExisting) {
+    query = query.where('ccr.is_first_report', '=', true)
+  }
+
   return await query.executeTakeFirst()
 }
 
@@ -153,6 +164,15 @@ export async function insertCropReportImage(image: NewCropReportImage) {
     .values(image)
     .returningAll()
     .execute()
+}
+
+export async function markReportAsInactive(id: string) {
+  return await db
+    .updateTable('community_crop_reports as ccr')
+    .set({ is_first_report: false })
+    .where('ccr.id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }
 
 export async function findCommunityFarmCrop(id: string) {
