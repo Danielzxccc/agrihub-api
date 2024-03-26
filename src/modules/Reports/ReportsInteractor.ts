@@ -77,7 +77,6 @@ export async function createCommunityCropReport(
     delete report.c_name
     delete report.isyield
 
-    console.log(report, 'REPORT OBJECT')
     const newReport = await Service.insertCommunityCropReport({
       ...report,
       farmid: user.farm_id,

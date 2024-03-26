@@ -30,6 +30,7 @@ export async function listUsers(
 
   return await query
     .where('u.isbanned', '=', false)
+    .where('u.verification_level', '=', '4')
     .limit(perpage)
     .offset(offset)
     .execute()
@@ -40,6 +41,7 @@ export async function getTotalUsers() {
     .selectFrom('users')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('isbanned', '=', false)
+    .where('verification_level', '=', '4')
     .executeTakeFirst()
 }
 

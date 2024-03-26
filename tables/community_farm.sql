@@ -76,10 +76,26 @@ CREATE TABLE community_crop_reports(
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     is_archived BOOLEAN DEFAULT false,
+    is_first_report BOOLEAN default TRUE,
+    is_existing BOOLEAN default TRUE,
     FOREIGN KEY (crop_id) REFERENCES community_farms_crops(id) ON DELETE CASCADE, 
     FOREIGN KEY (farmid) REFERENCES community_farms(id) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- TODO: new api for existing reported crops
+
+-- kangkong date planted march 2 2024 false false -UPDATE TABLE community_crop_reports set is_existing = false WHERE is_first_batch = true AND farmid = "farm id nung farm head"
+-- kangkong date planted march 3 2024 false false 0 10
+-- kangkong date planted march 4 2024 false false 0 20 
+-- kangkongdate planted march 5 2024 false false 0 40
+-- kangkong date planted march 6 2024 false false 0 40
+
+-- kangkong - 1st (date planted march 2 2024)
+
+-- WHERE first_bactch = true AND is_existing = TRUE
+
+
 
 CREATE TABLE community_crop_reports_images(
     id SERIAL PRIMARY KEY,

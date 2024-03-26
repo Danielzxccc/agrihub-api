@@ -142,6 +142,8 @@ export async function findCommunityFarmCrop(id: string) {
     .executeTakeFirst()
 }
 
+// TODO: Date harvested filter
+
 export async function getHarvestedAndWitheredCrops(id: string) {
   return await db
     .selectFrom('community_farms_crops as cfc')
@@ -160,6 +162,7 @@ export async function getHarvestedAndWitheredCrops(id: string) {
     .execute()
 }
 
+//TODO: crop filter
 export async function getTotalHarvestedCrops(id: string) {
   return await db
     .selectFrom('community_crop_reports as ccr')

@@ -74,6 +74,9 @@
  *         notes:
  *           type: string
  *           optional: true
+ *         is_first_report:
+ *           type: string
+ *           optional: true
  *         image:
  *           type: array
  *           items:
