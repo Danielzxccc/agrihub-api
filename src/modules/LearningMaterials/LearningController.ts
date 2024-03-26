@@ -3,8 +3,8 @@ import errorHandler from '../../utils/httpErrorHandler'
 import * as Interactor from './LearningInteractor'
 import * as Schema from '../../schema/LearningMaterialSchema'
 import zParse from '../../utils/zParse'
-import { createAuditLog } from '../AuditLogs/AuditLogsService'
 import { SessionRequest } from '../../types/AuthType'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
 export async function viewLearningMaterial(req: Request, res: Response) {
   try {
@@ -58,9 +58,14 @@ export async function createDraftLearningMaterial(
       body,
     })
 
+    // await createAuditLog({
+    //   action: '',
+    //   section: 'Leaning Material Management',
+    //   userid: req.session.userid,
+    // })
     await createAuditLog({
-      action: '',
-      section: 'Leaning Material Management',
+      action: 'Created Draft Learning Material',
+      section: 'Learning Material Management',
       userid: req.session.userid,
     })
 

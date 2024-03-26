@@ -3,12 +3,20 @@ import errorHandler from '../../utils/httpErrorHandler'
 import * as Schema from '../../schema/EventsSchema'
 import * as Interactor from './EventsInteractor'
 import zParse from '../../utils/zParse'
+import { SessionRequest } from '../../types/AuthType'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
-export async function createDraftEvent(req: Request, res: Response) {
+export async function createDraftEvent(req: SessionRequest, res: Response) {
   try {
     const { body: event } = await zParse(Schema.NewDraftEvent, req)
 
     const newDraftEvent = await Interactor.createDraftEvent(event)
+
+    await createAuditLog({
+      action: 'Created Draft Event',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
 
     res
       .status(201)
