@@ -90,6 +90,7 @@ export async function findCommunityReports(
     ])
     .groupBy([
       'ccr.id',
+      'cfc.id',
       'c.name',
       'c.image',
       'ccr.date_planted',
