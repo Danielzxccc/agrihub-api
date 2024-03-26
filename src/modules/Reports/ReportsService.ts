@@ -119,12 +119,32 @@ export async function findCommunityReports(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalReportCount(farmid: string) {
-  return await db
+export async function getTotalReportCount(
+  farmid: string,
+  filterKey: string[] | string,
+  searchKey: string
+) {
+  let query = db
     .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn }) => [fn.count<number>('ccr.id').as('count')])
     .where('ccr.farmid', '=', farmid)
-    .executeTakeFirst()
+
+  if (filterKey.length) {
+    if (typeof filterKey === 'string') {
+      query = query.where('c.name', 'ilike', `${filterKey}%`)
+    } else {
+      query = query.where((eb) =>
+        eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
+      )
+    }
+  }
+
+  if (searchKey.length) {
+    query = query.where('c.name', 'ilike', `${searchKey}%`)
+  }
+  return await query.executeTakeFirst()
 }
 
 export async function insertCropReportImage(image: NewCropReportImage) {
