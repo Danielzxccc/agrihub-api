@@ -26,13 +26,19 @@ export async function createDraftEvent(req: SessionRequest, res: Response) {
   }
 }
 
-export async function updateDraftEvent(req: Request, res: Response) {
+export async function updateDraftEvent(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     const image = req.file
     const { body: event } = await zParse(Schema.UpdateDraftEvent, req)
 
     const newDraftEvent = await Interactor.updateDraftEvent(id, event, image)
+
+    await createAuditLog({
+      action: 'Updated Event Draft',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
 
     res
       .status(200)
@@ -42,7 +48,7 @@ export async function updateDraftEvent(req: Request, res: Response) {
   }
 }
 
-export async function createNewEventPartnership(req: Request, res: Response) {
+export async function createNewEventPartnership(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     const image = req.file
@@ -54,6 +60,12 @@ export async function createNewEventPartnership(req: Request, res: Response) {
       image
     )
 
+    await createAuditLog({
+      action: 'Created New Event Partnership',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
+
     res.status(201).json({
       message: 'Created Partnership Successfully',
       data: newDraftEvent,
@@ -63,7 +75,7 @@ export async function createNewEventPartnership(req: Request, res: Response) {
   }
 }
 
-export async function updateEventPartnership(req: Request, res: Response) {
+export async function updateEventPartnership(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     const image = req.file
@@ -78,6 +90,12 @@ export async function updateEventPartnership(req: Request, res: Response) {
       image
     )
 
+    await createAuditLog({
+      action: 'Updated Event Partnership',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
+
     res.status(201).json({
       message: 'Updated Partnership Successfully',
       data: newDraftEvent,
@@ -87,18 +105,25 @@ export async function updateEventPartnership(req: Request, res: Response) {
   }
 }
 
-export async function removeEventPartnership(req: Request, res: Response) {
+export async function removeEventPartnership(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.removeEventPartnership(id)
+
+    await createAuditLog({
+      action: 'Removed Event Partnership',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
+
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
 }
 
-export async function createEventSpeaker(req: Request, res: Response) {
+export async function createEventSpeaker(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     const { body: speaker } = await zParse(Schema.NewEventSpearker, req)
@@ -109,6 +134,13 @@ export async function createEventSpeaker(req: Request, res: Response) {
       speaker,
       image
     )
+
+    await createAuditLog({
+      action: 'Created New Event Speaker',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
+
     res
       .status(201)
       .json({ message: 'Created Successfully', data: newEventSpeaker })
@@ -117,7 +149,7 @@ export async function createEventSpeaker(req: Request, res: Response) {
   }
 }
 
-export async function updateEventSpeaker(req: Request, res: Response) {
+export async function updateEventSpeaker(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     const { body: speaker } = await zParse(Schema.UpdateEventSpeaker, req)
@@ -128,6 +160,13 @@ export async function updateEventSpeaker(req: Request, res: Response) {
       speaker,
       image
     )
+
+    await createAuditLog({
+      action: 'Updated Event Speaker',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
+
     res
       .status(200)
       .json({ message: 'Updated Successfully', data: newEventSpeaker })
@@ -136,11 +175,17 @@ export async function updateEventSpeaker(req: Request, res: Response) {
   }
 }
 
-export async function removeEventSpeaker(req: Request, res: Response) {
+export async function removeEventSpeaker(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.removeEventSpeaker(id)
+
+    await createAuditLog({
+      action: 'Removed Event Speaker',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Deleted Susccessfully' })
   } catch (error) {
@@ -148,12 +193,19 @@ export async function removeEventSpeaker(req: Request, res: Response) {
   }
 }
 
-export async function createEventTags(req: Request, res: Response) {
+export async function createEventTags(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     const { body } = await zParse(Schema.NewEventTags, req)
 
     const newEventTags = await Interactor.createEventTags(id, body.tags)
+
+    await createAuditLog({
+      action: 'Created Event Tags',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
+
     res
       .status(201)
       .json({ message: 'Created Successfully', data: newEventTags })
@@ -162,11 +214,18 @@ export async function createEventTags(req: Request, res: Response) {
   }
 }
 
-export async function removeEventTag(req: Request, res: Response) {
+export async function removeEventTag(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.removeEventTag(id)
+
+    await createAuditLog({
+      action: 'Deleted Event Tags',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
+
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
     errorHandler(res, error)
@@ -240,11 +299,17 @@ export async function listArchivedEvents(req: Request, res: Response) {
   }
 }
 
-export async function archiveEvent(req: Request, res: Response) {
+export async function archiveEvent(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.archiveEvent(id)
+
+    await createAuditLog({
+      action: 'Archived Event',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Archived Successfuilly' })
   } catch (error) {
@@ -252,11 +317,17 @@ export async function archiveEvent(req: Request, res: Response) {
   }
 }
 
-export async function unarchiveEvent(req: Request, res: Response) {
+export async function unarchiveEvent(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.unarchiveEvent(id)
+
+    await createAuditLog({
+      action: 'Unarchived Event',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Unarchived Successfuilly' })
   } catch (error) {
@@ -264,10 +335,16 @@ export async function unarchiveEvent(req: Request, res: Response) {
   }
 }
 
-export async function deleteDraftEvent(req: Request, res: Response) {
+export async function deleteDraftEvent(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     await Interactor.deleteDraftEvent(id)
+
+    await createAuditLog({
+      action: 'Deleted Event Draft',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Deleted Successfuilly' })
   } catch (error) {
@@ -275,10 +352,16 @@ export async function deleteDraftEvent(req: Request, res: Response) {
   }
 }
 
-export async function publishEvent(req: Request, res: Response) {
+export async function publishEvent(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     await Interactor.publishEvent(id)
+
+    await createAuditLog({
+      action: 'Published Event',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Published Successfuilly' })
   } catch (error) {
@@ -286,10 +369,16 @@ export async function publishEvent(req: Request, res: Response) {
   }
 }
 
-export async function unpublishEvent(req: Request, res: Response) {
+export async function unpublishEvent(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     await Interactor.unpublishEvent(id)
+
+    await createAuditLog({
+      action: 'Unpablished Event',
+      section: 'Event Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Unpublished Successfuilly' })
   } catch (error) {
