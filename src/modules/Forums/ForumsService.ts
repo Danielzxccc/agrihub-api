@@ -86,6 +86,7 @@ export async function findQuestions(
 
   if (searchQuery.length) {
     query = query.where('forums.title', 'ilike', `%${searchQuery}%`)
+    query = query.where('forums.question', 'ilike', `%${searchQuery}%`)
   }
 
   return await query.limit(perpage).offset(offset).execute()
