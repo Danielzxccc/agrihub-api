@@ -420,7 +420,7 @@ export async function findAllCommunityFarms(
 ) {
   let query = db.selectFrom('community_farms').selectAll()
 
-  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (search.length) query = query.where('farm_name', 'ilike', `%${search}%`)
   if (filter.length) query = query.where('district', '=', filter)
 
   return await query
@@ -435,7 +435,7 @@ export async function getTotalCommunityFarms(search: string, filter: string) {
     .selectFrom('community_farms')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
 
-  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (search.length) query = query.where('farm_name', 'ilike', `%${search}%`)
   if (filter.length) query = query.where('district', '=', filter)
 
   return await query.where('is_archived', '=', false).executeTakeFirst()

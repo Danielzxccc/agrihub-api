@@ -286,7 +286,6 @@ export async function findPublishedBlogs(
     .where('is_archived', '=', false)
     .where('status', '=', 'published')
 
-  console.log(filter, 'FILTER NG BLOGGERS')
   if (filter.length) {
     query = query.where('b.category', '=', filter)
   }
@@ -294,9 +293,9 @@ export async function findPublishedBlogs(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('title', 'ilike', `${searchKey}%`),
-        eb('author', 'ilike', `${searchKey}%`),
-        eb('content', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('author', 'ilike', `%${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
       ])
     )
   }

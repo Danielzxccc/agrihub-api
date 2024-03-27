@@ -361,9 +361,9 @@ export async function findPublishedEvents(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('about', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
-        eb('location', 'ilike', `${searchKey}%`),
+        eb('about', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('location', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -388,9 +388,9 @@ export async function getTotalPublishedEvents(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('about', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
-        eb('location', 'ilike', `${searchKey}%`),
+        eb('about', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('location', 'ilike', `%${searchKey}%`),
       ])
     )
   }
