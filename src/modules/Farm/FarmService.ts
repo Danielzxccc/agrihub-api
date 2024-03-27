@@ -351,6 +351,14 @@ export async function findCommunityFarmById(id: string) {
     .executeTakeFirst()
 }
 
+export async function findCommunityFarmByName(name: string) {
+  return await db
+    .selectFrom('community_farms')
+    .selectAll()
+    .where('farm_name', '=', name)
+    .executeTakeFirst()
+}
+
 export async function insertCommunityFarmCrop(crop: NewCommunityFarmCrop) {
   return await db
     .insertInto('community_farms_crops')

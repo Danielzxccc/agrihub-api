@@ -51,6 +51,17 @@ export async function createFarmApplication({
         401
       )
 
+    const checkNameIfExisting = await Service.findCommunityFarmByName(
+      application.body.farm_name
+    )
+
+    if (checkNameIfExisting) {
+      throw new HttpError(
+        'Ang pangalan ng farm na iyong inilagay ay nakaregister na sa agrihub.',
+        400
+      )
+    }
+
     // check files
     if (!farmActualImages || !valid_id) {
       throw new HttpError('Incomplete Details', 400)
@@ -738,6 +749,19 @@ export async function updateCommunityFarm(
     const communityFarm = await Service.findCommunityFarmById(user.farm_id)
     if (!communityFarm) {
       throw new HttpError("Can't find farm", 404)
+    }
+
+    if (farm.body.farm_name) {
+      const checkNameIfExisting = await Service.findCommunityFarmByName(
+        farm.body.farm_name
+      )
+
+      if (checkNameIfExisting) {
+        throw new HttpError(
+          'Ang pangalan ng farm na iyong inilagay ay nakaregister na sa agrihub.',
+          400
+        )
+      }
     }
 
     const updatedCommunityFarm: UpdateCommunityFarm = {
