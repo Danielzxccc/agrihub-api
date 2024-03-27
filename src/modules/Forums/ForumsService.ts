@@ -84,8 +84,9 @@ export async function findQuestions(
     query = query.orderBy('latest_answer_createdat', 'desc')
   if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
 
-  if (searchQuery.length)
-    query = query.where('forums.title', 'ilike', `${searchQuery}%`)
+  if (searchQuery.length) {
+    query = query.where('forums.title', 'ilike', `%${searchQuery}%`)
+  }
 
   return await query.limit(perpage).offset(offset).execute()
 }
