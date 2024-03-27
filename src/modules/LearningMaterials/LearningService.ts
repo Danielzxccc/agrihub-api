@@ -411,8 +411,8 @@ export async function findPublishedLearningMaterials(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('content', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
       ])
     )
   }
