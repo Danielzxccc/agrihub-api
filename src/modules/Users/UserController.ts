@@ -5,6 +5,7 @@ import * as Schema from '../../schema/UserSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
 import { deleteFile } from '../../utils/file'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
 export async function listUsers(req: Request, res: Response) {
   try {
@@ -128,21 +129,32 @@ export async function listAdmins(req: Request, res: Response) {
   }
 }
 
-export async function disableAdminAccount(req: Request, res: Response) {
+export async function disableAdminAccount(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     await Interactor.disableAdminAccount(id)
 
+    await createAuditLog({
+      action: 'Disabled an admin account',
+      section: 'Admin Management',
+      userid: req.session.userid,
+    })
     res.status(200).json({ message: 'Disabled Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
 }
 
-export async function enableAdminAccount(req: Request, res: Response) {
+export async function enableAdminAccount(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     await Interactor.enableAdminAccount(id)
+
+    await createAuditLog({
+      action: 'Disabled an admin account',
+      section: 'Admin Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Enabled Successfully' })
   } catch (error) {
@@ -202,22 +214,32 @@ export async function listReportedUsers(req: Request, res: Response) {
   }
 }
 
-export async function banUserAccount(req: Request, res: Response) {
+export async function banUserAccount(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     await Interactor.banUserAccount(id)
 
+    await createAuditLog({
+      action: 'Banned a user account',
+      section: 'Users Management',
+      userid: req.session.userid,
+    })
     res.status(200).json({ message: 'Banned Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
 }
 
-export async function unbanUserAccount(req: Request, res: Response) {
+export async function unbanUserAccount(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     await Interactor.unbanUserAccount(id)
 
+    await createAuditLog({
+      action: 'Unbanned a user account',
+      section: 'Users Management',
+      userid: req.session.userid,
+    })
     res.status(200).json({ message: 'Unbanned Successfully' })
   } catch (error) {
     errorHandler(res, error)
@@ -248,11 +270,16 @@ export async function listBannedUsers(req: Request, res: Response) {
   }
 }
 
-export async function sendingWarningToUser(req: Request, res: Response) {
+export async function sendingWarningToUser(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     await Interactor.sendingWarningToUser(id)
 
+    await createAuditLog({
+      action: 'Sent a warning to a user account',
+      section: 'Users Management',
+      userid: req.session.userid,
+    })
     res.status(200).json({ message: 'Warning Sent Successfully' })
   } catch (error) {
     errorHandler(res, error)

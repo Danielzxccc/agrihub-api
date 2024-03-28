@@ -45,3 +45,5 @@ NotificationRouter.post(
   UserGuard(['admin']),
   NotificationController.testEmit
 )
+
+NotificationRouter.post('/read/all', NotificationController.markAllAsRead)

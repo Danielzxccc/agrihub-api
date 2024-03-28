@@ -81,3 +81,12 @@ export async function updateUserNotification(
     .returningAll()
     .executeTakeFirst()
 }
+
+export async function markAllAsRead(userid: string) {
+  return await db
+    .updateTable('user_notifications as us')
+    .set({ viewed: true })
+    .where('us.emitted_to', '=', userid)
+    .returningAll()
+    .executeTakeFirst()
+}

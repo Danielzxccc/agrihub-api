@@ -122,3 +122,13 @@ export async function readUserNotifications(userid: string, id: string) {
 
   await Service.updateUserNotification(id, updatedObject)
 }
+
+export async function markAllAsRead(userid: string) {
+  const user = await findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.markAllAsRead(userid)
+}
