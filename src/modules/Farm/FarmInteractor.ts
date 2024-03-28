@@ -90,7 +90,12 @@ export async function createFarmApplication({
       pendingApplication
     )
 
-    emitNotificationToAdmin('A new application has been received.')
+    await emitPushNotification(
+      'admin',
+      'New Application',
+      'A new application has been received.',
+      `/admin/community/application/${newApplication.id}`
+    )
 
     return newApplication
   } catch (error) {
@@ -277,6 +282,13 @@ export async function rejectFarmApplication(id: string) {
   const application = await Service.updateFarmApplication(farm.id, {
     status: 'rejected',
   })
+
+  await emitPushNotification(
+    farm.applicant.id,
+    'Farm Application Rejected',
+    'Your Farm Application has been rejected.'
+  )
+
   return application
 }
 

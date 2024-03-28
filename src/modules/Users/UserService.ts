@@ -124,7 +124,8 @@ export async function findUser(id: string) {
     }
     return newObj
   }
-  return user
+
+  return { ...user, activity_logs: true }
 }
 
 export async function findUserByUsername(username: string): Promise<User> {

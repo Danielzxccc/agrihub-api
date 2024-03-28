@@ -59,7 +59,7 @@ async function sendPushNotification(
 }
 
 export async function emitPushNotification(
-  userid: string,
+  userid: string | 'admin',
   title: string,
   body: string,
   redirect_to = ''
