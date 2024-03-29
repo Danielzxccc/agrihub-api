@@ -5,6 +5,8 @@ import {
   Answer,
   UpdateQuestion,
   NewVoteQuestion,
+  UpdateAnswer,
+  UpdateComment,
 } from '../../types/DBTypes'
 import { db } from '../../config/database'
 import { jsonObjectFrom, jsonArrayFrom } from 'kysely/helpers/postgres'
@@ -593,6 +595,24 @@ export async function getTotalReportedQuestions(searchKey: string) {
     )
   }
   return await query.executeTakeFirst()
+}
+
+export async function updateAnswer(id: string, answer: UpdateAnswer) {
+  return await db
+    .updateTable('forums_answers')
+    .set({ ...answer, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function updateComment(id: string, comment: UpdateComment) {
+  return await db
+    .updateTable('forums_comments')
+    .set({ ...comment, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }
 
 // export async function report

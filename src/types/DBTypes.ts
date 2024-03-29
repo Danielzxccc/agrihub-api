@@ -62,7 +62,9 @@ export type Token = Selectable<EmailToken>
 export type Question = Selectable<Forums>
 export type NewQuestion = Insertable<Forums>
 export type NewAnswer = Insertable<ForumsAnswers>
+export type UpdateAnswer = Updateable<ForumsAnswers>
 export type NewComment = Insertable<ForumsComments>
+export type UpdateComment = Updateable<ForumsComments>
 export type Answer = Selectable<ForumsAnswers>
 export type UpdateQuestion = Updateable<Forums>
 

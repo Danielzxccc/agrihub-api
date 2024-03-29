@@ -1,5 +1,11 @@
 import HttpError from '../../utils/HttpError'
-import { NewQuestion, NewVoteQuestion, Question } from '../../types/DBTypes'
+import {
+  NewQuestion,
+  NewVoteQuestion,
+  Question,
+  UpdateAnswer,
+  UpdateComment,
+} from '../../types/DBTypes'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
 import { ForumsContent } from './../../schema/ForumsSchema'
@@ -148,9 +154,8 @@ export async function createNewAnswer(
   if (!userid) {
     throw new HttpError('Session Expired', 401)
   }
-  const user = await findUser(userid)
-
   const question = await Service.findQuestionById(forumid)
+  const user = await findUser(question.userid)
 
   if (!question) {
     throw new HttpError('The question does not exist or was removed', 400)
@@ -396,4 +401,55 @@ export async function listReportedQuestions(
   ])
 
   return { data, total }
+}
+
+export async function updateAnswer(
+  userid: string,
+  id: string,
+  answer: UpdateAnswer
+) {
+  const user = await findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+  const findAnswer = await Service.findAnswer(id)
+
+  if (!findAnswer) {
+    throw new HttpError('Answer not found', 404)
+  }
+
+  if (user.id !== findAnswer.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const updatedAnwer = await Service.updateAnswer(id, answer)
+
+  return updatedAnwer
+}
+
+export async function updateComment(
+  userid: string,
+  id: string,
+  comment: UpdateComment
+) {
+  const user = await findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const findComment = await Service.findComment(id)
+
+  if (!findComment) {
+    throw new HttpError('Comment not found', 404)
+  }
+
+  if (user.id !== findComment.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const updatedAnwer = await Service.updateComment(id, comment)
+
+  return updatedAnwer
 }

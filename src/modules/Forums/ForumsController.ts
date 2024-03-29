@@ -322,3 +322,29 @@ export async function listReportedQuestions(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function updateAnswer(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.UpdateAnswersSchema, req)
+    const userid = req.session.userid
+    await Interactor.updateAnswer(userid, id, body)
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateComment(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.UpdateCommentsSchema, req)
+    const userid = req.session.userid
+    await Interactor.updateComment(userid, id, body)
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
