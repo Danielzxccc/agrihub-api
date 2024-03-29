@@ -265,6 +265,7 @@ export const SearchForums = z.object({
     perpage: z.string().optional().default('20'),
     filter: z.string().optional().default('newest'),
     profile: z.string().optional().default(''),
+    tag: z.string().optional().default(''),
   }),
 })
 /**

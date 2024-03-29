@@ -58,7 +58,8 @@ export async function listQuestions(
   filterKey: string,
   perpage: number,
   userid: string,
-  profile?: string
+  profile?: string,
+  tag?: string
 ) {
   const [data, total] = await Promise.all([
     Service.findQuestions(
@@ -67,10 +68,12 @@ export async function listQuestions(
       filterKey,
       perpage,
       userid,
-      profile
+      profile,
+      tag
     ),
     Service.getTotalCount(profile),
   ])
+
   for (let question of data) {
     question.user.avatar = question.user.avatar
       ? getObjectUrl(question.user.avatar)

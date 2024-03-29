@@ -24,7 +24,8 @@ export async function findQuestions(
   filterKey: string,
   perpage: number,
   userid: string,
-  profile?: string
+  profile?: string,
+  tag?: string
 ) {
   let query = db
     .selectFrom('forums')
@@ -87,6 +88,18 @@ export async function findQuestions(
   if (searchQuery.length) {
     query = query.where('forums.title', 'ilike', `%${searchQuery}%`)
     query = query.where('forums.question', 'ilike', `%${searchQuery}%`)
+  }
+
+  if (tag.length) {
+    query = query.where(({ selectFrom, exists }) =>
+      exists(
+        selectFrom('forums_tags')
+          .leftJoin('tags as t', 't.id', 'forums_tags.tagid')
+          .select('forums_tags.id')
+          .where('t.tag_name', '=', tag)
+          .whereRef('forums_tags.forumid', '=', 'forums.id')
+      )
+    )
   }
 
   return await query.limit(perpage).offset(offset).execute()

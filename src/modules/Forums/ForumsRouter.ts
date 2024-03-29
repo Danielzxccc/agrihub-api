@@ -43,6 +43,11 @@ export const ForumsRouter = express.Router()
  *         schema:
  *           type: string
  *         description: profile query
+ *       - in: query
+ *         name: tag
+ *         schema:
+ *           type: string
+ *         description: tag query
  *     responses:
  *       "200":
  *         description: Success
