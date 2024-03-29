@@ -4,8 +4,9 @@ import { Request, Response } from 'express'
 import errorHandler from '../../utils/httpErrorHandler'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
-export async function upsertFarmProblem(req: Request, res: Response) {
+export async function upsertFarmProblem(req: SessionRequest, res: Response) {
   try {
     const { body } = await zParse(Schema.NewFarmProblem, req)
     const { id, problem, description, materials, common } = body
@@ -14,6 +15,12 @@ export async function upsertFarmProblem(req: Request, res: Response) {
       { id, problem, description, common },
       materials
     )
+
+     await createAuditLog({
+      action: 'Updated Farm Problem',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json(data)
   } catch (error) {
@@ -31,11 +38,17 @@ export async function viewFarmProblem(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
-export async function archiveProblem(req: Request, res: Response) {
+export async function archiveProblem(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.archiveProblem(id)
+
+    await createAuditLog({
+      action: 'Archived a Farm Problem',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Archived Successfully' })
   } catch (error) {
@@ -43,11 +56,17 @@ export async function archiveProblem(req: Request, res: Response) {
   }
 }
 
-export async function unarchiveProblem(req: Request, res: Response) {
+export async function unarchiveProblem(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.unarchiveProblem(id)
+
+    await createAuditLog({
+      action: 'Unarchived a Farm Problem',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Unarchived Successfully' })
   } catch (error) {
@@ -55,11 +74,17 @@ export async function unarchiveProblem(req: Request, res: Response) {
   }
 }
 
-export async function deleteFarmProblemMaterial(req: Request, res: Response) {
+export async function deleteFarmProblemMaterial(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.deleteFarmProblemMaterial(id)
+
+    await createAuditLog({
+      action: 'Removed a Material in Farm Problem',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
