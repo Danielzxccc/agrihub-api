@@ -368,7 +368,8 @@ export async function getTotalDraftLearningMaterials() {
 export async function findPublishedLearningMaterials(
   offset: number,
   searchKey: string,
-  perpage: number
+  perpage: number,
+  filterKey: string
 ) {
   let query = db
     .selectFrom('learning_materials as lm')
@@ -410,10 +411,14 @@ export async function findPublishedLearningMaterials(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('content', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
       ])
     )
+  }
+
+  if (filterKey.length) {
+    query = query.where('language', '=', filterKey)
   }
 
   return await query
@@ -423,13 +428,30 @@ export async function findPublishedLearningMaterials(
     .execute()
 }
 
-export async function getTotalPublishedLearningMaterials() {
-  return await db
+export async function getTotalPublishedLearningMaterials(
+  searchKey: string,
+  filterKey: string
+) {
+  let query = db
     .selectFrom('learning_materials')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('status', '=', 'published')
     .where('is_archived', '=', false)
-    .executeTakeFirst()
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('content', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filterKey.length) {
+    query = query.where('language', '=', filterKey)
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function setLearningResourceAsFeatured(

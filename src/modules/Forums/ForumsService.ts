@@ -38,6 +38,7 @@ export async function findQuestions(
           .select([
             'avatar',
             'username',
+            'role',
             sql<string>`CAST(id AS TEXT)`.as('id'),
           ])
           .whereRef('forums.userid', '=', 'users.id')
@@ -83,8 +84,10 @@ export async function findQuestions(
     query = query.orderBy('latest_answer_createdat', 'desc')
   if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
 
-  if (searchQuery.length)
-    query = query.where('forums.title', 'ilike', `${searchQuery}%`)
+  if (searchQuery.length) {
+    query = query.where('forums.title', 'ilike', `%${searchQuery}%`)
+    query = query.where('forums.question', 'ilike', `%${searchQuery}%`)
+  }
 
   return await query.limit(perpage).offset(offset).execute()
 }
@@ -199,6 +202,7 @@ export async function viewQuestion(
           .select([
             'avatar',
             'username',
+            'role',
             sql<string>`CAST(id AS TEXT)`.as('id'),
           ])
           .whereRef('forums.userid', '=', 'users.id')
@@ -231,6 +235,7 @@ export async function viewQuestion(
                 .select([
                   'avatar',
                   'username',
+                  'role',
                   sql<string>`CAST(id AS TEXT)`.as('id'),
                 ])
                 .whereRef('forums_answers.userid', '=', 'users.id')
@@ -258,10 +263,12 @@ export async function viewQuestion(
                       .select([
                         'avatar',
                         'username',
+                        'role',
                         sql<string>`CAST(id AS TEXT)`.as('id'),
                       ])
                       .whereRef('userid', '=', 'users.id')
                   ).as('user'),
+                  sql<string>`CAST(forums_comments.id AS TEXT)`.as('id'),
                   'forums_comments.comment',
                   'forums_comments.createdat',
                 ])
@@ -492,6 +499,90 @@ export async function reportQuestion(
     .returningAll()
     .executeTakeFirst()
 }
+
+export async function findAnswer(id: string) {
+  return await db
+    .selectFrom('forums_answers')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function deleteAnswer(id: string) {
+  return await db.deleteFrom('forums_answers').where('id', '=', id).execute()
+}
+
+export async function findComment(id: string) {
+  return await db
+    .selectFrom('forums_comments')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function deleteComment(id: string) {
+  return await db.deleteFrom('forums_comments').where('id', '=', id).execute()
+}
+
+export async function findReportedQuestions(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
+    .selectFrom('reported_questions as rq')
+    .leftJoin('users as u', 'u.id', 'rq.userid')
+    .leftJoin('forums as f', 'f.id', 'rq.forumid')
+    .leftJoin('users as ru', 'f.userid', 'ru.id')
+    .select([
+      'rq.id',
+      'rq.userid',
+      'rq.forumid',
+      'rq.reason',
+      'rq.createdat',
+      'rq.updatedat',
+      'f.question',
+      'u.firstname',
+      'u.lastname',
+      'u.id as userid',
+      'ru.username as reported_username',
+      'ru.firstname as reported_firstname',
+      'ru.id as reported_userid',
+    ])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('rq.reason', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalReportedQuestions(searchKey: string) {
+  let query = db
+    .selectFrom('reported_questions as rq')
+    .leftJoin('users as u', 'u.id', 'rq.userid')
+    .leftJoin('forums as f', 'f.id', 'rq.forumid')
+    .select(({ fn }) => [fn.count<number>('rq.id').as('count')])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('rq.reason', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+  return await query.executeTakeFirst()
+}
+
+// export async function report
 
 // export async function findVoteByUserId(userid: string) {
 //   return await db

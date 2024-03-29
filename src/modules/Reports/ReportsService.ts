@@ -14,7 +14,7 @@ export async function insertCommunityCropReport(
     .executeTakeFirstOrThrow()
 }
 
-export async function findCommunityReportById(id: string) {
+export async function findCommunityReportById(id: string, farm_id?: string) {
   return await db
     .selectFrom('community_crop_reports as ccr')
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
@@ -31,12 +31,24 @@ export async function findCommunityReportById(id: string) {
       jsonArrayFrom(
         eb
           .selectFrom('community_crop_reports_images as ccri')
+          .leftJoin(
+            'community_crop_reports as ccrs',
+            'ccrs.id',
+            'ccri.report_id'
+          )
+          .leftJoin('community_farms as cfs', 'cfs.id', 'ccrs.farmid')
           .select(({ fn }) => [
             fn<string>('concat', [val(returnObjectUrl()), 'ccri.imagesrc']).as(
               'image'
             ),
           ])
           .whereRef('ccri.crop_name', '=', 'c.name')
+          .whereRef('ccri.report_id', '=', 'ccr.id')
+          .where((eb) => {
+            if (farm_id) {
+              return eb('cfs.id', '=', farm_id)
+            }
+          })
       ).as('images'),
     ])
     .groupBy([
@@ -59,7 +71,8 @@ export async function findCommunityReports(
   filterKey: string[] | string,
   searchKey: string,
   perpage: number,
-  sortBy: string
+  sortBy: string,
+  isExisting?: boolean
 ) {
   let query = db
     .selectFrom('community_crop_reports as ccr')
@@ -67,6 +80,7 @@ export async function findCommunityReports(
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn, val }) => [
       'ccr.id as crop_id',
+      'cfc.id as cfc_id',
       'c.name as crop_name',
       'ccr.date_planted',
       'ccr.date_harvested',
@@ -76,6 +90,7 @@ export async function findCommunityReports(
     ])
     .groupBy([
       'ccr.id',
+      'cfc.id',
       'c.name',
       'c.image',
       'ccr.date_planted',
@@ -101,18 +116,48 @@ export async function findCommunityReports(
   }
 
   query = query.orderBy('ccr.date_harvested', 'desc')
+
+  if (isExisting) {
+    query = query.where('ccr.is_first_report', '=', true)
+  }
   // if (sortBy.length) {
   //   query = query.orderBy('ccr.date_harvested', 'asc')
   // }
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalReportCount(farmid: string) {
-  return await db
+export async function getTotalReportCount(
+  farmid: string,
+  filterKey: string[] | string,
+  searchKey: string,
+  isExisting?: boolean
+) {
+  let query = db
     .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn }) => [fn.count<number>('ccr.id').as('count')])
     .where('ccr.farmid', '=', farmid)
-    .executeTakeFirst()
+
+  if (filterKey.length) {
+    if (typeof filterKey === 'string') {
+      query = query.where('c.name', 'ilike', `${filterKey}%`)
+    } else {
+      query = query.where((eb) =>
+        eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
+      )
+    }
+  }
+
+  if (searchKey.length) {
+    query = query.where('c.name', 'ilike', `${searchKey}%`)
+  }
+
+  if (isExisting) {
+    query = query.where('ccr.is_first_report', '=', true)
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function insertCropReportImage(image: NewCropReportImage) {
@@ -123,6 +168,15 @@ export async function insertCropReportImage(image: NewCropReportImage) {
     .execute()
 }
 
+export async function markReportAsInactive(id: string) {
+  return await db
+    .updateTable('community_crop_reports as ccr')
+    .set({ is_first_report: false })
+    .where('ccr.id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
 export async function findCommunityFarmCrop(id: string) {
   return await db
     .selectFrom('community_farms_crops')
@@ -130,6 +184,8 @@ export async function findCommunityFarmCrop(id: string) {
     .where('id', '=', id)
     .executeTakeFirst()
 }
+
+// TODO: Date harvested filter
 
 export async function getHarvestedAndWitheredCrops(id: string) {
   return await db
@@ -149,6 +205,7 @@ export async function getHarvestedAndWitheredCrops(id: string) {
     .execute()
 }
 
+//TODO: crop filter
 export async function getTotalHarvestedCrops(id: string) {
   return await db
     .selectFrom('community_crop_reports as ccr')
@@ -264,12 +321,19 @@ export async function getCropStatistics(name: string, farmid: string) {
       jsonArrayFrom(
         eb
           .selectFrom('community_crop_reports_images as ccri')
+          .leftJoin(
+            'community_crop_reports as ccrs',
+            'ccrs.id',
+            'ccri.report_id'
+          )
+          .leftJoin('community_farms as cfs', 'cfs.id', 'ccrs.farmid')
           .select(({ fn }) => [
             fn<string>('concat', [val(returnObjectUrl()), 'ccri.imagesrc']).as(
               'image'
             ),
           ])
           .whereRef('ccri.crop_name', '=', 'c.name')
+          .where('cfs.id', '=', farmid)
       ).as('images'),
     ])
     .groupBy([
@@ -370,7 +434,9 @@ export async function getAverageGrowthRate(farmid: string) {
       sql`ROUND(SUM(ccr.harvested_qty - COALESCE(ccr.withered_crops, 0)), 1)`.as(
         'net_yield'
       ),
-      sql`ROUND(SUM(harvested_qty) / SUM(planted_qty), 2)`.as('crop_yield'),
+      sql`ROUND(SUM(NULLIF(ccr.harvested_qty, 0)) / SUM(NULLIF(ccr.planted_qty, 0)), 2)`.as(
+        'crop_yield'
+      ),
     ])
     .groupBy([
       'ccr.crop_id',
@@ -385,9 +451,15 @@ export async function getAverageGrowthRate(farmid: string) {
       'c.isyield',
     ])
     .where('ccr.farmid', '=', farmid)
+    // .where(sql`EXTRACT(MONTH FROM date_harvested)`, "", )
+    .limit(20)
     .orderBy('ccr.createdat desc')
     .execute()
 }
+
+// EXTRACT(MONTH FROM date_harvested) BETWEEN ${String(
+//   start
+// )} AND ${String(end)}
 
 export async function getTotalWitheredHarvestEachMonth(
   year: number,
@@ -454,14 +526,13 @@ export async function getFavouriteCrops() {
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn, val }) => [
-      'ccr.crop_id',
       'c.name as crop_name',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
       sql`SUM(ccr.planted_qty)`.as('total_planted'),
       sql`SUM(ccr.harvested_qty)`.as('total_harvested'),
       sql`SUM(ccr.withered_crops)`.as('total_withered'),
     ])
-    .groupBy(['ccr.crop_id', 'ccr.planted_qty', 'c.name', 'c.image'])
+    .groupBy(['crop_name', 'c.image'])
     .where('ccr.is_archived', '=', false)
     .where('c.is_other', '=', false)
     .orderBy('total_planted desc')
@@ -469,7 +540,7 @@ export async function getFavouriteCrops() {
     .execute()
 }
 
-export async function getLowestGrowthRates() {
+export async function getLowestGrowthRates(order: 'desc' | 'asc') {
   return await db.executeQuery(
     sql`
         WITH GrowthRates AS (
@@ -493,6 +564,8 @@ export async function getLowestGrowthRates() {
               crops ON cfc.crop_id = crops.id
           WHERE 
               NOT cr.is_archived
+          AND 
+              cf.is_archived = false
           GROUP BY 
               cf.id
       )
@@ -505,10 +578,369 @@ export async function getLowestGrowthRates() {
           community_farms cf
       JOIN 
           GrowthRates gr ON cf.id = gr.farm_id
-      ORDER BY 
-          gr.avg_growth_rate ASC
+      ORDER BY
+        CASE WHEN ${order} = 'desc' THEN gr.avg_growth_rate END DESC,
+        CASE WHEN ${order} = 'asc' THEN gr.avg_growth_rate END ASC
       LIMIT 
           5;
   `.compile(db)
   )
+}
+
+export async function getGrowthRatePerMonth(
+  year: number,
+  start: number,
+  end: number
+) {
+  return await db.executeQuery(
+    sql`
+    SELECT
+        COALESCE(AVG(CASE WHEN month_number = 1 THEN growth_rate END), 0) AS January,
+        COALESCE(AVG(CASE WHEN month_number = 2 THEN growth_rate END), 0) AS February,
+        COALESCE(AVG(CASE WHEN month_number = 3 THEN growth_rate END), 0) AS March,
+        COALESCE(AVG(CASE WHEN month_number = 4 THEN growth_rate END), 0) AS April,
+        COALESCE(AVG(CASE WHEN month_number = 5 THEN growth_rate END), 0) AS May,
+        COALESCE(AVG(CASE WHEN month_number = 6 THEN growth_rate END), 0) AS June,
+        COALESCE(AVG(CASE WHEN month_number = 7 THEN growth_rate END), 0) AS July,
+        COALESCE(AVG(CASE WHEN month_number = 8 THEN growth_rate END), 0) AS August,
+        COALESCE(AVG(CASE WHEN month_number = 9 THEN growth_rate END), 0) AS September,
+        COALESCE(AVG(CASE WHEN month_number = 10 THEN growth_rate END), 0) AS October,
+        COALESCE(AVG(CASE WHEN month_number = 11 THEN growth_rate END), 0) AS November,
+        COALESCE(AVG(CASE WHEN month_number = 12 THEN growth_rate END), 0) AS December
+    FROM (
+        SELECT
+            Months.month_number,
+            EXTRACT(MONTH FROM cr.date_harvested) AS month,
+            EXTRACT(YEAR FROM cr.date_harvested) AS year,
+            CASE 
+                WHEN c.isyield THEN 
+                    (cr.harvested_qty::numeric / NULLIF(cr.harvested_qty + cr.withered_crops, 0)) * 100
+                ELSE 
+                    (cr.harvested_qty::numeric / NULLIF(cr.planted_qty, 0)) * 100
+            END AS growth_rate
+        FROM
+            (
+                SELECT generate_series(1, 12) AS month_number
+            ) AS Months
+        LEFT JOIN
+            community_crop_reports cr ON Months.month_number = EXTRACT(MONTH FROM cr.date_harvested)
+        LEFT JOIN
+            community_farms_crops cfc ON cr.farmid = cfc.farm_id
+        LEFT JOIN
+            crops c ON cfc.crop_id = c.id
+        WHERE
+            cr.date_harvested IS NOT NULL
+            AND
+            EXTRACT(YEAR FROM cr.date_harvested) = ${String(year)}
+            AND
+            EXTRACT(MONTH FROM cr.date_harvested) BETWEEN ${String(
+              start
+            )} AND ${String(end)}
+    ) AS source
+    GROUP BY
+        year
+    ORDER BY
+        year;
+  `.compile(db)
+  )
+}
+
+export async function getResourcesCount() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('learning_materials'),
+      eb
+        .selectFrom('events')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('events'),
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('blogs'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getResourcesCountDetails() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('all_learning_materials'),
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'draft')
+        .as('draft_learning_material'),
+      eb
+        .selectFrom('learning_materials')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('is_archived', '=', true)
+        .as('archived_learning_material'),
+
+      eb
+        .selectFrom('events')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('events'),
+      eb
+        .selectFrom('events')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('event_end', '>', new Date())
+        .as('upcoming_events'),
+
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'published')
+        .as('blogs'),
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'draft')
+        .as('draft_blogs'),
+      eb
+        .selectFrom('blogs')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('is_archived', '=', true)
+        .as('archived_blogs'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getTotalHarvestPerDistrict() {
+  return await db.executeQuery(
+    sql`
+    SELECT
+        all_districts.district_name,
+        COALESCE(cf.total_farms, 0) AS total_farms,
+        COALESCE(SUM(ccr.harvested_qty), 0) AS total_harvest
+    FROM
+        (
+            SELECT 'District 1' AS district_name
+            UNION ALL
+            SELECT 'District 2'
+            UNION ALL
+            SELECT 'District 3'
+            UNION ALL
+            SELECT 'District 4'
+            UNION ALL
+            SELECT 'District 5'
+            UNION ALL
+            SELECT 'District 6'
+            -- Add more districts here if needed
+        ) AS all_districts
+    LEFT JOIN
+        (
+            SELECT district, COUNT(*) AS total_farms 
+            FROM community_farms 
+            GROUP BY district
+        ) AS cf ON all_districts.district_name = cf.district
+    LEFT JOIN
+        community_farms farms ON all_districts.district_name = farms.district
+    LEFT JOIN
+        community_crop_reports ccr ON farms.id = ccr.farmid
+    GROUP BY
+        all_districts.district_name, cf.total_farms
+    ORDER BY
+        all_districts.district_name;
+
+  `.compile(db)
+  )
+}
+
+export async function getFarmOverview() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('farm_applications')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_farm_applications'),
+      eb
+        .selectFrom('community_farms')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('accepted_requests'),
+      eb
+        .selectFrom('users')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where((eb) =>
+          eb.or([
+            eb('users.role', '=', 'farmer'),
+            eb('users.role', '=', 'farm_head'),
+          ])
+        )
+        .where('isbanned', '=', false)
+        .as('total_farmers'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getForumOverview(
+  year: number,
+  start: number,
+  end: number
+) {
+  return db.executeQuery(
+    sql`
+    WITH Months AS (
+        SELECT generate_series(1, 12) AS month_number
+    ),
+    QuestionsPerMonth AS (
+        SELECT
+            EXTRACT(MONTH FROM f.createdat) AS month,
+            COUNT(*) AS num_questions
+        FROM
+            forums f
+        WHERE
+            EXTRACT(YEAR FROM f.createdat) = ${String(year)}
+        AND
+            EXTRACT(MONTH FROM f.createdat) BETWEEN ${String(
+              start
+            )} and ${String(end)}
+        GROUP BY
+            EXTRACT(MONTH FROM f.createdat)
+    ),
+    AnswersPerMonth AS (
+        SELECT
+            EXTRACT(MONTH FROM fa.createdat) AS month,
+            COUNT(*) AS num_answers
+        FROM
+            forums_answers fa
+        WHERE
+            EXTRACT(YEAR FROM fa.createdat) = ${String(year)}
+        AND
+            EXTRACT(MONTH FROM fa.createdat) BETWEEN ${String(
+              start
+            )} and ${String(end)}
+        GROUP BY
+            EXTRACT(MONTH FROM fa.createdat)
+    )
+    SELECT
+        m.month_number AS month,
+        COALESCE(qpm.num_questions, 0) AS num_questions,
+        COALESCE(apm.num_answers, 0) AS num_answers
+    FROM
+        Months m
+    LEFT JOIN
+        QuestionsPerMonth qpm ON m.month_number = qpm.month
+    LEFT JOIN
+        AnswersPerMonth apm ON m.month_number = apm.month
+    ORDER BY
+        m.month_number;
+  `.compile(db)
+  )
+}
+
+export async function getForumsCount() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('forums')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('forums'),
+      eb
+        .selectFrom('forums_answers')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('forums_answers'),
+      eb
+        .selectFrom('forums_tags')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('forums_tags'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getCommonListOverview() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('farm_applications')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_farm_applications'),
+
+      eb
+        .selectFrom('community_farms')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('community_farms'),
+
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('seedling_requests'),
+
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_seedling_requests'),
+
+      eb
+        .selectFrom('user_feedbacks')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('user_feedbacks'),
+
+      eb
+        .selectFrom('user_feedbacks')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('is_read', '=', false)
+        .as('unread_user_feedbacks'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getAnalyticsOverviewPieChart() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .as('seedling_requests'),
+
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_seedling_requests'),
+
+      eb
+        .selectFrom('reported_problems')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'resolved')
+        .as('solved_farm_problems'),
+
+      eb
+        .selectFrom('reported_problems')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_farm_problems'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getUserFeedbackOverview() {
+  return await db
+    .selectFrom('user_feedbacks')
+    .select(({ fn }) => [
+      fn
+        .count<number>('id')
+        .filterWhere('rating', '=', '5')
+        .as('very_satisfied'),
+      fn.count<number>('id').filterWhere('rating', '=', '4').as('satisfied'),
+      fn.count<number>('id').filterWhere('rating', '=', '3').as('neutral'),
+      fn.count<number>('id').filterWhere('rating', '=', '2').as('dissatisfied'),
+      fn
+        .count<number>('id')
+        .filterWhere('rating', '=', '1')
+        .as('very_dissatisfied'),
+    ])
+    .executeTakeFirst()
 }

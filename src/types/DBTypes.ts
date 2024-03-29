@@ -1,11 +1,10 @@
-import { InsertType, Insertable, Selectable, Updateable } from 'kysely'
+import { Insertable, Selectable, Updateable } from 'kysely'
 import {
   Forums,
   Users,
   Articles,
-  AboutCms,
   LandingImages,
-  CommunityEvents,
+  PrivacyPolicy,
   EmailToken,
   UserTags,
   ForumsComments,
@@ -15,7 +14,6 @@ import {
   Crops,
   CropReports,
   AnswerVotes,
-  AboutGallery,
   FarmApplications,
   CommunityFarms,
   CommunityFarmsCrops,
@@ -41,6 +39,19 @@ import {
   Approach,
   SeedlingRequests,
   AdminAccess,
+  ReportedUsers,
+  FarmProblems,
+  FarmProblemMaterials,
+  ReportedProblems,
+  Tags,
+  ClientSocials,
+  ClientPartners,
+  ClientMembers,
+  Otp,
+  UserFeedbacks,
+  TermsCondition,
+  AboutUs,
+  AboutUsCarousel,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -68,11 +79,12 @@ export type AddImageLanding = Insertable<LandingImages>
 export type UpdateLanding = Updateable<Landing>
 export type UpdateApproach = Updateable<Approach>
 
-//About
-export type UpdateAbout = Updateable<AboutCms>
-export type AddImage = Insertable<AboutCms>
-export type Gallery = Insertable<AboutGallery>
-export type UpdateGallery = Updateable<AboutGallery>
+//PrivacyPolicy
+
+export type UpdatePrivacyPolicy = Updateable<PrivacyPolicy>
+
+//TermsConditions
+export type UpdateTermsConditions = Updateable<TermsCondition>
 
 //events
 // export type Events = Selectable<CommunityEvents>
@@ -176,3 +188,34 @@ export type UpdateSeedlingRequest = Updateable<SeedlingRequests>
 //access control
 export type NewAccessControl = Insertable<AdminAccess>
 export type UpdateAccessControl = Updateable<AdminAccess>
+
+// report user
+export type NewReportedUser = Insertable<ReportedUsers>
+export type UpdateReportedUser = Updateable<ReportedUsers>
+
+export type NewFarmProblem = Insertable<FarmProblems>
+export type UpdateFarmProblem = Insertable<FarmProblems>
+
+export type NewFarmProblemMaterial = Insertable<FarmProblemMaterials>
+export type UpdateFarmProblemMaterial = Updateable<FarmProblemMaterials>
+
+export type NewFarmProblemReport = Insertable<ReportedProblems>
+export type UpdateFarmProblemReport = Updateable<ReportedProblems>
+
+export type NewTag = Insertable<Tags>
+export type UpdateTag = Updateable<Tags>
+
+//CUAI
+export type NewClientSocials = Insertable<ClientSocials>
+export type NewClientPartners = Insertable<ClientPartners>
+export type NewClientMembers = Insertable<ClientMembers>
+
+// OTP
+export type NewOTPCode = Insertable<Otp>
+
+// User Feedbacks
+export type NewUserFeedback = Insertable<UserFeedbacks>
+
+// Update
+export type UpdateAboutUs = Updateable<AboutUs>
+export type NewAboutUsCarousel = Insertable<AboutUsCarousel>

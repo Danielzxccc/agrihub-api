@@ -286,7 +286,7 @@
 
 /**
  * @openapi
- * /api/report/question/{id}:
+ * /api/forums/report/question/{id}:
  *   post:
  *     summary: Report a question
  *     tags:
@@ -327,7 +327,7 @@
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  *       "404":
- *         description: Validation Error
+ *         description: Not Found Error
  *         content:
  *           application/json:
  *             schema:
@@ -349,4 +349,104 @@
  *       properties:
  *         reason:
  *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/forums/delete/answer/{id}:
+ *   delete:
+ *     summary: Delete an answer
+ *     tags:
+ *       - Forums
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the answer to be deleted
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Answer Deleted Successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/forums/delete/comment/{id}:
+ *   delete:
+ *     summary: Delete a comment
+ *     tags:
+ *       - Forums
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the comment to be deleted
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Comment Deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */

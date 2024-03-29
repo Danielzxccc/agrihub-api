@@ -177,6 +177,44 @@ export async function listCommuntityCropReports(
   }
 }
 
+export async function listExistingCropReports(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query, params } = await zParse(Schema.CommunityCropReports, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+    const sortBy = query.sort
+
+    const reports = await Interactor.listExistingCropReports(
+      params.id,
+      offset,
+      filterKey,
+      searchKey,
+      perPage,
+      sortBy
+    )
+
+    const totalPages = Math.ceil(Number(reports.total.count) / perPage)
+    res.status(200).json({
+      reports: reports.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(reports.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function viewCommunityCropReport(
   req: SessionRequest,
   res: Response
@@ -187,6 +225,18 @@ export async function viewCommunityCropReport(
 
     const report = await Interactor.viewCommunityCropReport(id, userid)
     res.status(200).json(report)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function markReportAsInactive(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.markReportAsInactive(id, userid)
+    res.status(200).json({ message: 'Report successfully set to inactive.' })
   } catch (error) {
     errorHandler(res, error)
   }
@@ -250,9 +300,129 @@ export async function listFavouriteCrops(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
 export async function getLowestGrowthRates(req: SessionRequest, res: Response) {
   try {
-    const data = await Interactor.getLowestGrowthRates()
+    const { query } = await zParse(Schema.GetHarvestRanking, req)
+    const data = await Interactor.getLowestGrowthRates(query.order)
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getGrowthRatePerMonth(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.FilterWitheredHarvested, req)
+    const data = await Interactor.getGrowthRatePerMonth(
+      query.year,
+      query.start,
+      query.end
+    )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listResourcesCount(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.listResourcesCount()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listResourcesCountDetails(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.listResourcesCountDetails()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listTotalHarvestPerDistrict(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.listTotalHarvestPerDistrict()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getFarmOverview(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.getFarmOverview()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getForumOverview(req: SessionRequest, res: Response) {
+  try {
+    const { query } = await zParse(Schema.FilterWitheredHarvested, req)
+    const data = await Interactor.getForumOverview(
+      query.year,
+      query.start,
+      query.end
+    )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getForumsCount(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.getForumsCount()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getCommonListOverview(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.getCommonListOverview()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getAnalyticsOverviewPieChart(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.getAnalyticsOverviewPieChart()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getUserFeedbackOverview(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const data = await Interactor.getUserFeedbackOverview()
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)

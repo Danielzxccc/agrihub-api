@@ -243,7 +243,8 @@ export async function getTotalArchivedBlogs() {
 export async function findPublishedBlogs(
   offset: number,
   searchKey: string,
-  perpage: number
+  perpage: number,
+  filter: string
 ) {
   let query = db
     .selectFrom('blogs as b')
@@ -285,12 +286,16 @@ export async function findPublishedBlogs(
     .where('is_archived', '=', false)
     .where('status', '=', 'published')
 
+  if (filter.length) {
+    query = query.where('b.category', '=', filter)
+  }
+
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('title', 'ilike', `${searchKey}%`),
-        eb('author', 'ilike', `${searchKey}%`),
-        eb('content', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('author', 'ilike', `%${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
       ])
     )
   }

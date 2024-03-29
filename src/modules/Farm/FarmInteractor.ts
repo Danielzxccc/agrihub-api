@@ -33,7 +33,7 @@ import {
   emitNotification,
   emitNotificationToAdmin,
 } from '../Socket/SocketController'
-import { getMonthByIndex } from '../../utils/utils'
+import log, { getMonthByIndex } from '../../utils/utils'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
 
 export async function createFarmApplication({
@@ -50,6 +50,17 @@ export async function createFarmApplication({
         'It appears that you currently have an active application in progress.',
         401
       )
+
+    const checkNameIfExisting = await Service.findCommunityFarmByName(
+      application.body.farm_name
+    )
+
+    if (checkNameIfExisting) {
+      throw new HttpError(
+        'Ang pangalan ng farm na iyong inilagay ay nakaregister na sa agrihub.',
+        400
+      )
+    }
 
     // check files
     if (!farmActualImages || !valid_id) {
@@ -79,7 +90,12 @@ export async function createFarmApplication({
       pendingApplication
     )
 
-    emitNotificationToAdmin('A new application has been received.')
+    await emitPushNotification(
+      'admin',
+      'New Application',
+      'A new application has been received.',
+      `/admin/community/application/${newApplication.id}`
+    )
 
     return newApplication
   } catch (error) {
@@ -100,7 +116,7 @@ export async function listCommunityFarms(
 ) {
   const [data, total] = await Promise.all([
     Service.findAllCommunityFarms(perpage, offset, search, filter),
-    Service.getTotalCommunityFarms(),
+    Service.getTotalCommunityFarms(search, filter),
   ])
 
   for (const farm of data) {
@@ -111,6 +127,35 @@ export async function listCommunityFarms(
   }
 
   return { data, total }
+}
+
+export async function listArchivedCommunityFarms(
+  perpage: number,
+  offset: number,
+  search: string,
+  filter: string
+) {
+  const [data, total] = await Promise.all([
+    Service.findArchivedCommunityFarms(perpage, offset, search, filter),
+    Service.getTotalArchivedCommunityFarms(search, filter),
+  ])
+
+  for (const farm of data) {
+    farm.avatar = farm.avatar ? getObjectUrl(farm.avatar) : farm.avatar
+    farm.cover_photo = farm.cover_photo
+      ? getObjectUrl(farm.cover_photo)
+      : farm.cover_photo
+  }
+
+  return { data, total }
+}
+
+export async function archiveCommunityFarm(id: string) {
+  await Service.archiveCommunityFarm(id)
+}
+
+export async function restoreCommunityFarm(id: string) {
+  await Service.restoreCommunityFarm(id)
 }
 
 export async function checkExistingApplication(userid: string) {
@@ -139,7 +184,7 @@ export async function listFarmApplication(
 ) {
   const [data, total] = await Promise.all([
     Service.findFarmApplications(offset, filterKey, searchKey, perpage),
-    Service.getTotalFarmApplications(),
+    Service.getTotalFarmApplications(filterKey),
   ])
 
   const formattedDates = data.map((item) => ({
@@ -216,9 +261,15 @@ export async function acceptFarmApplication(id: string) {
     role: 'farm_head',
   })
 
-  emitNotification(
+  // emitNotification(
+  //   farm.applicant.id,
+  //   'Your Farm Application has been successfully accepted.'
+  // )
+  await emitPushNotification(
     farm.applicant.id,
-    'Your Farm Application has been successfully accepted.'
+    'Farm Application Accepted',
+    'Your Farm Application has been successfully accepted.',
+    `/community/my-community/${newCommunityFarm.id}`
   )
 
   return newCommunityFarm
@@ -231,6 +282,13 @@ export async function rejectFarmApplication(id: string) {
   const application = await Service.updateFarmApplication(farm.id, {
     status: 'rejected',
   })
+
+  await emitPushNotification(
+    farm.applicant.id,
+    'Farm Application Rejected',
+    'Your Farm Application has been rejected.'
+  )
+
   return application
 }
 
@@ -318,7 +376,7 @@ export async function createCommunityGallery(
   description: string
 ) {
   try {
-    if (!images.length) throw new HttpError('Image is required', 400)
+    if (!images?.length) throw new HttpError('Image is required', 400)
     const user = await findUser(userid)
 
     const newImages = []
@@ -797,6 +855,19 @@ export async function updateCommunityFarm(
       throw new HttpError("Can't find farm", 404)
     }
 
+    if (farm.body.farm_name) {
+      const checkNameIfExisting = await Service.findCommunityFarmByName(
+        farm.body.farm_name
+      )
+
+      if (checkNameIfExisting) {
+        throw new HttpError(
+          'Ang pangalan ng farm na iyong inilagay ay nakaregister na sa agrihub.',
+          400
+        )
+      }
+    }
+
     const updatedCommunityFarm: UpdateCommunityFarm = {
       ...farm.body,
       avatar: avatar?.filename ? avatar?.filename : communityFarm.avatar,
@@ -823,12 +894,20 @@ export async function updateCommunityFarm(
       updatedCommunityFarm
     )
 
-    if (updatedFarm.cover_photo !== communityFarm.cover_photo) {
-      await deleteFileCloud(communityFarm.cover_photo)
+    if (updatedFarm?.cover_photo !== communityFarm?.cover_photo) {
+      try {
+        await deleteFileCloud(communityFarm.cover_photo ?? 'filekey')
+      } catch (error) {
+        log.info('ERROR DELETING IMAGE')
+      }
     }
 
-    if (updatedFarm.avatar !== communityFarm.avatar) {
-      await deleteFileCloud(communityFarm.avatar)
+    if (updatedFarm?.avatar !== communityFarm?.avatar) {
+      try {
+        await deleteFileCloud(communityFarm.avatar ?? 'filekey')
+      } catch (error) {
+        log.info('ERROR DELETING IMAGE')
+      }
     }
 
     if (avatar?.filename) {
@@ -933,4 +1012,35 @@ export async function viewCropDetails(id: string) {
   if (!crop) throw new HttpError('Crop not found', 404)
 
   return crop
+}
+
+export async function leaveCommunityFarm(id: string) {
+  const user = await findUser(id)
+  const community_farm = await Service.findCommunityFarmById(user.farm_id)
+
+  await updateUser(id, { farm_id: null, role: 'member' })
+
+  await emitPushNotification(
+    community_farm.farm_head,
+    'A member has left your community farm.',
+    `${user.firstname} ${user.lastname} has left your farm`
+  )
+}
+
+export async function kickCommunityFarmMember(userid: string, id: string) {
+  const [user, farmHead] = await Promise.all([findUser(id), findUser(userid)])
+
+  const community_farm = await Service.findCommunityFarmById(farmHead.farm_id)
+
+  if (user.farm_id !== farmHead.farm_id) {
+    throw new HttpError('Unathorized', 401)
+  }
+
+  await updateUser(user.id, { role: 'member', farm_id: null })
+  await emitPushNotification(
+    user.id,
+    `You have been kicked`,
+    `You have been kicked from ${community_farm.farm_name}`,
+    `/community/explore/${farmHead.farm_id}`
+  )
 }

@@ -70,6 +70,13 @@ export async function findAllCrops() {
     .execute()
 }
 
+export async function getTotalCrops() {
+  return await db
+    .selectFrom('crops')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .executeTakeFirst()
+}
+
 export async function viewFarm(id: string) {
   return await db
     .selectFrom('farms')
@@ -266,6 +273,20 @@ export async function findFarmApplications(
   return await query.limit(perpage).offset(offset).execute()
 }
 
+export async function getTotalFarmApplications(
+  filterKey: FarmApplicationStatus
+) {
+  let query = db
+    .selectFrom('farm_applications')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+
+  if (filterKey) {
+    query = query.where('status', '=', filterKey)
+  }
+
+  return await query.executeTakeFirst()
+}
+
 export async function findOneFarmApplication(id: string) {
   return await db
     .selectFrom('farm_applications')
@@ -310,13 +331,6 @@ export async function findExistingApplication(userid: string) {
     .executeTakeFirst()
 }
 
-export async function getTotalFarmApplications() {
-  return await db
-    .selectFrom('farm_applications')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .executeTakeFirst()
-}
-
 export async function deleteFarmApplicaiton(id: string) {
   return await db.deleteFrom('farm_applications').where('id', '=', id).execute()
 }
@@ -334,6 +348,14 @@ export async function findCommunityFarmById(id: string) {
     .selectFrom('community_farms')
     .selectAll()
     .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findCommunityFarmByName(name: string) {
+  return await db
+    .selectFrom('community_farms')
+    .selectAll()
+    .where('farm_name', '=', name)
     .executeTakeFirst()
 }
 
@@ -406,17 +428,73 @@ export async function findAllCommunityFarms(
 ) {
   let query = db.selectFrom('community_farms').selectAll()
 
+  if (search.length) query = query.where('farm_name', 'ilike', `%${search}%`)
+  if (filter.length) query = query.where('district', '=', filter)
+
+  return await query
+    .where('is_archived', '=', false)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalCommunityFarms(search: string, filter: string) {
+  let query = db
+    .selectFrom('community_farms')
+    .select(({ fn }) => [fn.count<number>('id').as('count')])
+
+  if (search.length) query = query.where('farm_name', 'ilike', `%${search}%`)
+  if (filter.length) query = query.where('district', '=', filter)
+
+  return await query.where('is_archived', '=', false).executeTakeFirst()
+}
+
+export async function findArchivedCommunityFarms(
+  perpage: number,
+  offset: number,
+  search: string,
+  filter: string
+) {
+  let query = db.selectFrom('community_farms').selectAll()
+
   if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
   if (filter.length) query = query.where('district', '=', filter)
 
-  return await query.limit(perpage).offset(offset).execute()
+  return await query
+    .where('is_archived', '=', true)
+    .limit(perpage)
+    .offset(offset)
+    .execute()
 }
 
-export async function getTotalCommunityFarms() {
-  return await db
+export async function getTotalArchivedCommunityFarms(
+  search: string,
+  filter: string
+) {
+  let query = db
     .selectFrom('community_farms')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .executeTakeFirst()
+
+  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (filter.length) query = query.where('district', '=', filter)
+
+  return await query.where('is_archived', '=', true).executeTakeFirst()
+}
+
+export async function archiveCommunityFarm(id: string) {
+  return await db
+    .updateTable('community_farms')
+    .set({ is_archived: true })
+    .where('id', '=', id)
+    .execute()
+}
+
+export async function restoreCommunityFarm(id: string) {
+  return await db
+    .updateTable('community_farms')
+    .set({ is_archived: false })
+    .where('id', '=', id)
+    .execute()
 }
 
 export async function insertFarmerInvitation(farm: NewFarmerInvitation) {

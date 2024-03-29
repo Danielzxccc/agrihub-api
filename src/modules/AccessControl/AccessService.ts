@@ -21,6 +21,18 @@ export async function updateAccessControl(
     .executeTakeFirst()
 }
 
+export async function updateAdminAcessByUserId(
+  id: string,
+  access: UpdateAccessControl
+) {
+  return await db
+    .updateTable('admin_access')
+    .set(access)
+    .returningAll()
+    .where('userid', '=', id)
+    .executeTakeFirst()
+}
+
 export async function findUserAccess(userid: string) {
   return await db
     .selectFrom('admin_access')

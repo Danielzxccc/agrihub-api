@@ -1,5 +1,5 @@
 import upload from '../../config/multer'
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import * as UserController from './UserController'
 import express from 'express'
 
@@ -146,7 +146,7 @@ UserRouter.get('/profile/:username', UserController.findUserProfile)
 
 UserRouter.put(
   '/profile/:id',
-  UserGuard(['member', 'farmer', 'farm_head']),
+  UserGuard(['admin', 'asst_admin', 'member', 'farmer', 'farm_head']),
   upload.single('avatar'),
   UserController.updateUserProfile
 )
@@ -205,4 +205,67 @@ UserRouter.get(
   '/search/members',
   UserGuard(['farm_head']),
   UserController.listMembers
+)
+
+UserRouter.get(
+  '/admins',
+  AccessGuard('admin'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.listAdmins
+)
+
+UserRouter.delete(
+  '/admin/disable/:id',
+  AccessGuard('admin'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.disableAdminAccount
+)
+
+UserRouter.post(
+  '/admin/enable/:id',
+  AccessGuard('admin'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.enableAdminAccount
+)
+
+UserRouter.post(
+  '/report',
+  UserGuard(['admin', 'asst_admin', 'farmer', 'farm_head', 'member']),
+  upload.array('evidence'),
+  UserController.reportUser
+)
+
+UserRouter.get(
+  '/reported',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.listReportedUsers
+)
+
+UserRouter.post(
+  '/ban/:id',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.banUserAccount
+)
+
+UserRouter.post(
+  '/unban/:id',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.unbanUserAccount
+)
+
+UserRouter.get(
+  '/banned',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.listBannedUsers
+)
+
+UserRouter.post(
+  '/warn/:id',
+  AccessGuard('users'),
+  UserGuard(['admin', 'asst_admin']),
+  UserController.sendingWarningToUser
 )

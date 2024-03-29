@@ -56,14 +56,26 @@ ReportsRouter.get(
 
 ReportsRouter.get(
   '/crop/report/:id',
-  UserGuard(['farm_head']),
+  UserGuard(['farm_head', 'admin', 'asst_admin']),
   ReportsController.listCommuntityCropReports
+)
+
+ReportsRouter.get(
+  '/crop/report/existing/:id',
+  UserGuard(['farm_head', 'admin', 'asst_admin']),
+  ReportsController.listExistingCropReports
 )
 
 ReportsRouter.get(
   '/crop/report/view/:id',
   UserGuard(['farm_head']),
   ReportsController.viewCommunityCropReport
+)
+
+ReportsRouter.post(
+  '/crop/report/inactive/:id',
+  UserGuard(['farm_head']),
+  ReportsController.markReportAsInactive
 )
 
 ReportsRouter.put(
@@ -100,4 +112,64 @@ ReportsRouter.get(
   '/admin/lowest/growth-rate',
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getLowestGrowthRates
+)
+
+ReportsRouter.get(
+  '/admin/growth-rate/monthly',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getGrowthRatePerMonth
+)
+
+ReportsRouter.get(
+  '/admin/resources/count',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listResourcesCount
+)
+
+ReportsRouter.get(
+  '/admin/resources/count/detailed',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listResourcesCountDetails
+)
+
+ReportsRouter.get(
+  '/admin/farms/district',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listTotalHarvestPerDistrict
+)
+
+ReportsRouter.get(
+  '/farms/overview',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getFarmOverview
+)
+
+ReportsRouter.get(
+  '/forums/overview',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getForumOverview
+)
+
+ReportsRouter.get(
+  '/forums/count',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getForumsCount
+)
+
+ReportsRouter.get(
+  '/common/overview',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getCommonListOverview
+)
+
+ReportsRouter.get(
+  '/analytics/overview/piechart',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getAnalyticsOverviewPieChart
+)
+
+ReportsRouter.get(
+  '/analytics/overview/user-feedback',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getUserFeedbackOverview
 )

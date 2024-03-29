@@ -3,8 +3,8 @@ import errorHandler from '../../utils/httpErrorHandler'
 import * as Interactor from './LearningInteractor'
 import * as Schema from '../../schema/LearningMaterialSchema'
 import zParse from '../../utils/zParse'
-import { createAuditLog } from '../AuditLogs/AuditLogsService'
 import { SessionRequest } from '../../types/AuthType'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
 export async function viewLearningMaterial(req: Request, res: Response) {
   try {
@@ -58,9 +58,15 @@ export async function createDraftLearningMaterial(
       body,
     })
 
+    // await createAuditLog({
+    //   action: '',
+    //   section: 'Leaning Material Management',
+    //   userid: req.session.userid,
+    // })
+
     await createAuditLog({
-      action: '',
-      section: 'Leaning Material Management',
+      action: 'Created Draft Learning Material',
+      section: 'Learning Material Management',
       userid: req.session.userid,
     })
 
@@ -72,13 +78,22 @@ export async function createDraftLearningMaterial(
   }
 }
 
-export async function updateDraftLearningMaterial(req: Request, res: Response) {
+export async function updateDraftLearningMaterial(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
     const { body } = await zParse(Schema.UpdateLearningMaterial, req)
 
     const updatedLearningMaterial =
       await Interactor.updateDraftLearningMaterial(id, body)
+
+    await createAuditLog({
+      action: 'Update Draft Learning Material',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res
       .status(200)
@@ -88,7 +103,10 @@ export async function updateDraftLearningMaterial(req: Request, res: Response) {
   }
 }
 
-export async function createLearningResource(req: Request, res: Response) {
+export async function createLearningResource(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
     const { body } = await zParse(Schema.NewLearningResource, req)
@@ -102,6 +120,12 @@ export async function createLearningResource(req: Request, res: Response) {
       }
     )
 
+    await createAuditLog({
+      action: 'Created Learning Resource',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
+
     res
       .status(201)
       .json({ message: 'created successfully', data: newLearningResource })
@@ -110,7 +134,10 @@ export async function createLearningResource(req: Request, res: Response) {
   }
 }
 
-export async function updateLearningResource(req: Request, res: Response) {
+export async function updateLearningResource(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
     const { body: resource } = await zParse(Schema.NewLearningResource, req)
@@ -122,6 +149,12 @@ export async function updateLearningResource(req: Request, res: Response) {
       resource
     )
 
+    await createAuditLog({
+      action: 'Updated Learning Resource',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
+
     res
       .status(200)
       .json({ message: 'Updated Successfully', data: updatedLearningResource })
@@ -130,11 +163,20 @@ export async function updateLearningResource(req: Request, res: Response) {
   }
 }
 
-export async function removeLearningResource(req: Request, res: Response) {
+export async function removeLearningResource(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
 
     await Interactor.removeLearningResource(id)
+
+    await createAuditLog({
+      action: 'Removed Learning Resource',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Removed Successfully' })
   } catch (error) {
@@ -142,12 +184,21 @@ export async function removeLearningResource(req: Request, res: Response) {
   }
 }
 
-export async function createLearningCredits(req: Request, res: Response) {
+export async function createLearningCredits(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
     const { body } = await zParse(Schema.NewLearningCredits, req)
 
     const newLearningCredits = await Interactor.createLearningCredits(id, body)
+
+    await createAuditLog({
+      action: 'Created Learning Credits',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res
       .status(201)
@@ -157,12 +208,21 @@ export async function createLearningCredits(req: Request, res: Response) {
   }
 }
 
-export async function updateLearningCredits(req: Request, res: Response) {
+export async function updateLearningCredits(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
     const { body } = await zParse(Schema.NewLearningCredits, req)
 
     const newLearningCredits = await Interactor.updateLearningCredits(id, body)
+
+    await createAuditLog({
+      action: 'Update Learning Credits',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res
       .status(200)
@@ -172,23 +232,40 @@ export async function updateLearningCredits(req: Request, res: Response) {
   }
 }
 
-export async function removeLearningCredits(req: Request, res: Response) {
+export async function removeLearningCredits(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
 
     await Interactor.removeLearningCredits(id)
+
+    await createAuditLog({
+      action: 'Removed Learning Credits',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
+
     res.status(200).json({ message: 'Removed Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
 }
 
-export async function createLearningTags(req: Request, res: Response) {
+export async function createLearningTags(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
     const { body } = await zParse(Schema.NewLearningTags, req)
 
     const newLearningTags = await Interactor.createLearningTags(id, body.tags)
+
+    await createAuditLog({
+      action: 'Created Learning Tags',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
+
     res
       .status(201)
       .json({ message: 'Created Successfully', data: newLearningTags })
@@ -197,11 +274,18 @@ export async function createLearningTags(req: Request, res: Response) {
   }
 }
 
-export async function removeLearningTags(req: Request, res: Response) {
+export async function removeLearningTags(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.removeLearningTags(id)
+
+    await createAuditLog({
+      action: 'Removed Learning Tags',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
+
     res.status(200).json({ message: 'Removed Successfully' })
   } catch (error) {
     errorHandler(res, error)
@@ -250,11 +334,13 @@ export async function listPublishedLearningMaterials(
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
+    const filterKey = String(query.filter)
 
     const learningMaterials = await Interactor.listPublishedLearningMaterials(
       offset,
       searchKey,
-      perPage
+      perPage,
+      filterKey
     )
 
     const totalPages = Math.ceil(
@@ -309,11 +395,20 @@ export async function listArchivedLearningMaterials(
   }
 }
 
-export async function publishLearningMaterial(req: Request, res: Response) {
+export async function publishLearningMaterial(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
 
     await Interactor.publishLearningMaterial(id)
+
+    await createAuditLog({
+      action: 'Published Learning Material',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Published Successfully' })
   } catch (error) {
@@ -321,11 +416,20 @@ export async function publishLearningMaterial(req: Request, res: Response) {
   }
 }
 
-export async function setFeaturedLearningResource(req: Request, res: Response) {
+export async function setFeaturedLearningResource(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { materialId, id } = req.params
 
     await Interactor.setFeaturedLearningResource(materialId, id)
+
+    await createAuditLog({
+      action: 'Set Featured Learning Resource',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Set Successfully' })
   } catch (error) {
@@ -333,11 +437,20 @@ export async function setFeaturedLearningResource(req: Request, res: Response) {
   }
 }
 
-export async function unpublishLearningMaterial(req: Request, res: Response) {
+export async function unpublishLearningMaterial(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
 
     await Interactor.unpublishLearningMaterial(id)
+
+    await createAuditLog({
+      action: 'Unpublish Learning Material',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Unpublished Successfully' })
   } catch (error) {
@@ -345,11 +458,20 @@ export async function unpublishLearningMaterial(req: Request, res: Response) {
   }
 }
 
-export async function removeLearningMaterial(req: Request, res: Response) {
+export async function removeLearningMaterial(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
 
     await Interactor.removeLearningMaterial(id)
+
+    await createAuditLog({
+      action: 'Removed Learning Material',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
@@ -357,11 +479,20 @@ export async function removeLearningMaterial(req: Request, res: Response) {
   }
 }
 
-export async function archiveLearningMaterial(req: Request, res: Response) {
+export async function archiveLearningMaterial(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
 
     await Interactor.archiveLearningMaterial(id)
+
+    await createAuditLog({
+      action: 'Archived Learning Material',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Archived Successfully' })
   } catch (error) {
@@ -369,11 +500,20 @@ export async function archiveLearningMaterial(req: Request, res: Response) {
   }
 }
 
-export async function unArchiveLearningMaterial(req: Request, res: Response) {
+export async function unArchiveLearningMaterial(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
 
     await Interactor.unArchiveLearningMaterial(id)
+
+    await createAuditLog({
+      action: 'Unarchived Learning Material',
+      section: 'Learning Material Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Unarchived Successfully' })
   } catch (error) {

@@ -1078,6 +1078,14 @@
  *         name: perpage
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - News
+ *            - Initiatives
+ *            - Our Focus
  *         description: Number of items per page
  *     responses:
  *       "200":

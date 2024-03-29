@@ -19,6 +19,11 @@ export const NewCommunityCropReport = z.object({
     date_planted: z.string(),
     date_harvested: z.string(),
     notes: z.string().optional(),
+    is_first_report: z
+      .string()
+      .transform((arg) => Boolean(arg))
+      .optional()
+      .default('true'),
   }),
 })
 export type NewCommunityCropReportT = z.infer<typeof NewCommunityCropReport>
@@ -54,5 +59,11 @@ export const FilterWitheredHarvested = z.object({
       .string()
       .transform((arg) => Number(arg))
       .optional(),
+  }),
+})
+
+export const GetHarvestRanking = z.object({
+  query: z.object({
+    order: z.union([z.literal('asc'), z.literal('desc')]).optional(),
   }),
 })

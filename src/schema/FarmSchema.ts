@@ -57,6 +57,7 @@ export const NewCropSchema = z.object({
       z.array(z.string().transform((arg) => arg as unknown as Int8)),
       z.string().transform((arg) => [arg as unknown as Int8]),
     ]),
+    companion: z.array(z.string()).optional(),
     isyield: z
       .string({ required_error: 'harvest_season is requred' })
       .transform((arg) => Boolean(arg)),
@@ -80,6 +81,7 @@ export const UpdateCropSchema = z.object({
         z.string().transform((arg) => [arg as unknown as Int8]),
       ])
       .optional(),
+    companion: z.array(z.string()).optional(),
     isyield: z
       .string({ required_error: 'harvest_season is requred' })
       .transform((arg) => Boolean(arg))
@@ -316,6 +318,10 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *           type: array
  *           items:
  *             type: string
+ *         companion:
+ *           type: array
+ *           items:
+ *             type: string
  *         isyield:
  *           type: boolean
  *           description: Indicates whether the crop yields
@@ -363,6 +369,10 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *           type: array
  *           items:
  *             type: string
+ *         companion:
+ *           type: array
+ *           items:
+ *             type: string
  *         image:
  *           type: string
  *           format: binary
@@ -403,6 +413,10 @@ export type UpdateCommunityFarmT = z.infer<typeof UpdateCommunityFarm>
  *           type: boolean
  *           description: Indicates whether the crop yields
  *         p_season:
+ *           type: array
+ *           items:
+ *             type: string
+ *         companion:
  *           type: array
  *           items:
  *             type: string

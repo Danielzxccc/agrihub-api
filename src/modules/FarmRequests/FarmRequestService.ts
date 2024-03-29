@@ -118,9 +118,48 @@ export async function findAllSeedlingRequest(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalSeedlingRequests() {
+export async function getTotalSeedlingRequests(
+  searchKey: string,
+  filter: string
+) {
+  let query = db
+    .selectFrom('seedling_requests as sr')
+    .leftJoin('crops as c', 'c.id', 'sr.crop_id')
+    .leftJoin('community_farms as cf', 'sr.farm_id', 'cf.id')
+    .select(({ fn }) => [fn.count<number>('sr.id').as('count')])
+
+  if (filter === 'pending') {
+    query = query.where('sr.status', '=', 'pending')
+  } else if (filter === 'accepted') {
+    query = query.where('sr.status', '=', 'accepted')
+  } else if (filter === 'rejected') {
+    query = query.where('sr.status', '=', 'rejected')
+  }
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('c.name', 'ilike', `${searchKey}%`),
+        eb('cf.farm_name', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+  return await query.executeTakeFirst()
+}
+
+export async function getFarmRequestsCount() {
   return await db
-    .selectFrom('seedling_requests')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'pending')
+        .as('pending_requests'),
+      eb
+        .selectFrom('seedling_requests')
+        .select(({ fn }) => [fn.count<number>('id').as('count')])
+        .where('status', '=', 'accepted')
+        .as('accepted_requests'),
+    ])
     .executeTakeFirst()
 }

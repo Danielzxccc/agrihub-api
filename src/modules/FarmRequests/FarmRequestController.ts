@@ -4,6 +4,7 @@ import zParse from '../../utils/zParse'
 import * as Schema from '../../schema/FarmRequest'
 import * as Interactor from './FarmRequestInteractor'
 import { SessionRequest } from '../../types/AuthType'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
 export async function createtSeedlingRequest(
   req: SessionRequest,
@@ -40,8 +41,8 @@ export async function listSeedlingRequestByFarm(
   res: Response
 ) {
   try {
-    const { userid } = req.session
-    const requests = await Interactor.listSeedlingRequestByFarm(userid)
+    const { id } = req.params
+    const requests = await Interactor.listSeedlingRequestByFarm(id)
 
     res.status(201).json(requests)
   } catch (error) {
@@ -81,26 +82,53 @@ export async function listAllSeedlingRequests(req: Request, res: Response) {
   }
 }
 
-export async function acceptSeedlingRequest(req: Request, res: Response) {
+export async function acceptSeedlingRequest(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
     const { body } = await zParse(Schema.AcceptSeedlingRequest, req)
 
     await Interactor.acceptSeedlingRequest(id, body)
 
+    await createAuditLog({
+      action: 'Accepted a seedling request',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
     res.status(201).json({ message: 'Accepted Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
 }
 
-export async function rejectSeedlingRequest(req: Request, res: Response) {
+export async function rejectSeedlingRequest(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
 
     await Interactor.rejectSeedlingRequest(id)
 
+    await createAuditLog({
+      action: 'Rejected a seedling request',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
+
     res.status(201).json({ message: 'Rejected Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listFarmRequestsCount(req: Request, res: Response) {
+  try {
+    const data = await Interactor.listFarmRequestsCount()
+
+    res.status(201).json(data)
   } catch (error) {
     errorHandler(res, error)
   }

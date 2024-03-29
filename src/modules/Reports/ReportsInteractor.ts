@@ -77,7 +77,6 @@ export async function createCommunityCropReport(
     delete report.c_name
     delete report.isyield
 
-    console.log(report, 'REPORT OBJECT')
     const newReport = await Service.insertCommunityCropReport({
       ...report,
       farmid: user.farm_id,
@@ -248,6 +247,31 @@ export async function listCommuntityCropReports(
   filterKey: string[] | string,
   searchKey: string,
   perpage: number,
+  sortBy: string,
+  isExisting?: boolean
+) {
+  const [data, total] = await Promise.all([
+    Service.findCommunityReports(
+      id,
+      offset,
+      filterKey,
+      searchKey,
+      perpage,
+      sortBy,
+      isExisting
+    ),
+    Service.getTotalReportCount(id, filterKey, searchKey),
+  ])
+
+  return { data, total }
+}
+
+export async function listExistingCropReports(
+  id: string,
+  offset: number,
+  filterKey: string[] | string,
+  searchKey: string,
+  perpage: number,
   sortBy: string
 ) {
   const [data, total] = await Promise.all([
@@ -257,9 +281,10 @@ export async function listCommuntityCropReports(
       filterKey,
       searchKey,
       perpage,
-      sortBy
+      sortBy,
+      true
     ),
-    Service.getTotalReportCount(id),
+    Service.getTotalReportCount(id, filterKey, searchKey, true),
   ])
 
   return { data, total }
@@ -274,16 +299,28 @@ export async function removeCommunityCropReport(id: string) {
 }
 
 export async function viewCommunityCropReport(id: string, userid: string) {
-  const report = await Service.findCommunityReportById(id)
-  if (!report) throw new HttpError("Can't find report", 404)
-
   const user = await findUser(userid)
+
+  const report = await Service.findCommunityReportById(id, user.farm_id)
+  if (!report) throw new HttpError("Can't find report", 404)
 
   if (user.farm_id !== report.farmid) {
     throw new HttpError('Unathorized', 401)
   }
 
   return report
+}
+
+export async function markReportAsInactive(id: string, userid: string) {
+  const user = await findUser(userid)
+  const report = await Service.findCommunityReportById(id, user.farm_id)
+  if (!report) throw new HttpError("Can't find report", 404)
+
+  if (user.farm_id !== report.farmid) {
+    throw new HttpError('Unathorized', 401)
+  }
+
+  await Service.markReportAsInactive(id)
 }
 
 export async function listGrowthHarvestStats(userid: string) {
@@ -306,6 +343,10 @@ export async function getAverageGrowthRate(userid: string) {
   // yieldable growth rate=((harvestedqty/(harvestedqty+witheredqty))x100
   // ((parseFloat(plant.harvested_qty as string) / parseFloat(plant.planted_qty as string)) / parseFloat(plant.planted_qty as string)) *100
   const [plant] = data
+  // const latestGrowthRate =
+  //   (parseFloat(plant.net_yield as string) /
+  //     parseFloat(plant.planted_qty as string)) *
+  //   100
   const latestGrowthRate =
     plant.type === '1'
       ? (parseFloat(plant.harvested_qty as string) /
@@ -334,8 +375,8 @@ export async function getAverageGrowthRate(userid: string) {
   //   }, 0) / data.length
   let sum = 0
 
-  console.log(data)
-  for (let i = 1; i < data.length; i++) {
+  console.log(data, 'DATA NI NIKKI')
+  for (let i = 0; i < data.length; i++) {
     const plant = data[i]
     const growthRate =
       plant.type === '1'
@@ -346,12 +387,16 @@ export async function getAverageGrowthRate(userid: string) {
         : (parseFloat(plant.harvested_qty as string) /
             parseFloat(plant.planted_qty as string)) *
           100
+    // const growthRate =
+    //   parseFloat(plant.crop_yield as string) +
+    //   parseFloat(plant.net_yield as string) -
+    //   parseFloat(plant.withered_crops as string)
 
     console.log(growthRate)
     sum += growthRate
   }
 
-  const averageGrowthRate = sum / (data.length - 1)
+  const averageGrowthRate = sum / data.length
 
   const results = await axios.post(`${process.env.PYTHON_API}/growth-rate`, {
     average_growth: Number(averageGrowthRate.toFixed(2)),
@@ -372,13 +417,19 @@ export async function getSuggestedLearningMaterials(userid: string) {
   const [data] = await Service.getAverageGrowthRate(user.farm_id)
 
   // get suggested tags from python
-  const suggestedTags = await axios.post(
-    `${process.env.PYTHON_API}/suggested-tags`,
-    [data]
-  )
+  try {
+    var suggestedTags = await axios.post(
+      `${process.env.PYTHON_API}/suggested-tags`,
+      [data]
+    )
+  } catch (error) {
+    log.error('Failed Getting Learning Resource')
+  }
+
+  console.log(suggestedTags.data.tags, 'REPORTED TAGS FROM ANALYTICS SERVICE')
 
   // feed dataset from python to our database for query
-  const dataSet = suggestedTags.data.suggested_tags[0].tags
+  const dataSet = suggestedTags.data.tags[0]
 
   const suggestedLearningMaterials = await findLearningMaterialByTags(dataSet)
 
@@ -391,8 +442,149 @@ export async function listFavouriteCrops() {
   return data
 }
 
-export async function getLowestGrowthRates() {
-  const data = await Service.getLowestGrowthRates()
+export async function getLowestGrowthRates(order: 'desc' | 'asc') {
+  const data = await Service.getLowestGrowthRates(order)
 
   return data.rows
+}
+
+type MonthlyData = {
+  january?: number | string
+  february?: number | string
+  march?: number | string
+  april?: number | string
+  may?: number | string
+  june?: number | string
+  july?: number | string
+  august?: number | string
+  september?: number | string
+  october?: number | string
+  november?: number | string
+  december?: number | string
+}
+
+export async function getGrowthRatePerMonth(
+  year = new Date().getFullYear(),
+  start = 1,
+  end = 12
+) {
+  const monthlyData = await Service.getGrowthRatePerMonth(year, start, end)
+
+  const data = monthlyData.rows[0] as MonthlyData
+
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+
+  if ((start !== 1 && end !== 12) || start === 1 || end === 12) {
+    const startIndex = start - 1
+    const endIndex = end - 1
+
+    months.splice(endIndex + 1)
+
+    if (startIndex > 0) {
+      months.splice(0, startIndex)
+    }
+  }
+
+  const dataKeys = Object.keys(data ?? {})
+  console.log(monthlyData)
+
+  const formattedData: MonthlyData = {}
+
+  months.map((month: keyof MonthlyData) => {
+    const monthIndex = dataKeys.findIndex((e) => e === month.toLowerCase())
+
+    formattedData[month] = Object.values(data ?? {})[monthIndex] ?? '0'
+  })
+
+  return formattedData
+}
+
+export async function listResourcesCount() {
+  const data = await Service.getResourcesCount()
+  return data
+}
+
+export async function listResourcesCountDetails() {
+  const data = await Service.getResourcesCountDetails()
+  return data
+}
+
+export async function listTotalHarvestPerDistrict() {
+  const data = await Service.getTotalHarvestPerDistrict()
+
+  return data.rows
+}
+
+export async function getFarmOverview() {
+  const data = Service.getFarmOverview()
+  return data
+}
+
+export async function getForumOverview(
+  year = new Date().getFullYear(),
+  start = 1,
+  end = 12
+) {
+  const data = await Service.getForumOverview(year, start, end)
+
+  type MonthlyData = {
+    month: string
+    num_questions: string
+    num_answers: string
+  }
+
+  const monthlyData = data.rows as MonthlyData[]
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+
+  for (const month of monthlyData) {
+    month.month = months[parseInt(month.month) - 1]
+  }
+
+  return monthlyData
+}
+
+export async function getForumsCount() {
+  const data = await Service.getForumsCount()
+  return data
+}
+
+export async function getCommonListOverview() {
+  const data = await Service.getCommonListOverview()
+  return data
+}
+
+export async function getAnalyticsOverviewPieChart() {
+  const data = await Service.getAnalyticsOverviewPieChart()
+  return data
+}
+
+export async function getUserFeedbackOverview() {
+  const data = await Service.getUserFeedbackOverview()
+  return data
 }

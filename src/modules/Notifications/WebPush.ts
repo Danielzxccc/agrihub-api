@@ -10,7 +10,7 @@ const vapidKeys = {
 }
 
 PushService.setVapidDetails(
-  'mailto:user@example.org',
+  'https://qc-agrihub.xyz',
   vapidKeys.publicKey,
   vapidKeys.privateKey
 )

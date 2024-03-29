@@ -1188,6 +1188,14 @@
  *         schema:
  *           type: string
  *         description: Number of items per page (optional)
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - Tagalog
+ *            - English
+ *            - Tagalog and English
  *     responses:
  *       "200":
  *         description: Successful response

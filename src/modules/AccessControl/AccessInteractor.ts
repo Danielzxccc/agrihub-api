@@ -1,8 +1,9 @@
 import { NewAccessControl, NewUser } from '../../types/DBTypes'
 import bcrypt from 'bcrypt'
-import { createUser, findUserByEmail } from '../Users/UserService'
+import { createUser, findAdmin, findUserByEmail } from '../Users/UserService'
 import * as Service from './AccessService'
 import HttpError from '../../utils/HttpError'
+import { createAuditLog } from '../AuditLogs/AuditLogsService'
 
 export async function createNewAdmin(user: NewUser, access: NewAccessControl) {
   const hashedPassword = await bcrypt.hash(user.password, 10)
@@ -14,7 +15,7 @@ export async function createNewAdmin(user: NewUser, access: NewAccessControl) {
     ...user,
     password: hashedPassword,
     role: 'asst_admin',
-    verification_level: '4',
+    verification_level: '2',
   }
 
   const newAdmin = await createUser(adminObject)
@@ -25,4 +26,25 @@ export async function createNewAdmin(user: NewUser, access: NewAccessControl) {
   })
 
   return newAdmin
+}
+
+export async function updateAdminAccess(id: string, access: NewAccessControl) {
+  const adminAccess = await Service.findUserAccess(id)
+
+  if (!adminAccess) {
+    throw new HttpError('Access Control List Not Found', 404)
+  }
+
+  await Service.updateAdminAcessByUserId(id, access)
+  // await createAuditLog({})
+}
+
+export async function viewAdminAccess(id: string) {
+  const admin = await findAdmin(id)
+
+  if (!admin) {
+    throw new HttpError('Admin Not Found', 404)
+  }
+
+  return admin
 }

@@ -42,6 +42,15 @@ export const ListDraftLearningMaterials = z.object({
     search: z.string().optional().default(''),
     page: z.string().optional(),
     perpage: z.string().optional().default('20'),
+    filter: z
+      .union([
+        z.literal('Tagalog'),
+        z.literal('English'),
+        z.literal('Tagalog and English'),
+        z.literal(''),
+      ])
+      .optional()
+      .default(''),
   }),
 })
 

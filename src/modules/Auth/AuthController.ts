@@ -4,6 +4,7 @@ import * as Interactor from './AuthInteractor'
 import * as Schema from '../../schema/AuthSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
+import { verificationSuccessPage } from '../../utils/email_template'
 
 export async function authenticateUser(req: SessionRequest, res: Response) {
   try {
@@ -73,7 +74,7 @@ export async function verifyEmail(req: Request, res: Response) {
     // add data const here to pass in socket.io later
     await Interactor.verifyEmail(token.params.id)
 
-    res.status(200).json({ message: 'Verified Successfully' })
+    res.status(200).send(verificationSuccessPage)
   } catch (error) {
     errorHandler(res, error)
   }
@@ -148,6 +149,58 @@ export async function checkResetTokenExpiration(
     await Interactor.checkResetTokenExpiration(token)
 
     res.status(200).json({ message: 'Valid Token' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function verifyOTP(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.VerifyOTP, req)
+
+    await Interactor.verifyOTP(userid, body.code)
+
+    res.status(200).json({ message: 'Verified Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function sendOTP(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+
+    await Interactor.sendOTP(userid)
+
+    res.status(200).json({ message: 'Sent Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function sendResetTokenViaOTP(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.SendOTPByNumber, req)
+
+    await Interactor.sendResetTokenViaOTP(body.contact_number)
+
+    res.status(200).json({ message: 'Sent Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function verifyResetTokenViaOTP(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { body } = await zParse(Schema.VerifyOTP, req)
+
+    const token = await Interactor.verifyResetTokenViaOTP(body.code)
+
+    res.status(200).json({ token })
   } catch (error) {
     errorHandler(res, error)
   }

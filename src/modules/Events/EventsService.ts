@@ -361,9 +361,9 @@ export async function findPublishedEvents(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('about', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
-        eb('location', 'ilike', `${searchKey}%`),
+        eb('about', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('location', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -371,11 +371,31 @@ export async function findPublishedEvents(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalPublishedEvents() {
-  return await db
+export async function getTotalPublishedEvents(
+  searchKey: string,
+  filter: string
+) {
+  let query = db
     .selectFrom('events')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
+
+  if (filter === 'upcoming') {
+    query = query.where('events.createdat', '>', new Date())
+  } else if (filter === 'previous') {
+    query = query.where('events.createdat', '<', new Date())
+  }
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('about', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('location', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+  return await query
     .where('status', '=', 'published')
-    .where('is_archived', '=', true)
+    .where('is_archived', '=', false)
     .executeTakeFirst()
 }

@@ -1,5 +1,6 @@
 import * as Service from './TagsService'
 import HttpError from '../../utils/HttpError'
+import { NewTag } from '../../types/DBTypes'
 
 export async function findTags(tag: string) {
   const tags = await Service.findTags(tag)
@@ -14,7 +15,7 @@ export async function getTags(
 ) {
   const [data, total] = await Promise.all([
     Service.getTags(offset, filterKey, searchKey, perpage),
-    Service.getTotalCount(),
+    Service.getTotalCount(filterKey, searchKey),
   ])
 
   if (!data || data.length === 0) {
@@ -22,4 +23,28 @@ export async function getTags(
   }
 
   return { data, total }
+}
+
+export async function createTag(tag: NewTag) {
+  const data = await Service.createTag(tag)
+
+  return data
+}
+
+export async function viewTag(id: string) {
+  const data = await Service.viewTag(id)
+
+  if (!data) {
+    throw new HttpError('Tag Not Found', 404)
+  }
+
+  return data
+}
+
+export async function deleteTag(id: string) {
+  const deletedTag = await Service.deleteTag(id)
+
+  if (!deletedTag) {
+    throw new HttpError('Tag Not Found', 404)
+  }
 }

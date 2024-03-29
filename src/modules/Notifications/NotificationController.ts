@@ -105,3 +105,15 @@ export async function testEmit(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function markAllAsRead(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+
+    await Interactor.markAllAsRead(userid)
+
+    res.status(200).json({ message: 'success' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

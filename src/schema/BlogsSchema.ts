@@ -9,10 +9,10 @@ export const NewBlog = z.object({
 export const UpdateBlog = z.object({
   body: z.object({
     title: z.string(),
-    category: z.string(),
-    content: z.string(),
-    author: z.string(),
-    author_title: z.string(),
+    category: z.string().optional(),
+    content: z.string().optional(),
+    author: z.string().optional(),
+    author_title: z.string().optional(),
   }),
 })
 
@@ -33,5 +33,6 @@ export const ListDraftBlogs = z.object({
     search: z.string().optional().default(''),
     page: z.string().optional(),
     perpage: z.string().optional().default('20'),
+    filter: z.string().optional().default(''),
   }),
 })

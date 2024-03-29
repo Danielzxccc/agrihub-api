@@ -21,11 +21,12 @@ import { z } from 'zod'
  *     UserRegisterSchema:
  *       type: object
  *       required:
- *         - email
  *         - password
  *         - confirmPassword
  *       properties:
  *         email:
+ *           type: string
+ *         phone_number:
  *           type: string
  *         password:
  *           type: string
@@ -174,6 +175,8 @@ import { z } from 'zod'
  *           type: boolean
  *         about:
  *           type: boolean
+ *         users:
+ *           type: boolean
  *         privacy_policy:
  *           type: boolean
  *         terms_and_conditions:
@@ -225,6 +228,11 @@ import { z } from 'zod'
  *         farm_id:
  *           type: string
  *           nullable: true
+ *         contact_number:
+ *           type: string
+ *           nullable: true
+ *         isFarmBanned:
+ *           type: boolean
  */
 export const UserAuthSchema = z.object({
   body: z.object({
@@ -235,7 +243,8 @@ export const UserAuthSchema = z.object({
 
 export const UserRegisterSchema = z.object({
   body: z.object({
-    email: z.string({ required_error: 'email is required' }).email(),
+    email: z.string().email().optional(),
+    phone_number: z.string().optional(),
     password: z
       .string({ required_error: 'password is required' })
       .min(8, { message: 'minimum of 8 characters' }),
@@ -292,3 +301,15 @@ export const ResetPassword = z.object({
 
 export type RegisterUser = z.infer<typeof UserRegisterSchema>
 export type ProfileCompletion = z.infer<typeof verifyLevelTwo>
+
+export const VerifyOTP = z.object({
+  body: z.object({
+    code: z.number(),
+  }),
+})
+
+export const SendOTPByNumber = z.object({
+  body: z.object({
+    contact_number: z.string(),
+  }),
+})

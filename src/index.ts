@@ -1,6 +1,7 @@
 import express, { Express } from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import path from 'path'
 import { startSocket } from './modules/Socket/SocketController'
 import session from 'express-session'
 import { corsOptions, sessionConfig } from './config/config'
@@ -25,8 +26,22 @@ const io = new Server(httpServer, { cors: corsOptions })
 httpServer.listen(3000, () => {
   log.info('Server is running on port 3000')
   startSocket()
+  app.get('/ip', (request, response) => response.send(request.ip))
   routes(app)
   swaggerDocs(app)
+
+  // if (process.env.NODE_ENV === 'development') {
+  //   const __dirname = path.resolve()
+  //   app.use(express.static(path.join(__dirname, '/dist_fr')))
+
+  //   app.get('*', (req, res) =>
+  //     res.sendFile(path.resolve(__dirname, 'dist_fr', 'index.html'))
+  //   )
+  // } else {
+  //   app.get('/', (req, res) => {
+  //     res.send('API is running....')
+  //   })
+  // }
 })
 
 export { io }

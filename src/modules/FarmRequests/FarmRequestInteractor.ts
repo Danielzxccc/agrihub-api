@@ -64,10 +64,13 @@ export async function cancelSeedlingRequest(id: string, userid: string) {
   await Service.deleteSeedlingRequest(id)
 }
 
-export async function listSeedlingRequestByFarm(userid: string) {
-  const user = await findUser(userid)
+export async function listSeedlingRequestByFarm(id: string) {
+  // const user = await findUser(userid)
+  const communityFarm = await findCommunityFarmById(id)
 
-  const requests = await Service.findSeedlingRequestByFarm(user.farm_id)
+  if (!communityFarm) throw new HttpError('Farm Details Not Found', 404)
+
+  const requests = await Service.findSeedlingRequestByFarm(id)
 
   return requests
 }
@@ -80,7 +83,7 @@ export async function listAllSeedlingRequests(
 ) {
   const [data, total] = await Promise.all([
     Service.findAllSeedlingRequest(offset, searchKey, perpage, filter),
-    Service.getTotalSeedlingRequests(),
+    Service.getTotalSeedlingRequests(searchKey, filter),
   ])
 
   return { data, total }
@@ -132,4 +135,10 @@ export async function rejectSeedlingRequest(id: string) {
   )
 
   await Service.updateSeedlingRequest(id, updateObject)
+}
+
+export async function listFarmRequestsCount() {
+  const data = await Service.getFarmRequestsCount()
+
+  return data
 }

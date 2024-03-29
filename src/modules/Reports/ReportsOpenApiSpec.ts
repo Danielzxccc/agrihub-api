@@ -74,6 +74,9 @@
  *         notes:
  *           type: string
  *           optional: true
+ *         is_first_report:
+ *           type: string
+ *           optional: true
  *         image:
  *           type: array
  *           items:
@@ -603,6 +606,130 @@
  */
 
 /**
+ *  @openapi
+ * /api/reports/crop/report/existing/{id}:
+ *   get:
+ *     summary: Get crop reports by ID
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the farm
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Records per page
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Array of filters
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *         description: Sorting parameter
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommunityCropReportsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/reports/crop/report/inactive/{id}:
+ *   post:
+ *     summary: Set report as inactive
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: The ID of the report to be set as inactive
+ *         required: true
+ *     responses:
+ *       "200":
+ *         description: Event deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
  * @openapi
  * components:
  *   schemas:
@@ -610,6 +737,8 @@
  *       type: object
  *       properties:
  *         crop_id:
+ *           type: string
+ *         cfc_id:
  *           type: string
  *         crop_name:
  *           type: string
@@ -988,8 +1117,6 @@
  *     FavouriteCropData:
  *       type: object
  *       properties:
- *         crop_id:
- *           type: string
  *         crop_name:
  *           type: string
  *         image:
@@ -1007,6 +1134,14 @@
  * /api/reports/admin/lowest/growth-rate:
  *   get:
  *     summary: Get farms with the lowest average growth rate
+ *     parameters:
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - asc
+ *            - desc
  *     tags: [Reports]
  *     responses:
  *       "200":
@@ -1017,6 +1152,30 @@
  *               type: array
  *               items:
  *                 $ref: "#/components/schemas/FarmWithGrowthRate"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */
 
 /**
@@ -1038,4 +1197,724 @@
  *         avg_growth_rate:
  *           type: string
  *           description: Average growth rate of the farm
+ */
+
+/**
+ * @openapi
+ * /api/reports/admin/growth-rate/monthly:
+ *   get:
+ *     summary: Get monthly growth rate
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *         description: The year to filter the data
+ *         required: false
+ *       - in: query
+ *         name: start
+ *         schema:
+ *           type: string
+ *         description: The start date to filter the data
+ *         required: false
+ *       - in: query
+ *         name: end
+ *         schema:
+ *           type: string
+ *         description: The end date to filter the data
+ *         required: false
+ *     responses:
+ *       "200":
+ *         description: Monthly growth rate data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MonthlyGrowthRate"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     MonthlyGrowthRate:
+ *       type: object
+ *       properties:
+ *         January:
+ *           type: string
+ *         February:
+ *           type: string
+ *         March:
+ *           type: string
+ *         April:
+ *           type: string
+ *         May:
+ *           type: string
+ *         June:
+ *           type: string
+ *         July:
+ *           type: string
+ *         August:
+ *           type: string
+ *         September:
+ *           type: string
+ *         October:
+ *           type: string
+ *         November:
+ *           type: string
+ *         December:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/admin/resources/count:
+ *   get:
+ *     summary: Get count of resources
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Count of resources
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ResourceCount"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ResourceCount:
+ *       type: object
+ *       properties:
+ *         learning_materials:
+ *           type: string
+ *         events:
+ *           type: string
+ *         blogs:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/admin/resources/count/detailed:
+ *   get:
+ *     summary: Get detailed count of resources
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Detailed count of resources
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/DetailedResourceCount"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     DetailedResourceCount:
+ *       type: object
+ *       properties:
+ *         all_learning_materials:
+ *           type: string
+ *         draft_learning_material:
+ *           type: string
+ *         archived_learning_material:
+ *           type: string
+ *         events:
+ *           type: string
+ *         upcoming_events:
+ *           type: string
+ *         blogs:
+ *           type: string
+ *         draft_blogs:
+ *           type: string
+ *         archived_blogs:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/admin/farms/district:
+ *   get:
+ *     summary: Get farms count and total harvest by district
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Farms count and total harvest by district
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/DistrictFarmData"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     DistrictFarmData:
+ *       type: object
+ *       properties:
+ *         district_name:
+ *           type: string
+ *         total_farms:
+ *           type: string
+ *         total_harvest:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/farms/overview:
+ *   get:
+ *     summary: Get overview of farm reports
+ *     tags:
+ *       - FarmRequest
+ *     responses:
+ *       "200":
+ *         description: Overview of farm reports
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmOverview"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmOverview:
+ *       type: object
+ *       properties:
+ *         pending_farm_applications:
+ *           type: string
+ *         accepted_requests:
+ *           type: string
+ *         total_farmers:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/forums/count:
+ *   get:
+ *     summary: Get count of forums, forum answers, and forum tags
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Count of forums, forum answers, and forum tags
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ForumCount"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ForumCount:
+ *       type: object
+ *       properties:
+ *         forums:
+ *           type: string
+ *         forums_answers:
+ *           type: string
+ *         forums_tags:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/forums/overview:
+ *   get:
+ *     summary: Get overview of forum questions and answers by month
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *         description: The year to filter the overview
+ *     responses:
+ *       "200":
+ *         description: Overview of forum questions and answers by month
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/ForumOverview"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ForumOverview:
+ *       type: object
+ *       properties:
+ *         month:
+ *           type: string
+ *         num_questions:
+ *           type: string
+ *         num_answers:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/common/overview:
+ *   get:
+ *     summary: Retrieve Common Overview Reports
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommonOverviewResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ *
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommonOverviewResponse:
+ *       type: object
+ *       properties:
+ *         pending_farm_applications:
+ *           type: string
+ *         community_farms:
+ *           type: string
+ *         seedling_requests:
+ *           type: string
+ *         pending_seedling_requests:
+ *           type: string
+ *         user_feedbacks:
+ *           type: string
+ *         unread_user_feedbacks:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/analytics/overview/piechart:
+ *   get:
+ *     summary: Retrieve Analytics Overview for Pie Chart
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AnalyticsOverviewPieChartResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AnalyticsOverviewPieChartResponse:
+ *       type: object
+ *       properties:
+ *         seedling_requests:
+ *           type: string
+ *         pending_seedling_requests:
+ *           type: string
+ *         solved_farm_problems:
+ *           type: string
+ *         pending_farm_problems:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/analytics/overview/user-feedback:
+ *   get:
+ *     summary: Retrieve Analytics Overview for User Feedback
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AnalyticsOverviewUserFeedbackResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     AnalyticsOverviewUserFeedbackResponse:
+ *       type: object
+ *       properties:
+ *         very_satisfied:
+ *           type: string
+ *         satisfied:
+ *           type: string
+ *         neutral:
+ *           type: string
+ *         dissatisfied:
+ *           type: string
+ *         very_dissatisfied:
+ *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/forums/reported/questions:
+ *   get:
+ *     summary: Get Reported Questions in Forums
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: "#/components/schemas/ReportedQuestionList"
+ *                 pagination:
+ *                   $ref: "#/components/schemas/PaginationData"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ReportedQuestionList:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/ReportedQuestion"
+ *     ReportedQuestion:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         userid:
+ *           type: string
+ *         forumid:
+ *           type: string
+ *         reason:
+ *           type: string
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *         question:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         reported_username:
+ *           type: string
+ *         reported_firstname:
+ *           type: string
+ *         reported_userid:
+ *           type: string
  */

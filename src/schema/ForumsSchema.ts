@@ -23,6 +23,8 @@ import { z } from 'zod'
  *                     type: string
  *                   username:
  *                     type: string
+ *                   role:
+ *                     type: string
  *               tags:
  *                 type: array
  *                 items:
@@ -198,6 +200,8 @@ import { z } from 'zod'
  *         username:
  *           type: string
  *           description: The username of the user
+ *         role:
+ *           type: string
  *
  *     QuestionTags:
  *       type: object
@@ -249,6 +253,8 @@ import { z } from 'zod'
  *         user:
  *           $ref: "#/components/schemas/UserObject"
  *         createdat:
+ *           type: string
+ *         id:
  *           type: string
  */
 

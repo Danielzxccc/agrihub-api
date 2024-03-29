@@ -1,3 +1,4 @@
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import * as TagsController from './TagsController'
 import express from 'express'
 
@@ -76,5 +77,20 @@ TagsRouter.get('/search', TagsController.findTags)
  *               $ref: "#/components/schemas/ServerError"
  */
 TagsRouter.get('/', TagsController.getTags)
+
+TagsRouter.post(
+  '/create',
+  UserGuard(['admin', 'asst_admin']),
+  TagsController.createTag
+)
+
+TagsRouter.get('/:id', TagsController.viewTag)
+
+TagsRouter.delete(
+  '/:id',
+  AccessGuard('forums'),
+  UserGuard(['asst_admin', 'admin']),
+  TagsController.deleteTag
+)
 
 export default TagsRouter

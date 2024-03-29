@@ -54,3 +54,9 @@ export function getMonthByIndex(index: number) {
   const currentMonthName = monthNames[index]
   return currentMonthName
 }
+
+export function generateOTP() {
+  // Generate a random 3-byte buffer
+
+  return Math.floor(100000 + Math.random() * 900000)
+}

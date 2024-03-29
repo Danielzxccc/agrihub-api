@@ -6,6 +6,7 @@ import * as Schema from '../../schema/FarmSchema'
 import { SessionRequest } from '../../types/AuthType'
 import { deleteFile } from '../../utils/file'
 import { ZodError } from 'zod'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
 export async function applyFarm(req: SessionRequest, res: Response) {
   try {
@@ -79,11 +80,82 @@ export async function listCommunityFarms(req: Request, res: Response) {
   }
 }
 
-export async function acceptFarmApplication(req: Request, res: Response) {
+export async function listArchivedCommunityFarms(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(Schema.CommunityFarms, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+
+    const farms = await Interactor.listArchivedCommunityFarms(
+      perPage,
+      offset,
+      searchKey,
+      filterKey
+    )
+
+    const totalPages = Math.ceil(Number(farms.total.count) / perPage)
+    res.status(200).json({
+      farms: farms.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(farms.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function archiveCommunityFarm(req: SessionRequest, res: Response) {
+  try {
+    const id = req.params.id
+
+    await Interactor.archiveCommunityFarm(id)
+
+    await createAuditLog({
+      action: 'Archived a farm',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
+
+    res.status(200).json({ message: 'Archived successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function restoreCommunityFarm(req: Request, res: Response) {
+  try {
+    const id = req.params.id
+
+    await Interactor.restoreCommunityFarm(id)
+
+    res.status(200).json({ message: 'Restored successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function acceptFarmApplication(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const id = req.params.id
 
     const application = await Interactor.acceptFarmApplication(id)
+
+    await createAuditLog({
+      action: 'Accepted a farm application',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
 
     res
       .status(200)
@@ -93,11 +165,20 @@ export async function acceptFarmApplication(req: Request, res: Response) {
   }
 }
 
-export async function rejectFarmApplication(req: Request, res: Response) {
+export async function rejectFarmApplication(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const id = req.params.id
 
     const application = await Interactor.rejectFarmApplication(id)
+
+    await createAuditLog({
+      action: 'Rejected a farm application',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
 
     res
       .status(200)
@@ -280,13 +361,18 @@ export async function listCrops(req: Request, res: Response) {
   }
 }
 
-export async function createCrop(req: Request, res: Response) {
+export async function createCrop(req: SessionRequest, res: Response) {
   try {
     const { body } = await zParse(Schema.NewCropSchema, req)
 
     const data = { ...body, image: req.file.filename }
     const newCrop = await Interactor.createCrop(data, req.file)
 
+    await createAuditLog({
+      action: 'Updated Planting Calendar',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
     res
       .status(201)
       .json({ message: 'crop created successfully', data: newCrop })
@@ -651,13 +737,19 @@ export async function listArchivedCommunityCrops(
   }
 }
 
-export async function updateCrop(req: Request, res: Response) {
+export async function updateCrop(req: SessionRequest, res: Response) {
   try {
     const id = req.params.id
     const { body } = await zParse(Schema.UpdateCropSchema, req)
 
     const file = req.file
     const cropData = await Interactor.updateCrop(id, body, file)
+
+    await createAuditLog({
+      action: 'Updated planting calender',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({
       message: 'Updated successfully',
@@ -675,6 +767,34 @@ export async function viewCropDetails(req: Request, res: Response) {
     const cropData = await Interactor.viewCropDetails(id)
 
     res.status(200).json(cropData)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function leaveCommunityFarm(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+
+    await Interactor.leaveCommunityFarm(userid)
+
+    res.status(200).json({ message: 'Left Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function kickCommunityFarmMember(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.kickCommunityFarmMember(userid, id)
+
+    res.status(200).json({ message: 'Kicked Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }

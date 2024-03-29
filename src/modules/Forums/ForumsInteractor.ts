@@ -12,6 +12,7 @@ import {
 import { deleteFile } from '../../utils/file'
 import { viewsLimitter } from '../../middleware/ViewsLimitter'
 import { findUser } from '../Users/UserService'
+import { emitPushNotification } from '../Notifications/NotificationInteractor'
 
 export async function viewQuestion(
   id: string,
@@ -193,6 +194,15 @@ export async function voteQuestion(
 
   const data = await Service.voteQuestion(questionid, userid, vote)
 
+  const user = await findUser(userid)
+
+  await emitPushNotification(
+    question.userid,
+    `Your question received an ${vote}`,
+    `Your question about ${question.title} have received new ${vote}`,
+    `/forum/question/${user.username}/${question.id}`
+  )
+
   return data
 }
 
@@ -214,6 +224,21 @@ export async function voteAnswer(
   vote: NewVoteQuestion
 ) {
   const data = { ...vote, answerid, userid }
+  const answer = await Service.findAnswer(answerid)
+
+  if (!answer) {
+    throw new HttpError('Answer Not Found', 404)
+  }
+
+  const user = await findUser(userid)
+
+  await emitPushNotification(
+    answer.userid,
+    `Your answer received an ${vote.type}!`,
+    `Your answer about ${answer.answer} have received new upvote`,
+    `/forum/question/${user.username}/${answer.forumid}`
+  )
+
   const votedQuestion = await Service.voteAnswer(data)
   return votedQuestion
 }
@@ -253,11 +278,17 @@ export async function reportQuestion(
   if (!reason) throw new HttpError('Reason is required', 400)
 
   const question = await Service.reportQuestion(userid, forumid, reason)
+
   if (!question) {
     throw new HttpError('Question Not Found', 404)
   }
 
-  await Service.saveQuestion(userid, forumid)
+  await emitPushNotification(
+    'admin',
+    `Reported Question`,
+    `There's a new reported question`,
+    `/admin/forum/questions`
+  )
 }
 
 export async function removeSavedQuestion(userid: string, id: string) {
@@ -281,8 +312,13 @@ export async function deleteQuestion(userid: string, id: string) {
 
   const question = await Service.findQuestionById(id)
 
+  if (!question) throw new HttpError('Question Not Found', 404)
+
   if (question?.userid !== userid) {
-    throw new HttpError('Unauthorized', 401)
+    const isAdmin = user.role === 'admin' || user.role === 'asst_admin'
+    if (!isAdmin) {
+      throw new HttpError('Unauthorized', 401)
+    }
   }
 
   for (const image of question.imagesrc) {
@@ -290,4 +326,45 @@ export async function deleteQuestion(userid: string, id: string) {
   }
 
   await Service.deleteQuestion(id)
+}
+
+export async function deleteAnswer(userid: string, id: string) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const answer = await Service.findAnswer(id)
+
+  if (answer?.userid !== userid) {
+    throw new HttpError('Unauthorized s', 401)
+  }
+
+  await Service.deleteAnswer(id)
+}
+
+export async function deleteComment(userid: string, id: string) {
+  const user = await findUser(userid)
+
+  if (!user) throw new HttpError('Unauthorized', 401)
+
+  const answer = await Service.findComment(id)
+
+  if (answer?.userid !== userid) {
+    throw new HttpError('Unauthorized s', 401)
+  }
+
+  await Service.deleteComment(id)
+}
+
+export async function listReportedQuestions(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.findReportedQuestions(offset, searchKey, perpage),
+    Service.getTotalReportedQuestions(searchKey),
+  ])
+
+  return { data, total }
 }

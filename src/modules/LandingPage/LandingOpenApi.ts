@@ -329,11 +329,6 @@
  *           type: string
  *         description:
  *           type: string
- *       required:
- *         - id
- *         - icon
- *         - title
- *         - description
  *     UpdateApproachResponse:
  *       type: object
  *       properties:

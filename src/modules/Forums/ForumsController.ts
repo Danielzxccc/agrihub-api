@@ -4,6 +4,7 @@ import * as Interactor from './ForumsInteractor'
 import * as Schema from '../../schema/ForumsSchema'
 import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
+import { ListDraftEvents } from '../../schema/EventsSchema'
 
 export async function viewQuestion(req: SessionRequest, res: Response) {
   try {
@@ -211,7 +212,6 @@ export async function deleteVoteAnswer(req: SessionRequest, res: Response) {
     await Interactor.deleteAnswerVote(id, userid)
     res.status(200).json({ message: 'deleted Successfully' })
   } catch (error) {
-    console.log(error.stack)
     errorHandler(res, error)
   }
 }
@@ -224,7 +224,6 @@ export async function saveQuestion(req: SessionRequest, res: Response) {
 
     res.status(200).json({ message: 'Saved Successfully' })
   } catch (error) {
-    console.log(error.stack)
     errorHandler(res, error)
   }
 }
@@ -240,7 +239,6 @@ export async function reportQuestion(req: SessionRequest, res: Response) {
 
     res.status(200).json({ message: 'Reported Successfully' })
   } catch (error) {
-    console.log(error.stack)
     errorHandler(res, error)
   }
 }
@@ -253,7 +251,6 @@ export async function removeSavedQuestion(req: SessionRequest, res: Response) {
 
     res.status(200).json({ message: 'Removed Successfully' })
   } catch (error) {
-    console.log(error.stack)
     errorHandler(res, error)
   }
 }
@@ -266,7 +263,60 @@ export async function deleteQuestion(req: SessionRequest, res: Response) {
 
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
-    console.log(error.stack)
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteAnswer(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.deleteAnswer(userid, id)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function deleteComment(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const userid = req.session.userid
+    await Interactor.deleteComment(userid, id)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listReportedQuestions(req: Request, res: Response) {
+  try {
+    const { query } = await zParse(ListDraftEvents, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const events = await Interactor.listReportedQuestions(
+      offset,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(Number(events.total.count) / perPage)
+    res.status(200).json({
+      data: events.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(events.total.count),
+      },
+    })
+  } catch (error) {
     errorHandler(res, error)
   }
 }

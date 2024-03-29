@@ -7,7 +7,6 @@ import { TagsRouter } from './modules/Tags/TagsRouter'
 import { UserRouter } from './modules/Users/UserRoutes'
 import { FarmRouter } from './modules/Farm/FarmRouter'
 import { EventsRouter } from './modules/Events/EventsRouter'
-import { AboutRouter } from './modules/About/AboutRouter'
 import { multerLimitter } from './middleware/UploadMiddleware'
 import { BlogsRouter } from './modules/Blogs/BlogsRouter'
 import { ReportsRouter } from './modules/Reports/ReportsRouter'
@@ -17,6 +16,11 @@ import { UploaderRouter } from './modules/Uploader/UploaderRouter'
 import { LandingRouter } from './modules/LandingPage/LandingRouter'
 import { FarmRequestRouter } from './modules/FarmRequests/FarmRequestRouter'
 import { AccessRouter } from './modules/AccessControl/AcessRouter'
+import { FarmProblemRouter } from './modules/FarmProblems/FarmProblemRouter'
+import { CmsRouter } from './modules/CMS/CmsRouter'
+import { PrivacyPolicyRouter } from './modules/PrivacyPolicy/PrivacyPolicyRoute'
+import { TermsConditionsRouter } from './modules/Terms&Conditions/TermsConditionsRoute'
+import { AuditLogsRouter } from './modules/AuditLogs/AuditLogsRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -25,6 +29,7 @@ function routes(app: Express) {
 
   app.use('/api/auth', AuthRouter)
   app.use('/api/farm', FarmRouter)
+  app.use('/api/farm/problems', FarmProblemRouter)
   app.use('/api/reports', ReportsRouter)
   app.use('/api/account', AccountRouter)
   app.use('/api/user', UserRouter)
@@ -32,7 +37,7 @@ function routes(app: Express) {
   app.use('/api/tags', TagsRouter)
   app.use('/api/articles', ArticlesRouter)
   app.use('/api/events', EventsRouter)
-  app.use('/api/cms/about', AboutRouter)
+  app.use('/api/cms', CmsRouter)
   app.use('/api/cms/landing', LandingRouter)
   app.use('/api/blogs', BlogsRouter)
   app.use('/api/notification', NotificationRouter)
@@ -40,6 +45,9 @@ function routes(app: Express) {
   app.use('/api/upload', UploaderRouter)
   app.use('/api/request', FarmRequestRouter)
   app.use('/api/access', AccessRouter)
+  app.use('/api/privacy-policy', PrivacyPolicyRouter)
+  app.use('/api/terms-conditions', TermsConditionsRouter)
+  app.use('/api/audit-logs', AuditLogsRouter)
 
   // upload error messages
   app.use(multerLimitter)

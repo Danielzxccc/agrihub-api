@@ -1,6 +1,6 @@
 import upload from '../../config/multer'
 import { rateLimiter } from '../../middleware/RateLimitter'
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import * as ForumsController from './ForumsController'
 import express from 'express'
 
@@ -564,4 +564,15 @@ ForumsRouter.delete(
 
 ForumsRouter.delete('/delete/question/:id', ForumsController.deleteQuestion)
 
+ForumsRouter.delete('/delete/answer/:id', ForumsController.deleteAnswer)
+
+ForumsRouter.delete('/delete/comment/:id', ForumsController.deleteComment)
+
 ForumsRouter.get('/saved/questions', ForumsController.listSavedQuestions)
+
+ForumsRouter.get(
+  '/reported/questions',
+  AccessGuard('forums'),
+  UserGuard(['asst_admin', 'admin']),
+  ForumsController.listReportedQuestions
+)
