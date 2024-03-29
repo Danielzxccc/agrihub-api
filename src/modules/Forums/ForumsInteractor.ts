@@ -220,7 +220,7 @@ export async function voteQuestion(
 
   const data = await Service.voteQuestion(questionid, userid, vote)
 
-  const user = await findUser(userid)
+  const user = await findUser(question.userid)
 
   if (user.id !== question.userid) {
     await emitPushNotification(
