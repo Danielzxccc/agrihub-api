@@ -258,7 +258,8 @@ export async function voteAnswer(
     throw new HttpError('Answer Not Found', 404)
   }
 
-  const user = await findUser(userid)
+  const question = await Service.findQuestionById(answer.forumid)
+  const user = await findUser(question.userid)
 
   await emitPushNotification(
     answer.userid,
