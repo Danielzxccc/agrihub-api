@@ -148,7 +148,13 @@ export async function createNewAnswer(
   if (!userid) {
     throw new HttpError('Session Expired', 401)
   }
+  const user = await findUser(userid)
 
+  const question = await Service.findQuestionById(forumid)
+
+  if (!question) {
+    throw new HttpError('The question does not exist or was removed', 400)
+  }
   // container to represent data
   const answerData = {
     userid,
@@ -158,6 +164,15 @@ export async function createNewAnswer(
   }
 
   const newAnswer = await Service.createAnswer(answerData)
+
+  if (question.userid !== newAnswer.userid) {
+    await emitPushNotification(
+      question.userid,
+      `Your question received an answer`,
+      `Your question about ${question.title} have received new answer`,
+      `/forum/question/${user.username}/${question.id}`
+    )
+  }
 
   return newAnswer
 }
@@ -173,6 +188,8 @@ export async function createNewComment(
     comment,
   }
 
+  const user = await findUser(userid)
+
   // Check if the question exists
   const questionExists = await Service.checkQuestionExists(answerid)
 
@@ -183,6 +200,12 @@ export async function createNewComment(
   // Call the Service to create the comment
   const newComment = await Service.createComment(commentData)
 
+  await emitPushNotification(
+    questionExists.userid,
+    `Your answer received a reply`,
+    `Your answer received a new reply`,
+    `/forum/question/${user.username}/${questionExists.forumid}`
+  )
   return newComment
 }
 
@@ -199,12 +222,14 @@ export async function voteQuestion(
 
   const user = await findUser(userid)
 
-  await emitPushNotification(
-    question.userid,
-    `Your question received an ${vote}`,
-    `Your question about ${question.title} have received new ${vote}`,
-    `/forum/question/${user.username}/${question.id}`
-  )
+  if (user.id !== question.userid) {
+    await emitPushNotification(
+      question.userid,
+      `Your question received an ${vote}`,
+      `Your question about ${question.title} have received new ${vote}`,
+      `/forum/question/${user.username}/${question.id}`
+    )
+  }
 
   return data
 }
