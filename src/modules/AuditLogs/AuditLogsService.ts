@@ -47,7 +47,11 @@ export async function findAuditLogs(
     query = query.where('userid', '=', user)
   }
 
-  return await query.limit(perpage).offset(offset).execute()
+  return await query
+    .orderBy('createdat desc')
+    .limit(perpage)
+    .offset(offset)
+    .execute()
 }
 
 export async function getTotalAuditLogs(searchKey: string, user?: string) {
