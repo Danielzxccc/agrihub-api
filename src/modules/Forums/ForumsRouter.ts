@@ -48,6 +48,19 @@ ForumsRouter.post(
   upload.array('imagesrc'),
   ForumsController.createNewQuestion
 )
+ForumsRouter.put(
+  '/:id',
+  UserGuard([
+    'member',
+    'farmer',
+    'farm_head',
+    'subfarm_head',
+    'admin',
+    'asst_admin',
+  ]),
+  upload.array('imagesrc'),
+  ForumsController.updateQuestion
+)
 
 ForumsRouter.post(
   '/create/answers/:id',

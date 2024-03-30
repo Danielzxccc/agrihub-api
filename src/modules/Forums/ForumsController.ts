@@ -126,6 +126,27 @@ export async function createNewQuestion(req: SessionRequest, res: Response) {
   }
 }
 
+export async function updateQuestion(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+    const uploadedFiles = req.files as Express.Multer.File[]
+    const imagesrc = uploadedFiles?.map((file) => file.filename) || []
+    const contents = await zParse(Schema.UpdateForumsSchema, req)
+
+    await Interactor.updateQuestion(
+      id,
+      userid,
+      imagesrc,
+      contents,
+      uploadedFiles
+    )
+    res.status(201).json({ message: 'Updated successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function voteQuestion(req: SessionRequest, res: Response) {
   try {
     const userid = req.session.userid

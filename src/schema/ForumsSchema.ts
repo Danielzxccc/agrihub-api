@@ -97,6 +97,25 @@ import { z } from 'zod'
  *           items:
  *             type: string
  *           description: One or more tags associated with the forum
+ *     UpdateQuestionSchema:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: The title of the forum entry
+ *         question:
+ *           type: string
+ *           description: The question in the forum entry
+ *         imagesrc:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: binary
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: One or more tags associated with the forum
  *
  *     NewQuestionSchema:
  *       type: object
@@ -209,6 +228,9 @@ import { z } from 'zod'
  *         tag:
  *           type: string
  *           description: The tag associated with the question
+ *         id:
+ *           type: string
+ *           description: The id of tag associated with the question
  *
  *     Answer:
  *       type: object
@@ -558,3 +580,19 @@ export const UpdateCommentsSchema = z.object({
       .min(1, 'Comment must not be empty'),
   }),
 })
+
+export const UpdateForumsSchema = z.object({
+  body: z.object({
+    title: z
+      .string({ required_error: 'Title is required' })
+      .min(1, 'Title must not be empty')
+      .optional(),
+    question: z
+      .string({ required_error: 'Question is required' })
+      .min(1, 'Question must not be empty')
+      .optional(),
+    tags: z.union([z.array(z.string()), z.string()]).optional(),
+  }),
+})
+
+export type UpdateForumsContent = z.infer<typeof UpdateForumsSchema>

@@ -8,7 +8,7 @@ import {
 } from '../../types/DBTypes'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
-import { ForumsContent } from './../../schema/ForumsSchema'
+import { ForumsContent, UpdateForumsContent } from './../../schema/ForumsSchema'
 import {
   deleteFileCloud,
   getObjectUrl,
@@ -132,6 +132,69 @@ export async function createNewQuestion(
     const { title, question, tags } = questions.body
     const content = { userid, title, question, imagesrc }
     const newQuestion = await Service.createQuestion(content, tags)
+
+    await uploadFiles(uploadedFiles)
+    for (const image of uploadedFiles) {
+      deleteFile(image.filename)
+    }
+    return newQuestion
+  } catch (error) {
+    for (const image of uploadedFiles) {
+      deleteFile(image.filename)
+    }
+    dbErrorHandler(error)
+  }
+}
+
+export async function updateQuestion(
+  id: string,
+  userid: string,
+  imagesrc: string[],
+  questions: UpdateForumsContent,
+  uploadedFiles: Express.Multer.File[]
+) {
+  try {
+    const findQueston = await Service.findQuestionById(id)
+
+    if (!findQueston) {
+      throw new HttpError('Question not found', 404)
+    }
+
+    if (!userid) {
+      throw new HttpError('Session Expired', 401)
+    }
+
+    if (findQueston.userid !== userid) {
+      throw new HttpError('Unauthorized', 404)
+    }
+
+    const { title, question, tags } = questions.body
+    const content = {
+      id,
+      title,
+      question,
+      imagesrc: [...findQueston.imagesrc, ...imagesrc] as string[],
+    }
+
+    const findExistingTags = await Service.findQuestionTags(id)
+
+    let deletedTags: string[] = []
+    if (findExistingTags.length) {
+      const existingTags = findExistingTags.map((item) => item.tagid)
+
+      const tagsToCompare = tags?.length ? tags : []
+
+      deletedTags = existingTags.filter(
+        (element) => !tagsToCompare.includes(element)
+      )
+    }
+
+    const newQuestion = await Service.updateQuestion(
+      id,
+      content,
+      tags,
+      deletedTags
+    )
 
     await uploadFiles(uploadedFiles)
     for (const image of uploadedFiles) {
