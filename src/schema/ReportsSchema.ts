@@ -19,6 +19,7 @@ export const NewCommunityCropReport = z.object({
     date_planted: z.string(),
     date_harvested: z.string(),
     notes: z.string().optional(),
+    kilogram: z.number().optional(),
     is_first_report: z
       .string()
       .transform((arg) => Boolean(arg))

@@ -77,6 +77,9 @@
  *         is_first_report:
  *           type: string
  *           optional: true
+ *         kilogram:
+ *           type: number
+ *           optional: true
  *         image:
  *           type: array
  *           items:
