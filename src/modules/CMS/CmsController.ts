@@ -91,12 +91,6 @@ export async function createUserFeedback(req: SessionRequest, res: Response) {
 
     const data = await Interactor.createUserFeedback({ ...body, userid })
 
-    await createAuditLog({
-      action: 'Created User Feedback',
-      section: 'CMS',
-      userid: req.session.userid,
-    })
-
     res.status(201).json({ message: 'Created New Feedback', data })
   } catch (error) {
     errorHandler(res, error)
