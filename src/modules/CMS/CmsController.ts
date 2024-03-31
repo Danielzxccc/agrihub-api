@@ -6,6 +6,7 @@ import zParse from '../../utils/zParse'
 import { SessionRequest } from '../../types/AuthType'
 import { UpdateAboutUs } from '../../schema/AboutSchema'
 import { deleteFile } from '../../utils/file'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
 export async function findClientDetails(req: Request, res: Response) {
   try {
@@ -17,11 +18,17 @@ export async function findClientDetails(req: Request, res: Response) {
   }
 }
 
-export async function updateClientDetails(req: Request, res: Response) {
+export async function updateClientDetails(req: SessionRequest, res: Response) {
   try {
     const { body } = await zParse(Schema.UpdateClientDetails, req)
 
     await Interactor.updateClientDetails({ body })
+
+    await createAuditLog({
+      action: 'Updated Client Details',
+      section: 'CMS',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Updated Successfully' })
   } catch (error) {
@@ -29,11 +36,17 @@ export async function updateClientDetails(req: Request, res: Response) {
   }
 }
 
-export async function deleteClientSocial(req: Request, res: Response) {
+export async function deleteClientSocial(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.deleteClientSocial(id)
+
+    await createAuditLog({
+      action: 'Deleted Client Social',
+      section: 'CMS',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
@@ -41,11 +54,17 @@ export async function deleteClientSocial(req: Request, res: Response) {
   }
 }
 
-export async function deleteClientPartner(req: Request, res: Response) {
+export async function deleteClientPartner(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
 
     await Interactor.deleteClientPartner(id)
+
+    await createAuditLog({
+      action: 'Deleted Client Partner',
+      section: 'CMS',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {
@@ -71,6 +90,12 @@ export async function createUserFeedback(req: SessionRequest, res: Response) {
     const { body } = await zParse(Schema.NewUserFeedback, req)
 
     const data = await Interactor.createUserFeedback({ ...body, userid })
+
+    await createAuditLog({
+      action: 'Created User Feedback',
+      section: 'CMS',
+      userid: req.session.userid,
+    })
 
     res.status(201).json({ message: 'Created New Feedback', data })
   } catch (error) {
@@ -163,6 +188,12 @@ export async function updateAboutUs(req: SessionRequest, res: Response) {
       data: { body },
     })
 
+    await createAuditLog({
+      action: 'Updated About Us',
+      section: 'CMS',
+      userid: req.session.userid,
+    })
+
     res.status(200).json({ message: 'Updated Successfully' })
   } catch (error) {
     errorHandler(res, error)
@@ -190,6 +221,12 @@ export async function createAboutCarouselImage(
 
     await Interactor.createAboutCarouselImage(file)
 
+    await createAuditLog({
+      action: 'Created About Carousel Image',
+      section: 'CMS',
+      userid: req.session.userid,
+    })
+
     res.status(200).json({ message: 'Added Successfully' })
   } catch (error) {
     deleteFile(req.file?.filename)
@@ -205,6 +242,12 @@ export async function deleteAboutCarouselImage(
     const { id } = req.params
 
     await Interactor.deleteAboutCarouselImage(id)
+
+    await createAuditLog({
+      action: 'Deleted About Carousel Image',
+      section: 'CMS',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: 'Deleted Successfully' })
   } catch (error) {

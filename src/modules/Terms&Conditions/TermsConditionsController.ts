@@ -4,6 +4,7 @@ import { Response } from 'express'
 import zParse from '../../utils/zParse'
 import * as Interactor from './TermsConditionsInteractor'
 import * as Schema from '../../schema/TermsConditions'
+import { createAuditLog } from '../AuditLogs/AuditLogsInteractor'
 
 export async function listTermsConditions(req: SessionRequest, res: Response) {
   try {
@@ -22,6 +23,13 @@ export async function updateTermsConditions(
     const { body } = await zParse(Schema.UpdateTermsConditions, req)
 
     const updatedTermsConditions = await Interactor.updateTermsConditions(body)
+
+    await createAuditLog({
+      action: 'Updated Terms and Conditions',
+      section: 'Terms and Conditions Management',
+      userid: req.session.userid,
+    })
+
     res
       .status(200)
       .json({ message: 'Updated Successfully', data: updatedTermsConditions })
