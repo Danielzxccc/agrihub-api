@@ -118,7 +118,7 @@ export async function listDraftBlogs(
 ) {
   const [data, total] = await Promise.all([
     Service.findDraftBlogs(offset, searchKey, perpage),
-    Service.getTotalDraftBlogs(),
+    Service.getTotalDraftBlogs(searchKey),
   ])
 
   return { data, total }
@@ -161,7 +161,7 @@ export async function listArchivedBlogs(
 ) {
   const [data, total] = await Promise.all([
     Service.findArchivedBlogs(offset, searchKey, perpage),
-    Service.getTotalArchivedBlogs(),
+    Service.getTotalArchivedBlogs(searchKey),
   ])
 
   return { data, total }
