@@ -356,13 +356,23 @@ export async function findDraftLearningMaterials(
     .execute()
 }
 
-export async function getTotalDraftLearningMaterials() {
-  return await db
+export async function getTotalDraftLearningMaterials(searchKey: string) {
+  let query = db
     .selectFrom('learning_materials')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('status', '=', 'draft')
     .where('is_archived', '=', false)
-    .executeTakeFirst()
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('content', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function findPublishedLearningMaterials(
@@ -497,8 +507,8 @@ export async function findArchivedLearningMaterials(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('content', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -510,10 +520,20 @@ export async function findArchivedLearningMaterials(
     .execute()
 }
 
-export async function getTotalArchivedLearningMaterials() {
-  return await db
+export async function getTotalArchivedLearningMaterials(searchKey: string) {
+  let query = db
     .selectFrom('learning_materials')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .where('status', '=', 'draft')
-    .executeTakeFirst()
+    .where('is_archived', '=', true)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('content', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }

@@ -102,6 +102,7 @@ export async function acceptSeedlingRequest(
   const updateObject: UpdateSeedlingRequest = {
     ...request,
     status: 'accepted',
+    updatedat: new Date(),
   }
 
   const farm = await findCommunityFarmById(findRequest.farm_id)

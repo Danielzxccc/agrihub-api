@@ -234,7 +234,7 @@ export async function listPublishedBlogs(
 ) {
   const [data, total] = await Promise.all([
     Service.findPublishedBlogs(offset, searchKey, perpage, filterKey),
-    Service.getTotalPublishedBlogs(),
+    Service.getTotalPublishedBlogs(searchKey, filterKey),
   ])
 
   return { data, total }

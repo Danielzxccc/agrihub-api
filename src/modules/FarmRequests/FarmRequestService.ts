@@ -27,6 +27,7 @@ export async function findSeedlingRequest(farmid: string, cropid: string) {
     .selectAll()
     .where('farm_id', '=', farmid)
     .where('crop_id', '=', cropid)
+    .where('status', '=', 'pending')
     .executeTakeFirst()
 }
 export async function findSeedlingRequestById(id: string) {
@@ -68,6 +69,7 @@ export async function findSeedlingRequestByFarm(farm_id: string) {
       'cf.farm_name',
     ])
     .where('farm_id', '=', farm_id)
+    .orderBy('createdat desc')
     .execute()
 }
 
@@ -103,8 +105,10 @@ export async function findAllSeedlingRequest(
     query = query.where('sr.status', '=', 'pending')
   } else if (filter === 'accepted') {
     query = query.where('sr.status', '=', 'accepted')
+    query = query.orderBy('sr.updatedat desc')
   } else if (filter === 'rejected') {
     query = query.where('sr.status', '=', 'rejected')
+    query = query.orderBy('sr.createdat desc')
   }
 
   if (searchKey.length) {

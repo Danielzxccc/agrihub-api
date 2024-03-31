@@ -204,7 +204,11 @@ export async function findUserFeedbacks(
     )
   }
 
-  return await query.limit(perpage).offset(offset).execute()
+  return await query
+    .orderBy('createdat desc')
+    .limit(perpage)
+    .offset(offset)
+    .execute()
 }
 
 export async function getTotalUserFeedbacks(searchKey: string) {
