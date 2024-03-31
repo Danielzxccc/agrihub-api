@@ -46,8 +46,14 @@ export async function deleteSeedlingRequest(id: string) {
     .executeTakeFirst()
 }
 
-export async function findSeedlingRequestByFarm(farm_id: string) {
-  return await db
+export async function findSeedlingRequestByFarm(
+  farm_id: string,
+  offset: number,
+  searchKey: string,
+  perpage: number,
+  filter: string
+) {
+  let query = db
     .selectFrom('seedling_requests as sr')
     .leftJoin('crops as c', 'c.id', 'sr.crop_id')
     .leftJoin('community_farms as cf', 'sr.farm_id', 'cf.id')
@@ -70,7 +76,27 @@ export async function findSeedlingRequestByFarm(farm_id: string) {
     ])
     .where('farm_id', '=', farm_id)
     .orderBy('createdat desc')
-    .execute()
+
+  if (filter === 'pending') {
+    query = query.where('sr.status', '=', 'pending')
+  } else if (filter === 'accepted') {
+    query = query.where('sr.status', '=', 'accepted')
+    query = query.orderBy('sr.updatedat desc')
+  } else if (filter === 'rejected') {
+    query = query.where('sr.status', '=', 'rejected')
+    query = query.orderBy('sr.createdat desc')
+  }
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('c.name', 'ilike', `${searchKey}%`),
+        eb('cf.farm_name', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
 }
 
 export async function findAllSeedlingRequest(
@@ -124,7 +150,8 @@ export async function findAllSeedlingRequest(
 
 export async function getTotalSeedlingRequests(
   searchKey: string,
-  filter: string
+  filter: string,
+  id?: string
 ) {
   let query = db
     .selectFrom('seedling_requests as sr')
@@ -148,6 +175,11 @@ export async function getTotalSeedlingRequests(
       ])
     )
   }
+
+  if (id) {
+    query = query.where('farm_id', '=', id)
+  }
+
   return await query.executeTakeFirst()
 }
 

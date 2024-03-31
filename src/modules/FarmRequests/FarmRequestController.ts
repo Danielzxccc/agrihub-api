@@ -41,10 +41,32 @@ export async function listSeedlingRequestByFarm(
   res: Response
 ) {
   try {
+    const { query } = await zParse(Schema.ListSeedlingRequest, req)
     const { id } = req.params
-    const requests = await Interactor.listSeedlingRequestByFarm(id)
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
 
-    res.status(201).json(requests)
+    const requests = await Interactor.listSeedlingRequestByFarm(
+      id,
+      offset,
+      searchKey,
+      perPage,
+      filterKey
+    )
+
+    const totalPages = Math.ceil(Number(requests.total.count) / perPage)
+    res.status(200).json({
+      data: requests.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(requests.total.count),
+      },
+    })
   } catch (error) {
     errorHandler(res, error)
   }

@@ -151,17 +151,36 @@
  *         name: id
  *         schema:
  *           type: string
- *         description: The ID of the seedling request to be deleted
+ *         description: The ID of the community farm
  *         required: true
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search keyword
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum: [pending, accepted, rejected, ""]
+ *         description: Filter by request status
  *     responses:
  *       "200":
- *         description: A list of seedling requests
+ *         description: A list of all seedling requests
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: "#/components/schemas/SeedlingRequestListItem"
+ *               $ref: "#/components/schemas/SeedlingRequestListAllResponse"
  *       "401":
  *         description: Unauthorized
  *         content:

@@ -17,13 +17,13 @@ FarmRequestRouter.delete(
   FarmRequestController.cancelSeedlingRequest
 )
 
-// TODO: ADD PAGINATION
 FarmRequestRouter.get(
   '/seedling/list/all',
   UserGuard(['admin', 'asst_admin']),
   FarmRequestController.listAllSeedlingRequests
 )
 
+// TODO: ADD PAGINATION
 FarmRequestRouter.get(
   '/seedling/list/:id',
   UserGuard(['farm_head', 'farmer', 'admin', 'asst_admin']),
