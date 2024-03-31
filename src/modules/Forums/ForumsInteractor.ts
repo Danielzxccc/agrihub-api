@@ -173,7 +173,7 @@ export async function updateQuestion(
       id,
       title,
       question,
-      imagesrc: [...findQueston.imagesrc, ...imagesrc] as string[],
+      imagesrc,
     }
 
     const findExistingTags = await Service.findQuestionTags(id)

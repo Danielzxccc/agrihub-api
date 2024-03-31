@@ -799,3 +799,32 @@ export async function kickCommunityFarmMember(
     errorHandler(res, error)
   }
 }
+
+export async function setMemberAsFarmHead(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.setMemberAsFarmHead(id, userid)
+
+    res.status(200).json({ message: 'Assigned Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function setFarmerHeadAsFarmer(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    const { id } = req.params
+
+    await Interactor.setFarmerHeadAsFarmer(id, userid)
+
+    res.status(200).json({ message: 'Unassigned Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

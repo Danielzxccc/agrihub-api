@@ -237,8 +237,21 @@ FarmRouter.post(
   UserGuard(['farmer']),
   FarmController.leaveCommunityFarm
 )
+
 FarmRouter.post(
   '/community/kick/:id',
   UserGuard(['farm_head']),
   FarmController.kickCommunityFarmMember
+)
+
+FarmRouter.post(
+  '/community/assign/head/:id',
+  UserGuard(['farm_head']),
+  FarmController.setMemberAsFarmHead
+)
+
+FarmRouter.post(
+  '/community/unassign/head/:id',
+  UserGuard(['farm_head']),
+  FarmController.setFarmerHeadAsFarmer
 )

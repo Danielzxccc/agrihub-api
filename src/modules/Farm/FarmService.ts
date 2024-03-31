@@ -666,3 +666,21 @@ export async function unArchiveCommunityCrop(id: string) {
     .returningAll()
     .executeTakeFirst()
 }
+
+export async function setMemberAsFarmHead(id: string) {
+  return await db
+    .updateTable('users')
+    .set({ role: 'farm_head' })
+    .where('id', '=', id)
+    .returningAll()
+    .execute()
+}
+
+export async function setFarmerHeadAsFarmer(id: string) {
+  return await db
+    .updateTable('users')
+    .set({ role: 'farmer' })
+    .where('id', '=', id)
+    .returningAll()
+    .execute()
+}
