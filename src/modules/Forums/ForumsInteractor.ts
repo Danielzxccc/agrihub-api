@@ -188,6 +188,18 @@ export async function updateQuestion(
         (element) => !tagsToCompare.includes(element)
       )
     }
+    let deletedImages: string[] = []
+    if (findQueston.imagesrc.length) {
+      const existingImages = findQueston.imagesrc
+      const imagesToCompare = imagesrc?.length ? imagesrc : []
+      deletedImages = existingImages.filter(
+        (element) => !imagesToCompare.includes(element)
+      )
+
+      for (const image of deletedImages) {
+        await deleteFileCloud(image)
+      }
+    }
 
     const newQuestion = await Service.updateQuestion(
       id,
