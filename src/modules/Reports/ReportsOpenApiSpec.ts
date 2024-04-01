@@ -78,7 +78,7 @@
  *           type: string
  *           optional: true
  *         kilogram:
- *           type: number
+ *           type: string
  *           optional: true
  *         image:
  *           type: array
