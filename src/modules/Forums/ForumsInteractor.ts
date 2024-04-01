@@ -167,13 +167,26 @@ export async function updateQuestion(
     if (findQueston.userid !== userid) {
       throw new HttpError('Unauthorized', 404)
     }
+    const { title, question, tags, deleted_images } = questions.body
+    let newImageSrc: string[] = []
 
-    const { title, question, tags } = questions.body
+    if (deleted_images.length) {
+      const existingImages = findQueston.imagesrc
+      const imagesToCompare = deleted_images?.length ? deleted_images : []
+      newImageSrc = existingImages.filter(
+        (element) => !imagesToCompare.includes(element)
+      )
+
+      for (const image of deleted_images) {
+        await deleteFileCloud(image)
+      }
+    }
+
     const content = {
       id,
       title,
       question,
-      imagesrc,
+      imagesrc: [...newImageSrc, ...imagesrc],
     }
 
     const findExistingTags = await Service.findQuestionTags(id)
@@ -187,18 +200,6 @@ export async function updateQuestion(
       deletedTags = existingTags.filter(
         (element) => !tagsToCompare.includes(element)
       )
-    }
-    let deletedImages: string[] = []
-    if (findQueston.imagesrc.length) {
-      const existingImages = findQueston.imagesrc
-      const imagesToCompare = imagesrc?.length ? imagesrc : []
-      deletedImages = existingImages.filter(
-        (element) => !imagesToCompare.includes(element)
-      )
-
-      for (const image of deletedImages) {
-        await deleteFileCloud(image)
-      }
     }
 
     const newQuestion = await Service.updateQuestion(

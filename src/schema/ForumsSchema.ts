@@ -116,6 +116,10 @@ import { z } from 'zod'
  *           items:
  *             type: string
  *           description: One or more tags associated with the forum
+ *         deleted_images:
+ *           type: array
+ *           items:
+ *             type: string
  *
  *     NewQuestionSchema:
  *       type: object
@@ -592,6 +596,7 @@ export const UpdateForumsSchema = z.object({
       .min(1, 'Question must not be empty')
       .optional(),
     tags: z.union([z.array(z.string()), z.string()]).optional(),
+    deleted_images: z.union([z.array(z.string()), z.string()]).optional(),
   }),
 })
 
