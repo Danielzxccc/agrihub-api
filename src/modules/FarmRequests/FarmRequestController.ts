@@ -155,3 +155,48 @@ export async function listFarmRequestsCount(req: Request, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function submitNewToolRequest(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body: toolRequest } = await zParse(Schema.NewToolRequest, req)
+
+    await Interactor.submitNewToolRequest(userid, toolRequest)
+    res.status(200).json({ message: 'Tool Request Submmitted Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listToolRequests(req: SessionRequest, res: Response) {
+  try {
+    const { query } = await zParse(Schema.ListToolRequest, req)
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+    const farmid = query.farmid
+
+    const requests = await Interactor.listToolRequests(
+      offset,
+      searchKey,
+      perPage,
+      filterKey,
+      farmid
+    )
+
+    const totalPages = Math.ceil(Number(requests.total.count) / perPage)
+    res.status(200).json({
+      data: requests.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(requests.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

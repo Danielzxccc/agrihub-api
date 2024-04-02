@@ -1,4 +1,9 @@
-import { NewSeedlingRequest, UpdateSeedlingRequest } from '../../types/DBTypes'
+import { ToolRequestStatus } from 'kysely-codegen'
+import {
+  NewSeedlingRequest,
+  NewToolRequest,
+  UpdateSeedlingRequest,
+} from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
@@ -151,4 +156,51 @@ export async function listFarmRequestsCount() {
   const data = await Service.getFarmRequestsCount()
 
   return data
+}
+
+export async function submitNewToolRequest(
+  userid: string,
+  request: NewToolRequest
+) {
+  const user = await findUser(userid)
+
+  const newRequestObject: NewToolRequest = {
+    ...request,
+    farm_id: user.farm_id,
+    accepted_by: [],
+  }
+
+  //check request threshold
+  const toolRequests = await Service.findPendingToolRequestsByFarm(user.farm_id)
+
+  if (toolRequests.length >= 3) {
+    throw new HttpError('You already have 3 pending requests', 400)
+  }
+
+  const newToolRequest = await Service.createToolRequest(newRequestObject)
+
+  return newToolRequest
+}
+
+export async function listToolRequests(
+  offset: number,
+  searchKey: string,
+  perpage: number,
+  filter: ToolRequestStatus,
+  farmid?: string
+) {
+  if (farmid) {
+    const communityFarm = await findCommunityFarmById(farmid)
+
+    if (!communityFarm) {
+      throw new HttpError('Farm not found', 404)
+    }
+  }
+
+  const [data, total] = await Promise.all([
+    Service.findToolRequests(offset, searchKey, perpage, filter, farmid),
+    Service.getTotalToolRequest(searchKey, filter, farmid),
+  ])
+
+  return { data, total }
 }

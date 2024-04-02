@@ -23,7 +23,6 @@ FarmRequestRouter.get(
   FarmRequestController.listAllSeedlingRequests
 )
 
-// TODO: ADD PAGINATION
 FarmRequestRouter.get(
   '/seedling/list/:id',
   UserGuard(['farm_head', 'farmer', 'admin', 'asst_admin']),
@@ -47,3 +46,11 @@ FarmRequestRouter.get(
   UserGuard(['admin', 'asst_admin']),
   FarmRequestController.listFarmRequestsCount
 )
+
+FarmRequestRouter.post(
+  '/tool-request',
+  UserGuard(['farm_head']),
+  FarmRequestController.submitNewToolRequest
+)
+
+FarmRequestRouter.get('/tool-request', FarmRequestController.listToolRequests)
