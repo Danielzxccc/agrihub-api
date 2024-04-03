@@ -60,7 +60,7 @@ FarmRequestRouter.get(
 )
 
 FarmRequestRouter.post(
-  '/tool-request/accept/:id',
+  '/tool-request/update/:id',
   UserGuard(['admin', 'asst_admin']),
-  FarmRequestController.acceptToolRequest
+  FarmRequestController.updateToolRequestStatus
 )

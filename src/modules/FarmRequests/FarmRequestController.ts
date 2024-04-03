@@ -203,14 +203,14 @@ export async function listToolRequests(req: SessionRequest, res: Response) {
   }
 }
 
-export async function acceptToolRequest(req: Request, res: Response) {
+export async function updateToolRequestStatus(req: Request, res: Response) {
   try {
     const { id } = req.params
-    const { body } = await zParse(Schema.AcceptToolRequest, req)
+    const { body } = await zParse(Schema.UpdateToolRequestStatus, req)
 
-    await Interactor.acceptToolRequest(id, body)
+    await Interactor.updateToolRequestStatus(id, body)
 
-    res.status(200).json({ message: 'Accepted Succesfully' })
+    res.status(200).json({ message: `Updated Succesfully` })
   } catch (error) {
     errorHandler(res, error)
   }

@@ -1,6 +1,8 @@
 import logger from 'pino'
 import crypto from 'crypto'
 import { Request } from 'express'
+import { ToolRequestStatus } from 'kysely-codegen'
+import { UpdateToolRequest } from '../types/DBTypes'
 const log = logger({
   transport: {
     target: 'pino-pretty',
@@ -59,4 +61,39 @@ export function generateOTP() {
   // Generate a random 3-byte buffer
 
   return Math.floor(100000 + Math.random() * 900000)
+}
+
+export function getToolRequestNotification(
+  status: ToolRequestStatus,
+  request: UpdateToolRequest
+) {
+  switch (status) {
+    case 'accepted':
+      return {
+        title: `Congratulations!, your request for ${request.tool_requested} has been accepted`,
+        body: `Your request is accepted by ${request.accepted_by.join()}. We are now preparing your request. Stay tuned for further updates.`,
+      }
+    case 'communicating':
+      return {
+        title: `Greeting!, your ${request.tool_requested} is now ready.`,
+        body: `To get your requested tool kindy ${request.client_note}. If you have any questions or require clarification, do not hesitate to contact us.`,
+      }
+    case 'completed':
+      return {
+        title: `Congratulations, your tool request  for ${request.tool_requested} is now completed`,
+        body: `Your reqeust for ${request.tool_requested} is now completed. `,
+      }
+    case 'forwarded':
+      return {
+        title: `Hello!, your reqest for ${request.tool_requested} has been forwarded`,
+        body: `Your request for ${request.tool_requested} has been forwarded to {forwarded_to}. We will keep you updated as soon as we receive any further information regarding your request.`,
+      }
+    case 'rejected':
+      return {
+        title: `Request for ${request.tool_requested} is Rejected`,
+        body: `We regret to inform you that your request for ${request.tool_requested} has been rejected. Due to ${request.client_note} If you have any questions or need further clarification, please feel free to reach out to us."`,
+      }
+    default:
+      break
+  }
 }

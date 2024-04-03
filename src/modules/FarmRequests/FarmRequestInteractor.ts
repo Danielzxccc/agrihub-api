@@ -11,6 +11,8 @@ import { emitPushNotification } from '../Notifications/NotificationInteractor'
 import { emitNotificationToAdmin } from '../Socket/SocketController'
 import { findUser } from '../Users/UserService'
 import * as Service from './FarmRequestService'
+import { getToolRequestNotification } from '../../utils/utils'
+import { CommunityFarms } from '../../schema/FarmSchema'
 
 export async function createtSeedlingRequest(
   request: NewSeedlingRequest,
@@ -221,19 +223,29 @@ export async function listToolRequests(
   return { data, total }
 }
 
-export async function acceptToolRequest(
+export async function updateToolRequestStatus(
   id: string,
   request: UpdateToolRequest
 ) {
-  const acceptedToolRequest = await Service.updateToolRequest(id, {
+  const updatedToolRequest = await Service.updateToolRequest(id, {
     ...request,
-    status: 'accepted',
     updatedat: new Date(),
   })
 
-  if (!acceptedToolRequest) {
+  if (!updatedToolRequest) {
     throw new HttpError('Tool Request Not Found', 404)
   }
 
-  return acceptedToolRequest
+  const communityFarm = await findCommunityFarmById(updatedToolRequest.farm_id)
+  const findFarmHead = await findUser(communityFarm.farm_head)
+
+  const { title, body } = getToolRequestNotification(
+    updatedToolRequest.status,
+    request
+  )
+
+  //TODO: add redirection if frontend is finished
+  await emitPushNotification(findFarmHead.id, title, body)
+
+  return updatedToolRequest
 }

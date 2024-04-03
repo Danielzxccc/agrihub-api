@@ -692,3 +692,81 @@
  *         pagination:
  *           $ref: "#/components/schemas/PaginationData"
  */
+
+/**
+ * @openapi
+ * /api/request/tool-request/update/{id}:
+ *   post:
+ *     summary: Update Tool Request Status
+ *     tags:
+ *       - FarmRequest
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the tool request to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateToolRequestStatus"
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateToolRequestStatus:
+ *       type: object
+ *       properties:
+ *         client_note:
+ *           type: string
+ *         accepted_by:
+ *           type: array
+ *           items:
+ *             type: string
+ *         status:
+ *           type: string
+ *           enum:
+ *             - pending
+ *             - accepted
+ *             - communicating
+ *             - rejected
+ *             - completed
+ *       required:
+ *         - status
+ */
