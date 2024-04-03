@@ -170,7 +170,7 @@ export async function updateQuestion(
     const { title, question, tags, deleted_images } = questions.body
     let newImageSrc: string[] = []
 
-    if (deleted_images.length) {
+    if (deleted_images?.length) {
       const existingImages = findQueston.imagesrc
       const imagesToCompare = deleted_images?.length ? deleted_images : []
       newImageSrc = existingImages.filter(
