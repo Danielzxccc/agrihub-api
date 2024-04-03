@@ -177,13 +177,15 @@ export async function listToolRequests(req: SessionRequest, res: Response) {
     const searchKey = String(query.search)
     const filterKey = query.filter
     const farmid = query.farmid
+    const { userid } = req.session
 
     const requests = await Interactor.listToolRequests(
       offset,
       searchKey,
       perPage,
       filterKey,
-      farmid
+      farmid,
+      userid
     )
 
     const totalPages = Math.ceil(Number(requests.total.count) / perPage)
@@ -196,6 +198,19 @@ export async function listToolRequests(req: SessionRequest, res: Response) {
         total_records: Number(requests.total.count),
       },
     })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function acceptToolRequest(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.AcceptToolRequest, req)
+
+    await Interactor.acceptToolRequest(id, body)
+
+    res.status(200).json({ message: 'Accepted Succesfully' })
   } catch (error) {
     errorHandler(res, error)
   }

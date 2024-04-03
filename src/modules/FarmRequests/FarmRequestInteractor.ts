@@ -3,6 +3,7 @@ import {
   NewSeedlingRequest,
   NewToolRequest,
   UpdateSeedlingRequest,
+  UpdateToolRequest,
 } from '../../types/DBTypes'
 import HttpError from '../../utils/HttpError'
 import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
@@ -187,8 +188,23 @@ export async function listToolRequests(
   searchKey: string,
   perpage: number,
   filter: ToolRequestStatus,
-  farmid?: string
+  farmid?: string,
+  userid?: string
 ) {
+  if (userid) {
+    const user = await findUser(userid)
+    const isFarmHead = user.role === 'farm_head'
+    const isDataOwner = user.farm_id === farmid
+
+    if (isFarmHead && farmid === undefined) {
+      throw new HttpError('Unathorized', 401)
+    }
+
+    if (isFarmHead && !isDataOwner) {
+      throw new HttpError('Unathorized', 401)
+    }
+  }
+
   if (farmid) {
     const communityFarm = await findCommunityFarmById(farmid)
 
@@ -203,4 +219,21 @@ export async function listToolRequests(
   ])
 
   return { data, total }
+}
+
+export async function acceptToolRequest(
+  id: string,
+  request: UpdateToolRequest
+) {
+  const acceptedToolRequest = await Service.updateToolRequest(id, {
+    ...request,
+    status: 'accepted',
+    updatedat: new Date(),
+  })
+
+  if (!acceptedToolRequest) {
+    throw new HttpError('Tool Request Not Found', 404)
+  }
+
+  return acceptedToolRequest
 }

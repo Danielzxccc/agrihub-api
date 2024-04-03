@@ -1,6 +1,6 @@
 import * as FarmRequestController from './FarmRequestController'
 import express from 'express'
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import upload from '../../config/multer'
 
 export const FarmRequestRouter = express.Router()
@@ -53,4 +53,14 @@ FarmRequestRouter.post(
   FarmRequestController.submitNewToolRequest
 )
 
-FarmRequestRouter.get('/tool-request', FarmRequestController.listToolRequests)
+FarmRequestRouter.get(
+  '/tool-request',
+  UserGuard(['admin', 'asst_admin', 'farm_head']),
+  FarmRequestController.listToolRequests
+)
+
+FarmRequestRouter.post(
+  '/tool-request/accept/:id',
+  UserGuard(['admin', 'asst_admin']),
+  FarmRequestController.acceptToolRequest
+)
