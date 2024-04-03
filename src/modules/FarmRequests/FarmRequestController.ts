@@ -203,12 +203,21 @@ export async function listToolRequests(req: SessionRequest, res: Response) {
   }
 }
 
-export async function updateToolRequestStatus(req: Request, res: Response) {
+export async function updateToolRequestStatus(
+  req: SessionRequest,
+  res: Response
+) {
   try {
     const { id } = req.params
     const { body } = await zParse(Schema.UpdateToolRequestStatus, req)
 
     await Interactor.updateToolRequestStatus(id, body)
+
+    await createAuditLog({
+      action: 'Updated a tool request',
+      section: 'Community Management',
+      userid: req.session.userid,
+    })
 
     res.status(200).json({ message: `Updated Succesfully` })
   } catch (error) {

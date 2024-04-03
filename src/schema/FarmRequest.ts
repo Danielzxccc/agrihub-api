@@ -48,12 +48,14 @@ export const UpdateToolRequestStatus = z.object({
     .object({
       client_note: z.string().optional(),
       accepted_by: z.array(z.string()).optional(),
+      forwarded_to: z.array(z.string()).optional(),
       status: z.union([
         z.literal('pending'),
         z.literal('accepted'),
         z.literal('communicating'),
         z.literal('rejected'),
         z.literal('completed'),
+        z.literal('forwarded'),
       ]),
     })
     .refine(
@@ -61,10 +63,14 @@ export const UpdateToolRequestStatus = z.object({
         if (data.status === 'accepted' && !data.accepted_by) {
           return false
         }
+        if (data.status === 'forwarded' && !data.forwarded_to) {
+          return false
+        }
         return true
       },
       {
-        message: "Accepted by field is required when status is 'accepted'",
+        message:
+          "Accepted by field is required when status is 'accepted' and forwarded to field is required when status is 'forwarded'",
         path: ['status'], // You can specify the path where the error will be shown
       }
     ),

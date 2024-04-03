@@ -767,6 +767,7 @@
  *             - communicating
  *             - rejected
  *             - completed
+ *             - forwarded
  *       required:
  *         - status
  */

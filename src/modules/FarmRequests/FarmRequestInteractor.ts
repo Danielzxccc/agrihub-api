@@ -236,6 +236,11 @@ export async function updateToolRequestStatus(
     throw new HttpError('Tool Request Not Found', 404)
   }
 
+  if (updatedToolRequest.status === 'forwarded') {
+    // TODO: add forward email logic here
+    console.log('forwarded')
+  }
+
   const communityFarm = await findCommunityFarmById(updatedToolRequest.farm_id)
   const findFarmHead = await findUser(communityFarm.farm_head)
 
