@@ -247,7 +247,7 @@ FarmRouter.post(
 FarmRouter.post(
   '/community/assign/head/:id',
   UserGuard(['farm_head']),
-  FarmController.setMemberAsFarmHead
+  FarmController.setFarmerAsFarmHead
 )
 
 FarmRouter.post(

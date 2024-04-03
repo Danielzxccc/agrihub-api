@@ -800,12 +800,12 @@ export async function kickCommunityFarmMember(
   }
 }
 
-export async function setMemberAsFarmHead(req: SessionRequest, res: Response) {
+export async function setFarmerAsFarmHead(req: SessionRequest, res: Response) {
   try {
     const { userid } = req.session
     const { id } = req.params
 
-    await Interactor.setMemberAsFarmHead(id, userid)
+    await Interactor.setFarmerAsFarmHead(id, userid)
 
     res.status(200).json({ message: 'Assigned Successfully' })
   } catch (error) {

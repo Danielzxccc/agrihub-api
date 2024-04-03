@@ -953,7 +953,7 @@ export async function kickCommunityFarmMember(userid: string, id: string) {
   )
 }
 
-export async function setMemberAsFarmHead(id: string, userid: string) {
+export async function setFarmerAsFarmHead(id: string, userid: string) {
   const findFarmHead = await findUser(userid)
 
   if (!findFarmHead) {
@@ -970,7 +970,7 @@ export async function setMemberAsFarmHead(id: string, userid: string) {
     throw new HttpError('That user is not in your member list', 400)
   }
 
-  if (findFarmHead.farm_id === findMember.farm_id) {
+  if (findFarmHead.id === findMember.id) {
     throw new HttpError('You are already a farm head', 400)
   }
 
