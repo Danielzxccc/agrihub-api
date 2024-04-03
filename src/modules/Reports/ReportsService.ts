@@ -21,6 +21,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn, val, eb }) => [
       'ccr.id',
+      'cfc.id as cfc_id',
       'c.name as crop_name',
       'ccr.date_planted',
       'ccr.date_harvested',
@@ -54,6 +55,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
     .groupBy([
       'ccr.id',
       'c.name',
+      'cfc.id',
       'c.image',
       'ccr.date_planted',
       'ccr.date_harvested',
