@@ -759,6 +759,10 @@
  *           type: array
  *           items:
  *             type: string
+ *         forwarded_to:
+ *           type: array
+ *           items:
+ *             type: string
  *         status:
  *           type: string
  *           enum:
