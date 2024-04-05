@@ -5,7 +5,7 @@ import { UpdateTermsConditions } from '../../types/DBTypes'
 export async function listTermsConditions() {
   return await db
     .selectFrom('terms_condition')
-    .select('content')
+    .select(['content', 'updatedat'])
     .executeTakeFirst()
 }
 

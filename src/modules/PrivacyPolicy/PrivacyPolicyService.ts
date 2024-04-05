@@ -5,7 +5,7 @@ import { sql } from 'kysely'
 export async function listPrivacyPolicy() {
   return await db
     .selectFrom('privacy_policy')
-    .select('content')
+    .select(['content', 'updatedat'])
     .executeTakeFirst()
 }
 
