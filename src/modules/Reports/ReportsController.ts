@@ -445,3 +445,20 @@ export async function getFarmHarvestDistribution(
     errorHandler(res, error)
   }
 }
+
+export async function getCropHarvestDistribution(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.GetHarvestDistribution, req)
+
+    const data = await Interactor.getCropHarvestDistribution(
+      query.month,
+      query.limit
+    )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

@@ -594,3 +594,9 @@ export async function getFarmHarvestDistribution(month: number, limit: number) {
 
   return data.rows
 }
+
+export async function getCropHarvestDistribution(month: number, limit: number) {
+  const data = await Service.getCropHarvestDistribution(month, limit)
+
+  return data.rows
+}
