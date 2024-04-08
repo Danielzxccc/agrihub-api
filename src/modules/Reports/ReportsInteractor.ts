@@ -588,3 +588,9 @@ export async function getUserFeedbackOverview() {
   const data = await Service.getUserFeedbackOverview()
   return data
 }
+
+export async function getFarmHarvestDistribution(month: number, limit: number) {
+  const data = await Service.getFarmHarvestDistribution(month, limit)
+
+  return data.rows
+}

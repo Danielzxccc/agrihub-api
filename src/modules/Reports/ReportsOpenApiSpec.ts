@@ -1923,3 +1923,72 @@
  *         reported_userid:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/reports/analytics/harvest/distribution:
+ *   get:
+ *     summary: Get Harvest Distribution Analytics
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Month for which to retrieve harvest distribution
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: string
+ *         description: Limit the number of results (default is 50)
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/HarvestDistribution"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     HarvestDistribution:
+ *       type: object
+ *       properties:
+ *         farm_name:
+ *           type: string
+ *         farm_harvest_qty:
+ *           type: string
+ *         percentage_distribution:
+ *           type: string
+ */

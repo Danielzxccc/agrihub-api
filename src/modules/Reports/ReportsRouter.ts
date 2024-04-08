@@ -173,3 +173,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getUserFeedbackOverview
 )
+
+ReportsRouter.get(
+  '/analytics/harvest/distribution',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getFarmHarvestDistribution
+)

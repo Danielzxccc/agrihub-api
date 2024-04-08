@@ -946,3 +946,36 @@ export async function getUserFeedbackOverview() {
     ])
     .executeTakeFirst()
 }
+
+export async function getFarmHarvestDistribution(month: number, limit: number) {
+  return db.executeQuery(
+    sql`
+    WITH monthly_harvest AS (
+    SELECT 
+        SUM(harvested_qty) AS total_harvest,
+        EXTRACT(MONTH FROM date_harvested) AS harvest_month
+    FROM community_crop_reports
+    WHERE EXTRACT(MONTH FROM date_harvested) = ${month}
+    GROUP BY harvest_month
+    ),
+    farm_harvest AS (
+        SELECT 
+            farmid,
+            SUM(harvested_qty) AS farm_harvest_qty
+        FROM community_crop_reports
+        WHERE EXTRACT(MONTH FROM date_harvested) = ${month}
+        GROUP BY farmid
+    )
+    SELECT 
+        cf.farm_name,
+        fh.farm_harvest_qty,
+        ROUND((fh.farm_harvest_qty::numeric / mh.total_harvest) * 100, 2) AS percentage_distribution
+    FROM 
+        farm_harvest fh
+    INNER JOIN community_farms cf ON fh.farmid = cf.id
+    CROSS JOIN monthly_harvest mh
+    ORDER BY percentage_distribution DESC
+    LIMIT ${limit};
+  `.compile(db)
+  )
+}

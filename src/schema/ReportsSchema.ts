@@ -71,3 +71,14 @@ export const GetHarvestRanking = z.object({
     order: z.union([z.literal('asc'), z.literal('desc')]).optional(),
   }),
 })
+
+export const GetHarvestDistribution = z.object({
+  query: z.object({
+    month: z.string().transform((arg) => Number(arg)),
+    limit: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional()
+      .default('50'),
+  }),
+})
