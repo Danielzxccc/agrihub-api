@@ -203,6 +203,7 @@ export async function getHarvestedAndWitheredCrops(id: string) {
       sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('total_withered'),
     ])
     .where('cfc.farm_id', '=', id)
+    .where('cfc.is_archived', '=', false)
     .groupBy(['cfc.id', 'cfc.farm_id', 'cfc.crop_id', 'c.name'])
     .execute()
 }
