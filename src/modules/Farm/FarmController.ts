@@ -667,7 +667,7 @@ export async function updateCommunityFarm(req: SessionRequest, res: Response) {
     console.log(cover_photo, 'TEST COVER')
 
     const userid = req.session.userid
-    var allImages = [cover_photo || null, avatar || null]
+    var allFiles = [cover_photo || null, avatar || null]
 
     const updatedCommunityFarm = await Interactor.updateCommunityFarm(
       userid,
@@ -684,7 +684,7 @@ export async function updateCommunityFarm(req: SessionRequest, res: Response) {
     })
   } catch (error) {
     if (error instanceof ZodError) {
-      for (const image of allImages) {
+      for (const image of allFiles) {
         deleteFile(image?.filename)
       }
     }
