@@ -204,6 +204,7 @@ export async function getHarvestedAndWitheredCrops(id: string) {
     ])
     .where('cfc.farm_id', '=', id)
     .where('cfc.is_archived', '=', false)
+    // .where(sql`EXTRACT(MONTH FROM cr.date_harvested) = 2`)
     .groupBy(['cfc.id', 'cfc.farm_id', 'cfc.crop_id', 'c.name'])
     .execute()
 }
@@ -1009,6 +1010,49 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
         monthly_harvest
     ORDER BY 
         total_harvested_qty DESC
+    LIMIT ${limit};
+  `.compile(db)
+  )
+}
+
+export async function getGrowthRateDistribution(month: number, limit: number) {
+  return db.executeQuery(
+    sql`
+    WITH MonthlyCropReports AS (
+        SELECT 
+            cc.crop_id,
+            c.name AS crop_name,
+            SUM(cr.harvested_qty) AS total_harvested_qty,
+            SUM(cr.withered_crops) AS total_withered_crops,
+            SUM(cr.planted_qty) AS total_planted_qty
+        FROM 
+            community_crop_reports cr
+        INNER JOIN 
+            community_farms_crops cc ON cr.crop_id = cc.id
+        INNER JOIN 
+            crops c ON cc.crop_id = c.id
+        WHERE 
+            EXTRACT(MONTH FROM cr.date_harvested) = ${month}
+        GROUP BY 
+            cc.crop_id, c.name
+    )
+    SELECT 
+        crop_name,
+        ROUND((CASE 
+            WHEN c.isyield THEN 
+                (SUM(mcr.total_harvested_qty)::numeric / NULLIF(SUM(mcr.total_harvested_qty) + SUM(mcr.total_withered_crops), 0)) * 100
+            ELSE 
+                (SUM(mcr.total_harvested_qty)::numeric / NULLIF(SUM(mcr.total_planted_qty), 0)) * 100
+        END), 2) AS growth_rate,
+        ROUND(((SUM(mcr.total_harvested_qty)::numeric / NULLIF(SUM(total_harvested_qty) OVER(), 0)) * 100), 2) AS percentage_distribution
+    FROM 
+        MonthlyCropReports mcr
+    INNER JOIN 
+        crops c ON mcr.crop_id = c.id
+    GROUP BY 
+        crop_name, c.isyield, mcr.total_harvested_qty
+    ORDER BY 
+        percentage_distribution DESC
     LIMIT ${limit};
   `.compile(db)
   )

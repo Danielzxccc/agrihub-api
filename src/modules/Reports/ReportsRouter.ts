@@ -185,3 +185,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getCropHarvestDistribution
 )
+
+ReportsRouter.get(
+  '/analytics/growth-rate/distribution',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getGrowthRateDistribution
+)

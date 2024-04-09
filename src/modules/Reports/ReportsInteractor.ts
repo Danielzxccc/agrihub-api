@@ -600,3 +600,9 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
 
   return data.rows
 }
+
+export async function getGrowthRateDistribution(month: number, limit: number) {
+  const data = await Service.getGrowthRateDistribution(month, limit)
+
+  return data.rows
+}
