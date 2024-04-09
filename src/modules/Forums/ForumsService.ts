@@ -5,6 +5,8 @@ import {
   Answer,
   UpdateQuestion,
   NewVoteQuestion,
+  UpdateAnswer,
+  UpdateComment,
 } from '../../types/DBTypes'
 import { db } from '../../config/database'
 import { jsonObjectFrom, jsonArrayFrom } from 'kysely/helpers/postgres'
@@ -24,7 +26,8 @@ export async function findQuestions(
   filterKey: string,
   perpage: number,
   userid: string,
-  profile?: string
+  profile?: string,
+  tag?: string
 ) {
   let query = db
     .selectFrom('forums')
@@ -87,6 +90,18 @@ export async function findQuestions(
   if (searchQuery.length) {
     query = query.where('forums.title', 'ilike', `%${searchQuery}%`)
     query = query.where('forums.question', 'ilike', `%${searchQuery}%`)
+  }
+
+  if (tag.length) {
+    query = query.where(({ selectFrom, exists }) =>
+      exists(
+        selectFrom('forums_tags')
+          .leftJoin('tags as t', 't.id', 'forums_tags.tagid')
+          .select('forums_tags.id')
+          .where('t.tag_name', '=', tag)
+          .whereRef('forums_tags.forumid', '=', 'forums.id')
+      )
+    )
   }
 
   return await query.limit(perpage).offset(offset).execute()
@@ -211,9 +226,17 @@ export async function viewQuestion(
         eb
           .selectFrom('forums_tags')
           .leftJoin('tags', 'forums_tags.tagid', 'tags.id')
-          .select(['tags.tag_name as tag'])
+          .select([
+            'tags.tag_name as tag',
+            sql<string>`CAST(tags.id AS TEXT)`.as('id'),
+          ])
           .whereRef('forums_tags.forumid', '=', 'forums.id')
-          .groupBy(['forums_tags.id', 'forums_tags.forumid', 'tags.tag_name'])
+          .groupBy([
+            'forums_tags.id',
+            'tags.id',
+            'forums_tags.forumid',
+            'tags.tag_name',
+          ])
           .orderBy('forums_tags.id')
       ).as('tags'),
       jsonArrayFrom(
@@ -340,12 +363,20 @@ export async function createQuestion(
       .returningAll()
       .executeTakeFirstOrThrow()
 
+    let tagRecords
     if (Array.isArray(tagsId) && tagsId.length > 0) {
-      const tagRecords = tagsId.map((tagName) => ({
+      tagRecords = tagsId.map((tagName) => ({
         forumid: forum.id,
         tagid: tagName,
       }))
+    } else if (typeof tagsId === 'string') {
+      tagRecords = {
+        forumid: forum.id,
+        tagid: tagsId,
+      }
+    }
 
+    if (tagRecords?.length || tagRecords) {
       await trx
         .insertInto('forums_tags')
         .values(tagRecords)
@@ -357,6 +388,64 @@ export async function createQuestion(
   })
 
   return forumContent
+}
+
+export async function updateQuestion(
+  id: string,
+  question: UpdateQuestion,
+  tagsId: string[] | string,
+  deletedTags: string[]
+): Promise<NewQuestion> {
+  const forumContent = await db.transaction().execute(async (trx) => {
+    const forum = await trx
+      .updateTable('forums')
+      .set({ ...question, updatedat: sql`CURRENT_TIMESTAMP` })
+      .where('id', '=', id)
+      .returningAll()
+      .executeTakeFirstOrThrow()
+
+    let tagRecords
+    if (Array.isArray(tagsId) && tagsId.length > 0) {
+      tagRecords = tagsId.map((tagName) => ({
+        forumid: forum.id,
+        tagid: tagName,
+      }))
+    } else if (typeof tagsId === 'string') {
+      tagRecords = {
+        forumid: forum.id,
+        tagid: tagsId,
+      }
+    }
+
+    if (deletedTags.length) {
+      await db
+        .deleteFrom('forums_tags')
+        .where('forumid', '=', id)
+        .where('tagid', 'in', deletedTags)
+        .execute()
+    }
+
+    if (tagRecords?.length || tagRecords) {
+      await trx
+        .insertInto('forums_tags')
+        .values(tagRecords)
+        .onConflict((oc) => oc.column('tagid').column('forumid').doNothing())
+        .returningAll()
+        .executeTakeFirst()
+    }
+
+    return forum
+  })
+
+  return forumContent
+}
+
+export async function findQuestionTags(id: string) {
+  return await db
+    .selectFrom('forums_tags')
+    .select('tagid')
+    .where('forumid', '=', id)
+    .execute()
 }
 
 export async function createAnswer(answerData: NewAnswer): Promise<NewAnswer> {
@@ -580,6 +669,24 @@ export async function getTotalReportedQuestions(searchKey: string) {
     )
   }
   return await query.executeTakeFirst()
+}
+
+export async function updateAnswer(id: string, answer: UpdateAnswer) {
+  return await db
+    .updateTable('forums_answers')
+    .set({ ...answer, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function updateComment(id: string, comment: UpdateComment) {
+  return await db
+    .updateTable('forums_comments')
+    .set({ ...comment, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }
 
 // export async function report

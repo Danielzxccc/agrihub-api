@@ -1,5 +1,11 @@
+import { ToolRequestStatus } from 'kysely-codegen'
 import { db } from '../../config/database'
-import { NewSeedlingRequest, UpdateSeedlingRequest } from '../../types/DBTypes'
+import {
+  NewSeedlingRequest,
+  NewToolRequest,
+  UpdateSeedlingRequest,
+  UpdateToolRequest,
+} from '../../types/DBTypes'
 
 export async function insertSeedlingRequest(request: NewSeedlingRequest) {
   return await db
@@ -27,6 +33,7 @@ export async function findSeedlingRequest(farmid: string, cropid: string) {
     .selectAll()
     .where('farm_id', '=', farmid)
     .where('crop_id', '=', cropid)
+    .where('status', '=', 'pending')
     .executeTakeFirst()
 }
 export async function findSeedlingRequestById(id: string) {
@@ -45,8 +52,14 @@ export async function deleteSeedlingRequest(id: string) {
     .executeTakeFirst()
 }
 
-export async function findSeedlingRequestByFarm(farm_id: string) {
-  return await db
+export async function findSeedlingRequestByFarm(
+  farm_id: string,
+  offset: number,
+  searchKey: string,
+  perpage: number,
+  filter: string
+) {
+  let query = db
     .selectFrom('seedling_requests as sr')
     .leftJoin('crops as c', 'c.id', 'sr.crop_id')
     .leftJoin('community_farms as cf', 'sr.farm_id', 'cf.id')
@@ -68,7 +81,28 @@ export async function findSeedlingRequestByFarm(farm_id: string) {
       'cf.farm_name',
     ])
     .where('farm_id', '=', farm_id)
-    .execute()
+    .orderBy('createdat desc')
+
+  if (filter === 'pending') {
+    query = query.where('sr.status', '=', 'pending')
+  } else if (filter === 'accepted') {
+    query = query.where('sr.status', '=', 'accepted')
+    query = query.orderBy('sr.updatedat desc')
+  } else if (filter === 'rejected') {
+    query = query.where('sr.status', '=', 'rejected')
+    query = query.orderBy('sr.createdat desc')
+  }
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('c.name', 'ilike', `${searchKey}%`),
+        eb('cf.farm_name', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
 }
 
 export async function findAllSeedlingRequest(
@@ -103,8 +137,10 @@ export async function findAllSeedlingRequest(
     query = query.where('sr.status', '=', 'pending')
   } else if (filter === 'accepted') {
     query = query.where('sr.status', '=', 'accepted')
+    query = query.orderBy('sr.updatedat desc')
   } else if (filter === 'rejected') {
     query = query.where('sr.status', '=', 'rejected')
+    query = query.orderBy('sr.createdat desc')
   }
 
   if (searchKey.length) {
@@ -120,7 +156,8 @@ export async function findAllSeedlingRequest(
 
 export async function getTotalSeedlingRequests(
   searchKey: string,
-  filter: string
+  filter: string,
+  id?: string
 ) {
   let query = db
     .selectFrom('seedling_requests as sr')
@@ -144,6 +181,11 @@ export async function getTotalSeedlingRequests(
       ])
     )
   }
+
+  if (id) {
+    query = query.where('farm_id', '=', id)
+  }
+
   return await query.executeTakeFirst()
 }
 
@@ -162,4 +204,122 @@ export async function getFarmRequestsCount() {
         .as('accepted_requests'),
     ])
     .executeTakeFirst()
+}
+
+export async function createToolRequest(request: NewToolRequest) {
+  return await db
+    .insertInto('tool_request')
+    .values(request)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function updateToolRequest(
+  id: string,
+  request: UpdateToolRequest
+) {
+  return await db
+    .updateTable('tool_request')
+    .set(request)
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findPendingToolRequestsByFarm(farmid: string) {
+  return await db
+    .selectFrom('tool_request')
+    .selectAll()
+    .orderBy('createdat desc')
+    .limit(3)
+    .where('farm_id', '=', farmid)
+    .where('status', '=', 'pending')
+    .execute()
+}
+
+export async function findToolRequests(
+  offset: number,
+  searchKey: string,
+  perpage: number,
+  filter: ToolRequestStatus,
+  farmid?: string
+) {
+  let query = db
+    .selectFrom('tool_request as tr')
+    .innerJoin('community_farms as cf', 'tr.farm_id', 'cf.id')
+    .select([
+      'tr.id',
+      'tr.tool_requested',
+      'tr.quantity_requested',
+      'tr.status',
+      'tr.requester_note',
+      'tr.client_note',
+      'tr.forwarded_to',
+      'tr.accepted_by',
+      'tr.contact',
+      'tr.farm_id',
+      'tr.createdat',
+      'tr.updatedat',
+      'cf.farm_name',
+      'cf.location',
+      'cf.description',
+      'cf.farm_head',
+      'cf.district',
+      'cf.size',
+      'cf.avatar',
+      'cf.cover_photo',
+      'cf.application_id',
+      'cf.is_archived',
+    ])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('tool_requested', 'ilike', `%${searchKey}%`),
+        eb('requester_note', 'ilike', `%${searchKey}%`),
+        eb('cf.farm_name', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filter.length) {
+    query = query.where('tr.status', '=', filter)
+  }
+
+  if (farmid) {
+    query = query.where('farm_id', '=', farmid)
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalToolRequest(
+  searchKey: string,
+  filter: ToolRequestStatus,
+  farmid?: string
+) {
+  let query = db
+    .selectFrom('tool_request as tr')
+    .innerJoin('community_farms as cf', 'tr.farm_id', 'cf.id')
+    .select(({ fn }) => [fn.count<number>('tr.id').as('count')])
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('tool_requested', 'ilike', `%${searchKey}%`),
+        eb('requester_note', 'ilike', `%${searchKey}%`),
+        eb('cf.farm_name', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filter.length) {
+    query = query.where('tr.status', '=', filter)
+  }
+
+  if (farmid) {
+    query = query.where('farm_id', '=', farmid)
+  }
+
+  return await query.executeTakeFirst()
 }

@@ -289,7 +289,7 @@ export async function listDraftLearningMaterials(
 ) {
   const [data, total] = await Promise.all([
     Service.findDraftLearningMaterials(offset, searchKey, perpage),
-    Service.getTotalDraftLearningMaterials(),
+    Service.getTotalDraftLearningMaterials(searchKey),
   ])
 
   return { data, total }
@@ -448,7 +448,7 @@ export async function listArchivedLearningMaterials(
 ) {
   const [data, total] = await Promise.all([
     Service.findArchivedLearningMaterials(offset, searchKey, perpage),
-    Service.getTotalArchivedLearningMaterials(),
+    Service.getTotalArchivedLearningMaterials(searchKey),
   ])
 
   return { data, total }

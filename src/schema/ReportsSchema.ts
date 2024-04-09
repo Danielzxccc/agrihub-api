@@ -19,6 +19,10 @@ export const NewCommunityCropReport = z.object({
     date_planted: z.string(),
     date_harvested: z.string(),
     notes: z.string().optional(),
+    kilogram: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
     is_first_report: z
       .string()
       .transform((arg) => Boolean(arg))
@@ -65,5 +69,30 @@ export const FilterWitheredHarvested = z.object({
 export const GetHarvestRanking = z.object({
   query: z.object({
     order: z.union([z.literal('asc'), z.literal('desc')]).optional(),
+  }),
+})
+
+export const GetHarvestDistribution = z.object({
+  query: z.object({
+    month: z.string().transform((arg) => Number(arg)),
+    limit: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional()
+      .default('50'),
+  }),
+})
+
+export const AnalyticsMonthQuery = z.object({
+  query: z.object({
+    month: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
+    limit: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional()
+      .default('50'),
   }),
 })

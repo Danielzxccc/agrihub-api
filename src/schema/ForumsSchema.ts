@@ -97,6 +97,29 @@ import { z } from 'zod'
  *           items:
  *             type: string
  *           description: One or more tags associated with the forum
+ *     UpdateQuestionSchema:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: The title of the forum entry
+ *         question:
+ *           type: string
+ *           description: The question in the forum entry
+ *         imagesrc:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: binary
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: One or more tags associated with the forum
+ *         deleted_images:
+ *           type: array
+ *           items:
+ *             type: string
  *
  *     NewQuestionSchema:
  *       type: object
@@ -209,6 +232,9 @@ import { z } from 'zod'
  *         tag:
  *           type: string
  *           description: The tag associated with the question
+ *         id:
+ *           type: string
+ *           description: The id of tag associated with the question
  *
  *     Answer:
  *       type: object
@@ -265,6 +291,7 @@ export const SearchForums = z.object({
     perpage: z.string().optional().default('20'),
     filter: z.string().optional().default('newest'),
     profile: z.string().optional().default(''),
+    tag: z.string().optional().default(''),
   }),
 })
 /**
@@ -541,3 +568,36 @@ export const ReportQuestion = z.object({
     reason: z.string(),
   }),
 })
+
+export const UpdateAnswersSchema = z.object({
+  body: z.object({
+    answer: z
+      .string({ required_error: 'Answer is required' })
+      .min(1, 'Answer must not be empty'),
+  }),
+})
+
+export const UpdateCommentsSchema = z.object({
+  body: z.object({
+    comment: z
+      .string({ required_error: 'Comment is required' })
+      .min(1, 'Comment must not be empty'),
+  }),
+})
+
+export const UpdateForumsSchema = z.object({
+  body: z.object({
+    title: z
+      .string({ required_error: 'Title is required' })
+      .min(1, 'Title must not be empty')
+      .optional(),
+    question: z
+      .string({ required_error: 'Question is required' })
+      .min(1, 'Question must not be empty')
+      .optional(),
+    tags: z.union([z.array(z.string()), z.string()]).optional(),
+    deleted_images: z.union([z.array(z.string()), z.string()]).optional(),
+  }),
+})
+
+export type UpdateForumsContent = z.infer<typeof UpdateForumsSchema>

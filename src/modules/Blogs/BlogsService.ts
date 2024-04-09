@@ -111,13 +111,24 @@ export async function findDraftBlogs(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalDraftBlogs() {
-  return await db
+export async function getTotalDraftBlogs(searchKey: string) {
+  let query = db
     .selectFrom('blogs')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('is_archived', '=', false)
     .where('status', '=', 'draft')
-    .executeTakeFirst()
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('title', 'ilike', `${searchKey}%`),
+        eb('author', 'ilike', `${searchKey}%`),
+        eb('content', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function findBlogDetails(id: string) {
@@ -232,12 +243,23 @@ export async function findArchivedBlogs(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalArchivedBlogs() {
-  return await db
+export async function getTotalArchivedBlogs(searchKey: string) {
+  let query = db
     .selectFrom('blogs')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('is_archived', '=', true)
-    .executeTakeFirst()
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('title', 'ilike', `${searchKey}%`),
+        eb('author', 'ilike', `${searchKey}%`),
+        eb('content', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function findPublishedBlogs(
@@ -303,13 +325,30 @@ export async function findPublishedBlogs(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalPublishedBlogs() {
-  return await db
-    .selectFrom('blogs')
+export async function getTotalPublishedBlogs(
+  searchKey: string,
+  filter: string
+) {
+  let query = db
+    .selectFrom('blogs as b')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('is_archived', '=', false)
     .where('status', '=', 'published')
-    .executeTakeFirst()
+
+  if (filter.length) {
+    query = query.where('b.category', '=', filter)
+  }
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('author', 'ilike', `%${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+  return await query.executeTakeFirst()
 }
 
 export async function setBlogThumbnail(id: string, blog_id: string) {

@@ -248,7 +248,7 @@ export async function listDraftEvents(
 ) {
   const [data, total] = await Promise.all([
     Service.findDraftEvents(offset, searchKey, perpage),
-    Service.getTotalDraftEvents(),
+    Service.getTotalDraftEvents(searchKey),
   ])
 
   return { data, total }
@@ -261,7 +261,7 @@ export async function listArchivedEvents(
 ) {
   const [data, total] = await Promise.all([
     Service.findArchivedEvents(offset, searchKey, perpage),
-    Service.getTotalArchiveEvents(),
+    Service.getTotalArchiveEvents(searchKey),
   ])
 
   return { data, total }

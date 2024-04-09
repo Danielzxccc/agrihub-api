@@ -305,21 +305,43 @@ export async function findArchivedEvents(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalArchiveEvents() {
-  return await db
+export async function getTotalArchiveEvents(searchKey: string) {
+  let query = db
     .selectFrom('events')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('is_archived', '=', true)
-    .executeTakeFirst()
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('about', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+        eb('location', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }
 
-export async function getTotalDraftEvents() {
-  return await db
+export async function getTotalDraftEvents(searchKey: string) {
+  let query = db
     .selectFrom('events')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('status', '=', 'draft')
     .where('is_archived', '=', false)
-    .executeTakeFirst()
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('about', 'ilike', `${searchKey}%`),
+        eb('title', 'ilike', `${searchKey}%`),
+        eb('location', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function archiveEvent(id: string) {

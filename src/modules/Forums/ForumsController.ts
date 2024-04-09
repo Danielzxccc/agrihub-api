@@ -48,6 +48,7 @@ export async function listQuestions(req: SessionRequest, res: Response) {
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
     const filterKey = query.filter
+    const tagKey = query.tag
 
     const questions = await Interactor.listQuestions(
       offset,
@@ -55,7 +56,8 @@ export async function listQuestions(req: SessionRequest, res: Response) {
       filterKey,
       perPage,
       req.session.userid || '00',
-      query.profile
+      query.profile,
+      tagKey
     )
     const totalPages = Math.ceil(Number(questions.total.count) / perPage)
     res.status(200).json({
@@ -119,6 +121,27 @@ export async function createNewQuestion(req: SessionRequest, res: Response) {
     res
       .status(201)
       .json({ message: 'Question created successfully', newQuestion })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateQuestion(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+    const uploadedFiles = req.files as Express.Multer.File[]
+    const imagesrc = uploadedFiles?.map((file) => file.filename) || []
+    const contents = await zParse(Schema.UpdateForumsSchema, req)
+
+    await Interactor.updateQuestion(
+      id,
+      userid,
+      imagesrc,
+      contents,
+      uploadedFiles
+    )
+    res.status(201).json({ message: 'Updated successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
@@ -316,6 +339,32 @@ export async function listReportedQuestions(req: Request, res: Response) {
         total_records: Number(events.total.count),
       },
     })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateAnswer(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.UpdateAnswersSchema, req)
+    const userid = req.session.userid
+    await Interactor.updateAnswer(userid, id, body)
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateComment(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.UpdateCommentsSchema, req)
+    const userid = req.session.userid
+    await Interactor.updateComment(userid, id, body)
+
+    res.status(200).json({ message: 'Updated Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }

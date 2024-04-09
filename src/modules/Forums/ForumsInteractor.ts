@@ -1,8 +1,14 @@
 import HttpError from '../../utils/HttpError'
-import { NewQuestion, NewVoteQuestion, Question } from '../../types/DBTypes'
+import {
+  NewQuestion,
+  NewVoteQuestion,
+  Question,
+  UpdateAnswer,
+  UpdateComment,
+} from '../../types/DBTypes'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import * as Service from './ForumsService'
-import { ForumsContent } from './../../schema/ForumsSchema'
+import { ForumsContent, UpdateForumsContent } from './../../schema/ForumsSchema'
 import {
   deleteFileCloud,
   getObjectUrl,
@@ -58,7 +64,8 @@ export async function listQuestions(
   filterKey: string,
   perpage: number,
   userid: string,
-  profile?: string
+  profile?: string,
+  tag?: string
 ) {
   const [data, total] = await Promise.all([
     Service.findQuestions(
@@ -67,10 +74,12 @@ export async function listQuestions(
       filterKey,
       perpage,
       userid,
-      profile
+      profile,
+      tag
     ),
     Service.getTotalCount(profile),
   ])
+
   for (let question of data) {
     question.user.avatar = question.user.avatar
       ? getObjectUrl(question.user.avatar)
@@ -137,6 +146,82 @@ export async function createNewQuestion(
   }
 }
 
+export async function updateQuestion(
+  id: string,
+  userid: string,
+  imagesrc: string[],
+  questions: UpdateForumsContent,
+  uploadedFiles: Express.Multer.File[]
+) {
+  try {
+    const findQueston = await Service.findQuestionById(id)
+
+    if (!findQueston) {
+      throw new HttpError('Question not found', 404)
+    }
+
+    if (!userid) {
+      throw new HttpError('Session Expired', 401)
+    }
+
+    if (findQueston.userid !== userid) {
+      throw new HttpError('Unauthorized', 404)
+    }
+    const { title, question, tags, deleted_images } = questions.body
+    let newImageSrc: string[] = []
+
+    if (deleted_images?.length) {
+      const existingImages = findQueston.imagesrc
+      const imagesToCompare = deleted_images?.length ? deleted_images : []
+      newImageSrc = existingImages.filter(
+        (element) => !imagesToCompare.includes(element)
+      )
+
+      for (const image of deleted_images) {
+        await deleteFileCloud(image)
+      }
+    }
+
+    const content = {
+      id,
+      title,
+      question,
+      imagesrc: [...newImageSrc, ...imagesrc],
+    }
+
+    const findExistingTags = await Service.findQuestionTags(id)
+
+    let deletedTags: string[] = []
+    if (findExistingTags.length) {
+      const existingTags = findExistingTags.map((item) => item.tagid)
+
+      const tagsToCompare = tags?.length ? tags : []
+
+      deletedTags = existingTags.filter(
+        (element) => !tagsToCompare.includes(element)
+      )
+    }
+
+    const newQuestion = await Service.updateQuestion(
+      id,
+      content,
+      tags,
+      deletedTags
+    )
+
+    await uploadFiles(uploadedFiles)
+    for (const image of uploadedFiles) {
+      deleteFile(image.filename)
+    }
+    return newQuestion
+  } catch (error) {
+    for (const image of uploadedFiles) {
+      deleteFile(image.filename)
+    }
+    dbErrorHandler(error)
+  }
+}
+
 export async function createNewAnswer(
   userid: string,
   forumid: string,
@@ -145,7 +230,12 @@ export async function createNewAnswer(
   if (!userid) {
     throw new HttpError('Session Expired', 401)
   }
+  const question = await Service.findQuestionById(forumid)
+  const user = await findUser(question.userid)
 
+  if (!question) {
+    throw new HttpError('The question does not exist or was removed', 400)
+  }
   // container to represent data
   const answerData = {
     userid,
@@ -155,6 +245,15 @@ export async function createNewAnswer(
   }
 
   const newAnswer = await Service.createAnswer(answerData)
+
+  if (question.userid !== newAnswer.userid) {
+    await emitPushNotification(
+      question.userid,
+      `Your question received an answer`,
+      `Your question about ${question.title} have received new answer`,
+      `/forum/question/${user.username}/${question.id}`
+    )
+  }
 
   return newAnswer
 }
@@ -170,6 +269,8 @@ export async function createNewComment(
     comment,
   }
 
+  const user = await findUser(userid)
+
   // Check if the question exists
   const questionExists = await Service.checkQuestionExists(answerid)
 
@@ -180,6 +281,12 @@ export async function createNewComment(
   // Call the Service to create the comment
   const newComment = await Service.createComment(commentData)
 
+  await emitPushNotification(
+    questionExists.userid,
+    `Your answer received a reply`,
+    `Your answer received a new reply`,
+    `/forum/question/${user.username}/${questionExists.forumid}`
+  )
   return newComment
 }
 
@@ -194,14 +301,16 @@ export async function voteQuestion(
 
   const data = await Service.voteQuestion(questionid, userid, vote)
 
-  const user = await findUser(userid)
+  const user = await findUser(question.userid)
 
-  await emitPushNotification(
-    question.userid,
-    `Your question received an ${vote}`,
-    `Your question about ${question.title} have received new ${vote}`,
-    `/forum/question/${user.username}/${question.id}`
-  )
+  if (user.id !== question.userid) {
+    await emitPushNotification(
+      question.userid,
+      `Your question received an ${vote}`,
+      `Your question about ${question.title} have received new ${vote}`,
+      `/forum/question/${user.username}/${question.id}`
+    )
+  }
 
   return data
 }
@@ -230,7 +339,8 @@ export async function voteAnswer(
     throw new HttpError('Answer Not Found', 404)
   }
 
-  const user = await findUser(userid)
+  const question = await Service.findQuestionById(answer.forumid)
+  const user = await findUser(question.userid)
 
   await emitPushNotification(
     answer.userid,
@@ -367,4 +477,55 @@ export async function listReportedQuestions(
   ])
 
   return { data, total }
+}
+
+export async function updateAnswer(
+  userid: string,
+  id: string,
+  answer: UpdateAnswer
+) {
+  const user = await findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+  const findAnswer = await Service.findAnswer(id)
+
+  if (!findAnswer) {
+    throw new HttpError('Answer not found', 404)
+  }
+
+  if (user.id !== findAnswer.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const updatedAnwer = await Service.updateAnswer(id, answer)
+
+  return updatedAnwer
+}
+
+export async function updateComment(
+  userid: string,
+  id: string,
+  comment: UpdateComment
+) {
+  const user = await findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const findComment = await Service.findComment(id)
+
+  if (!findComment) {
+    throw new HttpError('Comment not found', 404)
+  }
+
+  if (user.id !== findComment.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const updatedAnwer = await Service.updateComment(id, comment)
+
+  return updatedAnwer
 }

@@ -1044,3 +1044,85 @@ export async function kickCommunityFarmMember(userid: string, id: string) {
     `/community/explore/${farmHead.farm_id}`
   )
 }
+
+export async function setFarmerAsFarmHead(id: string, userid: string) {
+  const findFarmHead = await findUser(userid)
+
+  if (!findFarmHead) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const findMember = await findUser(id)
+
+  if (!findMember) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  if (findFarmHead.farm_id !== findMember.farm_id) {
+    throw new HttpError('That user is not in your member list', 400)
+  }
+
+  if (findFarmHead.id === findMember.id) {
+    throw new HttpError('You are already a farm head', 400)
+  }
+
+  if (findMember.role === 'farm_head') {
+    throw new HttpError('That member is already the farm head.', 400)
+  }
+
+  await Service.setMemberAsFarmHead(id)
+
+  const community_farm = await Service.findCommunityFarmById(findMember.farm_id)
+
+  await emitPushNotification(
+    findMember.id,
+    `Farm Head Assignment Successful`,
+    `Congratulations! You have been successfully assigned as the Farm Head of ${community_farm.farm_name} in AgriHub. Welcome to your new role!`,
+    `/community/my-community/${findMember.farm_id}`
+  )
+}
+
+export async function setFarmerHeadAsFarmer(id: string, userid: string) {
+  const findFarmHead = await findUser(userid)
+
+  if (!findFarmHead) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const findMember = await findUser(id)
+
+  if (!findMember) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  if (findFarmHead.farm_id !== findMember.farm_id) {
+    throw new HttpError('That user is not in your member list', 400)
+  }
+
+  if (findFarmHead.id === findMember.id) {
+    throw new HttpError('You cannot remove your grants.', 400)
+  }
+
+  if (findMember.role === 'farmer') {
+    throw new HttpError('Already a farmer', 400)
+  }
+
+  const community_farm = await Service.findCommunityFarmById(findMember.farm_id)
+
+  const farmApplication = await Service.findOneFarmApplication(
+    community_farm.application_id
+  )
+
+  if (farmApplication.applicant.id === findMember.id) {
+    throw new HttpError('Original Farm Head Cannot Be Set to Farmer', 401)
+  }
+
+  await Service.setFarmerHeadAsFarmer(id)
+
+  await emitPushNotification(
+    findMember.id,
+    `Role Change Notification: Transitioned to Farmer Status`,
+    `Your role has been transitioned back to 'Farmer' by your farm head.`,
+    `/community/my-community/${findMember.farm_id}`
+  )
+}

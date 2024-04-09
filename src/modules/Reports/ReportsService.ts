@@ -21,6 +21,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .select(({ fn, val, eb }) => [
       'ccr.id',
+      'cfc.id as cfc_id',
       'c.name as crop_name',
       'ccr.date_planted',
       'ccr.date_harvested',
@@ -54,6 +55,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
     .groupBy([
       'ccr.id',
       'c.name',
+      'cfc.id',
       'c.image',
       'ccr.date_planted',
       'ccr.date_harvested',
@@ -187,7 +189,7 @@ export async function findCommunityFarmCrop(id: string) {
 
 // TODO: Date harvested filter
 
-export async function getHarvestedAndWitheredCrops(id: string) {
+export async function getHarvestedAndWitheredCrops(id: string, month?: number) {
   return await db
     .selectFrom('community_farms_crops as cfc')
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
@@ -201,6 +203,10 @@ export async function getHarvestedAndWitheredCrops(id: string) {
       sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('total_withered'),
     ])
     .where('cfc.farm_id', '=', id)
+    .where('cfc.is_archived', '=', false)
+    .$if(month !== undefined, (qb) =>
+      qb.where(sql`EXTRACT(MONTH FROM ccr.date_harvested) = ${month}`)
+    )
     .groupBy(['cfc.id', 'cfc.farm_id', 'cfc.crop_id', 'c.name'])
     .execute()
 }
@@ -401,7 +407,7 @@ export async function archiveCommunityCropReport(id: string) {
     .executeTakeFirst()
 }
 
-export async function getGrowthHarvestStats(id: string) {
+export async function getGrowthHarvestStats(id: string, month?: number) {
   return await db
     .selectFrom('crops as c')
     .select([
@@ -417,6 +423,9 @@ export async function getGrowthHarvestStats(id: string) {
     .where('ccr.date_planted', 'is not', null)
     .where('ccr.date_harvested', 'is not', null)
     .where('ccr.farmid', '=', id)
+    .$if(month !== undefined, (qb) =>
+      qb.where(sql`EXTRACT(MONTH FROM ccr.date_harvested) = ${month}`)
+    )
     .execute()
 }
 
@@ -943,4 +952,113 @@ export async function getUserFeedbackOverview() {
         .as('very_dissatisfied'),
     ])
     .executeTakeFirst()
+}
+
+export async function getFarmHarvestDistribution(month: number, limit: number) {
+  return db.executeQuery(
+    sql`
+    WITH monthly_harvest AS (
+    SELECT 
+        SUM(harvested_qty) AS total_harvest,
+        EXTRACT(MONTH FROM date_harvested) AS harvest_month
+    FROM community_crop_reports
+    WHERE EXTRACT(MONTH FROM date_harvested) = ${month}
+    GROUP BY harvest_month
+    ),
+    farm_harvest AS (
+        SELECT 
+            farmid,
+            SUM(harvested_qty) AS farm_harvest_qty
+        FROM community_crop_reports
+        WHERE EXTRACT(MONTH FROM date_harvested) = ${month}
+        GROUP BY farmid
+    )
+    SELECT 
+        cf.farm_name,
+        fh.farm_harvest_qty,
+        ROUND((fh.farm_harvest_qty::numeric / mh.total_harvest) * 100, 2) AS percentage_distribution
+    FROM 
+        farm_harvest fh
+    INNER JOIN community_farms cf ON fh.farmid = cf.id
+    CROSS JOIN monthly_harvest mh
+    ORDER BY percentage_distribution DESC
+    LIMIT ${limit};
+  `.compile(db)
+  )
+}
+
+export async function getCropHarvestDistribution(month: number, limit: number) {
+  return db.executeQuery(
+    sql`
+    WITH monthly_harvest AS (
+        SELECT 
+            cc.crop_id,
+            c.name AS crop_name,
+            SUM(cr.harvested_qty) AS total_harvested_qty
+        FROM 
+            community_crop_reports cr
+        JOIN 
+            community_farms_crops cc ON cr.crop_id = cc.id
+        JOIN 
+            crops c ON cc.crop_id = c.id
+        WHERE 
+            EXTRACT(MONTH FROM cr.date_harvested) = ${month}
+        GROUP BY 
+            cc.crop_id, c.name
+    )
+    SELECT 
+        crop_id,
+        crop_name,
+        total_harvested_qty,
+        (total_harvested_qty / SUM(total_harvested_qty) OVER ()) * 100 AS percentage_distribution
+    FROM 
+        monthly_harvest
+    ORDER BY 
+        total_harvested_qty DESC
+    LIMIT ${limit};
+  `.compile(db)
+  )
+}
+
+export async function getGrowthRateDistribution(month: number, limit: number) {
+  return db.executeQuery(
+    sql`
+    WITH MonthlyCropReports AS (
+        SELECT 
+            cc.crop_id,
+            c.name AS crop_name,
+            SUM(cr.harvested_qty) AS total_harvested_qty,
+            SUM(cr.withered_crops) AS total_withered_crops,
+            SUM(cr.planted_qty) AS total_planted_qty
+        FROM 
+            community_crop_reports cr
+        INNER JOIN 
+            community_farms_crops cc ON cr.crop_id = cc.id
+        INNER JOIN 
+            crops c ON cc.crop_id = c.id
+        WHERE 
+            EXTRACT(MONTH FROM cr.date_harvested) = ${month}
+        GROUP BY 
+            cc.crop_id, c.name
+    )
+    SELECT 
+        crop_name,
+        ROUND((CASE 
+            WHEN c.isyield THEN 
+                (SUM(mcr.total_harvested_qty)::numeric / NULLIF(SUM(mcr.total_harvested_qty) + SUM(mcr.total_withered_crops), 0)) * 100
+            ELSE 
+                (SUM(mcr.total_harvested_qty)::numeric / NULLIF(SUM(mcr.total_planted_qty), 0)) * 100
+        END), 2) AS growth_rate,
+        ROUND(((SUM(mcr.total_harvested_qty)::numeric / NULLIF(SUM(total_harvested_qty) OVER(), 0)) * 100), 2) AS percentage_distribution
+    FROM 
+        MonthlyCropReports mcr
+    INNER JOIN 
+        crops c ON mcr.crop_id = c.id
+    GROUP BY 
+        crop_name, c.isyield, mcr.total_harvested_qty
+    ORDER BY 
+        percentage_distribution DESC
+    LIMIT ${limit};
+  `.compile(db)
+  )
 }

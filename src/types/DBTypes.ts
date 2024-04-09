@@ -52,6 +52,7 @@ import {
   TermsCondition,
   AboutUs,
   AboutUsCarousel,
+  ToolRequest,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -62,7 +63,9 @@ export type Token = Selectable<EmailToken>
 export type Question = Selectable<Forums>
 export type NewQuestion = Insertable<Forums>
 export type NewAnswer = Insertable<ForumsAnswers>
+export type UpdateAnswer = Updateable<ForumsAnswers>
 export type NewComment = Insertable<ForumsComments>
+export type UpdateComment = Updateable<ForumsComments>
 export type Answer = Selectable<ForumsAnswers>
 export type UpdateQuestion = Updateable<Forums>
 
@@ -219,3 +222,7 @@ export type NewUserFeedback = Insertable<UserFeedbacks>
 // Update
 export type UpdateAboutUs = Updateable<AboutUs>
 export type NewAboutUsCarousel = Insertable<AboutUsCarousel>
+
+//tool request
+export type NewToolRequest = Insertable<ToolRequest>
+export type UpdateToolRequest = Updateable<ToolRequest>

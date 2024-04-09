@@ -102,7 +102,6 @@ UserRouter.get(
  */
 UserRouter.get('/profile/:username', UserController.findUserProfile)
 
-// TODO: fix edit profile
 /**
  * @openapi
  * /api/user/profile/{id}:

@@ -524,6 +524,8 @@
  *       properties:
  *         content:
  *           type: string
+ *         updatedat:
+ *           type: string
  */
 
 /**
@@ -862,6 +864,8 @@
  *       type: object
  *       properties:
  *         content:
+ *           type: string
+ *         updatedat:
  *           type: string
  */
 
