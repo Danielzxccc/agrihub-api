@@ -82,3 +82,17 @@ export const GetHarvestDistribution = z.object({
       .default('50'),
   }),
 })
+
+export const AnalyticsMonthQuery = z.object({
+  query: z.object({
+    month: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional(),
+    limit: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional()
+      .default('50'),
+  }),
+})

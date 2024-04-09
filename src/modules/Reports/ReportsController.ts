@@ -42,8 +42,12 @@ export async function listWitheredHarvestedCrops(
 ) {
   try {
     const { userid } = req.session
+    const { query } = await zParse(Schema.AnalyticsMonthQuery, req)
 
-    const data = await Interactor.listWitheredHarvestedCrops(userid)
+    const data = await Interactor.listWitheredHarvestedCrops(
+      userid,
+      query.month
+    )
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)
@@ -262,7 +266,8 @@ export async function listGrowthHarvestStats(
 ) {
   try {
     const { userid } = req.session
-    const data = await Interactor.listGrowthHarvestStats(userid)
+    const { query } = await zParse(Schema.AnalyticsMonthQuery, req)
+    const data = await Interactor.listGrowthHarvestStats(userid, query.month)
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)

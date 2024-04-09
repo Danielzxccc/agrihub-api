@@ -109,14 +109,17 @@ export async function createCommunityCropReport(
   }
 }
 
-export async function listWitheredHarvestedCrops(userid: string) {
+export async function listWitheredHarvestedCrops(
+  userid: string,
+  month?: number
+) {
   const user = await findUser(userid)
   if (!user) throw new HttpError('Unauthorized', 401)
 
   const farm = await findCommunityFarmById(user.farm_id)
   if (!farm) throw new HttpError("Can't find farm", 404)
 
-  const data = await Service.getHarvestedAndWitheredCrops(farm.id)
+  const data = await Service.getHarvestedAndWitheredCrops(farm.id, month)
   return data
 }
 
@@ -323,14 +326,14 @@ export async function markReportAsInactive(id: string, userid: string) {
   await Service.markReportAsInactive(id)
 }
 
-export async function listGrowthHarvestStats(userid: string) {
+export async function listGrowthHarvestStats(userid: string, month?: number) {
   const user = await findUser(userid)
   if (!user) throw new HttpError('Unauthorized', 401)
 
   const farm = await findCommunityFarmById(user.farm_id)
   if (!farm) throw new HttpError("Can't find farm", 404)
 
-  const data = await Service.getGrowthHarvestStats(farm.id)
+  const data = await Service.getGrowthHarvestStats(farm.id, month)
 
   return data
 }

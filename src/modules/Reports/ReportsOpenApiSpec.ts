@@ -134,6 +134,12 @@
  *     summary: Get stacked bar graph data for farmer reports
  *     tags:
  *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: string
+ *         description: Month for which to retrieve growth rate distribution
  *     responses:
  *       "200":
  *         description: Successful response
@@ -328,6 +334,12 @@
  *     summary: Get farmer graph growth harvest data
  *     tags:
  *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: string
+ *         description: Month for which to retrieve growth rate distribution
  *     responses:
  *       "200":
  *         description: Successful response
