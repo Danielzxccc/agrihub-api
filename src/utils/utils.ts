@@ -86,7 +86,9 @@ export function getToolRequestNotification(
     case 'forwarded':
       return {
         title: `Hello!, your reqest for ${request.tool_requested} has been forwarded`,
-        body: `Your request for ${request.tool_requested} has been forwarded to {forwarded_to}. We will keep you updated as soon as we receive any further information regarding your request.`,
+        body: `Your request for ${
+          request.tool_requested
+        } has been forwarded to ${request.forwarded_to.join()}. We will keep you updated as soon as we receive any further information regarding your request.`,
       }
     case 'rejected':
       return {
