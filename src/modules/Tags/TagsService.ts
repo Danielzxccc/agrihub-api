@@ -38,10 +38,11 @@ export async function getTotalCount(filterKey: string, searchKey: string) {
   let query = db
     .selectFrom('tags')
     .select(({ fn }) => [fn.count<number>('tags.id').as('count')])
-    .leftJoin('forums_tags', 'forums_tags.tagid', 'tags.id')
 
   if (searchKey.length) {
-    query = query.where('tag_name', 'ilike', `${searchKey}%`)
+    query = query
+      .leftJoin('forums_tags', 'forums_tags.tagid', 'tags.id')
+      .where('tag_name', 'ilike', `%${searchKey}%`)
   }
 
   // if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')
