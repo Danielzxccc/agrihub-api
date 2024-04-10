@@ -39,20 +39,14 @@ export async function getTotalCount(filterKey: string, searchKey: string) {
     .selectFrom('tags')
     .select(({ fn }) => [fn.count<number>('tags.id').as('count')])
     .leftJoin('forums_tags', 'forums_tags.tagid', 'tags.id')
-    .groupBy([
-      'tags.id',
-      'forums_tags.tagid',
-      'tags.tag_name',
-      'tags.createdat',
-    ])
 
   if (searchKey.length) {
     query = query.where('tag_name', 'ilike', `${searchKey}%`)
   }
 
-  if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')
-  if (filterKey === 'popular') query = query.orderBy('count', 'desc')
-  if (filterKey === 'newest') query = query.orderBy('createdat', 'desc')
+  // if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')
+  // if (filterKey === 'popular') query = query.orderBy('count', 'desc')
+  // if (filterKey === 'newest') query = query.orderBy('createdat', 'desc')
 
   return await query.executeTakeFirst()
 }
