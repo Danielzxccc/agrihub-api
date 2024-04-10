@@ -18,10 +18,6 @@ export async function getTags(
     Service.getTotalCount(filterKey, searchKey),
   ])
 
-  if (!data || data.length === 0) {
-    throw new HttpError('No tags were found', 404)
-  }
-
   return { data, total }
 }
 
