@@ -33,7 +33,7 @@ export async function getTags(req: Request, res: Response) {
       tags: tags.data,
       pagination: {
         page: pageNumber,
-        per_page: 20,
+        per_page: perPage,
         total_pages: totalPages,
         total_records: Number(tags.total.count),
       },
