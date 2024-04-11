@@ -187,6 +187,12 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
+  '/analytics/crop/distribution/community',
+  UserGuard(['farm_head']),
+  ReportsController.getCropHarvestDistributionPerFarm
+)
+
+ReportsRouter.get(
   '/analytics/growth-rate/distribution',
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getGrowthRateDistribution

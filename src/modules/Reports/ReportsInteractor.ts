@@ -604,6 +604,26 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
   return data.rows
 }
 
+export async function getCropHarvestDistributionPerFarm(
+  month: number,
+  limit: number,
+  userid: string
+) {
+  const user = await findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const data = await Service.getCropHarvestDistributionPerFarm(
+    month,
+    limit,
+    user.farm_id
+  )
+
+  return data.rows
+}
+
 export async function getGrowthRateDistribution(month: number, limit: number) {
   const data = await Service.getGrowthRateDistribution(month, limit)
 

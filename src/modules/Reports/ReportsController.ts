@@ -468,6 +468,25 @@ export async function getCropHarvestDistribution(
   }
 }
 
+export async function getCropHarvestDistributionPerFarm(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.GetHarvestDistribution, req)
+    const { userid } = req.session
+
+    const data = await Interactor.getCropHarvestDistributionPerFarm(
+      query.month,
+      query.limit,
+      userid
+    )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function getGrowthRateDistribution(
   req: SessionRequest,
   res: Response

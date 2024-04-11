@@ -1020,6 +1020,45 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
   )
 }
 
+export async function getCropHarvestDistributionPerFarm(
+  month: number,
+  limit: number,
+  farmid: string
+) {
+  return db.executeQuery(
+    sql`
+    WITH monthly_harvest AS (
+        SELECT 
+            cc.crop_id,
+            cr.farmid,
+            c.name AS crop_name,
+            SUM(cr.harvested_qty) AS total_harvested_qty
+        FROM 
+            community_crop_reports cr
+        JOIN 
+            community_farms_crops cc ON cr.crop_id = cc.id
+        JOIN 
+            crops c ON cc.crop_id = c.id
+        WHERE 
+            EXTRACT(MONTH FROM cr.date_harvested) = ${month}
+        GROUP BY 
+            cr.farmid, cc.crop_id, c.name
+    )
+    SELECT 
+        crop_id,
+        crop_name,
+        total_harvested_qty,
+        (total_harvested_qty / SUM(total_harvested_qty) OVER ()) * 100 AS percentage_distribution
+    FROM 
+        monthly_harvest
+    WHERE monthly_harvest.farmid = ${farmid}
+    ORDER BY 
+        total_harvested_qty DESC
+    LIMIT ${limit};
+  `.compile(db)
+  )
+}
+
 export async function getGrowthRateDistribution(month: number, limit: number) {
   return db.executeQuery(
     sql`
