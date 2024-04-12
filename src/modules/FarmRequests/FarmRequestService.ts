@@ -1,4 +1,4 @@
-import { ToolRequestStatus } from 'kysely-codegen'
+import { IdentifierNode, ToolRequestStatus } from 'kysely-codegen'
 import { db } from '../../config/database'
 import {
   NewSeedlingRequest,
@@ -322,4 +322,20 @@ export async function getTotalToolRequest(
   }
 
   return await query.executeTakeFirst()
+}
+
+export async function deleteToolRequest(id: string) {
+  return await db
+    .deleteFrom('tool_request')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findToolRequestById(id: string) {
+  return await db
+    .selectFrom('tool_request')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
 }
