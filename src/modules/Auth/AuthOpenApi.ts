@@ -264,7 +264,7 @@
  * @openapi
  * /api/auth/update/email:
  *   post:
- *     summary: Confirm Password
+ *     summary: Update Email
  *     tags:
  *       - Auth
  *     requestBody:
