@@ -313,3 +313,15 @@ export const SendOTPByNumber = z.object({
     contact_number: z.string(),
   }),
 })
+
+export const ConfirmPassword = z.object({
+  body: z.object({
+    password: z.string(),
+  }),
+})
+
+export const UpdateEmail = z.object({
+  body: z.object({
+    email: z.string().email(),
+  }),
+})

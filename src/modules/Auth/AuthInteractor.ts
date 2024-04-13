@@ -1,8 +1,11 @@
 import * as Service from '../Users/UserService'
 import {
+  createChangeEmailRequest,
+  deleteChangeEmailRequest,
   deleteOTPCode,
   deleteResetToken,
   deleteToken,
+  findChangeEmailRequest,
   findOTPCode,
   findOTPResetCode,
   findResetToken,
@@ -15,7 +18,11 @@ import {
 import HttpError from '../../utils/HttpError'
 import bcrypt from 'bcrypt'
 import { ProfileCompletion, RegisterUser } from '../../schema/AuthSchema'
-import { sendMail, sendResetTokenEmail } from '../../utils/email'
+import {
+  sendChangeEmailRequest,
+  sendMail,
+  sendResetTokenEmail,
+} from '../../utils/email'
 import { createUserTags } from '../Tags/TagsService'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
@@ -355,4 +362,67 @@ export async function verifyResetTokenViaOTP(code: number) {
   await deleteOTPCode(findToken.userid, OTPCode.otp_code, OTPCode.phone_number)
 
   return findToken.id
+}
+
+export async function confirmPassword(userid: string, password: string) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const compare = await bcrypt.compare(password, user.password)
+
+  if (!compare) {
+    throw new HttpError('Unauthorized', 401)
+  }
+}
+
+export async function updateUserEmail(userid: string, email: string) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  if (user.email === email) {
+    throw new HttpError(
+      'The email you entered is already your current email.',
+      400
+    )
+  }
+
+  const checkEmailIfExisting = await Service.findUserByEmail(email)
+
+  if (checkEmailIfExisting) {
+    throw new HttpError('Email Already Exists', 400)
+  }
+
+  const newChangeEmailRequest = await createChangeEmailRequest({
+    email,
+    userid,
+  })
+
+  await sendChangeEmailRequest(email, newChangeEmailRequest.id)
+  // return
+}
+
+export async function confirmChangeEmailRequest(id: string) {
+  const emailRequest = await findChangeEmailRequest(id)
+
+  if (!emailRequest) {
+    throw new HttpError('Token Not Found', 404)
+  }
+
+  await Service.updateUser(emailRequest.userid, { email: emailRequest.email })
+
+  await deleteChangeEmailRequest(emailRequest.id)
 }

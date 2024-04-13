@@ -1,6 +1,7 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
 import moment from 'moment'
+import { NewChangeEmailRequest } from '../../types/DBTypes'
 
 export async function generateToken(userid: string) {
   const generatedTimestamp = moment()
@@ -127,4 +128,28 @@ export async function removeUnverifiedPhoneNumber(phone: string) {
     .where('contact_number', '=', phone)
     .where('verification_level', '>', '1')
     .execute()
+}
+
+export async function findChangeEmailRequest(id: string) {
+  return await db
+    .selectFrom('change_email_request')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function createChangeEmailRequest(request: NewChangeEmailRequest) {
+  return await db
+    .insertInto('change_email_request')
+    .values(request)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteChangeEmailRequest(id: string) {
+  return await db
+    .deleteFrom('change_email_request')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }

@@ -205,3 +205,44 @@ export async function verifyResetTokenViaOTP(
     errorHandler(res, error)
   }
 }
+
+export async function confirmPassword(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.ConfirmPassword, req)
+
+    await Interactor.confirmPassword(userid, body.password)
+
+    res.status(200).json({ message: 'Successful Password Confirmation' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateUserEmail(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.UpdateEmail, req)
+
+    await Interactor.updateUserEmail(userid, body.email)
+
+    res.status(200).json({ message: 'Email Confirmation Sent Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function confirmChangeEmailRequest(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+
+    await Interactor.confirmChangeEmailRequest(id)
+
+    res.status(200).send(verificationSuccessPage)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
