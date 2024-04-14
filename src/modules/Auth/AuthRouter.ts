@@ -301,3 +301,9 @@ AuthRouter.get(
   '/confirm/email-update/:id',
   AuthController.confirmChangeEmailRequest
 )
+
+AuthRouter.post('/update/number', AuthController.updateUserNumber)
+AuthRouter.post(
+  '/confirm/number-update',
+  AuthController.confirmChangeNumberRequest
+)

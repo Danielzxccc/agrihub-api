@@ -246,3 +246,31 @@ export async function confirmChangeEmailRequest(
     errorHandler(res, error)
   }
 }
+
+export async function updateUserNumber(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.UpdateNumber, req)
+
+    await Interactor.updateUserNumber(userid, body.number)
+
+    res.status(200).json({ message: 'Request sent' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function confirmChangeNumberRequest(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { body } = await zParse(Schema.ConfirmChangeNumber, req)
+
+    await Interactor.confirmChangeNumberRequest(body.otp)
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

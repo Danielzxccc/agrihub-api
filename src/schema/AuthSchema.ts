@@ -325,3 +325,21 @@ export const UpdateEmail = z.object({
     email: z.string().email(),
   }),
 })
+
+export const ConfirmChangeNumber = z.object({
+  body: z.object({
+    otp: z.number(),
+  }),
+})
+
+const phoneRegex = /^(639\d{9}|09\d{9})$/
+export const UpdateNumber = z.object({
+  body: z.object({
+    number: z
+      .string()
+      .refine(
+        (value) => phoneRegex.test(value ?? ''),
+        'Please enter valid phone number, ex.09XXXXXXXXX, 63XXXXXXXXXX'
+      ),
+  }),
+})

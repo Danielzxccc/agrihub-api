@@ -1,11 +1,14 @@
 import * as Service from '../Users/UserService'
 import {
   createChangeEmailRequest,
+  createChangeNumberRequest,
   deleteChangeEmailRequest,
+  deleteChangeNumberRequest,
   deleteOTPCode,
   deleteResetToken,
   deleteToken,
   findChangeEmailRequest,
+  findChangeNumberRequest,
   findOTPCode,
   findOTPResetCode,
   findResetToken,
@@ -425,4 +428,48 @@ export async function confirmChangeEmailRequest(id: string) {
   await Service.updateUser(emailRequest.userid, { email: emailRequest.email })
 
   await deleteChangeEmailRequest(emailRequest.id)
+}
+
+export async function updateUserNumber(userid: string, number: string) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  if (user.contact_number === number) {
+    throw new HttpError(
+      'The number you entered is already your current number.',
+      400
+    )
+  }
+
+  const checkNumberIfExisting = await Service.findUserByPhoneNumber(number)
+
+  if (checkNumberIfExisting) {
+    throw new HttpError('Number Already Exists', 400)
+  }
+
+  const OTPCode = generateOTP()
+
+  await createChangeNumberRequest({ number, otp: OTPCode, userid })
+
+  const data = await sendSMS(OTPCode, number, `OTP CODE: {otp}`)
+  console.log(data, 'BIG DATA NUMBER')
+}
+
+export async function confirmChangeNumberRequest(otp: number) {
+  const findOtp = await findChangeNumberRequest(otp)
+
+  if (!findOtp) {
+    throw new HttpError('Invalid Code', 400)
+  }
+
+  await Service.updateUser(findOtp.userid, { contact_number: findOtp.number })
+
+  await deleteChangeNumberRequest(findOtp.id)
 }
