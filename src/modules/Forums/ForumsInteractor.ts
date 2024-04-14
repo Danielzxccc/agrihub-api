@@ -168,7 +168,7 @@ export async function updateQuestion(
       throw new HttpError('Unauthorized', 404)
     }
     const { title, question, tags, deleted_images } = questions.body
-    let newImageSrc: string[] = []
+    let newImageSrc: string[] = [...findQueston.imagesrc]
 
     if (deleted_images?.length) {
       const existingImages = findQueston.imagesrc
