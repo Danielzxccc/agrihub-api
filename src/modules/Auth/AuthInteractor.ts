@@ -474,3 +474,32 @@ export async function confirmChangeNumberRequest(otp: number) {
 
   await deleteChangeNumberRequest(findOtp.id)
 }
+
+type UpdatePassword = {
+  userid: string
+  oldPassword: string
+  newPassword: string
+}
+
+export async function updatePassword({
+  userid,
+  newPassword,
+  oldPassword,
+}: UpdatePassword) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const compare = await bcrypt.compare(oldPassword, user.password)
+
+  if (!compare) throw new HttpError('Invalid Credentials', 401)
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10)
+  await Service.updateUser(userid, { password: hashedPassword })
+}

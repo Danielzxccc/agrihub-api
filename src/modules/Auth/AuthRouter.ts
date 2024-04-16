@@ -307,3 +307,5 @@ AuthRouter.post(
   '/confirm/number-update',
   AuthController.confirmChangeNumberRequest
 )
+
+AuthRouter.post('/update/password', AuthController.updatePassword)

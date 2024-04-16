@@ -274,3 +274,17 @@ export async function confirmChangeNumberRequest(
     errorHandler(res, error)
   }
 }
+
+export async function updatePassword(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.UpdatePassword, req)
+    const { newPassword, oldPassword } = body
+    const { userid } = req.session
+
+    await Interactor.updatePassword({ userid, newPassword, oldPassword })
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

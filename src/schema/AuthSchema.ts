@@ -343,3 +343,28 @@ export const UpdateNumber = z.object({
       ),
   }),
 })
+
+export const UpdatePassword = z.object({
+  body: z
+    .object({
+      oldPassword: z.string(),
+      newPassword: z
+        .string()
+        .min(8, 'Password must be at least 8 characters')
+        .max(30, 'Password is too much')
+        .regex(
+          new RegExp('.*[A-Z].*'),
+          'Password must have one uppercase letter'
+        )
+        .regex(
+          new RegExp('.*[a-z].*'),
+          'Password must have one lowercase letter'
+        )
+        .regex(new RegExp('.*[0-9].*'), 'Password must have one digit number'),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ['confirmPassword'], // path of error
+    }),
+})
