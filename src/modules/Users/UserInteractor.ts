@@ -90,7 +90,7 @@ export async function listAdmins(
 ) {
   const [data, total] = await Promise.all([
     Service.findAdmins(offset, perpage, searchKey, filterKey),
-    Service.getTotalAdmins(filterKey),
+    Service.getTotalAdmins(filterKey, searchKey),
   ])
 
   return { data, total }
