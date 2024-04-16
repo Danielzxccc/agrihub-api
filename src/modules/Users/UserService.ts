@@ -226,11 +226,24 @@ export async function findAdmins(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalAdmins(filterKey: 'banned' | 'active') {
+export async function getTotalAdmins(
+  filterKey: 'banned' | 'active',
+  searchKey: string
+) {
   let query = db
     .selectFrom('users as u')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('u.role', '=', 'asst_admin')
+
+  if (searchKey.length >= 1) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.username', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
 
   if (filterKey === 'active') {
     query = query.where('u.isbanned', '=', false)
