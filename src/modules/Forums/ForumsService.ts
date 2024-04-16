@@ -89,8 +89,12 @@ export async function findQuestions(
   if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
 
   if (searchQuery.length) {
-    query = query.where('forums.title', 'ilike', `%${searchQuery}%`)
-    query = query.where('forums.question', 'ilike', `%${searchQuery}%`)
+    query = query.where((eb) =>
+      eb.or([
+        eb('forums.title', 'ilike', `%${searchQuery}%`),
+        eb('forums.question', 'ilike', `%${searchQuery}%`),
+      ])
+    )
   }
 
   if (tag.length) {
@@ -348,13 +352,22 @@ export async function getTotalAnswers(id: string) {
     .executeTakeFirst()
 }
 
-export async function getTotalCount(id: string) {
+export async function getTotalCount(id: string, searchKey: string) {
   let query = db
     .selectFrom('forums')
     .leftJoin('users as u', 'forums.userid', 'u.id')
     .select(({ fn }) => [fn.count<number>('forums.id').as('count')])
 
   if (id) query = query.where('forums.userid', '=', id)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('forums.title', 'ilike', `%${searchKey}%`),
+        eb('forums.question', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
 
   query = query.where('u.isbanned', '=', false)
   return await query.executeTakeFirst()
