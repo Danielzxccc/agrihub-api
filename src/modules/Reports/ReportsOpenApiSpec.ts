@@ -2203,3 +2203,72 @@
  *         percentage_distribution:
  *           type: string
  */
+
+/**
+ * @openapi
+ * /api/reports/farm/inactive:
+ *   get:
+ *     summary: Get Inactive Farm Reports
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/InactiveFarmReport"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     InactiveFarmReport:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/FarmInactiveDetails"
+ *     FarmInactiveDetails:
+ *       type: object
+ *       properties:
+ *         farm_id:
+ *           type: string
+ *           description: The ID of the inactive farm
+ *         farm_name:
+ *           type: string
+ *           description: The name of the inactive farm
+ *         last_report_date:
+ *           type: string
+ *           format: date-time
+ *           description: The date of the last report submitted for the farm
+ *         months_since_last_report:
+ *           type: string
+ *           description: The number of months since the last report was submitted for the farm
+ */

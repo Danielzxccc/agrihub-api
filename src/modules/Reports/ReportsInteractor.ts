@@ -632,3 +632,9 @@ export async function getGrowthRateDistribution(month: number, limit: number) {
 
   return data.rows
 }
+
+export async function listInactiveFarms() {
+  const data = await Service.listInactiveFarms()
+
+  return data
+}

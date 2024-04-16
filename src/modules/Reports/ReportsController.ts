@@ -505,3 +505,12 @@ export async function getGrowthRateDistribution(
     errorHandler(res, error)
   }
 }
+
+export async function listInactiveFarms(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.listInactiveFarms()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

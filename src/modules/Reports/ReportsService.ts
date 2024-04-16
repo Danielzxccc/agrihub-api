@@ -1106,3 +1106,32 @@ export async function getGrowthRateDistribution(month: number, limit: number) {
   `.compile(db)
   )
 }
+
+export async function listInactiveFarms() {
+  return await db
+    .with('LastCropReports', (db) =>
+      db
+        .selectFrom('community_farms as cf')
+        .where('cf.is_archived', '=', false)
+        .innerJoin('community_crop_reports as ccr', 'cf.id', 'ccr.farmid')
+        .select([
+          'cf.id as farm_id',
+          'cf.farm_name',
+          sql`MAX(ccr.createdAt)`.as('last_report_date'),
+        ])
+        .groupBy(['cf.id', 'cf.farm_name'])
+    )
+    .selectFrom('LastCropReports as lcr')
+    .select([
+      'lcr.farm_id',
+      'lcr.farm_name',
+      'lcr.last_report_date',
+      sql`  ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT`.as(
+        'months_since_last_report'
+      ),
+    ])
+    .where(
+      sql`ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT >= 1;`
+    )
+    .execute()
+}
