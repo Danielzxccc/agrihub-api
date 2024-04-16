@@ -156,12 +156,14 @@ export async function listCommuntityCropReports(
     const searchKey = String(query.search)
     const filterKey = query.filter
     const sortBy = query.sort
+    const month = query.month
 
     const reports = await Interactor.listCommuntityCropReports(
       params.id,
       offset,
       filterKey,
       searchKey,
+      month,
       perPage,
       sortBy
     )

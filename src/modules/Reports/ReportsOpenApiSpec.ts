@@ -566,6 +566,11 @@
  *           type: string
  *         description: Search term
  *       - in: query
+ *         name: month
+ *         schema:
+ *           type: string
+ *         description: Month Term (1-12)
+ *       - in: query
  *         name: page
  *         schema:
  *           type: string

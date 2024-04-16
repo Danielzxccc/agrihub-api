@@ -32,6 +32,7 @@ export const NewCommunityCropReport = z.object({
 })
 export type NewCommunityCropReportT = z.infer<typeof NewCommunityCropReport>
 
+const monthRegex: RegExp = /^(1[0-2]|[1-9])$/
 export const CommunityCropReports = z.object({
   params: z.object({
     id: z.string(),
@@ -41,6 +42,11 @@ export const CommunityCropReports = z.object({
     page: z.string().optional(),
     perpage: z.string().optional().default('20'),
     // filter: z.array(z.string()).optional().default([]),
+    month: z
+      .string()
+      .optional()
+      .default('')
+      .refine((value) => monthRegex.test(value ?? ''), 'Please input (1-12)'),
     filter: z
       .union([z.array(z.string()), z.string()])
       .optional()

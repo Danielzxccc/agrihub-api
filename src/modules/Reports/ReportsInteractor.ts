@@ -249,6 +249,7 @@ export async function listCommuntityCropReports(
   offset: number,
   filterKey: string[] | string,
   searchKey: string,
+  month: string,
   perpage: number,
   sortBy: string,
   isExisting?: boolean
@@ -259,6 +260,7 @@ export async function listCommuntityCropReports(
       offset,
       filterKey,
       searchKey,
+      month,
       perpage,
       sortBy,
       isExisting
@@ -283,6 +285,7 @@ export async function listExistingCropReports(
       offset,
       filterKey,
       searchKey,
+      '',
       perpage,
       sortBy,
       true

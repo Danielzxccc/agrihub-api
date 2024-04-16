@@ -72,6 +72,7 @@ export async function findCommunityReports(
   offset: number,
   filterKey: string[] | string,
   searchKey: string,
+  month: string,
   perpage: number,
   sortBy: string,
   isExisting?: boolean
@@ -111,6 +112,10 @@ export async function findCommunityReports(
         eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
       )
     }
+  }
+
+  if (month.length) {
+    query = query.where(sql`EXTRACT(MONTH FROM ccr.date_harvested) = ${month}`)
   }
 
   if (searchKey.length) {
