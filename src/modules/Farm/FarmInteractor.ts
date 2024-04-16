@@ -94,7 +94,7 @@ export async function createFarmApplication({
       'admin',
       'New Application',
       'A new application has been received.',
-      `/admin/community/application/${newApplication.id}`
+      `/admin/community/farms-application/view/${newApplication.id}`
     )
 
     return newApplication
