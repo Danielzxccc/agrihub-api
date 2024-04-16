@@ -267,11 +267,13 @@ export async function setupUsernameAndTags(
     const checkUsername = await Service.findUserByUsername(username)
     if (checkUsername) throw new HttpError('Username already exists', 409)
 
-    const fileKey = !user.avatar ? image.filename : user.avatar
-    console.log(fileKey, 'file to be uploaded')
+    const fileKey = !user.avatar ? image?.filename : user.avatar
     // create file stream
-    const stream: fs.ReadStream = await readFileAsStream(image.path)
-    await uploadFile(stream, fileKey, image.mimetype)
+    if (image?.filename) {
+      const stream: fs.ReadStream = await readFileAsStream(image.path)
+      await uploadFile(stream, fileKey, image.mimetype)
+      deleteFile(image.filename)
+    }
 
     // update user's username and avatar
     const updatedUser = await Service.updateUser(session, {
@@ -292,14 +294,13 @@ export async function setupUsernameAndTags(
       await createUserTags(usertags)
     }
 
-    // delete the file in local storage after updating the user
-    deleteFile(image.filename)
-
     // delete password object in response object
     delete updatedUser.password
     return { ...updatedUser, avatar: getObjectUrl(fileKey) }
   } catch (error) {
-    deleteFile(image.filename)
+    if (image?.filename) {
+      deleteFile(image.filename)
+    }
     dbErrorHandler(error)
   }
 }
