@@ -199,8 +199,8 @@ FarmRouter.get(
 )
 
 FarmRouter.get(
-  '/farmer/members',
-  UserGuard(['farm_head', 'farmer']),
+  '/farmer/members/:id',
+  UserGuard(['admin', 'asst_admin', 'farm_head', 'farmer']),
   FarmController.listCommunityFarmMembers
 )
 

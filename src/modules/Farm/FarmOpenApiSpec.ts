@@ -1493,7 +1493,7 @@
 
 /**
  * @openapi
- * /api/farm/farmer/members:
+ * /api/farm/farmer/members/{id}:
  *   get:
  *     tags:
  *       - Farm
@@ -1529,6 +1529,12 @@
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the farm
  *       - in: query
  *         name: search
  *         schema:

@@ -67,6 +67,7 @@ export async function findAllCrops() {
     .selectFrom('crops')
     .selectAll()
     .where('is_other', '=', false)
+    .where('is_archived', '=', false)
     .execute()
 }
 
@@ -185,6 +186,7 @@ export async function listCrops(): Promise<Crop[]> {
     .selectFrom('crops')
     .selectAll()
     .where('is_other', '=', false)
+    .where('is_archived', '=', false)
     .execute()
 }
 

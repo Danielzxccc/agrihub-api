@@ -729,6 +729,7 @@ export async function listFarmerInvitations(
 }
 
 export async function listCommunityFarmMembers(
+  id: string,
   userid: string,
   perpage: number,
   offset: number,
@@ -736,9 +737,16 @@ export async function listCommunityFarmMembers(
 ) {
   const user = await findUser(userid)
 
+  const isDataOwner = user.farm_id === id
+  const isAdmin = user.role === 'admin' || user.role === 'asst_admin'
+
+  if (!isAdmin && !isDataOwner) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
   const [data, total] = await Promise.all([
-    Service.findCommunityFarmMembers(user.farm_id, perpage, offset, search),
-    Service.getTotalFarmMembers(user.farm_id),
+    Service.findCommunityFarmMembers(id, perpage, offset, search),
+    Service.getTotalFarmMembers(id),
   ])
 
   for (const item of data) {

@@ -621,7 +621,7 @@ export async function listCommunityFarmMembers(
 ) {
   try {
     const { query } = await zParse(Schema.CommunityFarms, req)
-
+    const { id } = req.params
     const perPage = Number(query.perpage)
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perPage
@@ -631,6 +631,7 @@ export async function listCommunityFarmMembers(
     const { userid } = req.session
 
     const members = await Interactor.listCommunityFarmMembers(
+      id,
       userid,
       perPage,
       offset,
