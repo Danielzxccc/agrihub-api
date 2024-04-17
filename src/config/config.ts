@@ -37,7 +37,7 @@ export const allowedOrigins = [
   'http://localhost:5174',
   'https://qc-agrihub.xyz',
   'https://agrihub.vercel.app',
-  'https://agrihub-6vw7t76z8-wolfcarves.vercel.app',
+  'https://dev.d3lyx1qqy544j2.amplifyapp.com',
   'https://agrihub-frontend-fork.vercel.app',
   'https://app.qc-agrihub.xyz',
   'https://api.qc-agrihub.xyz',
