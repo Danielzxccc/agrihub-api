@@ -32,7 +32,7 @@ export const NewCommunityCropReport = z.object({
 })
 export type NewCommunityCropReportT = z.infer<typeof NewCommunityCropReport>
 
-const monthRegex: RegExp = /^(1[0-2]|[1-9])$/
+const monthRegex: RegExp = /^(1[0-2]|[1-9])?$/
 export const CommunityCropReports = z.object({
   params: z.object({
     id: z.string(),
