@@ -772,6 +772,8 @@
  *           type: string
  *         withered_crops:
  *           type: string
+ *         planted_qty:
+ *           type: string
  *         image:
  *           type: string
  *           format: uri

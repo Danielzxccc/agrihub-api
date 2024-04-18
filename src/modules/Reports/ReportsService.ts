@@ -89,6 +89,7 @@ export async function findCommunityReports(
       'ccr.date_harvested',
       'ccr.harvested_qty',
       'ccr.withered_crops',
+      'ccr.planted_qty',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
     ])
     .groupBy([
@@ -100,6 +101,7 @@ export async function findCommunityReports(
       'ccr.date_harvested',
       'ccr.harvested_qty',
       'ccr.withered_crops',
+      'ccr.planted_qty',
     ])
     .where('ccr.farmid', '=', id)
     .where('ccr.is_archived', '=', false)
