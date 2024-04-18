@@ -227,6 +227,7 @@ export async function getTotalHarvestedCrops(id: string) {
       'c.name as crop_name',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
       sql`SUM(ccr.harvested_qty)`.as('total_harvested'),
+      sql`SUM(ccr.kilogram)`.as('total_kg'),
     ])
     .groupBy(['ccr.crop_id', 'c.name', 'c.image'])
     .where('ccr.farmid', '=', id)

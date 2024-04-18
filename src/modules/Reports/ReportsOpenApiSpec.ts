@@ -450,6 +450,8 @@
  *           type: string
  *         total_harvested:
  *           type: string
+ *         total_kg:
+ *           type: string
  */
 
 /**
