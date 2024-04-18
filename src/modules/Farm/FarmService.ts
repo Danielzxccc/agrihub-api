@@ -281,11 +281,18 @@ export async function findFarmApplications(
   ])
 
   if (filterKey) query = query.where('status', '=', filterKey)
+
+  if (searchKey.length) {
+    query = query.where('farm_name', 'ilike', `%${searchKey}%`)
+  }
+
+  query = query.orderBy('updatedat desc')
   return await query.limit(perpage).offset(offset).execute()
 }
 
 export async function getTotalFarmApplications(
-  filterKey: FarmApplicationStatus
+  filterKey: FarmApplicationStatus,
+  searchKey: string
 ) {
   let query = db
     .selectFrom('farm_applications')
@@ -293,6 +300,10 @@ export async function getTotalFarmApplications(
 
   if (filterKey) {
     query = query.where('status', '=', filterKey)
+  }
+
+  if (searchKey.length) {
+    query = query.where('farm_name', 'ilike', `%${searchKey}%`)
   }
 
   return await query.executeTakeFirst()
