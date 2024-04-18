@@ -944,6 +944,24 @@
 
 /**
  * @openapi
+ * /api/farm/crop/find/archived:
+ *   get:
+ *     summary: Retrieve a list of crops
+ *     tags:
+ *       - Farm
+ *     responses:
+ *       "200":
+ *         description: List of crops
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/CropData"
+ */
+
+/**
+ * @openapi
  * /api/farm/crop:
  *   post:
  *     summary: Create a new crop
@@ -1894,6 +1912,58 @@
  *         schema:
  *           type: string
  *         description: ID of the farm community
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/farm/crop/archive/{id}:
+ *   delete:
+ *     summary: Archive a crop
+ *     tags:
+ *       - Farm
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the crop
  *     requestBody:
  *       required: false
  *     responses:

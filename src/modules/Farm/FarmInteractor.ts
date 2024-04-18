@@ -531,6 +531,16 @@ export async function listCrops() {
   return crops
 }
 
+export async function listArchivedCrops() {
+  const crops = await Service.findAllCrops(true)
+
+  for (const crop of crops) {
+    crop.image = getObjectUrl(crop.image)
+  }
+
+  return crops
+}
+
 export async function createCrop(crop: NewCrop, image: Express.Multer.File) {
   try {
     const foundCrop = await Service.findCropByName(crop.name)
@@ -755,6 +765,14 @@ export async function listCommunityFarmMembers(
   }
 
   return { data, total }
+}
+
+export async function archiveCrop(id: string) {
+  const archivedCrop = await Service.archiveCrop(id)
+
+  if (!archivedCrop) {
+    throw new HttpError('Crop not found', 404)
+  }
 }
 
 export async function updateCommunityFarm(

@@ -62,13 +62,22 @@ export async function listFarms(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function findAllCrops() {
+export async function findAllCrops(is_archived = false) {
   return await db
     .selectFrom('crops')
     .selectAll()
     .where('is_other', '=', false)
-    .where('is_archived', '=', false)
+    .where('is_archived', '=', is_archived)
     .execute()
+}
+
+export async function archiveCrop(id: string) {
+  return await db
+    .updateTable('crops')
+    .set({ is_archived: true })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }
 
 export async function getTotalCrops() {

@@ -361,6 +361,15 @@ export async function listCrops(req: Request, res: Response) {
   }
 }
 
+export async function listArchivedCrops(req: Request, res: Response) {
+  try {
+    const data = await Interactor.listArchivedCrops()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function createCrop(req: SessionRequest, res: Response) {
   try {
     const { body } = await zParse(Schema.NewCropSchema, req)
@@ -825,6 +834,18 @@ export async function setFarmerHeadAsFarmer(
     await Interactor.setFarmerHeadAsFarmer(id, userid)
 
     res.status(200).json({ message: 'Unassigned Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function archiveCrop(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.archiveCrop(id)
+
+    res.status(200).json({ message: 'Archived Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }
