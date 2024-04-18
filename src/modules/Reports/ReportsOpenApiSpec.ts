@@ -867,6 +867,8 @@
  *           type: string
  *         farmid:
  *           type: string
+ *         planted_qty:
+ *           type: string
  *         image:
  *           type: string
  *           format: uri
