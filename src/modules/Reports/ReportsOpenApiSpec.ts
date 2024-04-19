@@ -2323,22 +2323,22 @@
  *     FarmLandSizeAnalytics:
  *       type: object
  *       properties:
- *         District_1:
+ *         District 1:
  *           type: string
  *           description: The total land size of farms in District 1
- *         District_2:
+ *         District 2:
  *           type: string
  *           description: The total land size of farms in District 2
- *         District_3:
+ *         District 3:
  *           type: string
  *           description: The total land size of farms in District 3
- *         District_4:
+ *         District 4:
  *           type: string
  *           description: The total land size of farms in District 4
- *         District_5:
+ *         District 5:
  *           type: string
  *           description: The total land size of farms in District 5
- *         District_6:
+ *         District 6:
  *           type: string
  *           description: The total land size of farms in District 6
  */

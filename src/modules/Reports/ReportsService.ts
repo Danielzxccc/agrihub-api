@@ -1149,37 +1149,37 @@ export async function getLandSizeAnalytics() {
         .select(({ fn }) => [fn.sum('cf.size').as('District_1')])
         .where('district', '=', 'District 1')
         .where('is_archived', '=', false)
-        .as('District_1'),
+        .as('District 1'),
       eb
         .selectFrom('community_farms as cf')
         .select(({ fn }) => [fn.sum('cf.size').as('District_2')])
         .where('district', '=', 'District 2')
         .where('is_archived', '=', false)
-        .as('District_2'),
+        .as('District 2'),
       eb
         .selectFrom('community_farms as cf')
         .select(({ fn }) => [fn.sum('cf.size').as('District_3')])
         .where('district', '=', 'District 3')
         .where('is_archived', '=', false)
-        .as('District_3'),
+        .as('District 3'),
       eb
         .selectFrom('community_farms as cf')
         .select(({ fn }) => [fn.sum('cf.size').as('District_4')])
         .where('district', '=', 'District 4')
         .where('is_archived', '=', false)
-        .as('District_4'),
+        .as('District 4'),
       eb
         .selectFrom('community_farms as cf')
         .select(({ fn }) => [fn.sum('cf.size').as('District_5')])
         .where('district', '=', 'District 5')
         .where('is_archived', '=', false)
-        .as('District_5'),
+        .as('District 5'),
       eb
         .selectFrom('community_farms as cf')
         .select(({ fn }) => [fn.sum('cf.size').as('District_6')])
         .where('district', '=', 'District 6')
         .where('is_archived', '=', false)
-        .as('District_6'),
+        .as('District 6'),
     ])
     .executeTakeFirst()
 }
