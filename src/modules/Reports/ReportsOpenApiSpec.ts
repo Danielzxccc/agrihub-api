@@ -2255,12 +2255,9 @@
  * components:
  *   schemas:
  *     InactiveFarmReport:
- *       type: object
- *       properties:
- *         data:
- *           type: array
- *           items:
- *             $ref: "#/components/schemas/FarmInactiveDetails"
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/FarmInactiveDetails"
  *     FarmInactiveDetails:
  *       type: object
  *       properties:

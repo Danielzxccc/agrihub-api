@@ -80,6 +80,15 @@ export async function archiveCrop(id: string) {
     .executeTakeFirst()
 }
 
+export async function unarchiveCrop(id: string) {
+  return await db
+    .updateTable('crops')
+    .set({ is_archived: false })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
 export async function getTotalCrops() {
   return await db
     .selectFrom('crops')

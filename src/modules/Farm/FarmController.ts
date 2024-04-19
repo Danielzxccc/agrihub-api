@@ -850,3 +850,15 @@ export async function archiveCrop(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function unarchiveCrop(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.unarchiveCrop(id)
+
+    res.status(200).json({ message: 'Unarchived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

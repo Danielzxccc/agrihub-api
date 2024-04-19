@@ -775,6 +775,14 @@ export async function archiveCrop(id: string) {
   }
 }
 
+export async function unarchiveCrop(id: string) {
+  const unarchiveCrop = await Service.unarchiveCrop(id)
+
+  if (!unarchiveCrop) {
+    throw new HttpError('Crop not found', 404)
+  }
+}
+
 export async function updateCommunityFarm(
   userid: string,
   farm: UpdateCommunityFarmT,

@@ -267,3 +267,9 @@ FarmRouter.delete(
   UserGuard(['admin', 'asst_admin']),
   FarmController.archiveCrop
 )
+
+FarmRouter.put(
+  '/crop/unarchive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.unarchiveCrop
+)
