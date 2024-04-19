@@ -1,4 +1,5 @@
-import { z } from 'zod'
+import { query } from 'express'
+import { number, z } from 'zod'
 
 // add transform if there's an image input
 export const NewCommunityCropReport = z.object({
@@ -102,3 +103,36 @@ export const AnalyticsMonthQuery = z.object({
       .default('50'),
   }),
 })
+
+export const DistrictQuery = z.object({
+  query: z.object({
+    district: z
+      .union([
+        z.literal('District 1'),
+        z.literal('District 2'),
+        z.literal('District 3'),
+        z.literal('District 4'),
+        z.literal('District 5'),
+        z.literal('District 6'),
+      ])
+      .default('District 1'),
+    limit: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional()
+      .default('50'),
+  }),
+})
+
+const DistrictOptions = z
+  .union([
+    z.literal('District 1'),
+    z.literal('District 2'),
+    z.literal('District 3'),
+    z.literal('District 4'),
+    z.literal('District 5'),
+    z.literal('District 6'),
+  ])
+  .default('District 1')
+
+export type DistrictType = z.infer<typeof DistrictOptions>

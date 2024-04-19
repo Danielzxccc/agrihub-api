@@ -14,7 +14,10 @@ import { uploadFiles } from '../AWS-Bucket/UploadService'
 import log, { getMonthByIndex } from '../../utils/utils'
 import axios from 'axios'
 import { findLearningMaterialByTags } from '../LearningMaterials/LearningService'
-import { NewCommunityCropReportT } from '../../schema/ReportsSchema'
+import {
+  DistrictType,
+  NewCommunityCropReportT,
+} from '../../schema/ReportsSchema'
 
 export async function createCommunityCropReport(
   userid: string,
@@ -635,6 +638,21 @@ export async function getGrowthRateDistribution(month: number, limit: number) {
 
 export async function listInactiveFarms() {
   const data = await Service.listInactiveFarms()
+
+  return data
+}
+
+export async function getLandSizeAnalytics() {
+  const data = await Service.getLandSizeAnalytics()
+
+  return data
+}
+
+export async function getLandSizeAnalyticsPerDistrict(
+  district: DistrictType,
+  limit: number
+) {
+  const data = await Service.getLandSizeAnalyticsPerDistrict(district, limit)
 
   return data
 }

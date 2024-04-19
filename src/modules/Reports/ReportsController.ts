@@ -514,3 +514,28 @@ export async function listInactiveFarms(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function getLandSizeAnalytics(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.getLandSizeAnalytics()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getLandSizeAnalyticsPerDistrict(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.DistrictQuery, req)
+    const data = await Interactor.getLandSizeAnalyticsPerDistrict(
+      query.district,
+      query.limit
+    )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

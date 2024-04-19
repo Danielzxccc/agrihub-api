@@ -3,6 +3,7 @@ import { db } from '../../config/database'
 import { NewCommunityFarmReport, NewCropReportImage } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { jsonArrayFrom } from 'kysely/helpers/postgres'
+import { DistrictType } from '../../schema/ReportsSchema'
 
 export async function insertCommunityCropReport(
   report: NewCommunityFarmReport
@@ -1137,5 +1138,62 @@ export async function listInactiveFarms() {
     .where(
       sql`ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT >= 1;`
     )
+    .execute()
+}
+
+export async function getLandSizeAnalytics() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_1')])
+        .where('district', '=', 'District 1')
+        .where('is_archived', '=', false)
+        .as('District_1'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_2')])
+        .where('district', '=', 'District 2')
+        .where('is_archived', '=', false)
+        .as('District_2'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_3')])
+        .where('district', '=', 'District 3')
+        .where('is_archived', '=', false)
+        .as('District_3'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_4')])
+        .where('district', '=', 'District 4')
+        .where('is_archived', '=', false)
+        .as('District_4'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_5')])
+        .where('district', '=', 'District 5')
+        .where('is_archived', '=', false)
+        .as('District_5'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_6')])
+        .where('district', '=', 'District 6')
+        .where('is_archived', '=', false)
+        .as('District_6'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getLandSizeAnalyticsPerDistrict(
+  district: DistrictType,
+  limit: number
+) {
+  return await db
+    .selectFrom('community_farms')
+    .select(['farm_name', 'size'])
+    .where('district', '=', district)
+    .where('is_archived', '=', false)
+    .orderBy('size desc')
+    .limit(limit)
     .execute()
 }

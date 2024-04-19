@@ -204,3 +204,15 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.listInactiveFarms
 )
+
+ReportsRouter.get(
+  '/farm/land-size/analytics',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getLandSizeAnalytics
+)
+
+ReportsRouter.get(
+  '/farm/land-size/analytics/district',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getLandSizeAnalyticsPerDistrict
+)

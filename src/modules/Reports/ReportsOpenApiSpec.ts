@@ -2275,3 +2275,150 @@
  *           type: string
  *           description: The number of months since the last report was submitted for the farm
  */
+
+/**
+ * @openapi
+ * /api/reports/farm/land-size/analytics:
+ *   get:
+ *     summary: Get Farm Land Size Analytics by District
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmLandSizeAnalytics"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmLandSizeAnalytics:
+ *       type: object
+ *       properties:
+ *         District_1:
+ *           type: string
+ *           description: The total land size of farms in District 1
+ *         District_2:
+ *           type: string
+ *           description: The total land size of farms in District 2
+ *         District_3:
+ *           type: string
+ *           description: The total land size of farms in District 3
+ *         District_4:
+ *           type: string
+ *           description: The total land size of farms in District 4
+ *         District_5:
+ *           type: string
+ *           description: The total land size of farms in District 5
+ *         District_6:
+ *           type: string
+ *           description: The total land size of farms in District 6
+ */
+
+/**
+ * @openapi
+ * /api/reports/farm/land-size/analytics/district:
+ *   get:
+ *     summary: Get Farm Land Size Analytics by District
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - name: district
+ *         in: query
+ *         description: The district name (e.g., District 1, District 2, etc.)
+ *         schema:
+ *           type: string
+ *           enum:
+ *             [
+ *               "District 1",
+ *               "District 2",
+ *               "District 3",
+ *               "District 4",
+ *               "District 5",
+ *               "District 6",
+ *             ]
+ *         default: "District 1"
+ *       - name: limit
+ *         in: query
+ *         description: The maximum number of results to return
+ *         schema:
+ *           type: integer
+ *           format: int32
+ *           default: 50
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/FarmLandSizeByDistrict"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmLandSizeByDistrict:
+ *       type: object
+ *       properties:
+ *         farm_name:
+ *           type: string
+ *           description: The name of the farm
+ *         size:
+ *           type: string
+ *           description: The land size of the farm
+ */
