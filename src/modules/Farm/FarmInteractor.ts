@@ -531,6 +531,16 @@ export async function listCrops() {
   return crops
 }
 
+export async function listOtherCrops() {
+  const crops = await Service.findAllCrops(false, true)
+
+  for (const crop of crops) {
+    crop.image = getObjectUrl(crop.image)
+  }
+
+  return crops
+}
+
 export async function listArchivedCrops() {
   const crops = await Service.findAllCrops(true)
 

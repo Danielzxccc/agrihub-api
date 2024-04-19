@@ -962,6 +962,24 @@
 
 /**
  * @openapi
+ * /api/farm/crop/find/other:
+ *   get:
+ *     summary: Retrieve a other list of crops
+ *     tags:
+ *       - Farm
+ *     responses:
+ *       "200":
+ *         description: List of crops
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/CropData"
+ */
+
+/**
+ * @openapi
  * /api/farm/crop:
  *   post:
  *     summary: Create a new crop

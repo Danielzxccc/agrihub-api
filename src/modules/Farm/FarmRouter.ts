@@ -148,6 +148,12 @@ FarmRouter.get(
 FarmRouter.get('/crop/find', FarmController.listCrops)
 
 FarmRouter.get(
+  '/crop/find/other',
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.listOtherCrops
+)
+
+FarmRouter.get(
   '/crop/find/archived',
   UserGuard(['admin', 'asst_admin']),
   FarmController.listArchivedCrops
