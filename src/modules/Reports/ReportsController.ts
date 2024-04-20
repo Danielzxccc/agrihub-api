@@ -156,12 +156,14 @@ export async function listCommuntityCropReports(
     const searchKey = String(query.search)
     const filterKey = query.filter
     const sortBy = query.sort
+    const month = query.month
 
     const reports = await Interactor.listCommuntityCropReports(
       params.id,
       offset,
       filterKey,
       searchKey,
+      month,
       perPage,
       sortBy
     )
@@ -468,6 +470,25 @@ export async function getCropHarvestDistribution(
   }
 }
 
+export async function getCropHarvestDistributionPerFarm(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.GetHarvestDistribution, req)
+    const { userid } = req.session
+
+    const data = await Interactor.getCropHarvestDistributionPerFarm(
+      query.month,
+      query.limit,
+      userid
+    )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function getGrowthRateDistribution(
   req: SessionRequest,
   res: Response
@@ -477,6 +498,40 @@ export async function getGrowthRateDistribution(
 
     const data = await Interactor.getGrowthRateDistribution(
       query.month,
+      query.limit
+    )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listInactiveFarms(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.listInactiveFarms()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getLandSizeAnalytics(req: SessionRequest, res: Response) {
+  try {
+    const data = await Interactor.getLandSizeAnalytics()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getLandSizeAnalyticsPerDistrict(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.DistrictQuery, req)
+    const data = await Interactor.getLandSizeAnalyticsPerDistrict(
+      query.district,
       query.limit
     )
     res.status(200).json(data)

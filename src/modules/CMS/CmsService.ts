@@ -198,8 +198,8 @@ export async function findUserFeedbacks(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('feedback', 'ilike', `${searchKey}%`),
-        eb('rating', '=', `${searchKey}`),
+        eb('feedback', 'ilike', `%${searchKey}%`),
+        eb('rating', '=', searchKey),
       ])
     )
   }
@@ -219,8 +219,8 @@ export async function getTotalUserFeedbacks(searchKey: string) {
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('feedback', 'ilike', `${searchKey}%`),
-        eb('rating', '=', `${searchKey}`),
+        eb('feedback', 'ilike', `%${searchKey}%`),
+        eb('rating', '=', searchKey),
       ])
     )
   }

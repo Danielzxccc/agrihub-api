@@ -10,6 +10,7 @@ import {
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { jsonObjectFrom } from 'kysely/helpers/postgres'
 import { findCommunityFarmById } from '../Farm/FarmService'
+import { query } from 'express'
 
 export async function listUsers(
   offset: number,
@@ -36,13 +37,23 @@ export async function listUsers(
     .execute()
 }
 
-export async function getTotalUsers() {
-  return await db
-    .selectFrom('users')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
+export async function getTotalUsers(searchKey: string) {
+  let query = db
+    .selectFrom('users as u')
+    .select(({ fn }) => [fn.count<number>('u.id').as('count')])
     .where('isbanned', '=', false)
     .where('verification_level', '=', '4')
-    .executeTakeFirst()
+
+  if (searchKey.length >= 1) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function findMembers(
@@ -215,11 +226,24 @@ export async function findAdmins(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalAdmins(filterKey: 'banned' | 'active') {
+export async function getTotalAdmins(
+  filterKey: 'banned' | 'active',
+  searchKey: string
+) {
   let query = db
     .selectFrom('users as u')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
     .where('u.role', '=', 'asst_admin')
+
+  if (searchKey.length >= 1) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.username', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
 
   if (filterKey === 'active') {
     query = query.where('u.isbanned', '=', false)
@@ -317,11 +341,23 @@ export async function findReportedUsers(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalReportedUsers() {
-  return await db
-    .selectFrom('reported_users')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .executeTakeFirst()
+export async function getTotalReportedUsers(searchKey: string) {
+  let query = db
+    .selectFrom('reported_users as ru')
+    .leftJoin('users as u', 'u.id', 'ru.reported')
+    .select(({ fn }) => [fn.count<number>('ru.id').as('count')])
+
+  if (searchKey.length >= 1) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.username', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function findBannedUsers(
@@ -355,12 +391,30 @@ export async function findBannedUsers(
     .execute()
 }
 
-export async function getTotalBannedUsers() {
-  return await db
-    .selectFrom('users')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
-    .where('users.isbanned', '=', true)
-    .executeTakeFirst()
+export async function getTotalBannedUsers(searchKey: string) {
+  let query = db
+    .selectFrom('users as u')
+    .select(({ fn }) => [fn.count<number>('u.id').as('count')])
+    .where('u.isbanned', '=', true)
+    .where((eb) =>
+      eb.or([
+        eb('u.role', '=', 'member'),
+        eb('u.role', '=', 'farm_head'),
+        eb('u.role', '=', 'farmer'),
+      ])
+    )
+
+  if (searchKey.length >= 1) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('u.firstname', 'ilike', `${searchKey}%`),
+        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.username', 'ilike', `${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.executeTakeFirst()
 }
 
 export async function findReportedUser(id: string) {

@@ -254,3 +254,27 @@ export async function updateToolRequestStatus(
 
   return updatedToolRequest
 }
+
+export async function cancelToolRequest(userid: string, id: string) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const farmHead = await findUser(userid)
+
+  if (!farmHead) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const existingToolRequest = await Service.findToolRequestById(id)
+
+  if (!existingToolRequest) {
+    throw new HttpError('Tool request not found', 404)
+  }
+
+  if (existingToolRequest.farm_id !== farmHead.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.deleteToolRequest(id)
+}

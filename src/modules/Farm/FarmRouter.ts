@@ -147,6 +147,18 @@ FarmRouter.get(
 // crops
 FarmRouter.get('/crop/find', FarmController.listCrops)
 
+FarmRouter.get(
+  '/crop/find/other',
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.listOtherCrops
+)
+
+FarmRouter.get(
+  '/crop/find/archived',
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.listArchivedCrops
+)
+
 FarmRouter.post('/crop', upload.single('image'), FarmController.createCrop)
 
 FarmRouter.post(
@@ -199,8 +211,8 @@ FarmRouter.get(
 )
 
 FarmRouter.get(
-  '/farmer/members',
-  UserGuard(['farm_head', 'farmer']),
+  '/farmer/members/:id',
+  UserGuard(['admin', 'asst_admin', 'farm_head', 'farmer']),
   FarmController.listCommunityFarmMembers
 )
 
@@ -254,4 +266,16 @@ FarmRouter.post(
   '/community/unassign/head/:id',
   UserGuard(['farm_head']),
   FarmController.setFarmerHeadAsFarmer
+)
+
+FarmRouter.delete(
+  '/crop/archive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.archiveCrop
+)
+
+FarmRouter.put(
+  '/crop/unarchive/:id',
+  UserGuard(['admin', 'asst_admin']),
+  FarmController.unarchiveCrop
 )

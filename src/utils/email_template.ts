@@ -428,10 +428,27 @@ export const verificationSuccessPage = `
           You are all set! Thank you for verifying your email. Begin your
           journey with us and explore vast Urban agriculture knowledge.
         </p>
-        <a href="#index"> ← Go back to Agrihub</a>
+        <a href="${process.env.CLIENT}"> ← Go back to Agrihub</a>
       </div>
     </div>
     <script src="" async defer></script>
   </body>
 </html>
 `
+
+export const verifiyChangeEmail = (id: string) => {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+  </head>
+  <body>
+    <h1>Confirm Email</h1>
+    <a href="${process.env.API_DOMAIN}/api/auth/confirm/email-update/${id}">Confirm Here</a>
+  </body>
+  </html>
+  `
+}

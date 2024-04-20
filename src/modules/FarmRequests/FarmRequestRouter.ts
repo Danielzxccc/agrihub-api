@@ -64,3 +64,9 @@ FarmRequestRouter.post(
   UserGuard(['admin', 'asst_admin']),
   FarmRequestController.updateToolRequestStatus
 )
+
+FarmRequestRouter.post(
+  '/tool-request/cancel/:id',
+  UserGuard(['farm_head']),
+  FarmRequestController.cancelToolRequest
+)

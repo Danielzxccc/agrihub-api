@@ -1,5 +1,6 @@
 import { createTransport } from 'nodemailer'
 import * as dotenv from 'dotenv'
+import { verifiyChangeEmail } from './email_template'
 dotenv.config()
 
 const transporter = createTransport({
@@ -185,5 +186,14 @@ export async function sendResetTokenEmail(toEmail: string, token: string) {
 
         </html>
          `,
+  })
+}
+
+export async function sendChangeEmailRequest(email: string, id: string) {
+  await transporter.sendMail({
+    from: 'agrihub26@gmail.com',
+    to: email,
+    subject: 'Verify Email',
+    html: verifiyChangeEmail(id),
   })
 }

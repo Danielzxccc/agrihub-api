@@ -33,6 +33,7 @@ export async function findQuestions(
     .selectFrom('forums')
     .leftJoin('forums_answers', 'forums_answers.forumid', 'forums.id')
     .leftJoin('forums_ratings', 'forums_ratings.questionid', 'forums.id')
+    .leftJoin('users as u', 'forums.userid', 'u.id')
     .select(({ fn, eb }) => [
       'forums.id',
       jsonObjectFrom(
@@ -88,8 +89,12 @@ export async function findQuestions(
   if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
 
   if (searchQuery.length) {
-    query = query.where('forums.title', 'ilike', `%${searchQuery}%`)
-    query = query.where('forums.question', 'ilike', `%${searchQuery}%`)
+    query = query.where((eb) =>
+      eb.or([
+        eb('forums.title', 'ilike', `%${searchQuery}%`),
+        eb('forums.question', 'ilike', `%${searchQuery}%`),
+      ])
+    )
   }
 
   if (tag.length) {
@@ -103,6 +108,8 @@ export async function findQuestions(
       )
     )
   }
+
+  query = query.where('u.isbanned', '=', false)
 
   return await query.limit(perpage).offset(offset).execute()
 }
@@ -119,6 +126,7 @@ export async function findSavedQuestions(
     .leftJoin('forums', 'saved_questions.forumid', 'forums.id')
     .leftJoin('forums_answers', 'forums_answers.forumid', 'forums.id')
     .leftJoin('forums_ratings', 'forums_ratings.questionid', 'forums.id')
+    .leftJoin('users as u', 'forums.userid', 'u.id')
     .select(({ fn, eb }) => [
       'forums.id',
       'saved_questions.id as saved_id',
@@ -180,6 +188,7 @@ export async function findSavedQuestions(
   if (searchQuery.length)
     query = query.where('forums.title', 'ilike', `${searchQuery}%`)
 
+  query = query.where('u.isbanned', '=', false)
   return await query
     .where('saved_questions.userid', '=', userid)
     .limit(perpage)
@@ -343,12 +352,24 @@ export async function getTotalAnswers(id: string) {
     .executeTakeFirst()
 }
 
-export async function getTotalCount(id: string) {
+export async function getTotalCount(id: string, searchKey: string) {
   let query = db
     .selectFrom('forums')
-    .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .leftJoin('users as u', 'forums.userid', 'u.id')
+    .select(({ fn }) => [fn.count<number>('forums.id').as('count')])
 
   if (id) query = query.where('forums.userid', '=', id)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('forums.title', 'ilike', `%${searchKey}%`),
+        eb('forums.question', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  query = query.where('u.isbanned', '=', false)
   return await query.executeTakeFirst()
 }
 

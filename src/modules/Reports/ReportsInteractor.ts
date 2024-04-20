@@ -14,7 +14,10 @@ import { uploadFiles } from '../AWS-Bucket/UploadService'
 import log, { getMonthByIndex } from '../../utils/utils'
 import axios from 'axios'
 import { findLearningMaterialByTags } from '../LearningMaterials/LearningService'
-import { NewCommunityCropReportT } from '../../schema/ReportsSchema'
+import {
+  DistrictType,
+  NewCommunityCropReportT,
+} from '../../schema/ReportsSchema'
 
 export async function createCommunityCropReport(
   userid: string,
@@ -249,6 +252,7 @@ export async function listCommuntityCropReports(
   offset: number,
   filterKey: string[] | string,
   searchKey: string,
+  month: string,
   perpage: number,
   sortBy: string,
   isExisting?: boolean
@@ -259,6 +263,7 @@ export async function listCommuntityCropReports(
       offset,
       filterKey,
       searchKey,
+      month,
       perpage,
       sortBy,
       isExisting
@@ -283,6 +288,7 @@ export async function listExistingCropReports(
       offset,
       filterKey,
       searchKey,
+      '',
       perpage,
       sortBy,
       true
@@ -604,8 +610,49 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
   return data.rows
 }
 
+export async function getCropHarvestDistributionPerFarm(
+  month: number,
+  limit: number,
+  userid: string
+) {
+  const user = await findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const data = await Service.getCropHarvestDistributionPerFarm(
+    month,
+    limit,
+    user.farm_id
+  )
+
+  return data.rows
+}
+
 export async function getGrowthRateDistribution(month: number, limit: number) {
   const data = await Service.getGrowthRateDistribution(month, limit)
 
   return data.rows
+}
+
+export async function listInactiveFarms() {
+  const data = await Service.listInactiveFarms()
+
+  return data
+}
+
+export async function getLandSizeAnalytics() {
+  const data = await Service.getLandSizeAnalytics()
+
+  return data
+}
+
+export async function getLandSizeAnalyticsPerDistrict(
+  district: DistrictType,
+  limit: number
+) {
+  const data = await Service.getLandSizeAnalyticsPerDistrict(district, limit)
+
+  return data
 }

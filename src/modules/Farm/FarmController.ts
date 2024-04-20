@@ -361,6 +361,24 @@ export async function listCrops(req: Request, res: Response) {
   }
 }
 
+export async function listOtherCrops(req: Request, res: Response) {
+  try {
+    const data = await Interactor.listOtherCrops()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function listArchivedCrops(req: Request, res: Response) {
+  try {
+    const data = await Interactor.listArchivedCrops()
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function createCrop(req: SessionRequest, res: Response) {
   try {
     const { body } = await zParse(Schema.NewCropSchema, req)
@@ -621,7 +639,7 @@ export async function listCommunityFarmMembers(
 ) {
   try {
     const { query } = await zParse(Schema.CommunityFarms, req)
-
+    const { id } = req.params
     const perPage = Number(query.perpage)
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perPage
@@ -631,6 +649,7 @@ export async function listCommunityFarmMembers(
     const { userid } = req.session
 
     const members = await Interactor.listCommunityFarmMembers(
+      id,
       userid,
       perPage,
       offset,
@@ -667,7 +686,7 @@ export async function updateCommunityFarm(req: SessionRequest, res: Response) {
     console.log(cover_photo, 'TEST COVER')
 
     const userid = req.session.userid
-    var allImages = [cover_photo || null, avatar || null]
+    var allFiles = [cover_photo || null, avatar || null]
 
     const updatedCommunityFarm = await Interactor.updateCommunityFarm(
       userid,
@@ -684,7 +703,7 @@ export async function updateCommunityFarm(req: SessionRequest, res: Response) {
     })
   } catch (error) {
     if (error instanceof ZodError) {
-      for (const image of allImages) {
+      for (const image of allFiles) {
         deleteFile(image?.filename)
       }
     }
@@ -824,6 +843,30 @@ export async function setFarmerHeadAsFarmer(
     await Interactor.setFarmerHeadAsFarmer(id, userid)
 
     res.status(200).json({ message: 'Unassigned Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function archiveCrop(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.archiveCrop(id)
+
+    res.status(200).json({ message: 'Archived Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function unarchiveCrop(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+
+    await Interactor.unarchiveCrop(id)
+
+    res.status(200).json({ message: 'Unarchived Successfully' })
   } catch (error) {
     errorHandler(res, error)
   }

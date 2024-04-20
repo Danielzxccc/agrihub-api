@@ -1,8 +1,14 @@
 import * as Service from '../Users/UserService'
 import {
+  createChangeEmailRequest,
+  createChangeNumberRequest,
+  deleteChangeEmailRequest,
+  deleteChangeNumberRequest,
   deleteOTPCode,
   deleteResetToken,
   deleteToken,
+  findChangeEmailRequest,
+  findChangeNumberRequest,
   findOTPCode,
   findOTPResetCode,
   findResetToken,
@@ -15,7 +21,11 @@ import {
 import HttpError from '../../utils/HttpError'
 import bcrypt from 'bcrypt'
 import { ProfileCompletion, RegisterUser } from '../../schema/AuthSchema'
-import { sendMail, sendResetTokenEmail } from '../../utils/email'
+import {
+  sendChangeEmailRequest,
+  sendMail,
+  sendResetTokenEmail,
+} from '../../utils/email'
 import { createUserTags } from '../Tags/TagsService'
 import { deleteFile, readFileAsStream } from '../../utils/file'
 import dbErrorHandler from '../../utils/dbErrorHandler'
@@ -257,11 +267,13 @@ export async function setupUsernameAndTags(
     const checkUsername = await Service.findUserByUsername(username)
     if (checkUsername) throw new HttpError('Username already exists', 409)
 
-    const fileKey = !user.avatar ? image.filename : user.avatar
-    console.log(fileKey, 'file to be uploaded')
+    const fileKey = !user.avatar ? image?.filename : user.avatar
     // create file stream
-    const stream: fs.ReadStream = await readFileAsStream(image.path)
-    await uploadFile(stream, fileKey, image.mimetype)
+    if (image?.filename) {
+      const stream: fs.ReadStream = await readFileAsStream(image.path)
+      await uploadFile(stream, fileKey, image.mimetype)
+      deleteFile(image.filename)
+    }
 
     // update user's username and avatar
     const updatedUser = await Service.updateUser(session, {
@@ -282,14 +294,13 @@ export async function setupUsernameAndTags(
       await createUserTags(usertags)
     }
 
-    // delete the file in local storage after updating the user
-    deleteFile(image.filename)
-
     // delete password object in response object
     delete updatedUser.password
     return { ...updatedUser, avatar: getObjectUrl(fileKey) }
   } catch (error) {
-    deleteFile(image.filename)
+    if (image?.filename) {
+      deleteFile(image.filename)
+    }
     dbErrorHandler(error)
   }
 }
@@ -355,4 +366,140 @@ export async function verifyResetTokenViaOTP(code: number) {
   await deleteOTPCode(findToken.userid, OTPCode.otp_code, OTPCode.phone_number)
 
   return findToken.id
+}
+
+export async function confirmPassword(userid: string, password: string) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const compare = await bcrypt.compare(password, user.password)
+
+  if (!compare) {
+    throw new HttpError('Unauthorized', 401)
+  }
+}
+
+export async function updateUserEmail(userid: string, email: string) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  if (user.email === email) {
+    throw new HttpError(
+      'The email you entered is already your current email.',
+      400
+    )
+  }
+
+  const checkEmailIfExisting = await Service.findUserByEmail(email)
+
+  if (checkEmailIfExisting) {
+    throw new HttpError('Email Already Exists', 400)
+  }
+
+  const newChangeEmailRequest = await createChangeEmailRequest({
+    email,
+    userid,
+  })
+
+  await sendChangeEmailRequest(email, newChangeEmailRequest.id)
+  // return
+}
+
+export async function confirmChangeEmailRequest(id: string) {
+  const emailRequest = await findChangeEmailRequest(id)
+
+  if (!emailRequest) {
+    throw new HttpError('Token Not Found', 404)
+  }
+
+  await Service.updateUser(emailRequest.userid, { email: emailRequest.email })
+
+  await deleteChangeEmailRequest(emailRequest.id)
+}
+
+export async function updateUserNumber(userid: string, number: string) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  if (user.contact_number === number) {
+    throw new HttpError(
+      'The number you entered is already your current number.',
+      400
+    )
+  }
+
+  const checkNumberIfExisting = await Service.findUserByPhoneNumber(number)
+
+  if (checkNumberIfExisting) {
+    throw new HttpError('Number Already Exists', 400)
+  }
+
+  const OTPCode = generateOTP()
+
+  await createChangeNumberRequest({ number, otp: OTPCode, userid })
+
+  const data = await sendSMS(OTPCode, number, `OTP CODE: {otp}`)
+  console.log(data, 'BIG DATA NUMBER')
+}
+
+export async function confirmChangeNumberRequest(otp: number) {
+  const findOtp = await findChangeNumberRequest(otp)
+
+  if (!findOtp) {
+    throw new HttpError('Invalid Code', 400)
+  }
+
+  await Service.updateUser(findOtp.userid, { contact_number: findOtp.number })
+
+  await deleteChangeNumberRequest(findOtp.id)
+}
+
+type UpdatePassword = {
+  userid: string
+  oldPassword: string
+  newPassword: string
+}
+
+export async function updatePassword({
+  userid,
+  newPassword,
+  oldPassword,
+}: UpdatePassword) {
+  if (!userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const compare = await bcrypt.compare(oldPassword, user.password)
+
+  if (!compare) throw new HttpError('Invalid Credentials', 401)
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10)
+  await Service.updateUser(userid, { password: hashedPassword })
 }

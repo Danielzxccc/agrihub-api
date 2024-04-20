@@ -293,3 +293,19 @@ AuthRouter.post(
 )
 AuthRouter.post('/reset-token/otp', AuthController.sendResetTokenViaOTP)
 AuthRouter.post('/verify-token/otp', AuthController.verifyResetTokenViaOTP)
+
+AuthRouter.post('/confirm/password', AuthController.confirmPassword)
+AuthRouter.post('/update/email', AuthController.updateUserEmail)
+
+AuthRouter.get(
+  '/confirm/email-update/:id',
+  AuthController.confirmChangeEmailRequest
+)
+
+AuthRouter.post('/update/number', AuthController.updateUserNumber)
+AuthRouter.post(
+  '/confirm/number-update',
+  AuthController.confirmChangeNumberRequest
+)
+
+AuthRouter.post('/update/password', AuthController.updatePassword)

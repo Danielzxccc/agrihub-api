@@ -450,6 +450,8 @@
  *           type: string
  *         total_harvested:
  *           type: string
+ *         total_kg:
+ *           type: string
  */
 
 /**
@@ -565,6 +567,11 @@
  *         schema:
  *           type: string
  *         description: Search term
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: string
+ *         description: Month Term (1-12)
  *       - in: query
  *         name: page
  *         schema:
@@ -765,6 +772,8 @@
  *           type: string
  *         withered_crops:
  *           type: string
+ *         planted_qty:
+ *           type: string
  *         image:
  *           type: string
  *           format: uri
@@ -857,6 +866,8 @@
  *         withered_crops:
  *           type: string
  *         farmid:
+ *           type: string
+ *         planted_qty:
  *           type: string
  *         image:
  *           type: string
@@ -2061,6 +2072,60 @@
 
 /**
  * @openapi
+ * /api/reports/analytics/crop/distribution/community:
+ *   get:
+ *     summary: Get Crop Distribution Analytics
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Month for which to retrieve crop distribution
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: string
+ *         description: Limit the number of results (default is 50)
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/CropDistribution"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
  * components:
  *   schemas:
  *     CropDistribution:
@@ -2143,4 +2208,217 @@
  *           type: string
  *         percentage_distribution:
  *           type: string
+ */
+
+/**
+ * @openapi
+ * /api/reports/farm/inactive:
+ *   get:
+ *     summary: Get Inactive Farm Reports
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/InactiveFarmReport"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     InactiveFarmReport:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/FarmInactiveDetails"
+ *     FarmInactiveDetails:
+ *       type: object
+ *       properties:
+ *         farm_id:
+ *           type: string
+ *           description: The ID of the inactive farm
+ *         farm_name:
+ *           type: string
+ *           description: The name of the inactive farm
+ *         last_report_date:
+ *           type: string
+ *           format: date-time
+ *           description: The date of the last report submitted for the farm
+ *         months_since_last_report:
+ *           type: string
+ *           description: The number of months since the last report was submitted for the farm
+ */
+
+/**
+ * @openapi
+ * /api/reports/farm/land-size/analytics:
+ *   get:
+ *     summary: Get Farm Land Size Analytics by District
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmLandSizeAnalytics"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmLandSizeAnalytics:
+ *       type: object
+ *       properties:
+ *         District 1:
+ *           type: string
+ *           description: The total land size of farms in District 1
+ *         District 2:
+ *           type: string
+ *           description: The total land size of farms in District 2
+ *         District 3:
+ *           type: string
+ *           description: The total land size of farms in District 3
+ *         District 4:
+ *           type: string
+ *           description: The total land size of farms in District 4
+ *         District 5:
+ *           type: string
+ *           description: The total land size of farms in District 5
+ *         District 6:
+ *           type: string
+ *           description: The total land size of farms in District 6
+ */
+
+/**
+ * @openapi
+ * /api/reports/farm/land-size/analytics/district:
+ *   get:
+ *     summary: Get Farm Land Size Analytics by District
+ *     tags:
+ *       - Reports
+ *     parameters:
+ *       - name: district
+ *         in: query
+ *         description: The district name (e.g., District 1, District 2, etc.)
+ *         schema:
+ *           type: string
+ *           enum:
+ *             [
+ *               "District 1",
+ *               "District 2",
+ *               "District 3",
+ *               "District 4",
+ *               "District 5",
+ *               "District 6",
+ *             ]
+ *         default: "District 1"
+ *       - name: limit
+ *         in: query
+ *         description: The maximum number of results to return
+ *         schema:
+ *           type: integer
+ *           format: int32
+ *           default: 50
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/FarmLandSizeByDistrict"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmLandSizeByDistrict:
+ *       type: object
+ *       properties:
+ *         farm_name:
+ *           type: string
+ *           description: The name of the farm
+ *         size:
+ *           type: string
+ *           description: The land size of the farm
  */

@@ -19,7 +19,7 @@ export async function listUsers(
 ) {
   const [data, total] = await Promise.all([
     Service.listUsers(offset, perpage, filterKey, searchKey),
-    Service.getTotalUsers(),
+    Service.getTotalUsers(searchKey),
   ])
 
   return { data, total }
@@ -104,7 +104,7 @@ export async function listAdmins(
 ) {
   const [data, total] = await Promise.all([
     Service.findAdmins(offset, perpage, searchKey, filterKey),
-    Service.getTotalAdmins(filterKey),
+    Service.getTotalAdmins(filterKey, searchKey),
   ])
 
   return { data, total }
@@ -212,7 +212,7 @@ export async function listReportedUsers(
 ) {
   const [data, total] = await Promise.all([
     Service.findReportedUsers(offset, perpage, searchKey, filterKey),
-    Service.getTotalReportedUsers(),
+    Service.getTotalReportedUsers(searchKey),
   ])
 
   return { data, total }
@@ -241,7 +241,7 @@ export async function listBannedUsers(
 ) {
   const [data, total] = await Promise.all([
     Service.findBannedUsers(offset, perpage, searchKey),
-    Service.getTotalBannedUsers(),
+    Service.getTotalBannedUsers(searchKey),
   ])
 
   return { data, total }

@@ -98,6 +98,7 @@ CREATE TABLE crops(
     harvest_season INT, -- 0 - 11,
     isyield BOOLEAN default FALSE, 
     growth_span INT,
+    is_archived BOOLEAN default FALSE,
     UNIQUE(name),
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP

@@ -94,7 +94,7 @@ export async function createFarmApplication({
       'admin',
       'New Application',
       'A new application has been received.',
-      `/admin/community/application/${newApplication.id}`
+      `/admin/community/farms-application/view/${newApplication.id}`
     )
 
     return newApplication
@@ -184,7 +184,7 @@ export async function listFarmApplication(
 ) {
   const [data, total] = await Promise.all([
     Service.findFarmApplications(offset, filterKey, searchKey, perpage),
-    Service.getTotalFarmApplications(filterKey),
+    Service.getTotalFarmApplications(filterKey, searchKey),
   ])
 
   const formattedDates = data.map((item) => ({
@@ -623,6 +623,26 @@ export async function listCrops() {
   return crops
 }
 
+export async function listOtherCrops() {
+  const crops = await Service.findAllCrops(false, true)
+
+  for (const crop of crops) {
+    crop.image = getObjectUrl(crop.image)
+  }
+
+  return crops
+}
+
+export async function listArchivedCrops() {
+  const crops = await Service.findAllCrops(true)
+
+  for (const crop of crops) {
+    crop.image = getObjectUrl(crop.image)
+  }
+
+  return crops
+}
+
 export async function createCrop(crop: NewCrop, image: Express.Multer.File) {
   try {
     const foundCrop = await Service.findCropByName(crop.name)
@@ -821,6 +841,7 @@ export async function listFarmerInvitations(
 }
 
 export async function listCommunityFarmMembers(
+  id: string,
   userid: string,
   perpage: number,
   offset: number,
@@ -828,9 +849,16 @@ export async function listCommunityFarmMembers(
 ) {
   const user = await findUser(userid)
 
+  const isDataOwner = user.farm_id === id
+  const isAdmin = user.role === 'admin' || user.role === 'asst_admin'
+
+  if (!isAdmin && !isDataOwner) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
   const [data, total] = await Promise.all([
-    Service.findCommunityFarmMembers(user.farm_id, perpage, offset, search),
-    Service.getTotalFarmMembers(user.farm_id),
+    Service.findCommunityFarmMembers(id, perpage, offset, search),
+    Service.getTotalFarmMembers(id),
   ])
 
   for (const item of data) {
@@ -839,6 +867,22 @@ export async function listCommunityFarmMembers(
   }
 
   return { data, total }
+}
+
+export async function archiveCrop(id: string) {
+  const archivedCrop = await Service.archiveCrop(id)
+
+  if (!archivedCrop) {
+    throw new HttpError('Crop not found', 404)
+  }
+}
+
+export async function unarchiveCrop(id: string) {
+  const unarchiveCrop = await Service.unarchiveCrop(id)
+
+  if (!unarchiveCrop) {
+    throw new HttpError('Crop not found', 404)
+  }
 }
 
 export async function updateCommunityFarm(

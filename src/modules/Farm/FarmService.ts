@@ -62,12 +62,31 @@ export async function listFarms(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function findAllCrops() {
+export async function findAllCrops(is_archived = false, is_other = false) {
   return await db
     .selectFrom('crops')
     .selectAll()
-    .where('is_other', '=', false)
+    .where('is_other', '=', is_other)
+    .where('is_archived', '=', is_archived)
     .execute()
+}
+
+export async function archiveCrop(id: string) {
+  return await db
+    .updateTable('crops')
+    .set({ is_archived: true })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function unarchiveCrop(id: string) {
+  return await db
+    .updateTable('crops')
+    .set({ is_archived: false })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }
 
 export async function getTotalCrops() {
@@ -185,6 +204,7 @@ export async function listCrops(): Promise<Crop[]> {
     .selectFrom('crops')
     .selectAll()
     .where('is_other', '=', false)
+    .where('is_archived', '=', false)
     .execute()
 }
 
@@ -270,11 +290,18 @@ export async function findFarmApplications(
   ])
 
   if (filterKey) query = query.where('status', '=', filterKey)
+
+  if (searchKey.length) {
+    query = query.where('farm_name', 'ilike', `%${searchKey}%`)
+  }
+
+  query = query.orderBy('updatedat desc')
   return await query.limit(perpage).offset(offset).execute()
 }
 
 export async function getTotalFarmApplications(
-  filterKey: FarmApplicationStatus
+  filterKey: FarmApplicationStatus,
+  searchKey: string
 ) {
   let query = db
     .selectFrom('farm_applications')
@@ -282,6 +309,10 @@ export async function getTotalFarmApplications(
 
   if (filterKey) {
     query = query.where('status', '=', filterKey)
+  }
+
+  if (searchKey.length) {
+    query = query.where('farm_name', 'ilike', `%${searchKey}%`)
   }
 
   return await query.executeTakeFirst()

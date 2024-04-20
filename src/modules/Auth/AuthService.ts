@@ -1,6 +1,10 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
 import moment from 'moment'
+import {
+  NewChangeEmailRequest,
+  NewChangeNumberRequest,
+} from '../../types/DBTypes'
 
 export async function generateToken(userid: string) {
   const generatedTimestamp = moment()
@@ -127,4 +131,54 @@ export async function removeUnverifiedPhoneNumber(phone: string) {
     .where('contact_number', '=', phone)
     .where('verification_level', '>', '1')
     .execute()
+}
+
+export async function findChangeEmailRequest(id: string) {
+  return await db
+    .selectFrom('change_email_request')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findChangeNumberRequest(otp: number) {
+  return await db
+    .selectFrom('change_number_request')
+    .selectAll()
+    .where('change_number_request.otp', '=', String(otp))
+    .executeTakeFirst()
+}
+
+export async function createChangeEmailRequest(request: NewChangeEmailRequest) {
+  return await db
+    .insertInto('change_email_request')
+    .values(request)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function createChangeNumberRequest(
+  request: NewChangeNumberRequest
+) {
+  return await db
+    .insertInto('change_number_request')
+    .values(request)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteChangeEmailRequest(id: string) {
+  return await db
+    .deleteFrom('change_email_request')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteChangeNumberRequest(id: string) {
+  return await db
+    .deleteFrom('change_number_request')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }

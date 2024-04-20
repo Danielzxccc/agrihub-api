@@ -205,3 +205,86 @@ export async function verifyResetTokenViaOTP(
     errorHandler(res, error)
   }
 }
+
+export async function confirmPassword(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.ConfirmPassword, req)
+
+    await Interactor.confirmPassword(userid, body.password)
+
+    res.status(200).json({ message: 'Successful Password Confirmation' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateUserEmail(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.UpdateEmail, req)
+
+    await Interactor.updateUserEmail(userid, body.email)
+
+    res.status(200).json({ message: 'Email Confirmation Sent Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function confirmChangeEmailRequest(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+
+    await Interactor.confirmChangeEmailRequest(id)
+
+    res.status(200).send(verificationSuccessPage)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateUserNumber(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.UpdateNumber, req)
+
+    await Interactor.updateUserNumber(userid, body.number)
+
+    res.status(200).json({ message: 'Request sent' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function confirmChangeNumberRequest(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { body } = await zParse(Schema.ConfirmChangeNumber, req)
+
+    await Interactor.confirmChangeNumberRequest(body.otp)
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updatePassword(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.UpdatePassword, req)
+    const { newPassword, oldPassword } = body
+    const { userid } = req.session
+
+    await Interactor.updatePassword({ userid, newPassword, oldPassword })
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

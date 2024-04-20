@@ -224,3 +224,16 @@ export async function updateToolRequestStatus(
     errorHandler(res, error)
   }
 }
+
+export async function cancelToolRequest(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.cancelToolRequest(userid, id)
+
+    res.status(200).json({ message: 'Cancelled Succesfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

@@ -3,6 +3,7 @@ import { db } from '../../config/database'
 import { NewCommunityFarmReport, NewCropReportImage } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { jsonArrayFrom } from 'kysely/helpers/postgres'
+import { DistrictType } from '../../schema/ReportsSchema'
 
 export async function insertCommunityCropReport(
   report: NewCommunityFarmReport
@@ -28,6 +29,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
       'ccr.harvested_qty',
       'ccr.withered_crops',
       'ccr.farmid',
+      'ccr.planted_qty',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
       jsonArrayFrom(
         eb
@@ -72,6 +74,7 @@ export async function findCommunityReports(
   offset: number,
   filterKey: string[] | string,
   searchKey: string,
+  month: string,
   perpage: number,
   sortBy: string,
   isExisting?: boolean
@@ -88,6 +91,7 @@ export async function findCommunityReports(
       'ccr.date_harvested',
       'ccr.harvested_qty',
       'ccr.withered_crops',
+      'ccr.planted_qty',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
     ])
     .groupBy([
@@ -99,6 +103,7 @@ export async function findCommunityReports(
       'ccr.date_harvested',
       'ccr.harvested_qty',
       'ccr.withered_crops',
+      'ccr.planted_qty',
     ])
     .where('ccr.farmid', '=', id)
     .where('ccr.is_archived', '=', false)
@@ -111,6 +116,10 @@ export async function findCommunityReports(
         eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
       )
     }
+  }
+
+  if (month.length) {
+    query = query.where(sql`EXTRACT(MONTH FROM ccr.date_harvested) = ${month}`)
   }
 
   if (searchKey.length) {
@@ -222,6 +231,7 @@ export async function getTotalHarvestedCrops(id: string) {
       'c.name as crop_name',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
       sql`SUM(ccr.harvested_qty)`.as('total_harvested'),
+      sql`SUM(ccr.kilogram)`.as('total_kg'),
     ])
     .groupBy(['ccr.crop_id', 'c.name', 'c.image'])
     .where('ccr.farmid', '=', id)
@@ -1020,6 +1030,45 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
   )
 }
 
+export async function getCropHarvestDistributionPerFarm(
+  month: number,
+  limit: number,
+  farmid: string
+) {
+  return db.executeQuery(
+    sql`
+    WITH monthly_harvest AS (
+        SELECT 
+            cc.crop_id,
+            cr.farmid,
+            c.name AS crop_name,
+            SUM(cr.harvested_qty) AS total_harvested_qty
+        FROM 
+            community_crop_reports cr
+        JOIN 
+            community_farms_crops cc ON cr.crop_id = cc.id
+        JOIN 
+            crops c ON cc.crop_id = c.id
+        WHERE 
+            EXTRACT(MONTH FROM cr.date_harvested) = ${month}
+        GROUP BY 
+            cr.farmid, cc.crop_id, c.name
+    )
+    SELECT 
+        crop_id,
+        crop_name,
+        total_harvested_qty,
+        (total_harvested_qty / SUM(total_harvested_qty) OVER ()) * 100 AS percentage_distribution
+    FROM 
+        monthly_harvest
+    WHERE monthly_harvest.farmid = ${farmid}
+    ORDER BY 
+        total_harvested_qty DESC
+    LIMIT ${limit};
+  `.compile(db)
+  )
+}
+
 export async function getGrowthRateDistribution(month: number, limit: number) {
   return db.executeQuery(
     sql`
@@ -1061,4 +1110,90 @@ export async function getGrowthRateDistribution(month: number, limit: number) {
     LIMIT ${limit};
   `.compile(db)
   )
+}
+
+export async function listInactiveFarms() {
+  return await db
+    .with('LastCropReports', (db) =>
+      db
+        .selectFrom('community_farms as cf')
+        .where('cf.is_archived', '=', false)
+        .innerJoin('community_crop_reports as ccr', 'cf.id', 'ccr.farmid')
+        .select([
+          'cf.id as farm_id',
+          'cf.farm_name',
+          sql`MAX(ccr.createdAt)`.as('last_report_date'),
+        ])
+        .groupBy(['cf.id', 'cf.farm_name'])
+    )
+    .selectFrom('LastCropReports as lcr')
+    .select([
+      'lcr.farm_id',
+      'lcr.farm_name',
+      'lcr.last_report_date',
+      sql`  ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT`.as(
+        'months_since_last_report'
+      ),
+    ])
+    .where(
+      sql`ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT >= 1;`
+    )
+    .execute()
+}
+
+export async function getLandSizeAnalytics() {
+  return await db
+    .selectNoFrom((eb) => [
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_1')])
+        .where('district', '=', 'District 1')
+        .where('is_archived', '=', false)
+        .as('District 1'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_2')])
+        .where('district', '=', 'District 2')
+        .where('is_archived', '=', false)
+        .as('District 2'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_3')])
+        .where('district', '=', 'District 3')
+        .where('is_archived', '=', false)
+        .as('District 3'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_4')])
+        .where('district', '=', 'District 4')
+        .where('is_archived', '=', false)
+        .as('District 4'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_5')])
+        .where('district', '=', 'District 5')
+        .where('is_archived', '=', false)
+        .as('District 5'),
+      eb
+        .selectFrom('community_farms as cf')
+        .select(({ fn }) => [fn.sum('cf.size').as('District_6')])
+        .where('district', '=', 'District 6')
+        .where('is_archived', '=', false)
+        .as('District 6'),
+    ])
+    .executeTakeFirst()
+}
+
+export async function getLandSizeAnalyticsPerDistrict(
+  district: DistrictType,
+  limit: number
+) {
+  return await db
+    .selectFrom('community_farms')
+    .select(['farm_name', 'size'])
+    .where('district', '=', district)
+    .where('is_archived', '=', false)
+    .orderBy('size desc')
+    .limit(limit)
+    .execute()
 }

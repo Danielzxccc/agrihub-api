@@ -1,5 +1,5 @@
 import upload from '../../config/multer'
-import { UserGuard } from '../AuthGuard/UserGuard'
+import { AccessGuard, UserGuard } from '../AuthGuard/UserGuard'
 import * as ReportsController from './ReportsController'
 import express from 'express'
 
@@ -187,7 +187,32 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
+  '/analytics/crop/distribution/community',
+  UserGuard(['farm_head']),
+  ReportsController.getCropHarvestDistributionPerFarm
+)
+
+ReportsRouter.get(
   '/analytics/growth-rate/distribution',
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getGrowthRateDistribution
+)
+
+ReportsRouter.get(
+  '/farm/inactive',
+  AccessGuard('farms'),
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.listInactiveFarms
+)
+
+ReportsRouter.get(
+  '/farm/land-size/analytics',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getLandSizeAnalytics
+)
+
+ReportsRouter.get(
+  '/farm/land-size/analytics/district',
+  UserGuard(['admin', 'asst_admin']),
+  ReportsController.getLandSizeAnalyticsPerDistrict
 )
