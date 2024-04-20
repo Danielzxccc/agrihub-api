@@ -299,14 +299,16 @@ export async function listPublishedLearningMaterials(
   offset: number,
   searchKey: string,
   perpage: number,
-  filterKey: string
+  filterKey: string,
+  sortBy: 'desc' | 'asc'
 ) {
   const [data, total] = await Promise.all([
     Service.findPublishedLearningMaterials(
       offset,
       searchKey,
       perpage,
-      filterKey
+      filterKey,
+      sortBy
     ),
     Service.getTotalPublishedLearningMaterials(searchKey, filterKey),
   ])

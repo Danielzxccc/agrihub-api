@@ -379,7 +379,8 @@ export async function findPublishedLearningMaterials(
   offset: number,
   searchKey: string,
   perpage: number,
-  filterKey: string
+  filterKey: string,
+  sortBy: 'desc' | 'asc'
 ) {
   let query = db
     .selectFrom('learning_materials as lm')
@@ -432,7 +433,7 @@ export async function findPublishedLearningMaterials(
   }
 
   return await query
-    .orderBy('createdat desc')
+    .orderBy('published_date', sortBy)
     .limit(perpage)
     .offset(offset)
     .execute()
@@ -451,8 +452,8 @@ export async function getTotalPublishedLearningMaterials(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('content', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
       ])
     )
   }
