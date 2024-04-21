@@ -334,6 +334,7 @@ export async function findReportedUsers(
         eb('u.lastname', 'ilike', `%${searchKey}%`),
         eb('u.username', 'ilike', `%${searchKey}%`),
         eb(sql`CAST(u.role AS TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('ru.reason', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -358,6 +359,7 @@ export async function getTotalReportedUsers(searchKey: string) {
         eb('u.lastname', 'ilike', `%${searchKey}%`),
         eb('u.username', 'ilike', `%${searchKey}%`),
         eb(sql`CAST(u.role AS TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('ru.reason', 'ilike', `%${searchKey}%`),
       ])
     )
   }
