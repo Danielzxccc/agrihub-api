@@ -211,9 +211,10 @@ export async function findAdmins(
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
-        eb('u.username', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb('u.email', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -241,9 +242,10 @@ export async function getTotalAdmins(
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
-        eb('u.username', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb('u.email', 'ilike', `%${searchKey}%`),
       ])
     )
   }
