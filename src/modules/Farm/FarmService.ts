@@ -292,7 +292,13 @@ export async function findFarmApplications(
   if (filterKey) query = query.where('status', '=', filterKey)
 
   if (searchKey.length) {
-    query = query.where('farm_name', 'ilike', `%${searchKey}%`)
+    query = query.where((eb) =>
+      eb.or([
+        eb('farm_name', 'ilike', `%${searchKey}%`),
+        eb('district', 'ilike', `%${searchKey}%`),
+        eb('location', 'ilike', `%${searchKey}%`),
+      ])
+    )
   }
 
   query = query.orderBy('updatedat desc')
@@ -312,7 +318,13 @@ export async function getTotalFarmApplications(
   }
 
   if (searchKey.length) {
-    query = query.where('farm_name', 'ilike', `%${searchKey}%`)
+    query = query.where((eb) =>
+      eb.or([
+        eb('farm_name', 'ilike', `%${searchKey}%`),
+        eb('district', 'ilike', `%${searchKey}%`),
+        eb('location', 'ilike', `%${searchKey}%`),
+      ])
+    )
   }
 
   return await query.executeTakeFirst()
