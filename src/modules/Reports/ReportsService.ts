@@ -1145,11 +1145,7 @@ export async function listInactiveFarms(
 
   if (searchKey.length) {
     query = query.where((eb) =>
-      eb.or([
-        eb('lcr.farm_name', 'ilike', `%${searchKey}%`),
-        eb('lcr.farm_id', 'ilike', `%${searchKey}%`),
-        eb('lcr.last_report_date', 'ilike', `%${searchKey}%`),
-      ])
+      eb.or([eb('lcr.farm_name', 'ilike', `%${searchKey}%`)])
     )
   }
 
@@ -1178,11 +1174,7 @@ export async function getTotalInactiveFarms(searchKey: string) {
 
   if (searchKey.length) {
     query = query.where((eb) =>
-      eb.or([
-        eb('lcr.farm_name', 'ilike', `%${searchKey}%`),
-        eb('lcr.farm_id', 'ilike', `%${searchKey}%`),
-        eb('lcr.last_report_date', 'ilike', `%${searchKey}%`),
-      ])
+      eb.or([eb('lcr.farm_name', 'ilike', `%${searchKey}%`)])
     )
   }
 
