@@ -316,8 +316,8 @@ export async function findReportedProblems(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('fp.description', 'ilike', `${searchKey}%`),
-        eb('fp.problem', 'ilike', `${searchKey}%`),
+        eb('fp.description', 'ilike', `%${searchKey}%`),
+        eb('fp.problem', 'ilike', `%${searchKey}%`),
       ])
     )
   }
