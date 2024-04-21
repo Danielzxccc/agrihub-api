@@ -2214,9 +2214,28 @@
  * @openapi
  * /api/reports/farm/inactive:
  *   get:
- *     summary: Get Inactive Farm Reports
+ *     summary: Get Inactive Farm Report
  *     tags:
  *       - Reports
+ *     parameters:
+ *       - name: search
+ *         in: query
+ *         description: Search term to filter farms
+ *         schema:
+ *           type: string
+ *         example: ""
+ *       - name: page
+ *         in: query
+ *         description: Page number for pagination
+ *         schema:
+ *           type: string
+ *         example: "1"
+ *       - name: perpage
+ *         in: query
+ *         description: Number of records per page
+ *         schema:
+ *           type: string
+ *         example: "20"
  *     responses:
  *       "200":
  *         description: Successful response
@@ -2255,10 +2274,15 @@
  * components:
  *   schemas:
  *     InactiveFarmReport:
- *       type: array
- *       items:
- *         $ref: "#/components/schemas/FarmInactiveDetails"
- *     FarmInactiveDetails:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/InactiveFarmInfo"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     InactiveFarmInfo:
  *       type: object
  *       properties:
  *         farm_id:
@@ -2273,7 +2297,7 @@
  *           description: The date of the last report submitted for the farm
  *         months_since_last_report:
  *           type: string
- *           description: The number of months since the last report was submitted for the farm
+ *           description: The number of months since the last report
  */
 
 /**

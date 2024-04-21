@@ -56,6 +56,14 @@ export const CommunityCropReports = z.object({
   }),
 })
 
+export const InactiveFarmQuery = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+  }),
+})
+
 export const FilterWitheredHarvested = z.object({
   query: z.object({
     year: z

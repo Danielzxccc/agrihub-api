@@ -1112,8 +1112,12 @@ export async function getGrowthRateDistribution(month: number, limit: number) {
   )
 }
 
-export async function listInactiveFarms() {
-  return await db
+export async function listInactiveFarms(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  let query = db
     .with('LastCropReports', (db) =>
       db
         .selectFrom('community_farms as cf')
@@ -1136,9 +1140,53 @@ export async function listInactiveFarms() {
       ),
     ])
     .where(
+      sql`ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT >= 1`
+    )
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('lcr.farm_name', 'ilike', `%${searchKey}%`),
+        eb('lcr.farm_id', 'ilike', `%${searchKey}%`),
+        eb('lcr.last_report_date', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalInactiveFarms(searchKey: string) {
+  let query = db
+    .with('LastCropReports', (db) =>
+      db
+        .selectFrom('community_farms as cf')
+        .where('cf.is_archived', '=', false)
+        .innerJoin('community_crop_reports as ccr', 'cf.id', 'ccr.farmid')
+        .select([
+          'cf.id as farm_id',
+          'cf.farm_name',
+          sql`MAX(ccr.createdAt)`.as('last_report_date'),
+        ])
+        .groupBy(['cf.id', 'cf.farm_name'])
+    )
+    .selectFrom('LastCropReports as lcr')
+    .select(({ fn }) => [fn.count('lcr.farm_id').as('count')])
+    .where(
       sql`ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT >= 1;`
     )
-    .execute()
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('lcr.farm_name', 'ilike', `%${searchKey}%`),
+        eb('lcr.farm_id', 'ilike', `%${searchKey}%`),
+        eb('lcr.last_report_date', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  return query.executeTakeFirst()
 }
 
 export async function getLandSizeAnalytics() {

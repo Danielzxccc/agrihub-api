@@ -636,10 +636,17 @@ export async function getGrowthRateDistribution(month: number, limit: number) {
   return data.rows
 }
 
-export async function listInactiveFarms() {
-  const data = await Service.listInactiveFarms()
+export async function listInactiveFarms(
+  offset: number,
+  searchKey: string,
+  perpage: number
+) {
+  const [data, total] = await Promise.all([
+    Service.listInactiveFarms(offset, searchKey, perpage),
+    Service.getTotalInactiveFarms(searchKey),
+  ])
 
-  return data
+  return { data, total }
 }
 
 export async function getLandSizeAnalytics() {

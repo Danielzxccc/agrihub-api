@@ -508,8 +508,29 @@ export async function getGrowthRateDistribution(
 
 export async function listInactiveFarms(req: SessionRequest, res: Response) {
   try {
-    const data = await Interactor.listInactiveFarms()
-    res.status(200).json(data)
+    const { query } = await zParse(Schema.InactiveFarmQuery, req)
+
+    const perPage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perPage
+    const searchKey = String(query.search)
+
+    const events = await Interactor.listInactiveFarms(
+      offset,
+      searchKey,
+      perPage
+    )
+
+    const totalPages = Math.ceil(Number(events.total.count) / perPage)
+    res.status(200).json({
+      data: events.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perPage,
+        total_pages: totalPages,
+        total_records: Number(events.total.count),
+      },
+    })
   } catch (error) {
     errorHandler(res, error)
   }
