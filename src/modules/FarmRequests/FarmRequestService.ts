@@ -6,6 +6,7 @@ import {
   UpdateSeedlingRequest,
   UpdateToolRequest,
 } from '../../types/DBTypes'
+import { sql } from 'kysely'
 
 export async function insertSeedlingRequest(request: NewSeedlingRequest) {
   return await db
@@ -148,6 +149,7 @@ export async function findAllSeedlingRequest(
       eb.or([
         eb('c.name', 'ilike', `${searchKey}%`),
         eb('cf.farm_name', 'ilike', `${searchKey}%`),
+        eb(sql`CAST(quantity_request AS TEXT)`, 'ilike', `${searchKey}%`),
       ])
     )
   }
@@ -178,6 +180,7 @@ export async function getTotalSeedlingRequests(
       eb.or([
         eb('c.name', 'ilike', `${searchKey}%`),
         eb('cf.farm_name', 'ilike', `${searchKey}%`),
+        eb(sql`CAST(quantity_request AS TEXT)`, 'ilike', `${searchKey}%`),
       ])
     )
   }
@@ -278,6 +281,7 @@ export async function findToolRequests(
         eb('tool_requested', 'ilike', `%${searchKey}%`),
         eb('requester_note', 'ilike', `%${searchKey}%`),
         eb('cf.farm_name', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(quantity_requested AS TEXT)`, 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -309,6 +313,7 @@ export async function getTotalToolRequest(
         eb('tool_requested', 'ilike', `%${searchKey}%`),
         eb('requester_note', 'ilike', `%${searchKey}%`),
         eb('cf.farm_name', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(quantity_requested AS TEXT)`, 'ilike', `${searchKey}%`),
       ])
     )
   }
