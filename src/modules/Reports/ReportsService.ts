@@ -1173,7 +1173,7 @@ export async function getTotalInactiveFarms(searchKey: string) {
     .selectFrom('LastCropReports as lcr')
     .select(({ fn }) => [fn.count('lcr.farm_id').as('count')])
     .where(
-      sql`ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT >= 1;`
+      sql`ROUND(EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lcr.last_report_date) / 2592000)::INT >= 1`
     )
 
   if (searchKey.length) {
