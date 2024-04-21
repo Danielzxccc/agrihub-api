@@ -306,6 +306,8 @@ export async function findReportedProblems(
       'fp.id as fp_id',
       'rp.status',
       'rp.is_helpful',
+      'rp.date_solved',
+      'rp.date_noticed',
       'rp.feedback',
       'fp.problem',
       'fp.description',
