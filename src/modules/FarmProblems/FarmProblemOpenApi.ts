@@ -737,6 +737,10 @@
  *           type: string
  *         status:
  *           type: string
+ *         is_helpful:
+ *           type: boolean
+ *         feedback:
+ *           type: string
  *         problem:
  *           type: string
  *         description:
