@@ -343,8 +343,9 @@ export async function findDraftLearningMaterials(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('content', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('language', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -366,8 +367,9 @@ export async function getTotalDraftLearningMaterials(searchKey: string) {
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('content', 'ilike', `${searchKey}%`),
-        eb('title', 'ilike', `${searchKey}%`),
+        eb('content', 'ilike', `%${searchKey}%`),
+        eb('title', 'ilike', `%${searchKey}%`),
+        eb('language', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -424,6 +426,7 @@ export async function findPublishedLearningMaterials(
       eb.or([
         eb('content', 'ilike', `%${searchKey}%`),
         eb('title', 'ilike', `%${searchKey}%`),
+        eb('language', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -454,6 +457,7 @@ export async function getTotalPublishedLearningMaterials(
       eb.or([
         eb('content', 'ilike', `%${searchKey}%`),
         eb('title', 'ilike', `%${searchKey}%`),
+        eb('language', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -510,6 +514,7 @@ export async function findArchivedLearningMaterials(
       eb.or([
         eb('content', 'ilike', `%${searchKey}%`),
         eb('title', 'ilike', `%${searchKey}%`),
+        eb('language', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -532,6 +537,7 @@ export async function getTotalArchivedLearningMaterials(searchKey: string) {
       eb.or([
         eb('content', 'ilike', `%${searchKey}%`),
         eb('title', 'ilike', `%${searchKey}%`),
+        eb('language', 'ilike', `%${searchKey}%`),
       ])
     )
   }
