@@ -52,7 +52,18 @@ export const CommunityCropReports = z.object({
       .union([z.array(z.string()), z.string()])
       .optional()
       .default([]),
-    sort: z.string().optional().default('date_harvested'),
+    order: z
+      .union([z.literal('desc'), z.literal('asc')])
+      .optional()
+      .default('desc'),
+  }),
+})
+
+export const InactiveFarmQuery = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
   }),
 })
 

@@ -10,6 +10,7 @@ CREATE TABLE users(
     password TEXT NOT NULL,
     contact_number TEXT DEFAULT '',
     firstname TEXT,
+    middlename TEXT,
     lastname TEXT,
     birthdate DATE,
     present_address TEXT,

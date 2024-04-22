@@ -305,6 +305,10 @@ export async function findReportedProblems(
       'rp.id',
       'fp.id as fp_id',
       'rp.status',
+      'rp.is_helpful',
+      'rp.date_solved',
+      'rp.date_noticed',
+      'rp.feedback',
       'fp.problem',
       'fp.description',
     ])
@@ -312,8 +316,8 @@ export async function findReportedProblems(
   if (searchKey.length) {
     query = query.where((eb) =>
       eb.or([
-        eb('fp.description', 'ilike', `${searchKey}%`),
-        eb('fp.problem', 'ilike', `${searchKey}%`),
+        eb('fp.description', 'ilike', `%${searchKey}%`),
+        eb('fp.problem', 'ilike', `%${searchKey}%`),
       ])
     )
   }

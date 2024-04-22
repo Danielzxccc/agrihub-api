@@ -292,7 +292,13 @@ export async function findFarmApplications(
   if (filterKey) query = query.where('status', '=', filterKey)
 
   if (searchKey.length) {
-    query = query.where('farm_name', 'ilike', `%${searchKey}%`)
+    query = query.where((eb) =>
+      eb.or([
+        eb('farm_name', 'ilike', `%${searchKey}%`),
+        eb('district', 'ilike', `%${searchKey}%`),
+        eb('location', 'ilike', `%${searchKey}%`),
+      ])
+    )
   }
 
   query = query.orderBy('updatedat desc')
@@ -312,7 +318,13 @@ export async function getTotalFarmApplications(
   }
 
   if (searchKey.length) {
-    query = query.where('farm_name', 'ilike', `%${searchKey}%`)
+    query = query.where((eb) =>
+      eb.or([
+        eb('farm_name', 'ilike', `%${searchKey}%`),
+        eb('district', 'ilike', `%${searchKey}%`),
+        eb('location', 'ilike', `%${searchKey}%`),
+      ])
+    )
   }
 
   return await query.executeTakeFirst()
@@ -459,7 +471,15 @@ export async function findAllCommunityFarms(
 ) {
   let query = db.selectFrom('community_farms').selectAll()
 
-  if (search.length) query = query.where('farm_name', 'ilike', `%${search}%`)
+  if (search.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('farm_name', 'ilike', `%${search}%`),
+        eb('district', 'ilike', `%${search}%`),
+        eb('location', 'ilike', `%${search}%`),
+      ])
+    )
+  }
   if (filter.length) query = query.where('district', '=', filter)
 
   return await query
@@ -475,7 +495,15 @@ export async function getTotalCommunityFarms(search: string, filter: string) {
     .select(({ fn }) => [fn.count<number>('id').as('count')])
 
   if (search.length) query = query.where('farm_name', 'ilike', `%${search}%`)
-  if (filter.length) query = query.where('district', '=', filter)
+  if (search.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('farm_name', 'ilike', `%${search}%`),
+        eb('district', 'ilike', `%${search}%`),
+        eb('location', 'ilike', `%${search}%`),
+      ])
+    )
+  }
 
   return await query.where('is_archived', '=', false).executeTakeFirst()
 }
@@ -488,7 +516,15 @@ export async function findArchivedCommunityFarms(
 ) {
   let query = db.selectFrom('community_farms').selectAll()
 
-  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (search.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('farm_name', 'ilike', `%${search}%`),
+        eb('district', 'ilike', `%${search}%`),
+        eb('location', 'ilike', `%${search}%`),
+      ])
+    )
+  }
   if (filter.length) query = query.where('district', '=', filter)
 
   return await query
@@ -506,7 +542,15 @@ export async function getTotalArchivedCommunityFarms(
     .selectFrom('community_farms')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
 
-  if (search.length) query = query.where('farm_name', 'ilike', `${search}%`)
+  if (search.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('farm_name', 'ilike', `%${search}%`),
+        eb('district', 'ilike', `%${search}%`),
+        eb('location', 'ilike', `%${search}%`),
+      ])
+    )
+  }
   if (filter.length) query = query.where('district', '=', filter)
 
   return await query.where('is_archived', '=', true).executeTakeFirst()

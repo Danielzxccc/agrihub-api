@@ -51,6 +51,10 @@ export const ListDraftLearningMaterials = z.object({
       ])
       .optional()
       .default(''),
+    sortBy: z
+      .union([z.literal('asc'), z.literal('desc')])
+      .optional()
+      .default('desc'),
   }),
 })
 

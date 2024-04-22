@@ -76,7 +76,12 @@ export async function getTags(
     ])
 
   if (searchKey.length) {
-    query = query.where('tag_name', 'ilike', `${searchKey}%`)
+    query = query.where((eb) =>
+      eb.or([
+        eb('tag_name', 'ilike', `%${searchKey}%`),
+        eb('details', 'ilike', `%${searchKey}%`),
+      ])
+    )
   }
 
   if (filterKey === 'name') query = query.orderBy('tags.tag_name', 'asc')

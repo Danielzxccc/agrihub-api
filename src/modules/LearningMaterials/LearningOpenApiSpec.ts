@@ -1196,6 +1196,13 @@
  *            - Tagalog
  *            - English
  *            - Tagalog and English
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - asc
+ *            - desc
  *     responses:
  *       "200":
  *         description: Successful response

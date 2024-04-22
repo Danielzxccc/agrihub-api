@@ -10,7 +10,6 @@ import {
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { jsonObjectFrom } from 'kysely/helpers/postgres'
 import { findCommunityFarmById } from '../Farm/FarmService'
-import { query } from 'express'
 
 export async function listUsers(
   offset: number,
@@ -23,8 +22,10 @@ export async function listUsers(
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(u.role AS TEXT)`, 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -47,8 +48,10 @@ export async function getTotalUsers(searchKey: string) {
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(u.role AS TEXT)`, 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -208,9 +211,10 @@ export async function findAdmins(
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
-        eb('u.username', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb('u.email', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -238,9 +242,10 @@ export async function getTotalAdmins(
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
-        eb('u.username', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb('u.email', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -327,9 +332,11 @@ export async function findReportedUsers(
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
-        eb('u.username', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(u.role AS TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('ru.reason', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -350,9 +357,11 @@ export async function getTotalReportedUsers(searchKey: string) {
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
-        eb('u.username', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(u.role AS TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('ru.reason', 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -370,9 +379,10 @@ export async function findBannedUsers(
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
-        eb('u.username', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(u.role AS TEXT)`, 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -407,9 +417,10 @@ export async function getTotalBannedUsers(searchKey: string) {
   if (searchKey.length >= 1) {
     query = query.where((eb) =>
       eb.or([
-        eb('u.firstname', 'ilike', `${searchKey}%`),
-        eb('u.lastname', 'ilike', `${searchKey}%`),
-        eb('u.username', 'ilike', `${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(u.role AS TEXT)`, 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -440,6 +451,7 @@ export async function findAllAdmins() {
   return await db
     .selectFrom('users')
     .selectAll()
+    .where('verification_level', '=', '4')
     .where((eb) =>
       eb.or([
         eb('users.role', '=', 'admin'),
