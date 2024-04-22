@@ -126,8 +126,6 @@ export async function findCommunityReports(
     query = query.where('c.name', 'ilike', `${searchKey}%`)
   }
 
-  query = query.orderBy('ccr.date_harvested', 'desc')
-
   if (isExisting) {
     query = query.where('ccr.is_first_report', '=', true)
   }
