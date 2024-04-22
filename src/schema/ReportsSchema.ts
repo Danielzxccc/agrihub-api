@@ -52,7 +52,10 @@ export const CommunityCropReports = z.object({
       .union([z.array(z.string()), z.string()])
       .optional()
       .default([]),
-    sort: z.string().optional().default('date_harvested'),
+    order: z
+      .union([z.literal('desc'), z.literal('asc')])
+      .optional()
+      .default('desc'),
   }),
 })
 

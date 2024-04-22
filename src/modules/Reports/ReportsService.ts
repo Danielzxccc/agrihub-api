@@ -76,7 +76,7 @@ export async function findCommunityReports(
   searchKey: string,
   month: string,
   perpage: number,
-  sortBy: string,
+  orderBy: 'desc' | 'asc',
   isExisting?: boolean
 ) {
   let query = db
@@ -131,9 +131,10 @@ export async function findCommunityReports(
   if (isExisting) {
     query = query.where('ccr.is_first_report', '=', true)
   }
-  // if (sortBy.length) {
-  //   query = query.orderBy('ccr.date_harvested', 'asc')
-  // }
+
+  if (orderBy.length) {
+    query = query.orderBy('ccr.date_harvested', orderBy)
+  }
   return await query.limit(perpage).offset(offset).execute()
 }
 

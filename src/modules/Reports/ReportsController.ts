@@ -155,7 +155,7 @@ export async function listCommuntityCropReports(
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
     const filterKey = query.filter
-    const sortBy = query.sort
+    const orderBy = query.order
     const month = query.month
 
     const reports = await Interactor.listCommuntityCropReports(
@@ -165,7 +165,7 @@ export async function listCommuntityCropReports(
       searchKey,
       month,
       perPage,
-      sortBy
+      orderBy
     )
 
     const totalPages = Math.ceil(Number(reports.total.count) / perPage)
@@ -195,7 +195,7 @@ export async function listExistingCropReports(
     const offset = (pageNumber - 1) * perPage
     const searchKey = String(query.search)
     const filterKey = query.filter
-    const sortBy = query.sort
+    const orderBy = query.order
 
     const reports = await Interactor.listExistingCropReports(
       params.id,
@@ -203,7 +203,7 @@ export async function listExistingCropReports(
       filterKey,
       searchKey,
       perPage,
-      sortBy
+      orderBy
     )
 
     const totalPages = Math.ceil(Number(reports.total.count) / perPage)

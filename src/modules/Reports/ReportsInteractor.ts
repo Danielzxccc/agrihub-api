@@ -254,7 +254,7 @@ export async function listCommuntityCropReports(
   searchKey: string,
   month: string,
   perpage: number,
-  sortBy: string,
+  sortBy: 'desc' | 'asc',
   isExisting?: boolean
 ) {
   const [data, total] = await Promise.all([
@@ -280,7 +280,7 @@ export async function listExistingCropReports(
   filterKey: string[] | string,
   searchKey: string,
   perpage: number,
-  sortBy: string
+  orderBy: 'desc' | 'asc'
 ) {
   const [data, total] = await Promise.all([
     Service.findCommunityReports(
@@ -290,7 +290,7 @@ export async function listExistingCropReports(
       searchKey,
       '',
       perpage,
-      sortBy,
+      orderBy,
       true
     ),
     Service.getTotalReportCount(id, filterKey, searchKey, true),

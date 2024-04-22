@@ -590,10 +590,12 @@
  *             type: string
  *         description: Array of filters
  *       - in: query
- *         name: sort
+ *         name: order
  *         schema:
  *           type: string
- *         description: Sorting parameter
+ *           enum:
+ *            - asc
+ *            - desc
  *     responses:
  *       "200":
  *         description: Successful response
@@ -664,10 +666,12 @@
  *             type: string
  *         description: Array of filters
  *       - in: query
- *         name: sort
+ *         name: order
  *         schema:
  *           type: string
- *         description: Sorting parameter
+ *           enum:
+ *            - asc
+ *            - desc
  *     responses:
  *       "200":
  *         description: Successful response
