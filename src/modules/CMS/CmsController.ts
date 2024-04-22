@@ -26,7 +26,7 @@ export async function updateClientDetails(req: SessionRequest, res: Response) {
 
     await createAuditLog({
       action: 'Updated Client Details',
-      section: 'CMS',
+      section: 'Content Management System',
       userid: req.session.userid,
     })
 
@@ -44,7 +44,7 @@ export async function deleteClientSocial(req: SessionRequest, res: Response) {
 
     await createAuditLog({
       action: 'Deleted Client Social',
-      section: 'CMS',
+      section: 'Content Management System',
       userid: req.session.userid,
     })
 
@@ -62,7 +62,7 @@ export async function deleteClientPartner(req: SessionRequest, res: Response) {
 
     await createAuditLog({
       action: 'Deleted Client Partner',
-      section: 'CMS',
+      section: 'Content Management System',
       userid: req.session.userid,
     })
 
@@ -184,7 +184,7 @@ export async function updateAboutUs(req: SessionRequest, res: Response) {
 
     await createAuditLog({
       action: 'Updated About Us',
-      section: 'CMS',
+      section: 'Content Management System',
       userid: req.session.userid,
     })
 
@@ -217,7 +217,7 @@ export async function createAboutCarouselImage(
 
     await createAuditLog({
       action: 'Created About Carousel Image',
-      section: 'CMS',
+      section: 'Content Management System',
       userid: req.session.userid,
     })
 
@@ -239,7 +239,7 @@ export async function deleteAboutCarouselImage(
 
     await createAuditLog({
       action: 'Deleted About Carousel Image',
-      section: 'CMS',
+      section: 'Content Management System',
       userid: req.session.userid,
     })
 
