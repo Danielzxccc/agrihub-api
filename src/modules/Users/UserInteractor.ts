@@ -198,7 +198,7 @@ export async function listReportedUsers(
 ) {
   const [data, total] = await Promise.all([
     Service.findReportedUsers(offset, perpage, searchKey, filterKey),
-    Service.getTotalReportedUsers(searchKey),
+    Service.getTotalReportedUsers(searchKey, filterKey),
   ])
 
   return { data, total }

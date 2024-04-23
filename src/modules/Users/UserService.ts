@@ -348,7 +348,10 @@ export async function findReportedUsers(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalReportedUsers(searchKey: string) {
+export async function getTotalReportedUsers(
+  searchKey: string,
+  filterKey?: 'pending' | 'warned'
+) {
   let query = db
     .selectFrom('reported_users as ru')
     .leftJoin('users as u', 'u.id', 'ru.reported')
@@ -364,6 +367,10 @@ export async function getTotalReportedUsers(searchKey: string) {
         eb('ru.reason', 'ilike', `%${searchKey}%`),
       ])
     )
+  }
+
+  if (filterKey.length > 1) {
+    query = query.where('ru.status', '=', filterKey)
   }
 
   return await query.executeTakeFirst()
