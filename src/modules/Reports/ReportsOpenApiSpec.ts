@@ -143,6 +143,11 @@
  *         schema:
  *           type: string
  *         description: Month for which to retrieve growth rate distribution
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *         description: Year for which to retrieve growth rate distribution
  *     responses:
  *       "200":
  *         description: Successful response
@@ -340,6 +345,11 @@
  *     parameters:
  *       - in: query
  *         name: month
+ *         schema:
+ *           type: string
+ *         description: Month for which to retrieve growth rate distribution
+ *       - in: query
+ *         name: year
  *         schema:
  *           type: string
  *         description: Month for which to retrieve growth rate distribution

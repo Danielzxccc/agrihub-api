@@ -137,7 +137,8 @@ export async function createCommunityCropReport(
 
 export async function listWitheredHarvestedCrops(
   userid: string,
-  month?: number
+  month?: number,
+  year = new Date().getFullYear()
 ) {
   const user = await findUser(userid)
   if (!user) throw new HttpError('Unauthorized', 401)
@@ -145,7 +146,7 @@ export async function listWitheredHarvestedCrops(
   const farm = await findCommunityFarmById(user.farm_id)
   if (!farm) throw new HttpError("Can't find farm", 404)
 
-  const data = await Service.getHarvestedAndWitheredCrops(farm.id, month)
+  const data = await Service.getHarvestedAndWitheredCrops(farm.id, month, year)
   return data
 }
 
@@ -355,14 +356,18 @@ export async function markReportAsInactive(id: string, userid: string) {
   await Service.markReportAsInactive(id)
 }
 
-export async function listGrowthHarvestStats(userid: string, month?: number) {
+export async function listGrowthHarvestStats(
+  userid: string,
+  month?: number,
+  year = new Date().getFullYear()
+) {
   const user = await findUser(userid)
   if (!user) throw new HttpError('Unauthorized', 401)
 
   const farm = await findCommunityFarmById(user.farm_id)
   if (!farm) throw new HttpError("Can't find farm", 404)
 
-  const data = await Service.getGrowthHarvestStats(farm.id, month)
+  const data = await Service.getGrowthHarvestStats(farm.id, month, year)
 
   return data
 }

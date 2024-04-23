@@ -216,7 +216,11 @@ export async function findCommunityFarmCrop(id: string) {
 
 // TODO: Date harvested filter
 
-export async function getHarvestedAndWitheredCrops(id: string, month?: number) {
+export async function getHarvestedAndWitheredCrops(
+  id: string,
+  month?: number,
+  year = new Date().getFullYear()
+) {
   return await db
     .selectFrom('community_farms_crops as cfc')
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
@@ -231,6 +235,7 @@ export async function getHarvestedAndWitheredCrops(id: string, month?: number) {
     ])
     .where('cfc.farm_id', '=', id)
     .where('cfc.is_archived', '=', false)
+    .where(sql`EXTRACT(YEAR FROM ccr.date_harvested) = ${year}`)
     .$if(month !== undefined, (qb) =>
       qb.where(sql`EXTRACT(MONTH FROM ccr.date_harvested) = ${month}`)
     )
@@ -435,7 +440,11 @@ export async function archiveCommunityCropReport(id: string) {
     .executeTakeFirst()
 }
 
-export async function getGrowthHarvestStats(id: string, month?: number) {
+export async function getGrowthHarvestStats(
+  id: string,
+  month?: number,
+  year?: number
+) {
   return await db
     .selectFrom('crops as c')
     .select([
@@ -451,6 +460,7 @@ export async function getGrowthHarvestStats(id: string, month?: number) {
     .where('ccr.date_planted', 'is not', null)
     .where('ccr.date_harvested', 'is not', null)
     .where('ccr.farmid', '=', id)
+    .where(sql`EXTRACT(YEAR FROM ccr.date_harvested) = ${year}`)
     .$if(month !== undefined, (qb) =>
       qb.where(sql`EXTRACT(MONTH FROM ccr.date_harvested) = ${month}`)
     )

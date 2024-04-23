@@ -121,6 +121,11 @@ export const AnalyticsMonthQuery = z.object({
       .string()
       .transform((arg) => Number(arg))
       .optional(),
+    year: z
+      .string()
+      .transform((arg) => Number(arg))
+      .optional()
+      .default(new Date().getFullYear().toString()),
     limit: z
       .string()
       .transform((arg) => Number(arg))
