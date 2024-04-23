@@ -82,7 +82,8 @@ export async function createCommunityCropReport(
       const harvested = report.harvested_qty
 
       const previousCropReport = await Service.findCommunityReportById(
-        report.report_id
+        report.report_id,
+        user.farm_id
       )
 
       if (isyield) {
@@ -100,6 +101,7 @@ export async function createCommunityCropReport(
     delete report.is_other
     delete report.c_name
     delete report.isyield
+    delete report.report_id
 
     const newReport = await Service.insertCommunityCropReport({
       ...report,

@@ -34,14 +34,13 @@ export const NewCommunityCropReport = z.object({
     })
     .refine(
       (data) => {
-        if (data.is_other && !data.report_id) {
+        if (!data.is_first_report && !data.report_id) {
           return false
         }
         return true
       },
       {
-        message:
-          "Accepted by field is required when status is 'accepted' and forwarded to field is required when status is 'forwarded'",
+        message: 'report',
         path: ['status'], // You can specify the path where the error will be shown
       }
     ),
