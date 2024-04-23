@@ -423,7 +423,7 @@ export async function getSuggestedLearningMaterials(userid: string) {
   const user = await findUser(userid)
 
   // get latest report
-  const [data] = await Service.getAverageGrowthRate(user.farm_id)
+  const [data] = await Service.getLatestAverageReports(user.farm_id)
 
   // get suggested tags from python
   try {

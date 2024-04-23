@@ -475,6 +475,44 @@ export async function getAverageGrowthRate(farmid: string) {
     .execute()
 }
 
+export async function getLatestAverageReports(farmid: string) {
+  return await db
+    .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .select([
+      'c.name as plant',
+      sql`CASE WHEN c.isyield THEN 1 ELSE 0 END`.as('type'),
+      sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_qty'),
+      sql`COALESCE(SUM(ccr.harvested_qty), 0)`.as('harvested_qty'),
+      sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('withered_crops'),
+      sql`ROUND(SUM(ccr.harvested_qty - COALESCE(ccr.withered_crops, 0)), 1)`.as(
+        'net_yield'
+      ),
+      sql`ROUND(SUM(NULLIF(ccr.harvested_qty, 0)) / SUM(NULLIF(ccr.planted_qty, 0)), 2)`.as(
+        'crop_yield'
+      ),
+    ])
+    .groupBy([
+      'ccr.crop_id',
+      'ccr.createdat',
+      'c.name',
+      'c.image',
+      'c.description',
+      'c.growth_span',
+      'c.seedling_season',
+      'c.planting_season',
+      'c.harvest_season',
+      'c.isyield',
+    ])
+    .where('ccr.farmid', '=', farmid)
+    .where('ccr.is_first_report', '=', true)
+    // .where(sql`EXTRACT(MONTH FROM date_harvested)`, "", )
+    .limit(1)
+    .orderBy('ccr.createdat desc')
+    .execute()
+}
+
 // EXTRACT(MONTH FROM date_harvested) BETWEEN ${String(
 //   start
 // )} AND ${String(end)}
