@@ -44,6 +44,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
       'ccr.date_harvested',
       'ccr.harvested_qty',
       'ccr.withered_crops',
+      'c.isyield',
       'ccr.farmid',
       'ccr.planted_qty',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
@@ -79,6 +80,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
       'ccr.date_harvested',
       'ccr.harvested_qty',
       'ccr.withered_crops',
+      'c.isyield',
     ])
     .where('ccr.id', '=', id)
     .where('ccr.is_archived', '=', false)

@@ -872,6 +872,8 @@
  *           type: string
  *         withered_crops:
  *           type: string
+ *         isyield:
+ *           type: boolean
  *         farmid:
  *           type: string
  *         planted_qty:
