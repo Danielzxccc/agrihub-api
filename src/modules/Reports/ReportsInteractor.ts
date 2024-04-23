@@ -384,7 +384,6 @@ export async function getAverageGrowthRate(userid: string) {
   //   }, 0) / data.length
   let sum = 0
 
-  console.log(data, 'DATA NI NIKKI')
   for (let i = 0; i < data.length; i++) {
     const plant = data[i]
     const growthRate =
@@ -425,11 +424,18 @@ export async function getSuggestedLearningMaterials(userid: string) {
   // get latest report
   const [data] = await Service.getLatestAverageReports(user.farm_id)
 
+  const payload = {
+    ...data,
+    crop_yield: data.crop_yield === null ? '0' : data.crop_yield,
+  }
+
+  console.log(payload, 'PAYLOAD')
+
   // get suggested tags from python
   try {
     var suggestedTags = await axios.post(
       `${process.env.PYTHON_API}/suggested-tags`,
-      [data]
+      [payload]
     )
   } catch (error) {
     log.error('Failed Getting Learning Resource')
