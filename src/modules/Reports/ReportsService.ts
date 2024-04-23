@@ -674,18 +674,18 @@ export async function getGrowthRatePerMonth(
   return await db.executeQuery(
     sql`
     SELECT
-        COALESCE(AVG(CASE WHEN month_number = 1 THEN growth_rate END), 0) AS January,
-        COALESCE(AVG(CASE WHEN month_number = 2 THEN growth_rate END), 0) AS February,
-        COALESCE(AVG(CASE WHEN month_number = 3 THEN growth_rate END), 0) AS March,
-        COALESCE(AVG(CASE WHEN month_number = 4 THEN growth_rate END), 0) AS April,
-        COALESCE(AVG(CASE WHEN month_number = 5 THEN growth_rate END), 0) AS May,
-        COALESCE(AVG(CASE WHEN month_number = 6 THEN growth_rate END), 0) AS June,
-        COALESCE(AVG(CASE WHEN month_number = 7 THEN growth_rate END), 0) AS July,
-        COALESCE(AVG(CASE WHEN month_number = 8 THEN growth_rate END), 0) AS August,
-        COALESCE(AVG(CASE WHEN month_number = 9 THEN growth_rate END), 0) AS September,
-        COALESCE(AVG(CASE WHEN month_number = 10 THEN growth_rate END), 0) AS October,
-        COALESCE(AVG(CASE WHEN month_number = 11 THEN growth_rate END), 0) AS November,
-        COALESCE(AVG(CASE WHEN month_number = 12 THEN growth_rate END), 0) AS December
+        COALESCE(AVG(CASE WHEN month_number = 1 THEN LEAST(growth_rate, 100) END), 0) AS January,
+        COALESCE(AVG(CASE WHEN month_number = 2 THEN LEAST(growth_rate, 100) END), 0) AS February,
+        COALESCE(AVG(CASE WHEN month_number = 3 THEN LEAST(growth_rate, 100) END), 0) AS March,
+        COALESCE(AVG(CASE WHEN month_number = 4 THEN LEAST(growth_rate, 100) END), 0) AS April,
+        COALESCE(AVG(CASE WHEN month_number = 5 THEN LEAST(growth_rate, 100) END), 0) AS May,
+        COALESCE(AVG(CASE WHEN month_number = 6 THEN LEAST(growth_rate, 100) END), 0) AS June,
+        COALESCE(AVG(CASE WHEN month_number = 7 THEN LEAST(growth_rate, 100) END), 0) AS July,
+        COALESCE(AVG(CASE WHEN month_number = 8 THEN LEAST(growth_rate, 100) END), 0) AS August,
+        COALESCE(AVG(CASE WHEN month_number = 9 THEN LEAST(growth_rate, 100) END), 0) AS September,
+        COALESCE(AVG(CASE WHEN month_number = 10 THEN LEAST(growth_rate, 100) END), 0) AS October,
+        COALESCE(AVG(CASE WHEN month_number = 11 THEN LEAST(growth_rate, 100) END), 0) AS November,
+        COALESCE(AVG(CASE WHEN month_number = 12 THEN LEAST(growth_rate, 100) END), 0) AS December
     FROM (
         SELECT
             Months.month_number,
@@ -693,9 +693,9 @@ export async function getGrowthRatePerMonth(
             EXTRACT(YEAR FROM cr.date_harvested) AS year,
             CASE 
                 WHEN c.isyield THEN 
-                    (cr.harvested_qty::numeric / NULLIF(cr.harvested_qty + cr.withered_crops, 0)) * 100
+                    LEAST((cr.harvested_qty::numeric / NULLIF(cr.harvested_qty + cr.withered_crops, 0)) * 100, 100)
                 ELSE 
-                    (cr.harvested_qty::numeric / NULLIF(cr.planted_qty, 0)) * 100
+                    LEAST((cr.harvested_qty::numeric / NULLIF(cr.planted_qty, 0)) * 100, 100)
             END AS growth_rate
         FROM
             (
