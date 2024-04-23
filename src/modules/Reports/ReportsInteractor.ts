@@ -76,6 +76,27 @@ export async function createCommunityCropReport(
       report.crop_id = newCommunityCrop.id
     }
 
+    if (report?.report_id) {
+      const isyield = parentCrop.isyield
+      const withered_crops = report.withered_crops
+      const harvested = report.harvested_qty
+
+      const previousCropReport = await Service.findCommunityReportById(
+        report.report_id
+      )
+
+      if (isyield) {
+        await Service.updateCommunityCropReport(report.report_id, {
+          planted_qty: Number(previousCropReport.planted_qty) - withered_crops,
+        })
+      } else {
+        await Service.updateCommunityCropReport(report.report_id, {
+          planted_qty:
+            Number(previousCropReport.planted_qty) -
+            (withered_crops + harvested),
+        })
+      }
+    }
     delete report.is_other
     delete report.c_name
     delete report.isyield

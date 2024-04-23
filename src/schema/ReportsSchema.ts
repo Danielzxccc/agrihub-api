@@ -3,33 +3,48 @@ import { number, z } from 'zod'
 
 // add transform if there's an image input
 export const NewCommunityCropReport = z.object({
-  body: z.object({
-    crop_id: z.string().optional(),
-    is_other: z
-      .string()
-      .transform((arg) => Boolean(arg))
-      .optional(),
-    isyield: z
-      .string()
-      .transform((arg) => Boolean(arg))
-      .optional(),
-    c_name: z.string().optional(),
-    planted_qty: z.string().transform((arg) => Number(arg)),
-    harvested_qty: z.string().transform((arg) => Number(arg)),
-    withered_crops: z.string().transform((arg) => Number(arg)),
-    date_planted: z.string(),
-    date_harvested: z.string(),
-    notes: z.string().optional(),
-    kilogram: z
-      .string()
-      .transform((arg) => Number(arg))
-      .optional(),
-    is_first_report: z
-      .string()
-      .transform((arg) => Boolean(arg))
-      .optional()
-      .default('true'),
-  }),
+  body: z
+    .object({
+      crop_id: z.string().optional(),
+      is_other: z
+        .string()
+        .transform((arg) => Boolean(arg))
+        .optional(),
+      report_id: z.string().optional(),
+      isyield: z
+        .string()
+        .transform((arg) => Boolean(arg))
+        .optional(),
+      c_name: z.string().optional(),
+      planted_qty: z.string().transform((arg) => Number(arg)),
+      harvested_qty: z.string().transform((arg) => Number(arg)),
+      withered_crops: z.string().transform((arg) => Number(arg)),
+      date_planted: z.string(),
+      date_harvested: z.string(),
+      notes: z.string().optional(),
+      kilogram: z
+        .string()
+        .transform((arg) => Number(arg))
+        .optional(),
+      is_first_report: z
+        .string()
+        .transform((arg) => Boolean(arg))
+        .optional()
+        .default('true'),
+    })
+    .refine(
+      (data) => {
+        if (data.is_other && !data.report_id) {
+          return false
+        }
+        return true
+      },
+      {
+        message:
+          "Accepted by field is required when status is 'accepted' and forwarded to field is required when status is 'forwarded'",
+        path: ['status'], // You can specify the path where the error will be shown
+      }
+    ),
 })
 export type NewCommunityCropReportT = z.infer<typeof NewCommunityCropReport>
 

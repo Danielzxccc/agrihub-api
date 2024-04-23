@@ -116,6 +116,7 @@ export type NewCommunityFarmImage = Insertable<CommunityFarmsGallery>
 
 export type CommunityCropReport = Selectable<CommunityCropReports>
 export type NewCommunityFarmReport = Insertable<CommunityCropReports>
+export type UpdateCommunityFarmReport = Updateable<CommunityCropReports>
 export type NewCropReportImage = Insertable<CommunityCropReportsImages>
 // farms
 export type Farm = Selectable<Farms>
