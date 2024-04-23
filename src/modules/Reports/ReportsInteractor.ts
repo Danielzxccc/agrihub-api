@@ -435,10 +435,16 @@ export async function getSuggestedLearningMaterials(userid: string) {
     log.error('Failed Getting Learning Resource')
   }
 
-  console.log(suggestedTags.data.tags, 'REPORTED TAGS FROM ANALYTICS SERVICE')
+  type SuggestedTags = {
+    suggested_tags: {
+      tags: string[]
+    }[]
+  }
+  const response: SuggestedTags = suggestedTags.data
+  console.log(response.suggested_tags, 'REPORTED TAGS FROM ANALYTICS SERVICE')
 
   // feed dataset from python to our database for query
-  const dataSet = suggestedTags.data.tags[0]
+  const dataSet = response.suggested_tags[0].tags
 
   const suggestedLearningMaterials = await findLearningMaterialByTags(dataSet)
 
