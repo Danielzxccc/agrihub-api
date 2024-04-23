@@ -199,7 +199,7 @@ export async function findUserFeedbacks(
     query = query.where((eb) =>
       eb.or([
         eb('feedback', 'ilike', `%${searchKey}%`),
-        eb('rating', '=', searchKey),
+        eb(sql`CAST(rating as TEXT)`, 'ilike', `%${searchKey}%`),
       ])
     )
   }
@@ -220,7 +220,7 @@ export async function getTotalUserFeedbacks(searchKey: string) {
     query = query.where((eb) =>
       eb.or([
         eb('feedback', 'ilike', `%${searchKey}%`),
-        eb('rating', '=', searchKey),
+        eb(sql`CAST(rating as TEXT)`, 'ilike', `%${searchKey}%`),
       ])
     )
   }
