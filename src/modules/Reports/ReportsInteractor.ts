@@ -371,6 +371,7 @@ export async function getAverageGrowthRate(userid: string) {
   const user = await findUser(userid)
 
   const data = await Service.getAverageGrowthRate(user.farm_id)
+  console.log(data, 'SPEC DATA')
 
   // yieldable growth rate=((harvestedqty/(harvestedqty+witheredqty))x100
   // ((parseFloat(plant.harvested_qty as string) / parseFloat(plant.planted_qty as string)) / parseFloat(plant.planted_qty as string)) *100
@@ -379,6 +380,7 @@ export async function getAverageGrowthRate(userid: string) {
   //   (parseFloat(plant.net_yield as string) /
   //     parseFloat(plant.planted_qty as string)) *
   //   100
+
   const latestGrowthRate =
     plant.type === '1'
       ? (parseFloat(plant.harvested_qty as string) /
@@ -388,6 +390,10 @@ export async function getAverageGrowthRate(userid: string) {
       : (parseFloat(plant.harvested_qty as string) /
           parseFloat(plant.planted_qty as string)) *
         100
+
+  const parsedLatestGrowthRate = isFinite(latestGrowthRate)
+    ? latestGrowthRate
+    : 0
 
   // Calculate the average growth rate
   // const averageGrowthRate =
@@ -423,20 +429,20 @@ export async function getAverageGrowthRate(userid: string) {
     //   parseFloat(plant.net_yield as string) -
     //   parseFloat(plant.withered_crops as string)
 
-    console.log(growthRate)
-    sum += growthRate
+    console.log(isFinite(growthRate) ? growthRate : 0)
+    sum += isFinite(growthRate) ? growthRate : 0
   }
 
   const averageGrowthRate = sum / data.length
 
   const results = await axios.post(`${process.env.PYTHON_API}/growth-rate`, {
     average_growth: Number(averageGrowthRate.toFixed(2)),
-    recent_growth: Number(latestGrowthRate.toFixed(2)),
+    recent_growth: Number(parsedLatestGrowthRate.toFixed(2)),
   })
 
   return {
     results: results.data.result,
-    growth_rate: Number(latestGrowthRate.toFixed(2)),
+    growth_rate: Number(parsedLatestGrowthRate.toFixed(2)),
     average_growth_rate: Number(averageGrowthRate.toFixed(2)),
   }
 }

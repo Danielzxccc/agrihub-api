@@ -80,6 +80,9 @@
  *         kilogram:
  *           type: string
  *           optional: true
+ *         report_id:
+ *           type: string
+ *           optional: true
  *         image:
  *           type: array
  *           items:
