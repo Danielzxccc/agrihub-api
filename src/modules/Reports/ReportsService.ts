@@ -107,7 +107,6 @@ export async function findCommunityReports(
     ])
     .where('ccr.farmid', '=', id)
     .where('ccr.is_archived', '=', false)
-    .where('c.isyield', '=', true)
 
   if (filterKey.length) {
     if (typeof filterKey === 'string') {
@@ -128,7 +127,7 @@ export async function findCommunityReports(
   }
 
   if (isExisting) {
-    query = query.where('ccr.is_first_report', '=', true)
+    query = query.where('c.isyield', '=', true)
   }
 
   if (orderBy.length) {
