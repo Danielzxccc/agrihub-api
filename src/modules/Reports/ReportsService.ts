@@ -266,9 +266,9 @@ export async function getTotalPlantedQuantity(farmid: string) {
       'c.name as crop_name',
       sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_quantity'),
     ])
-    .groupBy(['ccr.crop_id', 'c.name'])
     .where('ccr.farmid', '=', farmid)
-    .where('ccr.is_archived', '=', false)
+    .where('cfc.is_archived', '=', false)
+    .groupBy(['ccr.crop_id', 'c.name'])
     .execute()
 }
 
