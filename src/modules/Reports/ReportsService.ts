@@ -1,6 +1,10 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
-import { NewCommunityFarmReport, NewCropReportImage } from '../../types/DBTypes'
+import {
+  NewCommunityFarmReport,
+  NewCropReportImage,
+  UpdateCommunityFarmReport,
+} from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { jsonArrayFrom } from 'kysely/helpers/postgres'
 import { DistrictType } from '../../schema/ReportsSchema'
@@ -13,6 +17,18 @@ export async function insertCommunityCropReport(
     .values(report)
     .returningAll()
     .executeTakeFirstOrThrow()
+}
+
+export async function updateCommunityCropReport(
+  id: string,
+  report: UpdateCommunityFarmReport
+) {
+  return await db
+    .updateTable('community_crop_reports')
+    .set({ ...report, updatedat: sql`CURRENT_TIMESTAMP` })
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }
 
 export async function findCommunityReportById(id: string, farm_id?: string) {
@@ -127,7 +143,8 @@ export async function findCommunityReports(
   }
 
   if (isExisting) {
-    query = query.where('c.isyield', '=', true)
+    query = query.where('is_first_report', '=', true)
+    query = query.where('ccr.planted_qty', '>', '0')
   }
 
   if (orderBy.length) {
