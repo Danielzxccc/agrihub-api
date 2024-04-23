@@ -812,7 +812,10 @@ export async function updateCommunityFarm(
         farm.body.farm_name
       )
 
-      if (checkNameIfExisting) {
+      if (
+        checkNameIfExisting &&
+        communityFarm.farm_name !== farm.body.farm_name
+      ) {
         throw new HttpError(
           'Ang pangalan ng farm na iyong inilagay ay nakaregister na sa agrihub.',
           400
