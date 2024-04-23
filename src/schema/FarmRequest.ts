@@ -90,8 +90,7 @@ export const ListToolRequest = z.object({
         z.literal('forwarded'),
         z.literal('completed'),
       ])
-      .optional()
-      .default('pending'),
+      .optional(),
     farmid: z.string().optional(),
   }),
 })
