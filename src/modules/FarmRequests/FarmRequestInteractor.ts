@@ -246,7 +246,7 @@ export async function updateToolRequestStatus(
 
   const { title, body } = getToolRequestNotification(
     updatedToolRequest.status,
-    request
+    updatedToolRequest
   )
 
   //TODO: add redirection if frontend is finished
