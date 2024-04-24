@@ -205,10 +205,11 @@ export async function listReportedUsers(
 }
 
 export async function banUserAccount(id: string) {
-  const user = Service.findUser(id)
+  const user = await Service.findUser(id)
 
   if (!user) throw new HttpError('User Not Found', 404)
 
+  await Service.clearUserSession(user.id)
   await Service.updateUser(id, { isbanned: true })
 }
 
