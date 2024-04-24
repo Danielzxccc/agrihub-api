@@ -376,8 +376,10 @@ export async function findPublishedEvents(
 
   if (filter === 'upcoming') {
     query = query.where('events.event_start', '>', new Date())
+    query = query.orderBy('events.event_start asc')
   } else if (filter === 'previous') {
     query = query.where('events.event_start', '<', new Date())
+    query = query.orderBy('events.event_start asc')
   }
 
   if (searchKey.length) {
@@ -390,7 +392,11 @@ export async function findPublishedEvents(
     )
   }
 
-  return await query.limit(perpage).offset(offset).execute()
+  return await query
+    .groupBy(['id', 'event_start'])
+    .limit(perpage)
+    .offset(offset)
+    .execute()
 }
 
 export async function getTotalPublishedEvents(
@@ -403,8 +409,10 @@ export async function getTotalPublishedEvents(
 
   if (filter === 'upcoming') {
     query = query.where('events.event_start', '>', new Date())
+    query = query.orderBy('events.event_start asc')
   } else if (filter === 'previous') {
     query = query.where('events.event_start', '<', new Date())
+    query = query.orderBy('events.event_start asc')
   }
 
   if (searchKey.length) {
@@ -419,5 +427,6 @@ export async function getTotalPublishedEvents(
   return await query
     .where('status', '=', 'published')
     .where('is_archived', '=', false)
+    .groupBy(['id', 'event_start'])
     .executeTakeFirst()
 }
