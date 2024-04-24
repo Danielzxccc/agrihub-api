@@ -565,3 +565,17 @@ export async function getLandSizeAnalyticsPerDistrict(
     errorHandler(res, error)
   }
 }
+
+export async function getPreDefinedMessages(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+
+    const data = await Interactor.getPreDefinedMessages(userid)
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

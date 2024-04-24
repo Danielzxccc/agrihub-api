@@ -2465,3 +2465,67 @@
  *           type: string
  *           description: The land size of the farm
  */
+
+/**
+ * @openapi
+ * /api/reports/analytics/pre-defined:
+ *   get:
+ *     summary: Get Pre-defined Messages
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/PreDefinedMessages"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PreDefinedMessages:
+ *       type: object
+ *       properties:
+ *         crop_yield:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Pre-defined messages for crop yield
+ *         net_yield:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Pre-defined messages for net yield
+ *         withered_reports:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Pre-defined messages for withered reports
+ */

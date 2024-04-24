@@ -216,3 +216,9 @@ ReportsRouter.get(
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getLandSizeAnalyticsPerDistrict
 )
+
+ReportsRouter.get(
+  '/analytics/pre-defined',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.getPreDefinedMessages
+)

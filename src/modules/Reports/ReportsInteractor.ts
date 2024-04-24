@@ -709,3 +709,32 @@ export async function getLandSizeAnalyticsPerDistrict(
 
   return data
 }
+
+export async function getPreDefinedMessages(userid: string) {
+  const user = await findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+  const [payload] = await Service.getLatestAverageReports(user.farm_id)
+
+  type Report = {
+    crop_yield: string[]
+    net_yield: string[]
+    withered_reports: string[]
+  }
+
+  const results = await axios.post(`${process.env.PYTHON_API}/pre-defined`, [
+    {
+      ...payload,
+      type: Number(payload.type),
+      crop_yield: Number(payload.crop_yield),
+      planted_qty: Number(payload.planted_qty),
+      harvested_qty: Number(payload.harvested_qty),
+      withered_crops: Number(payload.withered_crops),
+      net_yield: Number(payload.net_yield),
+    },
+  ])
+
+  return results.data as Report
+}
