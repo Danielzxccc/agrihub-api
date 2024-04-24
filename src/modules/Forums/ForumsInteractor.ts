@@ -82,6 +82,7 @@ export async function listQuestions(
   ])
 
   for (let question of data) {
+    question.vote_count = question.vote_count - question.downvote
     question.user.avatar = question.user.avatar
       ? getObjectUrl(question.user.avatar)
       : question.user.avatar

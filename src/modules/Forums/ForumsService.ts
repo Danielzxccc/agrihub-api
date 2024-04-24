@@ -63,11 +63,22 @@ export async function findQuestions(
       'forums.updatedat',
       'forums.views',
       sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
+      // fn
+      //   .count<number>('forums_ratings.id')
+      //   .filterWhere('type', '=', 'upvote')
+      //   .distinct()
+      //   .as('vote_count'),
+      fn.count<number>('forums_ratings.id').distinct().as('vote_count'),
       fn
         .count<number>('forums_ratings.id')
-        .filterWhere('type', '=', 'upvote')
         .distinct()
-        .as('vote_count'),
+        .filterWhere('type', '=', 'downvote')
+        .as('downvote'),
+      fn
+        .count<number>('forums_ratings.id')
+        .distinct()
+        .filterWhere('type', '=', 'upvote')
+        .as('upvote'),
       // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
       // fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
@@ -86,7 +97,7 @@ export async function findQuestions(
   if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
   if (filterKey === 'active')
     query = query.orderBy('latest_answer_createdat', 'desc')
-  if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
+  if (filterKey === 'trending') query = query.orderBy('upvote', 'desc')
 
   if (searchQuery.length) {
     query = query.where((eb) =>
