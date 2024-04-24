@@ -402,9 +402,9 @@ export async function getTotalPublishedEvents(
     .select(({ fn }) => [fn.count<number>('id').as('count')])
 
   if (filter === 'upcoming') {
-    query = query.where('events.createdat', '>', new Date())
+    query = query.where('events.event_start', '>', new Date())
   } else if (filter === 'previous') {
-    query = query.where('events.createdat', '<', new Date())
+    query = query.where('events.event_start', '<', new Date())
   }
 
   if (searchKey.length) {
