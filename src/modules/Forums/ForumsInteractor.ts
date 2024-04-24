@@ -52,6 +52,7 @@ export async function viewQuestion(
 
   const formattedQuestion = await replaceAvatarsWithUrls({
     ...data,
+    vote_count: data.upvote - data.downvote,
     imagesrc: dataWithImageSrc,
   })
 

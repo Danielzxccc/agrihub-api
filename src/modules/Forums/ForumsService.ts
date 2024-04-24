@@ -323,12 +323,15 @@ export async function viewQuestion(
       'forums.views',
       sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
       // sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
+      fn.count<number>('forums_ratings.id').distinct().as('upvote'),
       fn
         .count<number>('forums_ratings.id')
         .distinct()
-        .filterWhere('type', '=', 'upvote')
-        .as('vote_count'),
-
+        .filterWhere('type', '=', 'downvote')
+        .as('downvote'),
+      // sql`(count(distinct "forums_ratings"."id") filter(where "type" = 'upvote')) - (count(distinct "forums_ratings"."id") filter(where "type" = 'downvote'))`.as(
+      //   'vote_count'
+      // ),
       // fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
