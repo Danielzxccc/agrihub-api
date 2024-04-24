@@ -352,7 +352,11 @@ export async function getTotalAnswers(id: string) {
     .executeTakeFirst()
 }
 
-export async function getTotalCount(id: string, searchKey: string) {
+export async function getTotalCount(
+  id: string,
+  searchKey: string,
+  tag?: string
+) {
   let query = db
     .selectFrom('forums')
     .leftJoin('users as u', 'forums.userid', 'u.id')
@@ -366,6 +370,18 @@ export async function getTotalCount(id: string, searchKey: string) {
         eb('forums.title', 'ilike', `%${searchKey}%`),
         eb('forums.question', 'ilike', `%${searchKey}%`),
       ])
+    )
+  }
+
+  if (tag.length) {
+    query = query.where(({ selectFrom, exists }) =>
+      exists(
+        selectFrom('forums_tags')
+          .leftJoin('tags as t', 't.id', 'forums_tags.tagid')
+          .select('forums_tags.id')
+          .where('t.tag_name', '=', tag)
+          .whereRef('forums_tags.forumid', '=', 'forums.id')
+      )
     )
   }
 

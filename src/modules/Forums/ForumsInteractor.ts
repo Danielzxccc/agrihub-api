@@ -77,7 +77,7 @@ export async function listQuestions(
       profile,
       tag
     ),
-    Service.getTotalCount(profile, searchKey),
+    Service.getTotalCount(profile, searchKey, tag),
   ])
 
   for (let question of data) {
