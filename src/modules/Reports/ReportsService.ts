@@ -158,6 +158,7 @@ export async function findCommunityReports(
 export async function getTotalReportCount(
   farmid: string,
   filterKey: string[] | string,
+  month: string,
   searchKey: string,
   isExisting?: boolean
 ) {
@@ -176,6 +177,10 @@ export async function getTotalReportCount(
         eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
       )
     }
+  }
+
+  if (month.length) {
+    query = query.where(sql`EXTRACT(MONTH FROM ccr.date_harvested) = ${month}`)
   }
 
   if (searchKey.length) {

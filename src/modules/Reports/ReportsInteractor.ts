@@ -292,7 +292,7 @@ export async function listCommuntityCropReports(
       sortBy,
       isExisting
     ),
-    Service.getTotalReportCount(id, filterKey, searchKey),
+    Service.getTotalReportCount(id, filterKey, month, searchKey),
   ])
 
   return { data, total }
@@ -317,7 +317,7 @@ export async function listExistingCropReports(
       orderBy,
       true
     ),
-    Service.getTotalReportCount(id, filterKey, searchKey, true),
+    Service.getTotalReportCount(id, filterKey, '', searchKey, true),
   ])
 
   return { data, total }
