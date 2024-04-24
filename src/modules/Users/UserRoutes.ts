@@ -268,3 +268,5 @@ UserRouter.post(
   UserGuard(['admin', 'asst_admin']),
   UserController.sendingWarningToUser
 )
+
+UserRouter.delete('/delete/avatar', UserController.deleteUserProfilePicture)

@@ -233,3 +233,15 @@ export async function listBannedUsers(
 
   return { data, total }
 }
+
+export async function deleteUserProfilePicture(userid: string) {
+  const user = await Service.findUser(userid)
+
+  if (!user) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await deleteFileCloud(user.avatar ?? 'avatar')
+
+  await Service.updateUser(user.id, { avatar: null })
+}
