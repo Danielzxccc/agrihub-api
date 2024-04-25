@@ -54,7 +54,8 @@ export async function createtSeedlingRequest(
     'New Seedling Request',
     `Farm head ${user.firstname} ${user.lastname} requested ${
       crop?.name ? crop?.name : request?.other
-    } seedlings`
+    } seedlings`,
+    '/admin/community/seedling-request?search=&tab=pending'
   )
 
   return newSeedlingRequest
