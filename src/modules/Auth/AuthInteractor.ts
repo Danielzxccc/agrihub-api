@@ -342,7 +342,7 @@ export async function sendResetTokenViaOTP(contact_number: string) {
   const user = await Service.findUserByNumber(contact_number)
 
   if (!user) {
-    throw new HttpError('Invalid Contact Number', 404)
+    throw new HttpError('No account is tied to the provided number.', 404)
   }
 
   //generate new reset token

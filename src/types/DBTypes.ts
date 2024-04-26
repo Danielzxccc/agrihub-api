@@ -55,6 +55,7 @@ import {
   ToolRequest,
   ChangeEmailRequest,
   ChangeNumberRequest,
+  FarmQuestions,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -233,3 +234,5 @@ export type UpdateToolRequest = Updateable<ToolRequest>
 // auth
 export type NewChangeEmailRequest = Insertable<ChangeEmailRequest>
 export type NewChangeNumberRequest = Insertable<ChangeNumberRequest>
+
+export type NewFarmQuestion = Insertable<FarmQuestions>
