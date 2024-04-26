@@ -8,6 +8,8 @@ CREATE TABLE farm_questions(
     FOREIGN KEY (farmid) REFERENCES community_farms(id) ON DELETE CASCADE
 );
 
+CREATE TYPE IF NOT EXISTS farm_member_application_status AS ENUM ('accepted', 'rejected');
+
 CREATE TABLE farm_member_application(
     id SERIAL PRIMARY KEY,
     farmid INT NOT NULL,
@@ -18,6 +20,8 @@ CREATE TABLE farm_member_application(
     reason TEXT NOT NULL,
     createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status farm_member_application_status default 'pending',
+    remarks TEXT,
     FOREIGN KEY (farmid) REFERENCES community_farms(id) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );

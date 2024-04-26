@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { Request } from 'express'
 import { ToolRequestStatus } from 'kysely-codegen'
 import { UpdateToolRequest } from '../types/DBTypes'
+import { deleteFile } from './file'
 const log = logger({
   transport: {
     target: 'pino-pretty',
@@ -97,5 +98,11 @@ export function getToolRequestNotification(
       }
     default:
       break
+  }
+}
+
+export async function deleteLocalFiles(files: Express.Multer.File[]) {
+  for (const file of files) {
+    deleteFile(file.filename)
   }
 }
