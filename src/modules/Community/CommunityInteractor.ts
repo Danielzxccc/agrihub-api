@@ -104,11 +104,13 @@ export async function joinCommunityFarm({
     )
 
     // add answers
-    applicantAnswers.forEach((obj) => {
-      obj.applicationid = data.id
-    })
+    if (answer) {
+      applicantAnswers.forEach((obj) => {
+        obj.applicationid = data.id
+      })
 
-    await Service.createFarmMemberApplicationAnswers(applicantAnswers)
+      await Service.createFarmMemberApplicationAnswers(applicantAnswers)
+    }
 
     //delte local images
     deleteLocalFiles(applicationImages)
