@@ -94,7 +94,7 @@ export async function joinCommunityFarm({
       userid,
       contact_person,
       proof_selfie: proof_selfie.filename,
-      valid_id: valid_id.fieldname,
+      valid_id: valid_id.filename,
       reason,
     }
 
