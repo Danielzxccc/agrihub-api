@@ -606,3 +606,127 @@
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
+
+/**
+ * @openapi
+ * /api/community-farm/member/application/existing:
+ *   get:
+ *     summary: Get Existing Membership Application
+ *     tags:
+ *       - CommunityFarm
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/FarmerApplication"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/member/application/existing:
+ *   get:
+ *     summary: Get Existing Membership Application
+ *     tags:
+ *       - CommunityFarm
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ExistingFarmerApplication"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FarmerApplication:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID of the membership application
+ *         farmid:
+ *           type: string
+ *           description: ID of the community farm
+ *         userid:
+ *           type: string
+ *           description: ID of the user who applied
+ *         contact_person:
+ *           type: string
+ *           description: Contact person for the application
+ *         proof_selfie:
+ *           type: string
+ *           description: URL of the proof selfie
+ *         valid_id:
+ *           type: string
+ *           description: URL of the valid ID
+ *         reason:
+ *           type: string
+ *           description: Reason for the application
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *           description: Date and time of application creation
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *           description: Date and time of last update
+ *         status:
+ *           type: string
+ *           description: Current status of the application
+ *         remarks:
+ *           type: string
+ *           description: Remarks for the application
+ */

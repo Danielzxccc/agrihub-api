@@ -324,3 +324,14 @@ export async function cancelFarmerApplication(userid: string, id: string) {
 
   await Service.deleteFarmerApplication(id)
 }
+
+export async function checkExistingFarmerApplication(userid: string) {
+  const user = await getUserOrThrow(userid)
+
+  const application = await Service.findUserApplication(user.id)
+
+  application.proof_selfie = getObjectUrl(application.proof_selfie)
+  application.valid_id = getObjectUrl(application.valid_id)
+
+  return application
+}

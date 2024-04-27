@@ -164,3 +164,18 @@ export async function cancelFarmerApplication(
     errorHandler(res, error)
   }
 }
+
+export async function checkExistingFarmerApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+
+    const data = await Interactor.checkExistingFarmerApplication(userid)
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

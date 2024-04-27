@@ -47,3 +47,9 @@ CommunityRouter.delete(
   UserGuard(['member']),
   CommunityController.cancelFarmerApplication
 )
+
+CommunityRouter.get(
+  '/member/application/existing',
+  UserGuard(['member']),
+  CommunityController.checkExistingFarmerApplication
+)
