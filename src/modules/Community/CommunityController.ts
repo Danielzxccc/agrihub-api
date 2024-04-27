@@ -116,3 +116,51 @@ export async function listFarmerApplications(
     errorHandler(res, error)
   }
 }
+
+export async function findFarmerApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    const data = await Interactor.findFarmerApplication(userid, id)
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateApplicationStatus(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.UpdateFarmerApplicationStatus, req)
+
+    await Interactor.updateApplicationStatus(id, body.status, body.remarks)
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function cancelFarmerApplication(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.cancelFarmerApplication(userid, id)
+
+    res.status(200).json({ message: 'Cancelled Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

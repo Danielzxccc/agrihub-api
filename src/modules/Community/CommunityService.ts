@@ -4,9 +4,11 @@ import {
   NewApplicationAnswers,
   NewFarmMemberApplication,
   NewFarmQuestion,
+  UpdateFarmMemberApplication,
 } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { ListFarmerRequests } from './CommunityInteractor'
+import { jsonArrayFrom } from 'kysely/helpers/postgres'
 
 export async function createNewFarmQuestion(question: NewFarmQuestion) {
   return await db
@@ -86,17 +88,25 @@ export async function listFarmerApplications({
   let query = db
     .selectFrom('farm_member_application as fa')
     .leftJoin('users as u', 'fa.userid', 'u.id')
-    .select(({ fn, val }) => [
+    .select(({ fn, val, eb }) => [
       'fa.id',
       'fa.createdat',
       'fa.updatedat',
       'fa.userid',
+      'fa.status',
       fn<string>('concat', [val(returnObjectUrl()), 'u.avatar']).as('avatar'),
       'u.lastname',
       'u.username',
       'u.email',
       'u.present_address',
       'u.district',
+      jsonArrayFrom(
+        eb
+          .selectFrom('application_answers as aa')
+          .leftJoin('farm_questions as fq', 'fq.id', 'aa.questionid')
+          .select(['aa.answer', 'fq.question'])
+          .whereRef('aa.applicationid', '=', 'fa.id')
+      ).as('answers'),
     ])
     .where('fa.farmid', '=', farmid)
 
@@ -155,4 +165,32 @@ export async function getTotalFarmerApplications({
   }
 
   return await query.executeTakeFirst()
+}
+
+export async function findFarmerApplication(id: string) {
+  return await db
+    .selectFrom('farm_member_application')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function updateFarmerApplication(
+  id: string,
+  application: UpdateFarmMemberApplication
+) {
+  return await db
+    .updateTable('farm_member_application')
+    .set(application)
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function deleteFarmerApplication(id: string) {
+  return await db
+    .deleteFrom('farm_member_application')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }

@@ -302,7 +302,7 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/ApplicationListResponse"
+ *               $ref: "#/components/schemas/ListApplicationsResponse"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -333,56 +333,276 @@
  * @openapi
  * components:
  *   schemas:
- *     ApplicationListResponse:
+ *     ListApplicationsResponse:
  *       type: object
  *       properties:
  *         data:
  *           type: array
  *           items:
- *             $ref: "#/components/schemas/ApplicationFarmMember"
+ *             $ref: "#/components/schemas/FarmerApplication"
+ *           description: List of farmer applications
  *         pagination:
  *           $ref: "#/components/schemas/PaginationData"
- *     ApplicationFarmMember:
+ *     FarmerApplication:
  *       type: object
  *       properties:
  *         id:
  *           type: string
- *           description: Application ID
- *           required: true
+ *           description: ID of the membership application
  *         createdat:
  *           type: string
+ *           format: date-time
  *           description: Date and time of application creation
- *           required: true
  *         updatedat:
  *           type: string
- *           description: Date and time of application update
- *           required: true
+ *           format: date-time
+ *           description: Date and time of last update
  *         userid:
  *           type: string
- *           description: User ID of the applicant
- *           required: true
+ *           description: ID of the user who applied
+ *         status:
+ *           type: string
+ *           description: Current status of the application
  *         avatar:
  *           type: string
- *           description: URL of the applicant's avatar
- *           required: true
+ *           description: URL of the user's avatar
  *         lastname:
  *           type: string
- *           description: Last name of the applicant
- *           required: true
+ *           description: Last name of the user
  *         username:
  *           type: string
- *           description: Username of the applicant
- *           required: true
+ *           description: Username of the user
  *         email:
  *           type: string
- *           description: Email address of the applicant
- *           required: true
+ *           format: email
+ *           description: Email address of the user
  *         present_address:
  *           type: string
- *           description: Present address of the applicant
- *           required: true
+ *           description: Present address of the user
  *         district:
  *           type: string
- *           description: District of the applicant
+ *           description: District of the user
+ *         answers:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/FarmerAnswer"
+ *           description: List of answers provided by the user
+ *     FarmerAnswer:
+ *       type: object
+ *       properties:
+ *         answer:
+ *           type: string
+ *           description: Answer provided by the user
+ *         question:
+ *           type: string
+ *           description: Question associated with the answer
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/member/application/update/{id}:
+ *   put:
+ *     summary: Update Membership Application Status for Community Farm
+ *     tags:
+ *       - CommunityFarm
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the membership application
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateApplicationStatusRequest"
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UpdateApplicationStatusResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateApplicationStatusRequest:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: string
+ *           enum: [rejected, accepted]
+ *           description: New status for the membership application
  *           required: true
+ *         remarks:
+ *           type: string
+ *           description: Remarks on the application status update
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/member/application/view/{id}:
+ *   get:
+ *     summary: View Membership Application for Community Farm
+ *     tags:
+ *       - CommunityFarm
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the membership application
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ViewApplicationResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ViewApplicationResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID of the membership application
+ *         farmid:
+ *           type: string
+ *           description: ID of the community farm
+ *         userid:
+ *           type: string
+ *           description: ID of the user who applied
+ *         contact_person:
+ *           type: string
+ *           description: Contact person for the application
+ *         proof_selfie:
+ *           type: string
+ *           description: URL of the selfie provided as proof
+ *         valid_id:
+ *           type: string
+ *           description: URL of the valid ID provided
+ *         reason:
+ *           type: string
+ *           description: Reason for applying
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *           description: Date and time of application creation
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *           description: Date and time of last update
+ *         status:
+ *           type: string
+ *           description: Current status of the application
+ *         remarks:
+ *           type: string
+ *           nullable: true
+ *           description: Additional remarks or notes
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/member/application/cancel/{id}:
+ *   delete:
+ *     summary: Delete Community Farmer Application by ID
+ *     tags:
+ *       - CommunityFarm
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the application to delete
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */

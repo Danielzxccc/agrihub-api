@@ -29,3 +29,21 @@ CommunityRouter.get(
   UserGuard(['farm_head']),
   CommunityController.listFarmerApplications
 )
+
+CommunityRouter.get(
+  '/member/application/view/:id',
+  UserGuard(['farm_head']),
+  CommunityController.findFarmerApplication
+)
+
+CommunityRouter.put(
+  '/member/application/update/:id',
+  UserGuard(['farm_head']),
+  CommunityController.updateApplicationStatus
+)
+
+CommunityRouter.delete(
+  '/member/application/cancel/:id',
+  UserGuard(['member']),
+  CommunityController.cancelFarmerApplication
+)

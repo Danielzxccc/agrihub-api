@@ -11,7 +11,7 @@ import * as Service from './CommunityService'
 import { application, json } from 'express'
 import { z } from 'zod'
 import dbErrorHandler from '../../utils/dbErrorHandler'
-import { uploadFiles } from '../AWS-Bucket/UploadService'
+import { getObjectUrl, uploadFiles } from '../AWS-Bucket/UploadService'
 import { NewFarmMemberApplication } from '../../types/DBTypes'
 import { deleteFile } from '../../utils/file'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
@@ -248,4 +248,79 @@ export async function deleteFarmQuestion(userid: string, id: string) {
   if (!deletedQuestion) {
     throw new HttpError('Question Not Found', 404)
   }
+}
+
+export async function findFarmerApplication(userid: string, id: string) {
+  const farmHead = await getUserOrThrow(userid)
+
+  const application = await Service.findFarmerApplication(id)
+
+  if (!application) {
+    throw new HttpError('Application Not Found', 404)
+  }
+
+  if (farmHead.farm_id !== application.farmid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  application.proof_selfie = getObjectUrl(application.proof_selfie)
+  application.valid_id = getObjectUrl(application.valid_id)
+
+  return application
+}
+
+export async function updateApplicationStatus(
+  id: string,
+  status: FarmMemberApplicationStatus,
+  remarks?: string
+) {
+  const findApplication = await Service.findFarmerApplication(id)
+  if (!findApplication) {
+    throw new HttpError('Application Not Found', 404)
+  }
+  const updatedApplication = await Service.updateFarmerApplication(id, {
+    status,
+    remarks: remarks ? remarks : null,
+  })
+  const communityFarm = await findCommunityFarmById(updatedApplication.farmid)
+
+  if (updatedApplication.status === 'accepted') {
+    await updateUser(updatedApplication.userid, {
+      role: 'farmer',
+      farm_id: updatedApplication.farmid,
+    })
+
+    await emitPushNotification(
+      updatedApplication.userid,
+      'Application Approved!',
+      `Congratulations! You are now a proud member of ${communityFarm.farm_name} community farm! 🌱 Click here to discover your recently joined community farm more! 🌟`,
+      `/community/my-community/${updatedApplication.farmid}`
+    )
+  } else {
+    await emitPushNotification(
+      updatedApplication.userid,
+      'Application Rejected',
+      `We regret to inform you that your farm application at ${
+        communityFarm.farm_name
+      } has not been accepted at this time. We appreciate your interest in joining our community, and we encourage you to keep exploring other opportunities. Remarks: [${
+        updatedApplication.remarks ?? ''
+      }]`
+    )
+  }
+}
+
+export async function cancelFarmerApplication(userid: string, id: string) {
+  const user = await getUserOrThrow(userid)
+
+  const application = await Service.findFarmerApplication(id)
+
+  if (!application) {
+    throw new HttpError('Application Not Found', 404)
+  }
+
+  if (user.id !== application.userid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.deleteFarmerApplication(id)
 }

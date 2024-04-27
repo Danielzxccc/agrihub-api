@@ -239,4 +239,5 @@ export type NewChangeNumberRequest = Insertable<ChangeNumberRequest>
 
 export type NewFarmQuestion = Insertable<FarmQuestions>
 export type NewFarmMemberApplication = Insertable<FarmMemberApplication>
+export type UpdateFarmMemberApplication = Updateable<FarmMemberApplication>
 export type NewApplicationAnswers = Insertable<ApplicationAnswers>

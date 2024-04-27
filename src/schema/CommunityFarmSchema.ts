@@ -43,3 +43,10 @@ export const ListFarmerApplications = z.object({
       .optional(),
   }),
 })
+
+export const UpdateFarmerApplicationStatus = z.object({
+  body: z.object({
+    status: z.union([z.literal('rejected'), z.literal('accepted')]),
+    remarks: z.string().optional(),
+  }),
+})
