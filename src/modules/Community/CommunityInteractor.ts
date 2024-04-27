@@ -16,6 +16,7 @@ import { NewFarmMemberApplication } from '../../types/DBTypes'
 import { deleteFile } from '../../utils/file'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
 import { deleteLocalFiles } from '../../utils/utils'
+import { FarmMemberApplicationStatus } from 'kysely-codegen'
 
 /**
  * FARM APPLICATION LOGICS
@@ -130,17 +131,36 @@ export async function joinCommunityFarm({
   }
 }
 
-type ListFarmerRequests = {
+export type ListFarmerRequests = {
   farmid: string
   userid: string
+  offset: number
+  searchKey: string
+  perpage: number
+  filter?: FarmMemberApplicationStatus
 }
 
-export async function listFarmJoinRequest({
-  farmid,
-  userid,
-}: ListFarmerRequests) {
+export async function listFarmerApplications(payload: ListFarmerRequests) {
   // verify if farm head is authorized for this data
-  // query join requests via farmid with paginations
+  const { farmid, userid } = payload
+  const user = await getUserOrThrow(userid)
+
+  const communityFarm = await findCommunityFarmById(farmid)
+
+  if (!communityFarm) {
+    throw new HttpError('Community Farm Not Found', 404)
+  }
+
+  if (user.farm_id !== communityFarm.id) {
+    throw new HttpError('Unathorized', 401)
+  }
+
+  const [data, total] = await Promise.all([
+    Service.listFarmerApplications(payload),
+    Service.getTotalFarmerApplications(payload),
+  ])
+
+  return { data, total }
 }
 
 export async function viewFarmerJoinRequest(id: string) {

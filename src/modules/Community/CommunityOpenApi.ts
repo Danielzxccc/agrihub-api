@@ -258,3 +258,131 @@
  *           format: binary
  *           description: Valid ID image of the applicant
  */
+
+/**
+ * @openapi
+ * /api/community-farm/member/applications/{id}:
+ *   get:
+ *     summary: Get Membership Applications for Community Farm
+ *     tags:
+ *       - CommunityFarm
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the community farm
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search query (optional)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number (optional)
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of items per page (optional)
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *            - pending
+ *            - accepted
+ *            - rejected
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ApplicationListResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ApplicationListResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/ApplicationFarmMember"
+ *         pagination:
+ *           $ref: "#/components/schemas/PaginationData"
+ *     ApplicationFarmMember:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Application ID
+ *           required: true
+ *         createdat:
+ *           type: string
+ *           description: Date and time of application creation
+ *           required: true
+ *         updatedat:
+ *           type: string
+ *           description: Date and time of application update
+ *           required: true
+ *         userid:
+ *           type: string
+ *           description: User ID of the applicant
+ *           required: true
+ *         avatar:
+ *           type: string
+ *           description: URL of the applicant's avatar
+ *           required: true
+ *         lastname:
+ *           type: string
+ *           description: Last name of the applicant
+ *           required: true
+ *         username:
+ *           type: string
+ *           description: Username of the applicant
+ *           required: true
+ *         email:
+ *           type: string
+ *           description: Email address of the applicant
+ *           required: true
+ *         present_address:
+ *           type: string
+ *           description: Present address of the applicant
+ *           required: true
+ *         district:
+ *           type: string
+ *           description: District of the applicant
+ *           required: true
+ */

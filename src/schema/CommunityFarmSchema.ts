@@ -28,3 +28,18 @@ export const FarmMemberApplication = z.object({
   }),
 })
 export type FarmMemberApplicationSchema = z.infer<typeof FarmMemberApplication>
+
+export const ListFarmerApplications = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z
+      .union([
+        z.literal('pending'),
+        z.literal('rejected'),
+        z.literal('accepted'),
+      ])
+      .optional(),
+  }),
+})

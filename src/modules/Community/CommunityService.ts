@@ -1,9 +1,12 @@
+import { sql } from 'kysely'
 import { db } from '../../config/database'
 import {
   NewApplicationAnswers,
   NewFarmMemberApplication,
   NewFarmQuestion,
 } from '../../types/DBTypes'
+import { returnObjectUrl } from '../AWS-Bucket/UploadService'
+import { ListFarmerRequests } from './CommunityInteractor'
 
 export async function createNewFarmQuestion(question: NewFarmQuestion) {
   return await db
@@ -71,4 +74,85 @@ export async function createFarmMemberApplicationAnswers(
     .values(answers)
     .returningAll()
     .executeTakeFirst()
+}
+
+export async function listFarmerApplications({
+  farmid,
+  offset,
+  perpage,
+  searchKey,
+  filter,
+}: ListFarmerRequests) {
+  let query = db
+    .selectFrom('farm_member_application as fa')
+    .leftJoin('users as u', 'fa.userid', 'u.id')
+    .select(({ fn, val }) => [
+      'fa.id',
+      'fa.createdat',
+      'fa.updatedat',
+      'fa.userid',
+      fn<string>('concat', [val(returnObjectUrl()), 'u.avatar']).as('avatar'),
+      'u.lastname',
+      'u.username',
+      'u.email',
+      'u.present_address',
+      'u.district',
+    ])
+    .where('fa.farmid', '=', farmid)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb(sql`CAST(fa.userid as TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb('u.email', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(u.district as TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('u.present_address', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filter) {
+    query = query.where('fa.status', '=', filter)
+  }
+
+  return await query
+    .orderBy('createdat desc')
+    .limit(perpage)
+    .offset(offset)
+    .execute()
+}
+
+export async function getTotalFarmerApplications({
+  farmid,
+  searchKey,
+  filter,
+}: ListFarmerRequests) {
+  let query = db
+    .selectFrom('farm_member_application as fa')
+    .leftJoin('users as u', 'fa.userid', 'u.id')
+    .select(({ fn }) => [fn.count<number>('fa.id').as('count')])
+    .where('fa.farmid', '=', farmid)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb(sql`CAST(fa.userid as TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('u.lastname', 'ilike', `%${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb('u.email', 'ilike', `%${searchKey}%`),
+        eb(sql`CAST(u.district as TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('u.present_address', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  if (filter) {
+    query = query.where('fa.status', '=', filter)
+  }
+
+  return await query.executeTakeFirst()
 }

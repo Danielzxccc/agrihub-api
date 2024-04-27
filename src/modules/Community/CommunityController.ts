@@ -77,3 +77,42 @@ export async function joinCommunityFarm(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function listFarmerApplications(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.ListFarmerApplications, req)
+    const { id } = req.params
+    const { userid } = req.session
+
+    const perpage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perpage
+    const searchKey = String(query.search)
+    const filter = query.filter
+
+    const data = await Interactor.listFarmerApplications({
+      farmid: id,
+      offset,
+      filter,
+      perpage,
+      searchKey,
+      userid,
+    })
+
+    const totalPages = Math.ceil(Number(data.total.count) / perpage)
+    res.status(200).json({
+      data: data.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perpage,
+        total_pages: totalPages,
+        total_records: Number(data.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

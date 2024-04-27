@@ -23,3 +23,9 @@ CommunityRouter.post(
   ]),
   CommunityController.joinCommunityFarm
 )
+
+CommunityRouter.get(
+  '/member/applications/:id',
+  UserGuard(['farm_head']),
+  CommunityController.listFarmerApplications
+)
