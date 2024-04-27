@@ -424,7 +424,7 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/UpdateApplicationStatusResponse"
+ *               $ref: "#/components/schemas/MessageResponse"
  *       "401":
  *         description: Unauthorized
  *         content:
