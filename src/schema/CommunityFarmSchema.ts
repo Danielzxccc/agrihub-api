@@ -50,3 +50,38 @@ export const UpdateFarmerApplicationStatus = z.object({
     remarks: z.string().optional(),
   }),
 })
+
+export const PlantedCropReport = z.object({
+  body: z.object({
+    planted_qty: z.string(),
+    date_planted: z.string(),
+    crop_id: z.string(),
+  }),
+})
+
+export type PlantedCropReportT = z.infer<typeof PlantedCropReport>
+
+const monthRegex: RegExp = /^(1[0-2]|[1-9])?$/
+export const CommunityCropReports = z.object({
+  params: z.object({
+    id: z.string(),
+  }),
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    // filter: z.array(z.string()).optional().default([]),
+    month: z
+      .string()
+      .optional()
+      .default('')
+      .refine((value) => monthRegex.test(value ?? ''), 'Please input (1-12)'),
+    filter: z
+      .union([z.array(z.string()), z.string()])
+      .optional()
+      .default([]),
+    status: z
+      .union([z.literal('harvested'), z.literal('planted')])
+      .default('planted'),
+  }),
+})

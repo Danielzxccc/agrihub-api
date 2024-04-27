@@ -1,13 +1,18 @@
 import { sql } from 'kysely'
 import { db } from '../../config/database'
 import {
+  CommunityCropReport,
   NewApplicationAnswers,
+  NewCommunityFarmReport,
   NewFarmMemberApplication,
   NewFarmQuestion,
   UpdateFarmMemberApplication,
 } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
-import { ListFarmerRequests } from './CommunityInteractor'
+import {
+  ListFarmerRequests,
+  listPlantedCropReportsT,
+} from './CommunityInteractor'
 import { jsonArrayFrom } from 'kysely/helpers/postgres'
 
 export async function createNewFarmQuestion(question: NewFarmQuestion) {
@@ -193,4 +198,123 @@ export async function deleteFarmerApplication(id: string) {
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
+}
+
+export async function createPlantedReport(report: NewCommunityFarmReport) {
+  return await db
+    .insertInto('community_crop_reports')
+    .values(report)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function listPlantedCropReports({
+  farmid,
+  filterKey,
+  offset,
+  perpage,
+  searchKey,
+  month,
+  status,
+}: listPlantedCropReportsT) {
+  let query = db
+    .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .select(({ fn, val }) => [
+      'ccr.id as report_id',
+      'cfc.id as cfc_id',
+      'c.name as crop_name',
+      'ccr.date_planted',
+      'ccr.date_harvested',
+      'ccr.harvested_qty',
+      'ccr.withered_crops',
+      'ccr.planted_qty',
+      'c.growth_span',
+      sql`ccr.date_planted + (c.growth_span || ' month')::INTERVAL`.as(
+        'expected_harvest_date'
+      ),
+      fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
+    ])
+    .groupBy([
+      'ccr.id',
+      'cfc.id',
+      'c.name',
+      'c.image',
+      'ccr.date_planted',
+      'ccr.date_harvested',
+      'ccr.harvested_qty',
+      'ccr.withered_crops',
+      'ccr.planted_qty',
+    ])
+    .where('ccr.farmid', '=', farmid)
+    .where('ccr.is_archived', '=', false)
+
+  if (status === 'planted') {
+    query = query.where('ccr.date_harvested', 'is', null)
+  } else {
+    query = query.where('ccr.date_harvested', 'is not', null)
+  }
+
+  if (month.length) {
+    query = query.where(sql`EXTRACT(MONTH FROM ccr.date_planted) = ${month}`)
+  }
+
+  if (filterKey.length) {
+    if (typeof filterKey === 'string') {
+      query = query.where('c.name', 'ilike', `${filterKey}%`)
+    } else {
+      query = query.where((eb) =>
+        eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
+      )
+    }
+  }
+
+  if (searchKey.length) {
+    query = query.where('c.name', 'ilike', `${searchKey}%`)
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalPlantedReports({
+  farmid,
+  filterKey,
+  month,
+  searchKey,
+  status,
+}: listPlantedCropReportsT) {
+  let query = db
+    .selectFrom('community_crop_reports as ccr')
+    .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
+    .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .select(({ fn }) => [fn.count<number>('ccr.id').as('count')])
+    .where('ccr.farmid', '=', farmid)
+    .where('ccr.is_archived', '=', false)
+
+  if (status === 'planted') {
+    query = query.where('ccr.date_harvested', 'is', null)
+  } else {
+    query = query.where('ccr.date_harvested', 'is not', null)
+  }
+
+  if (filterKey.length) {
+    if (typeof filterKey === 'string') {
+      query = query.where('c.name', 'ilike', `${filterKey}%`)
+    } else {
+      query = query.where((eb) =>
+        eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
+      )
+    }
+  }
+
+  if (month.length) {
+    query = query.where(sql`EXTRACT(MONTH FROM ccr.date_harvested) = ${month}`)
+  }
+
+  if (searchKey.length) {
+    query = query.where('c.name', 'ilike', `${searchKey}%`)
+  }
+
+  return await query.executeTakeFirst()
 }

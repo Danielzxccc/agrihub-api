@@ -730,3 +730,209 @@
  *           type: string
  *           description: Remarks for the application
  */
+
+/**
+ * @openapi
+ * /api/community-farm/crop/report/planted/{id}:
+ *   post:
+ *     summary: Submit planted crop report
+ *     tags:
+ *       - CommunityFarmReports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the community farm
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/PlantedCropReportFormData"
+ *           example:
+ *             planted_qty: "100"
+ *             date_planted: "2024-04-28"
+ *             crop_id: "123"
+ *             images: [binary1, binary2]
+ *     responses:
+ *       "200":
+ *         description: Submitted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PlantedCropReportFormData:
+ *       type: object
+ *       properties:
+ *         planted_qty:
+ *           type: string
+ *         date_planted:
+ *           type: string
+ *         crop_id:
+ *           type: string
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: binary
+ *       required:
+ *         - planted_qty
+ *         - date_planted
+ *         - crop_id
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/crop/reports/{id}:
+ *   get:
+ *     summary: Get planted crop reports by Farm id
+ *     tags:
+ *       - CommunityFarmReports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the farm
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: string
+ *         description: Month Term (1-12)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Records per page
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Array of filters
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommunityCropReportsResponseV2"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PlantedCropsResponse:
+ *       type: object
+ *       properties:
+ *         report_id:
+ *           type: string
+ *         cfc_id:
+ *           type: string
+ *         crop_name:
+ *           type: string
+ *         date_planted:
+ *           type: string
+ *         date_harvested:
+ *           type: string
+ *         harvested_qty:
+ *           type: string
+ *         withered_crops:
+ *           type: string
+ *         planted_qty:
+ *           type: string
+ *         growth_span:
+ *           type: string
+ *         expected_harvest_date:
+ *           type: string
+ *         image:
+ *           type: string
+ *           format: uri
+ *     CommunityCropReportsResponseV2:
+ *       type: object
+ *       properties:
+ *         reports:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/PlantedCropsResponse"
+ *         pagination:
+ *           type: object
+ *           properties:
+ *             page:
+ *               type: number
+ *             per_page:
+ *               type: number
+ *             total_pages:
+ *               type: number
+ *             total_records:
+ *               type: number
+ */

@@ -2,21 +2,29 @@ import {
   ApplicationAnswers,
   FarmMemberApplicationSchema,
   FarmQuestionSchema,
+  PlantedCropReportT,
 } from '../../schema/CommunityFarmSchema'
 import { getUserOrThrow } from '../../utils/findUser'
-import { findCommunityFarmById } from '../Farm/FarmService'
+import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
 import { updateUser } from '../Users/UserService'
 import HttpError from '../../utils/HttpError'
 import * as Service from './CommunityService'
-import { application, json } from 'express'
 import { z } from 'zod'
 import dbErrorHandler from '../../utils/dbErrorHandler'
 import { getObjectUrl, uploadFiles } from '../AWS-Bucket/UploadService'
-import { NewFarmMemberApplication } from '../../types/DBTypes'
+import {
+  CommunityCropReport,
+  NewCommunityFarmReport,
+  NewFarmMemberApplication,
+} from '../../types/DBTypes'
 import { deleteFile } from '../../utils/file'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
 import { deleteLocalFiles } from '../../utils/utils'
 import { FarmMemberApplicationStatus } from 'kysely-codegen'
+import {
+  findCommunityFarmCrop,
+  insertCropReportImage,
+} from '../Reports/ReportsService'
 
 /**
  * FARM APPLICATION LOGICS
@@ -337,3 +345,88 @@ export async function checkExistingFarmerApplication(userid: string) {
 }
 
 // TODO: add option to farm head if their farm is public or private
+
+type CreatePlantedRerportType = {
+  farmid: string
+  userid: string
+  report: PlantedCropReportT
+  images: Express.Multer.File[]
+}
+
+export async function createPlantedReport({
+  farmid,
+  userid,
+  report,
+  images,
+}: CreatePlantedRerportType) {
+  try {
+    const user = await getUserOrThrow(userid)
+
+    const communityFarm = await findCommunityFarmById(farmid)
+
+    if (!communityFarm) {
+      throw new HttpError('Community farm not found', 404)
+    }
+
+    if (communityFarm.id !== user.farm_id) {
+      throw new HttpError('Unauthorized', 401)
+    }
+
+    // TODO: ADD TASKINGS FOR FARMERS
+
+    const { crop_id, date_planted, planted_qty } = report.body
+
+    const crop = await findCommunityFarmCrop(crop_id as string)
+    if (!crop) throw new HttpError("Can't find crop", 404)
+
+    const [parent] = await findCrop(crop.crop_id)
+
+    const reportObject: NewCommunityFarmReport = {
+      farmid,
+      userid,
+      crop_id,
+      date_planted: new Date(date_planted),
+      planted_qty,
+    }
+
+    const data = await Service.createPlantedReport(reportObject)
+
+    if (images?.length) {
+      const reportImages = images.map((item) => {
+        return {
+          imagesrc: item.filename,
+          report_id: data.id,
+          crop_name: parent.name,
+        }
+      })
+
+      await insertCropReportImage(reportImages)
+      await uploadFiles(images)
+
+      deleteLocalFiles(images)
+    }
+    return data
+  } catch (error) {
+    deleteLocalFiles(images)
+    dbErrorHandler(error)
+  }
+}
+
+export type listPlantedCropReportsT = {
+  farmid: string
+  offset: number
+  searchKey: string
+  perpage: number
+  month: string
+  filterKey: string[] | string
+  status: 'harvested' | 'planted'
+}
+
+export async function listPlantedCropReports(payload: listPlantedCropReportsT) {
+  const [data, total] = await Promise.all([
+    Service.listPlantedCropReports(payload),
+    Service.getTotalPlantedReports(payload),
+  ])
+
+  return { data, total }
+}

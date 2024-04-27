@@ -53,3 +53,16 @@ CommunityRouter.get(
   UserGuard(['member']),
   CommunityController.checkExistingFarmerApplication
 )
+
+CommunityRouter.post(
+  '/crop/report/planted/:id',
+  UserGuard(['farm_head', 'farmer']),
+  upload.array('images'),
+  CommunityController.createPlantedReport
+)
+
+CommunityRouter.get(
+  '/crop/reports/:id',
+  UserGuard(['farm_head', 'farmer', 'admin', 'asst_admin']),
+  CommunityController.listPlantedCropReports
+)

@@ -179,3 +179,66 @@ export async function checkExistingFarmerApplication(
     errorHandler(res, error)
   }
 }
+
+export async function createPlantedReport(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+    const requestObject = await zParse(Schema.PlantedCropReport, req)
+    const images = req.files as Express.Multer.File[]
+
+    await Interactor.createPlantedReport({
+      farmid: id,
+      report: requestObject,
+      userid,
+      images,
+    })
+
+    res.status(200).json({ message: 'Submitted Successfully' })
+  } catch (error) {
+    const images = req.files as Express.Multer.File[]
+    deleteLocalFiles(images)
+    errorHandler(res, error)
+  }
+}
+
+export async function listPlantedCropReports(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.CommunityCropReports, req)
+    const { id } = req.params
+
+    const perpage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perpage
+    const searchKey = String(query.search)
+    const filterKey = query.filter
+    const month = query.month
+    const status = query.status
+
+    const data = await Interactor.listPlantedCropReports({
+      farmid: id,
+      offset,
+      filterKey,
+      perpage,
+      searchKey,
+      month,
+      status,
+    })
+
+    const totalPages = Math.ceil(Number(data.total.count) / perpage)
+    res.status(200).json({
+      data: data.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perpage,
+        total_pages: totalPages,
+        total_records: Number(data.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
