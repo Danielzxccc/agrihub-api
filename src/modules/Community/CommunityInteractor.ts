@@ -335,3 +335,5 @@ export async function checkExistingFarmerApplication(userid: string) {
 
   return application
 }
+
+// TODO: add option to farm head if their farm is public or private

@@ -691,7 +691,7 @@
  * @openapi
  * components:
  *   schemas:
- *     FarmerApplication:
+ *     ExistingFarmerApplication:
  *       type: object
  *       properties:
  *         id:
