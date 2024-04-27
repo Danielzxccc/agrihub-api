@@ -61,6 +61,18 @@ export const PlantedCropReport = z.object({
 
 export type PlantedCropReportT = z.infer<typeof PlantedCropReport>
 
+export const HarvestedCropReport = z.object({
+  body: z.object({
+    harvested_qty: z.string(),
+    withered_crops: z.string(),
+    date_harvested: z.string(),
+    notes: z.string().optional(),
+    kilogram: z.string(),
+  }),
+})
+
+export type HarvestedCropReportT = z.infer<typeof HarvestedCropReport>
+
 const monthRegex: RegExp = /^(1[0-2]|[1-9])?$/
 export const CommunityCropReports = z.object({
   params: z.object({

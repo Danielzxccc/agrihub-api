@@ -815,6 +815,96 @@
 
 /**
  * @openapi
+ * /api/community-farm/crop/report/harvested/{id}:
+ *   post:
+ *     summary: Submit harvested crop report
+ *     tags:
+ *       - CommunityFarmReports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the harvested crop report
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/HarvestedCropReportFormData"
+ *           example:
+ *             harvested_qty: "100"
+ *             withered_crops: "20"
+ *             date_harvested: "2024-04-28"
+ *             notes: "Some optional notes"
+ *             kilogram: "50"
+ *             images: [binary1, binary2]
+ *     responses:
+ *       "200":
+ *         description: Submitted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     HarvestedCropReportFormData:
+ *       type: object
+ *       properties:
+ *         harvested_qty:
+ *           type: string
+ *         withered_crops:
+ *           type: string
+ *         date_harvested:
+ *           type: string
+ *         notes:
+ *           type: string
+ *         kilogram:
+ *           type: string
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: binary
+ *       required:
+ *         - harvested_qty
+ *         - withered_crops
+ *         - date_harvested
+ *         - kilogram
+ *         - images
+ */
+
+/**
+ * @openapi
  * /api/community-farm/crop/reports/{id}:
  *   get:
  *     summary: Get planted crop reports by Farm id

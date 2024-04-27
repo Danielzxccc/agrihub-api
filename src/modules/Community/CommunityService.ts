@@ -6,6 +6,7 @@ import {
   NewCommunityFarmReport,
   NewFarmMemberApplication,
   NewFarmQuestion,
+  UpdateCommunityFarmReport,
   UpdateFarmMemberApplication,
 } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
@@ -204,6 +205,18 @@ export async function createPlantedReport(report: NewCommunityFarmReport) {
   return await db
     .insertInto('community_crop_reports')
     .values(report)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function updateCropReport(
+  id: string,
+  report: UpdateCommunityFarmReport
+) {
+  return await db
+    .updateTable('community_crop_reports')
+    .set(report)
+    .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
 }

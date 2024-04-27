@@ -2,6 +2,7 @@ import {
   ApplicationAnswers,
   FarmMemberApplicationSchema,
   FarmQuestionSchema,
+  HarvestedCropReportT,
   PlantedCropReportT,
 } from '../../schema/CommunityFarmSchema'
 import { getUserOrThrow } from '../../utils/findUser'
@@ -16,6 +17,7 @@ import {
   CommunityCropReport,
   NewCommunityFarmReport,
   NewFarmMemberApplication,
+  UpdateCommunityFarmReport,
 } from '../../types/DBTypes'
 import { deleteFile } from '../../utils/file'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
@@ -23,6 +25,7 @@ import { deleteLocalFiles } from '../../utils/utils'
 import { FarmMemberApplicationStatus } from 'kysely-codegen'
 import {
   findCommunityFarmCrop,
+  findCommunityReportById,
   insertCropReportImage,
 } from '../Reports/ReportsService'
 
@@ -346,7 +349,7 @@ export async function checkExistingFarmerApplication(userid: string) {
 
 // TODO: add option to farm head if their farm is public or private
 
-type CreatePlantedRerportType = {
+type CreatePlantedReportType = {
   farmid: string
   userid: string
   report: PlantedCropReportT
@@ -358,7 +361,7 @@ export async function createPlantedReport({
   userid,
   report,
   images,
-}: CreatePlantedRerportType) {
+}: CreatePlantedReportType) {
   try {
     const user = await getUserOrThrow(userid)
 
@@ -429,4 +432,67 @@ export async function listPlantedCropReports(payload: listPlantedCropReportsT) {
   ])
 
   return { data, total }
+}
+
+type CreateHarvestedReportType = {
+  id: string
+  userid: string
+  report: HarvestedCropReportT
+  images: Express.Multer.File[]
+}
+
+export async function createHarvestedReport({
+  id,
+  userid,
+  report,
+  images,
+}: CreateHarvestedReportType) {
+  try {
+    const user = await getUserOrThrow(userid)
+
+    const communityFarm = await findCommunityFarmById(user.farm_id)
+
+    if (!communityFarm) {
+      throw new HttpError('Community Farm not found', 404)
+    }
+
+    if (user.farm_id !== communityFarm.id) {
+      throw new HttpError('Unauthorized', 401)
+    }
+
+    const reportData = await findCommunityReportById(id, user.farm_id)
+
+    if (!reportData) {
+      throw new HttpError('Report Not Found', 404)
+    }
+
+    if (reportData.date_harvested !== null) {
+      throw new HttpError('This crop is already harvested', 400)
+    }
+
+    const reportObject: UpdateCommunityFarmReport = {
+      ...report.body,
+      harvested_by: userid,
+    }
+
+    await Service.updateCropReport(id, reportObject)
+
+    if (images?.length) {
+      const reportImages = images.map((item) => {
+        return {
+          imagesrc: item.filename,
+          report_id: reportData.id,
+          crop_name: reportData.crop_name,
+        }
+      })
+
+      await insertCropReportImage(reportImages)
+      await uploadFiles(images)
+
+      deleteLocalFiles(images)
+    }
+  } catch (error) {
+    deleteLocalFiles(images)
+    dbErrorHandler(error)
+  }
 }

@@ -242,3 +242,28 @@ export async function listPlantedCropReports(
     errorHandler(res, error)
   }
 }
+
+export async function createHarvestedReport(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+    const requestObject = await zParse(Schema.HarvestedCropReport, req)
+    const images = req.files as Express.Multer.File[]
+
+    await Interactor.createHarvestedReport({
+      id,
+      report: requestObject,
+      userid,
+      images,
+    })
+
+    res.status(200).json({ message: 'Submitted Successfully' })
+  } catch (error) {
+    const images = req.files as Express.Multer.File[]
+    deleteLocalFiles(images)
+    errorHandler(res, error)
+  }
+}

@@ -61,6 +61,13 @@ CommunityRouter.post(
   CommunityController.createPlantedReport
 )
 
+CommunityRouter.post(
+  '/crop/report/harvested/:id',
+  UserGuard(['farm_head', 'farmer']),
+  upload.array('images'),
+  CommunityController.createHarvestedReport
+)
+
 CommunityRouter.get(
   '/crop/reports/:id',
   UserGuard(['farm_head', 'farmer', 'admin', 'asst_admin']),
