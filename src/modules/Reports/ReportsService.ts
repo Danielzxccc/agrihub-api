@@ -544,6 +544,7 @@ export async function getLatestAverageReports(farmid: string) {
       'c.isyield',
     ])
     .where('ccr.farmid', '=', farmid)
+    .where('ccr.harvested_qty', 'is not', null)
     // .where('ccr.is_first_report', '=', true)
     // .where(sql`EXTRACT(MONTH FROM date_harvested)`, "", )
     .limit(1)
