@@ -142,7 +142,8 @@ export async function joinCommunityFarm({
     await emitPushNotification(
       communityFarm.farm_head,
       `Heads up! ${communityFarm.farm_name} has a new applicant!`,
-      `Click here to see more about ${user.firstname} ${user.lastname} details.`
+      `Click here to see more about ${user.firstname} ${user.lastname} details.`,
+      `/community/my-community/${farmid}/application/${user.username}/${data.id}`
     )
 
     return data
