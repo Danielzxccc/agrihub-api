@@ -188,7 +188,7 @@ ReportsRouter.get(
 
 ReportsRouter.get(
   '/analytics/crop/distribution/community',
-  UserGuard(['farm_head']),
+  UserGuard(['farm_head', 'farmer']),
   ReportsController.getCropHarvestDistributionPerFarm
 )
 
