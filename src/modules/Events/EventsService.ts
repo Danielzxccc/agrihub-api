@@ -406,13 +406,15 @@ export async function getTotalPublishedEvents(
   let query = db
     .selectFrom('events')
     .select(({ fn }) => [fn.count<number>('id').as('count')])
+    .where('status', '=', 'published')
+    .where('is_archived', '=', false)
 
   if (filter === 'upcoming') {
     query = query.where('events.event_start', '>', new Date())
-    query = query.orderBy('events.event_start asc')
+    // query = query.orderBy('events.event_start asc')
   } else if (filter === 'previous') {
     query = query.where('events.event_start', '<', new Date())
-    query = query.orderBy('events.event_start asc')
+    // query = query.orderBy('events.event_start asc')
   }
 
   if (searchKey.length) {
@@ -424,9 +426,6 @@ export async function getTotalPublishedEvents(
       ])
     )
   }
-  return await query
-    .where('status', '=', 'published')
-    .where('is_archived', '=', false)
-    .groupBy(['id', 'event_start'])
-    .executeTakeFirst()
+
+  return await query.executeTakeFirst()
 }
