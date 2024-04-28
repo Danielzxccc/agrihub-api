@@ -73,3 +73,15 @@ CommunityRouter.get(
   UserGuard(['farm_head', 'farmer', 'admin', 'asst_admin']),
   CommunityController.listPlantedCropReports
 )
+
+CommunityRouter.post(
+  '/task/planted/:id',
+  UserGuard(['farm_head']),
+  CommunityController.createPlantedCommunityTask
+)
+
+CommunityRouter.post(
+  '/task/harvest/:id',
+  UserGuard(['farm_head']),
+  CommunityController.createHarvestTask
+)

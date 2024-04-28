@@ -34,3 +34,25 @@ CREATE TABLE application_answers(
     FOREIGN KEY (questionid) REFERENCES farm_questions(id) ON DELETE CASCADE,
     FOREIGN KEY (applicationid) REFERENCES farm_member_application(id) ON DELETE CASCADE
 );
+
+CREATE TYPE IF NOT EXISTS community_tasks_type AS ENUM ('plant', 'harvest');
+CREATE TYPE IF NOT EXISTS community_tasks_status AS ENUM ('completed', 'pending');
+
+
+CREATE TABLE community_tasks(
+    id SERIAL PRIMARY KEY,
+    farmid INT NOT NULL,
+    assigned_to INT NOT NULL,
+    report_id INT,
+    crop_id INT,
+    due_date DATE NOT NULL,
+    task_type community_tasks_type NOT NULL,
+    message TEXT,
+    action_message TEXT,
+    status community_tasks_status DEFAULT 'pending',
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (farmid) REFERENCES community_farms(id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (report_id) REFERENCES community_crop_reports(id) ON DELETE CASCADE
+);

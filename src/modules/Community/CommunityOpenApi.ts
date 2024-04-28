@@ -802,6 +802,8 @@
  *           type: string
  *         crop_id:
  *           type: string
+ *         task_id:
+ *           type: string
  *         images:
  *           type: array
  *           items:
@@ -889,6 +891,8 @@
  *         notes:
  *           type: string
  *         kilogram:
+ *           type: string
+ *         task_id:
  *           type: string
  *         images:
  *           type: array
@@ -1000,6 +1004,12 @@
  *           type: string
  *         planted_qty:
  *           type: string
+ *         harvested_by:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
  *         growth_span:
  *           type: string
  *         expected_harvest_date:
@@ -1025,4 +1035,163 @@
  *               type: number
  *             total_records:
  *               type: number
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/task/planted/{id}:
+ *   post:
+ *     summary: Create new plant task
+ *     tags:
+ *       - CommunityFarmTasks
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the plant task
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/NewPlantTask"
+ *           example:
+ *             crop_id: "123"
+ *             due_date: "2024-04-28"
+ *             message: "Optional message"
+ *             assigned_to: "John Doe"
+ *     responses:
+ *       "200":
+ *         description: Submitted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewPlantTask:
+ *       type: object
+ *       properties:
+ *         crop_id:
+ *           type: string
+ *         due_date:
+ *           type: string
+ *         message:
+ *           type: string
+ *         assigned_to:
+ *           type: string
+ *       required:
+ *         - crop_id
+ *         - due_date
+ *         - assigned_to
+ *
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/task/harvest/{id}:
+ *   post:
+ *     summary: Create new harvest task
+ *     tags:
+ *       - CommunityFarmTasks
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the harvest task
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/NewHarvestTask"
+ *           example:
+ *             report_id: "123"
+ *             due_date: "2024-04-28"
+ *             message: "Optional message"
+ *             assigned_to: "John Doe"
+ *     responses:
+ *       "200":
+ *         description: Submitted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NewHarvestTask:
+ *       type: object
+ *       properties:
+ *         report_id:
+ *           type: string
+ *         due_date:
+ *           type: string
+ *         message:
+ *           type: string
+ *         assigned_to:
+ *           type: string
+ *       required:
+ *         - report_id
+ *         - due_date
+ *         - assigned_to
  */

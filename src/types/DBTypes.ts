@@ -58,6 +58,7 @@ import {
   FarmQuestions,
   FarmMemberApplication,
   ApplicationAnswers,
+  CommunityTasks,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -241,3 +242,6 @@ export type NewFarmQuestion = Insertable<FarmQuestions>
 export type NewFarmMemberApplication = Insertable<FarmMemberApplication>
 export type UpdateFarmMemberApplication = Updateable<FarmMemberApplication>
 export type NewApplicationAnswers = Insertable<ApplicationAnswers>
+
+export type NewCommunityTask = Insertable<CommunityTasks>
+export type UpdateCommunityTask = Updateable<CommunityTasks>

@@ -56,6 +56,7 @@ export const PlantedCropReport = z.object({
     planted_qty: z.string(),
     date_planted: z.string(),
     crop_id: z.string(),
+    task_id: z.string().optional(),
   }),
 })
 
@@ -68,6 +69,7 @@ export const HarvestedCropReport = z.object({
     date_harvested: z.string(),
     notes: z.string().optional(),
     kilogram: z.string(),
+    task_id: z.string(),
   }),
 })
 
@@ -95,5 +97,23 @@ export const CommunityCropReports = z.object({
     status: z
       .union([z.literal('harvested'), z.literal('planted')])
       .default('planted'),
+  }),
+})
+
+export const NewPlantTask = z.object({
+  body: z.object({
+    crop_id: z.string(),
+    due_date: z.string(),
+    message: z.string().optional(),
+    assigned_to: z.string(),
+  }),
+})
+
+export const NewHarvestTask = z.object({
+  body: z.object({
+    report_id: z.string(),
+    due_date: z.string(),
+    message: z.string().optional(),
+    assigned_to: z.string(),
   }),
 })

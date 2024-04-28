@@ -16,8 +16,10 @@ import { getObjectUrl, uploadFiles } from '../AWS-Bucket/UploadService'
 import {
   CommunityCropReport,
   NewCommunityFarmReport,
+  NewCommunityTask,
   NewFarmMemberApplication,
   UpdateCommunityFarmReport,
+  UpdateCommunityTask,
 } from '../../types/DBTypes'
 import { deleteFile } from '../../utils/file'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
@@ -375,9 +377,43 @@ export async function createPlantedReport({
       throw new HttpError('Unauthorized', 401)
     }
 
+    const { crop_id, date_planted, planted_qty, task_id } = report.body
     // TODO: ADD TASKINGS FOR FARMERS
 
-    const { crop_id, date_planted, planted_qty } = report.body
+    // check if farm head
+    const isFarmHead = user.role === 'farm_head'
+
+    if (!isFarmHead && !task_id) {
+      throw new HttpError(
+        "Quick Reminder: Please submit reports only if you've been assigned the task. Thank you for your cooperation!",
+        401
+      )
+    }
+    //find task
+
+    if (!isFarmHead) {
+      const farmerTask = await Service.findPendingCommunityTask(task_id)
+
+      if (!farmerTask) {
+        throw new HttpError('Task not found', 404)
+      }
+      // compare if task equal to requester
+      if (farmerTask.assigned_to !== user.id) {
+        throw new HttpError(
+          "Notice: This task isn't assigned to you. Thank you.",
+          401
+        )
+      }
+
+      if (farmerTask.task_type !== 'plant') {
+        throw new HttpError(
+          'Note: This task is designated for planting purposes only. Thank you for your understanding.',
+          401
+        )
+      }
+    }
+
+    // update task to completed
 
     const crop = await findCommunityFarmCrop(crop_id as string)
     if (!crop) throw new HttpError("Can't find crop", 404)
@@ -393,6 +429,13 @@ export async function createPlantedReport({
     }
 
     const data = await Service.createPlantedReport(reportObject)
+
+    // update task
+    if (task_id) {
+      await Service.updateCommunityTask(task_id, {
+        status: 'completed',
+      })
+    }
 
     if (images?.length) {
       const reportImages = images.map((item) => {
@@ -470,12 +513,55 @@ export async function createHarvestedReport({
       throw new HttpError('This crop is already harvested', 400)
     }
 
+    const isFarmHead = user.role === 'farm_head'
+
+    const { task_id } = report.body
+    if (!isFarmHead && !task_id) {
+      throw new HttpError(
+        "Quick Reminder: Please submit reports only if you've been assigned the task. Thank you for your cooperation!",
+        401
+      )
+    }
+    //find task
+
+    if (!isFarmHead) {
+      const farmerTask = await Service.findPendingCommunityTask(task_id)
+
+      if (!farmerTask) {
+        throw new HttpError('Task not found', 404)
+      }
+      // compare if task equal to requester
+      if (farmerTask.assigned_to !== user.id) {
+        throw new HttpError(
+          "Notice: This task isn't assigned to you. Thank you.",
+          401
+        )
+      }
+
+      if (farmerTask.task_type !== 'harvest') {
+        throw new HttpError(
+          'Note: This task is designated for harvesting purposes only. Thank you for your understanding.',
+          401
+        )
+      }
+    }
+
+    const reportPayload = report.body
+    delete reportPayload.task_id
+
     const reportObject: UpdateCommunityFarmReport = {
-      ...report.body,
+      ...reportPayload,
       harvested_by: userid,
     }
 
     await Service.updateCropReport(id, reportObject)
+
+    // update task
+    if (task_id) {
+      await Service.updateCommunityTask(task_id, {
+        status: 'completed',
+      })
+    }
 
     if (images?.length) {
       const reportImages = images.map((item) => {
@@ -495,4 +581,143 @@ export async function createHarvestedReport({
     deleteLocalFiles(images)
     dbErrorHandler(error)
   }
+}
+
+export type CreatePlantedCommunityTaskT = {
+  farmid: string
+  userid: string
+  assigned_to: string
+  crop_id: string
+  due_date: string
+  message?: string
+}
+
+export async function createPlantedCommunityTask({
+  assigned_to,
+  farmid,
+  crop_id,
+  due_date,
+  message,
+  userid,
+}: CreatePlantedCommunityTaskT) {
+  const user = await getUserOrThrow(assigned_to)
+
+  const farmHead = await getUserOrThrow(userid)
+
+  if (farmHead.farm_id !== farmid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const communityFarm = await findCommunityFarmById(farmid)
+
+  if (!communityFarm) {
+    throw new HttpError('Community Farm Not Found', 404)
+  }
+
+  if (communityFarm.id !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const taskObject: NewCommunityTask = {
+    crop_id,
+    due_date,
+    assigned_to,
+    farmid,
+    message,
+    task_type: 'plant',
+    action_message: `${user.firstname} ${user.lastname} has submitted a planting report.`,
+  }
+
+  const newTask = await Service.createCommunityTask(taskObject)
+
+  //TODO: Add redirect path for frontend
+  await emitPushNotification(
+    assigned_to,
+    'New Task Alert:',
+    `The Farm Head has assigned you a planting report to submit. Please review and take action. Message: (${message})`
+  )
+
+  return newTask
+}
+
+type CreateHarvestTaskT = {
+  farmid: string
+  userid: string
+  assigned_to: string
+  report_id: string
+  due_date: string
+  message: string
+}
+
+export async function createHarvestTask({
+  assigned_to,
+  userid,
+  farmid,
+  due_date,
+  message,
+  report_id,
+}: CreateHarvestTaskT) {
+  const user = await getUserOrThrow(assigned_to)
+
+  const farmHead = await getUserOrThrow(userid)
+
+  if (farmHead.farm_id !== farmid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const communityFarm = await findCommunityFarmById(farmid)
+
+  if (!communityFarm) {
+    throw new HttpError('Community Farm Not Found', 404)
+  }
+
+  if (communityFarm.id !== user.farm_id) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const isReportAlreadyAssigned = await Service.findHarvestingCommunityTask(
+    report_id
+  )
+
+  if (isReportAlreadyAssigned) {
+    throw new HttpError(
+      `This task report has already been assigned to ${
+        isReportAlreadyAssigned.assigned_to === assigned_to ? 'this' : 'another'
+      } user.`,
+      400
+    )
+  }
+
+  const plantedReport = await findCommunityReportById(report_id, farmid)
+
+  if (!plantedReport) {
+    throw new HttpError('Report not found', 404)
+  }
+
+  if (plantedReport.date_harvested) {
+    throw new HttpError(
+      'This report is already submitted a harvested report',
+      400
+    )
+  }
+
+  const taskObject: NewCommunityTask = {
+    farmid,
+    assigned_to,
+    report_id,
+    due_date,
+    task_type: 'harvest',
+    status: 'pending',
+    message,
+  }
+
+  const newHarvestTask = await Service.createCommunityTask(taskObject)
+
+  await emitPushNotification(
+    assigned_to,
+    'New Task Alert:',
+    `The Farm Head has assigned you a harvesting report to submit. Please review and take action. Message: (${message})`
+  )
+
+  return newHarvestTask
 }

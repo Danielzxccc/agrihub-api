@@ -4,9 +4,11 @@ import {
   CommunityCropReport,
   NewApplicationAnswers,
   NewCommunityFarmReport,
+  NewCommunityTask,
   NewFarmMemberApplication,
   NewFarmQuestion,
   UpdateCommunityFarmReport,
+  UpdateCommunityTask,
   UpdateFarmMemberApplication,
 } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
@@ -234,6 +236,7 @@ export async function listPlantedCropReports({
     .selectFrom('community_crop_reports as ccr')
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
+    .leftJoin('users as u', 'u.id', 'ccr.harvested_by')
     .select(({ fn, val }) => [
       'ccr.id as report_id',
       'cfc.id as cfc_id',
@@ -243,6 +246,9 @@ export async function listPlantedCropReports({
       'ccr.harvested_qty',
       'ccr.withered_crops',
       'ccr.planted_qty',
+      'ccr.harvested_by',
+      'u.firstname',
+      'u.lastname',
       'c.growth_span',
       sql`ccr.date_planted + (c.growth_span || ' month')::INTERVAL`.as(
         'expected_harvest_date'
@@ -259,6 +265,9 @@ export async function listPlantedCropReports({
       'ccr.harvested_qty',
       'ccr.withered_crops',
       'ccr.planted_qty',
+      'ccr.harvested_by',
+      'u.firstname',
+      'u.lastname',
     ])
     .where('ccr.farmid', '=', farmid)
     .where('ccr.is_archived', '=', false)
@@ -330,4 +339,41 @@ export async function getTotalPlantedReports({
   }
 
   return await query.executeTakeFirst()
+}
+
+export async function createCommunityTask(task: NewCommunityTask) {
+  return await db
+    .insertInto('community_tasks')
+    .values(task)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function findPendingCommunityTask(id: string) {
+  return await db
+    .selectFrom('community_tasks')
+    .selectAll()
+    .where('id', '=', id)
+    .where('status', '=', 'pending')
+    .executeTakeFirst()
+}
+
+export async function findHarvestingCommunityTask(report_id: string) {
+  return await db
+    .selectFrom('community_tasks')
+    .selectAll()
+    .where('report_id', '=', report_id)
+    .executeTakeFirst()
+}
+
+export async function updateCommunityTask(
+  id: string,
+  task: UpdateCommunityTask
+) {
+  return await db
+    .updateTable('community_tasks')
+    .set(task)
+    .returningAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
 }

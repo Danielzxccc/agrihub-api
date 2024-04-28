@@ -267,3 +267,48 @@ export async function createHarvestedReport(
     errorHandler(res, error)
   }
 }
+
+export async function createPlantedCommunityTask(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.NewPlantTask, req)
+    const { userid } = req.session
+
+    await Interactor.createPlantedCommunityTask({
+      farmid: id,
+      assigned_to: body.assigned_to,
+      crop_id: body.crop_id,
+      due_date: body.due_date,
+      message: body.message,
+      userid,
+    })
+
+    res.status(200).json({ message: 'Created Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function createHarvestTask(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.NewHarvestTask, req)
+    const { userid } = req.session
+
+    await Interactor.createHarvestTask({
+      farmid: id,
+      assigned_to: body.assigned_to,
+      report_id: body.report_id,
+      due_date: body.due_date,
+      message: body.message,
+      userid,
+    })
+
+    res.status(200).json({ message: 'Created Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
