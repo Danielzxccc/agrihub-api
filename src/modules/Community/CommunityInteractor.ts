@@ -24,7 +24,11 @@ import {
 import { deleteFile } from '../../utils/file'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
 import { deleteLocalFiles } from '../../utils/utils'
-import { FarmMemberApplicationStatus } from 'kysely-codegen'
+import {
+  CommunityTasksStatus,
+  CommunityTasksType,
+  FarmMemberApplicationStatus,
+} from 'kysely-codegen'
 import {
   findCommunityFarmCrop,
   findCommunityReportById,
@@ -378,8 +382,6 @@ export async function createPlantedReport({
     }
 
     const { crop_id, date_planted, planted_qty, task_id } = report.body
-    // TODO: ADD TASKINGS FOR FARMERS
-
     // check if farm head
     const isFarmHead = user.role === 'farm_head'
 
@@ -720,4 +722,44 @@ export async function createHarvestTask({
   )
 
   return newHarvestTask
+}
+
+export type ListCommunityTasksT = {
+  farmid: string
+  filter: CommunityTasksStatus
+  type: CommunityTasksType
+  offset: number
+  searchKey: string
+  perpage: number
+}
+
+export async function listCommunityTasks(payload: ListCommunityTasksT) {
+  const communityFarm = await findCommunityFarmById(payload.farmid)
+
+  if (!communityFarm) {
+    throw new HttpError('Community Farm Not Found', 404)
+  }
+
+  const [data, total] = await Promise.all([
+    Service.listCommunityTasks(payload),
+    Service.getTotalCommunityTasks(payload),
+  ])
+
+  return { data, total }
+}
+
+export async function deleteCommunityTask(userid: string, id: string) {
+  const farmHead = await getUserOrThrow(userid)
+
+  const task = await Service.findPendingCommunityTask(id)
+
+  if (!task) {
+    throw new HttpError('Community Task Not Found', 404)
+  }
+
+  if (farmHead.farm_id !== task.farmid) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  await Service.deleteCommunityTask(id)
 }

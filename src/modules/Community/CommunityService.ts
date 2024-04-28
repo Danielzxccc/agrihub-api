@@ -13,6 +13,7 @@ import {
 } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import {
+  ListCommunityTasksT,
   ListFarmerRequests,
   listPlantedCropReportsT,
 } from './CommunityInteractor'
@@ -375,5 +376,101 @@ export async function updateCommunityTask(
     .set(task)
     .returningAll()
     .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function listCommunityTasks({
+  farmid,
+  filter,
+  type,
+  offset,
+  perpage,
+  searchKey,
+}: ListCommunityTasksT) {
+  let query = db
+    .selectFrom('community_tasks as ct')
+    .leftJoin('users as u', 'u.id', 'ct.assigned_to')
+    .select([
+      'ct.id',
+      'ct.farmid',
+      'ct.assigned_to',
+      'ct.report_id',
+      'ct.crop_id',
+      'ct.due_date',
+      'ct.task_type',
+      'ct.message',
+      'ct.action_message',
+      'ct.status',
+      'u.username',
+      'u.firstname',
+      'u.lastname',
+      'u.role',
+    ])
+    .where('farmid', '=', farmid)
+
+  if (filter) {
+    query = query.where('ct.status', '=', filter)
+  }
+
+  if (type) {
+    query = query.where('ct.task_type', '=', type)
+  }
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb(sql`CAST(ct.task_type AS TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('ct.message', 'ilike', `%${searchKey}%`),
+        eb('ct.action_message', 'ilike', `%${searchKey}%`),
+        eb('ct.message', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalCommunityTasks({
+  farmid,
+  filter,
+  searchKey,
+  type,
+}: ListCommunityTasksT) {
+  let query = db
+    .selectFrom('community_tasks as ct')
+    .leftJoin('users as u', 'u.id', 'ct.assigned_to')
+    .select(({ fn }) => [fn.count<number>('ct.id').as('count')])
+    .where('farm_id', '=', farmid)
+
+  if (filter) {
+    query = query.where('ct.status', '=', filter)
+  }
+
+  if (type) {
+    query = query.where('ct.task_type', '=', type)
+  }
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb(sql`CAST(ct.task_type AS TEXT)`, 'ilike', `%${searchKey}%`),
+        eb('ct.message', 'ilike', `%${searchKey}%`),
+        eb('ct.action_message', 'ilike', `%${searchKey}%`),
+        eb('ct.message', 'ilike', `%${searchKey}%`),
+        eb('u.username', 'ilike', `%${searchKey}%`),
+        eb('u.firstname', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+  return await query.executeTakeFirst()
+}
+
+export async function deleteCommunityTask(id: string) {
+  return await db
+    .deleteFrom('community_tasks')
+    .where('id', '=', id)
+    .returningAll()
     .executeTakeFirst()
 }

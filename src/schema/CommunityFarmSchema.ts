@@ -117,3 +117,13 @@ export const NewHarvestTask = z.object({
     assigned_to: z.string(),
   }),
 })
+
+export const ListCommunityTasks = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    filter: z.union([z.literal('completed'), z.literal('pending')]).optional(),
+    type: z.union([z.literal('plant'), z.literal('harvest')]).optional(),
+  }),
+})

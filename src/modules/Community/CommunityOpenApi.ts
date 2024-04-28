@@ -948,6 +948,13 @@
  *           items:
  *             type: string
  *         description: Array of filters
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - planted
+ *             - harvested
  *     responses:
  *       "200":
  *         description: Successful response
@@ -1194,4 +1201,188 @@
  *         - report_id
  *         - due_date
  *         - assigned_to
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/task/list/{id}:
+ *   get:
+ *     summary: Get list of community tasks
+ *     tags:
+ *       - CommunityFarmTasks
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - completed
+ *             - pending
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - plant
+ *             - harvest
+ *     responses:
+ *       "200":
+ *         description: List of community tasks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommunityTasksResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CommunityTask:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         farmid:
+ *           type: string
+ *         assigned_to:
+ *           type: string
+ *         report_id:
+ *           type: string
+ *           nullable: true
+ *         crop_id:
+ *           type: string
+ *         due_date:
+ *           type: string
+ *           format: date-time
+ *         task_type:
+ *           type: string
+ *           enum:
+ *             - plant
+ *             - harvest
+ *         message:
+ *           type: string
+ *         action_message:
+ *           type: string
+ *         status:
+ *           type: string
+ *         username:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         role:
+ *           type: string
+ *
+ *     Pagination:
+ *       type: object
+ *       properties:
+ *         page:
+ *           type: integer
+ *         per_page:
+ *           type: integer
+ *         total_pages:
+ *           type: integer
+ *         total_records:
+ *           type: integer
+ *
+ *     CommunityTasksResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/CommunityTask"
+ *         pagination:
+ *           $ref: "#/components/schemas/Pagination"
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/task/delete/{id}:
+ *   delete:
+ *     summary: Delete a community task
+ *     tags:
+ *       - CommunityFarmTasks
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the task to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Task deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/SuccessMessage"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */

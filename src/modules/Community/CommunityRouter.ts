@@ -85,3 +85,15 @@ CommunityRouter.post(
   UserGuard(['farm_head']),
   CommunityController.createHarvestTask
 )
+
+CommunityRouter.get(
+  '/task/list/:id',
+  UserGuard(['farm_head', 'farmer']),
+  CommunityController.listCommunityTasks
+)
+
+CommunityRouter.delete(
+  '/task/delete/:id',
+  UserGuard(['farm_head', 'farmer']),
+  CommunityController.deleteCommunityTask
+)
