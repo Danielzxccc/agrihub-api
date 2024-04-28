@@ -127,3 +127,26 @@ export const ListCommunityTasks = z.object({
     type: z.union([z.literal('plant'), z.literal('harvest')]).optional(),
   }),
 })
+
+export const ListCommunityEvents = z.object({
+  query: z.object({
+    search: z.string().optional().default(''),
+    page: z.string().optional(),
+    perpage: z.string().optional().default('20'),
+    type: z.union([z.literal('private'), z.literal('public')]).optional(),
+  }),
+})
+
+export const CreateCommunityEvent = z.object({
+  body: z.object({
+    farmid: z.string(),
+    title: z.string(),
+    about: z.string(),
+    start_date: z.string(),
+    end_date: z.string(),
+    type: z.union([z.literal('private'), z.literal('public')]),
+    tags: z.union([z.array(z.string()), z.string()]).optional(),
+  }),
+})
+
+export type CreateCommunityEventT = z.infer<typeof CreateCommunityEvent>

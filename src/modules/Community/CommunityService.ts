@@ -3,6 +3,7 @@ import { db } from '../../config/database'
 import {
   CommunityCropReport,
   NewApplicationAnswers,
+  NewCommunityEvent,
   NewCommunityFarmReport,
   NewCommunityTask,
   NewFarmMemberApplication,
@@ -13,6 +14,7 @@ import {
 } from '../../types/DBTypes'
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import {
+  ListCommunityEventsT,
   ListCommunityTasksT,
   ListFarmerRequests,
   listPlantedCropReportsT,
@@ -473,4 +475,96 @@ export async function deleteCommunityTask(id: string) {
     .where('id', '=', id)
     .returningAll()
     .executeTakeFirst()
+}
+
+export async function createCommunityEvent(
+  event: NewCommunityEvent,
+  tagsId: string[] | string
+) {
+  const communityEvent = await db.transaction().execute(async (trx) => {
+    const insertedEvent = await trx
+      .insertInto('community_events')
+      .values(event)
+      .returningAll()
+      .executeTakeFirst()
+
+    let tagRecords
+    if (Array.isArray(tagsId) && tagsId.length > 0) {
+      tagRecords = tagsId.map((tagName) => ({
+        event_id: insertedEvent.id,
+        tag_id: tagName,
+      }))
+    } else if (typeof tagsId === 'string') {
+      tagRecords = {
+        event_id: insertedEvent.id,
+        tag_id: tagsId,
+      }
+    }
+
+    if (tagRecords?.length || tagRecords) {
+      await trx
+        .insertInto('event_tags')
+        .values(tagRecords)
+        .returningAll()
+        .executeTakeFirst()
+    }
+
+    return insertedEvent
+  })
+
+  return communityEvent
+}
+
+export async function listCommunityEventsByFarm({
+  farmid,
+  searchKey,
+  offset,
+  perpage,
+  type,
+}: ListCommunityEventsT) {
+  let query = db
+    .selectFrom('community_events as ce')
+    .selectAll()
+    .where('farmid', '=', farmid)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('ce.title', 'ilike', `%${searchKey}%`),
+        eb('ce.about', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  if (type) {
+    query = query.where('ce.type', '=', type)
+  }
+
+  return await query.limit(perpage).offset(offset).execute()
+}
+
+export async function getTotalCommunityEventsByFarm({
+  farmid,
+  searchKey,
+  type,
+}: ListCommunityEventsT) {
+  let query = db
+    .selectFrom('community_events as ce')
+    .select(({ fn }) => [fn.count<number>('ce.id').as('count')])
+    .where('farmid', '=', farmid)
+
+  if (searchKey.length) {
+    query = query.where((eb) =>
+      eb.or([
+        eb('ce.title', 'ilike', `%${searchKey}%`),
+        eb('ce.about', 'ilike', `%${searchKey}%`),
+      ])
+    )
+  }
+
+  if (type) {
+    query = query.where('ce.type', '=', type)
+  }
+
+  return await query.executeTakeFirst()
 }

@@ -1360,7 +1360,7 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/SuccessMessage"
+ *               $ref: "#/components/schemas/MessageResponse"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -1385,4 +1385,228 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/event/create:
+ *   post:
+ *     summary: Create a community event
+ *     tags:
+ *       - CommunityFarmEvents
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/CreateCommunityEventFormData"
+ *           example:
+ *             farmid: "123"
+ *             title: "Farmers' Market"
+ *             about: "Join us for the monthly farmers' market event!"
+ *             start_date: "2024-05-01"
+ *             end_date: "2024-05-02"
+ *             type: "public"
+ *             tags: ["market", "community"]
+ *             banner: binary_data_here
+ *     responses:
+ *       "200":
+ *         description: Event created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     CreateCommunityEventFormData:
+ *       type: object
+ *       properties:
+ *         farmid:
+ *           type: string
+ *         title:
+ *           type: string
+ *         about:
+ *           type: string
+ *         start_date:
+ *           type: string
+ *           format: date
+ *         end_date:
+ *           type: string
+ *           format: date
+ *         type:
+ *           type: string
+ *           enum:
+ *             - private
+ *             - public
+ *         tags:
+ *           oneOf:
+ *             - type: array
+ *               items:
+ *                 type: string
+ *             - type: string
+ *         banner:
+ *           type: string
+ *           format: binary
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/event/list/{id}:
+ *   get:
+ *     summary: Get list of community events
+ *     tags:
+ *       - CommunityFarmEvents
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the community
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term (optional)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number (optional)
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of events per page (optional)
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - private
+ *             - public
+ *         description: Filter by event type (optional)
+ *     responses:
+ *       "200":
+ *         description: List of community events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommunityEventsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ListCommunityEvents:
+ *       type: object
+ *       properties:
+ *         query:
+ *           type: object
+ *           properties:
+ *             search:
+ *               type: string
+ *             page:
+ *               type: string
+ *             perpage:
+ *               type: string
+ *             type:
+ *               type: string
+ *               enum:
+ *                 - private
+ *                 - public
+ *
+ *     CommunityEvent:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         farmid:
+ *           type: string
+ *         title:
+ *           type: string
+ *         about:
+ *           type: string
+ *         banner:
+ *           type: string
+ *         start_date:
+ *           type: string
+ *           format: date-time
+ *         end_date:
+ *           type: string
+ *           format: date-time
+ *         type:
+ *           type: string
+ *           enum:
+ *             - private
+ *             - public
+ *         createdat:
+ *           type: string
+ *           format: date-time
+ *         updatedat:
+ *           type: string
+ *           format: date-time
+ *
+ *     CommunityEventsResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/CommunityEvent"
+ *         pagination:
+ *           $ref: "#/components/schemas/Pagination"
  */

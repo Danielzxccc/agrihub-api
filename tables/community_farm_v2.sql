@@ -56,3 +56,29 @@ CREATE TABLE community_tasks(
     FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (report_id) REFERENCES community_crop_reports(id) ON DELETE CASCADE
 );
+
+
+CREATE TYPE IF NOT EXISTS community_events_type AS ENUM ('private', 'public');
+
+CREATE TABLE community_events(
+    id SERIAL PRIMARY KEY,
+    farmid INT NOT NULL,
+    title TEXT NOT NULL,
+    about TEXT NOT NULL,
+    banner TEXT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    type community_events_type NOT NULL,
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (farmid) REFERENCES community_farms(id) ON DELETE CASCADE
+);
+
+CREATE TABLE community_events_tags(
+    id SERIAL PRIMARY KEY,
+    eventid INT REFERENCES community_events(id) ON DELETE CASCADE,
+    tagid INT REFERENCES tags(id) ON DELETE CASCADE,
+    UNIQUE (eventid, tagid)
+);
+
+

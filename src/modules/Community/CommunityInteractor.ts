@@ -1,5 +1,6 @@
 import {
   ApplicationAnswers,
+  CreateCommunityEventT,
   FarmMemberApplicationSchema,
   FarmQuestionSchema,
   HarvestedCropReportT,
@@ -25,6 +26,7 @@ import { deleteFile } from '../../utils/file'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
 import { deleteLocalFiles } from '../../utils/utils'
 import {
+  CommunityEventsType,
   CommunityTasksStatus,
   CommunityTasksType,
   FarmMemberApplicationStatus,
@@ -762,4 +764,61 @@ export async function deleteCommunityTask(userid: string, id: string) {
   }
 
   await Service.deleteCommunityTask(id)
+}
+
+export async function createCommunityEvent(
+  event: CreateCommunityEventT,
+  banner: Express.Multer.File
+) {
+  try {
+    const { farmid } = event.body
+
+    const communityFarm = await findCommunityFarmById(farmid)
+
+    if (!communityFarm) {
+      throw new HttpError('Community Farm Not Found', 404)
+    }
+
+    const payload = event.body
+    delete payload.tags
+
+    const data = await Service.createCommunityEvent(
+      {
+        ...payload,
+        banner: banner.filename,
+      },
+      event.body.tags
+    )
+
+    await uploadFiles([banner])
+
+    deleteLocalFiles([banner])
+    return data
+  } catch (error) {
+    deleteLocalFiles([banner])
+    dbErrorHandler(error)
+  }
+}
+
+export type ListCommunityEventsT = {
+  farmid: string
+  type: CommunityEventsType
+  offset: number
+  searchKey: string
+  perpage: number
+}
+
+export async function listCommunityEvents(payload: ListCommunityEventsT) {
+  const communityFarm = await findCommunityFarmById(payload.farmid)
+
+  if (!communityFarm) {
+    throw new HttpError('Community Farm Not Found', 404)
+  }
+
+  const [data, total] = await Promise.all([
+    Service.listCommunityEventsByFarm(payload),
+    Service.getTotalCommunityEventsByFarm(payload),
+  ])
+
+  return { data, total }
 }
