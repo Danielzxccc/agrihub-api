@@ -373,6 +373,18 @@ export async function createCommunityEvent(req: SessionRequest, res: Response) {
   }
 }
 
+export async function deleteCommunityEvent(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.deleteCommunityEvent(id, userid)
+    res.status(200).json({ message: 'Deleted Successfuly' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function listCommunityEvents(req: SessionRequest, res: Response) {
   try {
     const { query } = await zParse(Schema.ListCommunityEvents, req)

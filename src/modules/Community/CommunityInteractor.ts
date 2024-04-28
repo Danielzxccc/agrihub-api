@@ -5,6 +5,7 @@ import {
   FarmQuestionSchema,
   HarvestedCropReportT,
   PlantedCropReportT,
+  UpdateCommunityEventT,
 } from '../../schema/CommunityFarmSchema'
 import { getUserOrThrow } from '../../utils/findUser'
 import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
@@ -19,6 +20,7 @@ import {
   NewCommunityFarmReport,
   NewCommunityTask,
   NewFarmMemberApplication,
+  UpdateCommunityEvent,
   UpdateCommunityFarmReport,
   UpdateCommunityTask,
 } from '../../types/DBTypes'
@@ -821,4 +823,57 @@ export async function listCommunityEvents(payload: ListCommunityEventsT) {
   ])
 
   return { data, total }
+}
+
+export async function deleteCommunityEvent(id: string, userid: string) {
+  const user = await getUserOrThrow(userid)
+  const communityEvent = await Service.findCommunityEvent(id)
+
+  if (!communityEvent) {
+    throw new HttpError('Event not found', 404)
+  }
+
+  if (communityEvent.farmid !== user.farm_id) {
+    throw new HttpError('Unthorized', 401)
+  }
+
+  await Service.deleteCommunityEvent(id)
+}
+
+export async function updateCommunityEvent(
+  id: string,
+  event: UpdateCommunityEventT,
+  banner: Express.Multer.File
+) {
+  try {
+    const { farmid } = event.body
+
+    const communityFarm = await findCommunityFarmById(farmid)
+
+    const communityEvent = await Service.findCommunityEvent(id)
+
+    if (!communityEvent) {
+      throw new HttpError('Event not found', 404)
+    }
+
+    if (!communityFarm) {
+      throw new HttpError('Community Farm Not Found', 404)
+    }
+
+    const payload = event.body
+    delete payload.tags
+
+    const data = await Service.updateCommunityEvent(
+      id,
+      {
+        ...payload,
+        banner: banner.filename,
+      },
+      event.body.tags
+    )
+
+    return data
+  } catch (error) {
+    dbErrorHandler(error)
+  }
 }

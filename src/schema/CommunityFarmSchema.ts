@@ -149,4 +149,17 @@ export const CreateCommunityEvent = z.object({
   }),
 })
 
+export const UpdateCommunityEvent = z.object({
+  body: z.object({
+    farmid: z.string().optional(),
+    title: z.string().optional(),
+    about: z.string().optional(),
+    start_date: z.string().optional(),
+    end_date: z.string().optional(),
+    type: z.union([z.literal('private'), z.literal('public')]).optional(),
+    tags: z.union([z.array(z.string()), z.string()]).optional(),
+  }),
+})
+
 export type CreateCommunityEventT = z.infer<typeof CreateCommunityEvent>
+export type UpdateCommunityEventT = z.infer<typeof UpdateCommunityEvent>

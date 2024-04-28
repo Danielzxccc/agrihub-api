@@ -558,6 +558,11 @@
  *           type: string
  *           nullable: true
  *           description: Additional remarks or notes
+ *         answers:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/FarmerAnswer"
+ *           description: List of answers provided by the user
  */
 
 /**
@@ -1609,4 +1614,51 @@
  *             $ref: "#/components/schemas/CommunityEvent"
  *         pagination:
  *           $ref: "#/components/schemas/Pagination"
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/event/delete/{id}:
+ *   delete:
+ *     summary: Delete a community event
+ *     tags:
+ *       - CommunityFarmEvents
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the event to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Event deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
  */

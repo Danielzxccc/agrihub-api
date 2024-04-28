@@ -8,6 +8,7 @@ import {
   NewCommunityTask,
   NewFarmMemberApplication,
   NewFarmQuestion,
+  UpdateCommunityEvent,
   UpdateCommunityFarmReport,
   UpdateCommunityTask,
   UpdateFarmMemberApplication,
@@ -180,8 +181,27 @@ export async function getTotalFarmerApplications({
 
 export async function findFarmerApplication(id: string) {
   return await db
-    .selectFrom('farm_member_application')
-    .selectAll()
+    .selectFrom('farm_member_application as fa')
+    .select(({ eb }) => [
+      'fa.id',
+      'fa.farmid',
+      'fa.userid',
+      'fa.contact_person',
+      'fa.proof_selfie',
+      'fa.valid_id',
+      'fa.reason',
+      'fa.createdat',
+      'fa.updatedat',
+      'fa.status',
+      'fa.remarks',
+      jsonArrayFrom(
+        eb
+          .selectFrom('application_answers as aa')
+          .leftJoin('farm_questions as fq', 'fq.id', 'aa.questionid')
+          .select(['aa.answer', 'fq.question'])
+          .whereRef('aa.applicationid', '=', 'fa.id')
+      ).as('answers'),
+    ])
     .where('id', '=', id)
     .executeTakeFirst()
 }
@@ -567,4 +587,61 @@ export async function getTotalCommunityEventsByFarm({
   }
 
   return await query.executeTakeFirst()
+}
+
+export async function updateCommunityEvent(
+  id: string,
+  event: UpdateCommunityEvent,
+  tagsId: string[] | string
+) {
+  const updateCommunityEvent = await db.transaction().execute(async (trx) => {
+    const updatedEvent = await trx
+      .updateTable('community_events')
+      .set(event)
+      .where('id', '=', id)
+      .returningAll()
+      .executeTakeFirst()
+
+    let tagRecords
+    if (Array.isArray(tagsId) && tagsId.length > 0) {
+      tagRecords = tagsId.map((tagName) => ({
+        event_id: updatedEvent.id,
+        tag_id: tagName,
+      }))
+    } else if (typeof tagsId === 'string') {
+      tagRecords = {
+        event_id: updatedEvent.id,
+        tag_id: tagsId,
+      }
+    }
+
+    if (tagRecords?.length || tagRecords) {
+      await trx
+        .insertInto('event_tags')
+        .values(tagRecords)
+        .onConflict((oc) => oc.column('tag_id').column('event_id').doNothing())
+        .returningAll()
+        .executeTakeFirst()
+    }
+
+    return updatedEvent
+  })
+
+  return updateCommunityEvent
+}
+
+export async function findCommunityEvent(id: string) {
+  return await db
+    .selectFrom('community_events')
+    .selectAll()
+    .where('id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function deleteCommunityEvent(id: string) {
+  return await db
+    .deleteFrom('community_events')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
 }

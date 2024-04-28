@@ -110,3 +110,9 @@ CommunityRouter.get(
   UserGuard(['farm_head']),
   CommunityController.listCommunityEvents
 )
+
+CommunityRouter.delete(
+  '/event/delete/:id',
+  UserGuard(['farm_head']),
+  CommunityController.deleteCommunityEvent
+)
