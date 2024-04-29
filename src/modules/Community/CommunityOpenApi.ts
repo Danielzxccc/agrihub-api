@@ -1386,6 +1386,8 @@
  *           type: string
  *         status:
  *           type: string
+ *         crop_name:
+ *           type: string
  *         username:
  *           type: string
  *         firstname:

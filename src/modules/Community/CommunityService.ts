@@ -413,6 +413,8 @@ export async function listCommunityTasks({
 }: ListCommunityTasksT) {
   let query = db
     .selectFrom('community_tasks as ct')
+    .leftJoin('community_farms_crops as cfc', 'cfc.id', 'ct.crop_id')
+    .leftJoin('crops as c', 'c.id', 'cfc.crop_id')
     .leftJoin('users as u', 'u.id', 'ct.assigned_to')
     .select(({ eb }) => [
       'ct.id',
@@ -425,6 +427,7 @@ export async function listCommunityTasks({
       'ct.message',
       'ct.action_message',
       'ct.status',
+      'c.name as crop_name',
       'u.username',
       'u.firstname',
       'u.lastname',
