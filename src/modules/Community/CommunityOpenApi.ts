@@ -1032,7 +1032,7 @@
  *     CommunityCropReportsResponseV2:
  *       type: object
  *       properties:
- *         reports:
+ *         data:
  *           type: array
  *           items:
  *             $ref: "#/components/schemas/PlantedCropsResponse"
@@ -1283,6 +1283,79 @@
 
 /**
  * @openapi
+ * /api/community-farm/task/list/farmer/{id}:
+ *   get:
+ *     summary: Get list of community tasks
+ *     tags:
+ *       - CommunityFarmTasks
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - completed
+ *             - pending
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - plant
+ *             - harvest
+ *     responses:
+ *       "200":
+ *         description: List of community tasks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommunityTasksResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
  * components:
  *   schemas:
  *     CommunityTask:
@@ -1449,6 +1522,67 @@
 
 /**
  * @openapi
+ * /api/community-farm/event/update/{id}:
+ *   put:
+ *     summary: Update a community event
+ *     tags:
+ *       - CommunityFarmEvents
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the event to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateCommunityEventFormData"
+ *           example:
+ *             title: "New Event Title"
+ *             about: "Updated event description"
+ *             start_date: "2024-05-01"
+ *             end_date: "2024-05-02"
+ *             type: "public"
+ *             tags: ["updated", "community"]
+ *             banner: binary_data_here
+ *     responses:
+ *       "200":
+ *         description: Event updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
  * components:
  *   schemas:
  *     CreateCommunityEventFormData:
@@ -1456,6 +1590,39 @@
  *       properties:
  *         farmid:
  *           type: string
+ *         title:
+ *           type: string
+ *         about:
+ *           type: string
+ *         start_date:
+ *           type: string
+ *           format: date
+ *         end_date:
+ *           type: string
+ *           format: date
+ *         type:
+ *           type: string
+ *           enum:
+ *             - private
+ *             - public
+ *         tags:
+ *           oneOf:
+ *             - type: array
+ *               items:
+ *                 type: string
+ *             - type: string
+ *         banner:
+ *           type: string
+ *           format: binary
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UpdateCommunityEventFormData:
+ *       type: object
+ *       properties:
  *         title:
  *           type: string
  *         about:
