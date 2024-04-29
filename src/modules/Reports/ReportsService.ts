@@ -483,6 +483,7 @@ export async function getAverageGrowthRate(farmid: string) {
       sql`COALESCE(SUM(ccr.planted_qty), 0)`.as('planted_qty'),
       sql`COALESCE(SUM(ccr.harvested_qty), 0)`.as('harvested_qty'),
       sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('withered_crops'),
+      sql`COALESCE(SUM(ccr.kilogram), 0)`.as('kilogram'),
       sql`ROUND(SUM(ccr.harvested_qty - COALESCE(ccr.withered_crops, 0)), 1)`.as(
         'net_yield'
       ),
