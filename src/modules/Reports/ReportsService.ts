@@ -302,7 +302,7 @@ export async function getTotalHarvestEachMonth(farmid: string) {
             SELECT
                 EXTRACT(MONTH FROM date_harvested) AS month,
                 EXTRACT(YEAR FROM date_harvested) AS year,
-                SUM(harvested_qty) AS total_harvested_qty
+                SUM(kilogram) AS total_harvested_qty
             FROM
                 community_crop_reports
             WHERE
