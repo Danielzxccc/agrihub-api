@@ -9,12 +9,16 @@ import {
 } from '../../schema/CommunityFarmSchema'
 import { getUserOrThrow } from '../../utils/findUser'
 import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
-import { updateUser } from '../Users/UserService'
+import { findFarmMembersByFarmId, updateUser } from '../Users/UserService'
 import HttpError from '../../utils/HttpError'
 import * as Service from './CommunityService'
 import { z } from 'zod'
 import dbErrorHandler from '../../utils/dbErrorHandler'
-import { getObjectUrl, uploadFiles } from '../AWS-Bucket/UploadService'
+import {
+  deleteFileCloud,
+  getObjectUrl,
+  uploadFiles,
+} from '../AWS-Bucket/UploadService'
 import {
   CommunityCropReport,
   NewCommunityFarmReport,
@@ -31,6 +35,7 @@ import {
   CommunityEventsType,
   CommunityTasksStatus,
   CommunityTasksType,
+  EventEngagement,
   FarmMemberApplicationStatus,
 } from 'kysely-codegen'
 import {
@@ -344,6 +349,9 @@ export async function cancelFarmerApplication(userid: string, id: string) {
     throw new HttpError('Unauthorized', 401)
   }
 
+  await deleteFileCloud(application.proof_selfie)
+  await deleteFileCloud(application.valid_id)
+
   await Service.deleteFarmerApplication(id)
 }
 
@@ -441,6 +449,7 @@ export async function createPlantedReport({
     if (task_id) {
       await Service.updateCommunityTask(task_id, {
         status: 'completed',
+        action_message: 'finished planting and reported accordingly',
       })
     }
 
@@ -567,6 +576,7 @@ export async function createHarvestedReport({
     if (task_id) {
       await Service.updateCommunityTask(task_id, {
         status: 'completed',
+        action_message: 'finished harvesting and reported accordingly',
       })
     }
 
@@ -622,7 +632,7 @@ export async function createPlantedCommunityTask({
   }
 
   if (communityFarm.id !== user.farm_id) {
-    throw new HttpError('Unauthorized', 401)
+    throw new HttpError('Not a farm member', 401)
   }
 
   const taskObject: NewCommunityTask = {
@@ -731,6 +741,7 @@ export async function createHarvestTask({
 
 export type ListCommunityTasksT = {
   farmid: string
+  userid?: string
   filter: CommunityTasksStatus
   type: CommunityTasksType
   offset: number
@@ -739,6 +750,10 @@ export type ListCommunityTasksT = {
 }
 
 export async function listCommunityTasks(payload: ListCommunityTasksT) {
+  if (payload?.userid) {
+    await getUserOrThrow(payload.userid)
+  }
+
   const communityFarm = await findCommunityFarmById(payload.farmid)
 
   if (!communityFarm) {
@@ -783,6 +798,12 @@ export async function createCommunityEvent(
     }
 
     const payload = event.body
+    const newTags =
+      typeof event.body?.tags === 'string'
+        ? event.body.tags
+        : event.body.tags
+        ? [...event.body.tags]
+        : []
     delete payload.tags
 
     const data = await Service.createCommunityEvent(
@@ -790,12 +811,61 @@ export async function createCommunityEvent(
         ...payload,
         banner: banner.filename,
       },
-      event.body.tags
+      newTags
     )
 
     await uploadFiles([banner])
 
     deleteLocalFiles([banner])
+    // notification service
+
+    // TODO: add redirect path
+    if (payload.type === 'public') {
+      const tagsToSearch = Array.isArray(data.tags)
+        ? data.tags.map((item) => item.tagid)
+        : [data.tags.tagid]
+      const selectedUsers = await Service.findUsersWithTags(tagsToSearch)
+
+      const notificationObjects = selectedUsers.map((item) =>
+        emitPushNotification(
+          item.userid,
+          'Alert! New Community Farm Event',
+          `Hey there! We've got something special just for you: an exciting new event from ${communityFarm.farm_name}. Get ready to dive into ${event.body.title}`
+        )
+      )
+
+      const farmMembers = await findFarmMembersByFarmId(
+        farmid,
+        communityFarm.farm_head
+      )
+
+      const farmMembersNotifications = farmMembers.map((item) =>
+        emitPushNotification(
+          item.id,
+          'Alert! New Community Farm Event',
+          `Hey! Quick heads up: There's a new event going on at the community farm. Take a look when you get a chance! ${payload.title}`
+        )
+      )
+
+      await Promise.all(farmMembersNotifications)
+
+      await Promise.all(notificationObjects)
+    } else {
+      const selectedUsers = await findFarmMembersByFarmId(
+        farmid,
+        communityFarm.farm_head
+      )
+      const notificationObjects = selectedUsers.map((item) =>
+        emitPushNotification(
+          item.id,
+          'Alert! New Community Farm Event',
+          `Hey! Quick heads up: There's a new event going on at the community farm. Take a look when you get a chance! ${payload.title}`
+        )
+      )
+
+      await Promise.all(notificationObjects)
+    }
+
     return data
   } catch (error) {
     deleteLocalFiles([banner])
@@ -804,18 +874,22 @@ export async function createCommunityEvent(
 }
 
 export type ListCommunityEventsT = {
-  farmid: string
+  farmid?: string
+  userid: string
   type: CommunityEventsType
   offset: number
   searchKey: string
   perpage: number
+  filter: 'upcoming' | 'previous'
 }
 
 export async function listCommunityEvents(payload: ListCommunityEventsT) {
-  const communityFarm = await findCommunityFarmById(payload.farmid)
+  if (payload?.farmid) {
+    const communityFarm = await findCommunityFarmById(payload.farmid)
 
-  if (!communityFarm) {
-    throw new HttpError('Community Farm Not Found', 404)
+    if (!communityFarm) {
+      throw new HttpError('Community Farm Not Found', 404)
+    }
   }
 
   const [data, total] = await Promise.all([
@@ -847,34 +921,95 @@ export async function updateCommunityEvent(
   banner: Express.Multer.File
 ) {
   try {
-    const { farmid } = event.body
-
-    const communityFarm = await findCommunityFarmById(farmid)
-
     const communityEvent = await Service.findCommunityEvent(id)
 
     if (!communityEvent) {
       throw new HttpError('Event not found', 404)
     }
 
-    if (!communityFarm) {
-      throw new HttpError('Community Farm Not Found', 404)
-    }
-
     const payload = event.body
+    const newTags =
+      typeof event.body?.tags === 'string'
+        ? event.body.tags
+        : event.body.tags
+        ? [...event.body.tags]
+        : []
     delete payload.tags
+
+    const findExistingTags = await Service.findCommunityEventTags(id)
+
+    let deletedTags: string[] = []
+    if (findExistingTags.length) {
+      const existingTags = findExistingTags.map((item) => item.tagid)
+
+      const tagsToCompare = newTags?.length ? newTags : []
+
+      deletedTags = existingTags.filter(
+        (element) => !tagsToCompare.includes(element)
+      )
+    }
 
     const data = await Service.updateCommunityEvent(
       id,
       {
         ...payload,
-        banner: banner.filename,
+        banner: banner?.filename ? banner?.filename : communityEvent.banner,
       },
-      event.body.tags
+      newTags,
+      deletedTags
     )
+
+    if (banner?.filename) {
+      await deleteFileCloud(communityEvent.banner ?? 'banner')
+      await uploadFiles([banner])
+      deleteLocalFiles([banner])
+    }
 
     return data
   } catch (error) {
+    if (banner?.filename) deleteLocalFiles([banner])
     dbErrorHandler(error)
   }
+}
+
+export async function viewCommunityEvent(userid: string, id: string) {
+  const event = await Service.viewCommunityEvent(id, userid)
+
+  if (!event) {
+    throw new HttpError('Event Not Found', 404)
+  }
+
+  if (event.type === 'private') {
+    const user = await getUserOrThrow(userid)
+
+    if (user.farm_id !== event.farmid) {
+      throw new HttpError('Unauthorized', 401)
+    }
+
+    return event
+  }
+
+  return event
+}
+
+export async function eventAction(
+  eventid: string,
+  userid: string,
+  action: EventEngagement
+) {
+  const event = await Service.findCommunityEvent(eventid)
+
+  if (!event) {
+    throw new HttpError('Event Not found', 404)
+  }
+
+  await getUserOrThrow(userid)
+
+  await Service.eventAction(eventid, userid, action)
+
+  // await emitPushNotification(
+  //   communityFarm.farm_head,
+  //   `Alert: New User Activity on Your Event`,
+  //   `${user.firstname} ${user.lastname} is ${action} to your event (${event.title}).`
+  // )
 }

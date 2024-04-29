@@ -165,3 +165,9 @@ export const UpdateCommunityEvent = z.object({
 
 export type CreateCommunityEventT = z.infer<typeof CreateCommunityEvent>
 export type UpdateCommunityEventT = z.infer<typeof UpdateCommunityEvent>
+
+export const EventAction = z.object({
+  body: z.object({
+    action: z.union([z.literal('going'), z.literal('interested')]),
+  }),
+})

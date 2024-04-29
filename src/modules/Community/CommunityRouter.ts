@@ -92,6 +92,12 @@ CommunityRouter.get(
   CommunityController.listCommunityTasks
 )
 
+CommunityRouter.get(
+  '/task/list/farmer/:id',
+  UserGuard(['farm_head', 'farmer']),
+  CommunityController.listCommunityTasksByFarmer
+)
+
 CommunityRouter.delete(
   '/task/delete/:id',
   UserGuard(['farm_head', 'farmer']),
@@ -105,14 +111,27 @@ CommunityRouter.post(
   CommunityController.createCommunityEvent
 )
 
+CommunityRouter.put(
+  '/event/update/:id',
+  UserGuard(['farm_head']),
+  upload.single('banner'),
+  CommunityController.updateCommunityEvent
+)
+
 CommunityRouter.get(
   '/event/list/:id',
-  UserGuard(['farm_head']),
+  UserGuard(['farm_head', 'farmer']),
   CommunityController.listCommunityEvents
 )
+
+CommunityRouter.get('/event/list', CommunityController.listCommunityEvents)
 
 CommunityRouter.delete(
   '/event/delete/:id',
   UserGuard(['farm_head']),
   CommunityController.deleteCommunityEvent
 )
+
+CommunityRouter.get('/event/view/:id', CommunityController.viewCommunityEvent)
+
+CommunityRouter.post('/event/action/:id', CommunityController.eventAction)

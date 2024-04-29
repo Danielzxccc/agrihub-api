@@ -349,6 +349,47 @@ export async function listCommunityTasks(req: SessionRequest, res: Response) {
   }
 }
 
+export async function listCommunityTasksByFarmer(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { query } = await zParse(Schema.ListCommunityTasks, req)
+    const { id } = req.params
+    const { userid } = req.session
+
+    const perpage = Number(query.perpage)
+    const pageNumber = Number(query.page) || 1
+    const offset = (pageNumber - 1) * perpage
+    const searchKey = String(query.search)
+    const filter = query.filter
+    const type = query.type
+
+    const data = await Interactor.listCommunityTasks({
+      farmid: id,
+      userid,
+      offset,
+      filter,
+      perpage,
+      searchKey,
+      type,
+    })
+
+    const totalPages = Math.ceil(Number(data.total.count) / perpage)
+    res.status(200).json({
+      data: data.data,
+      pagination: {
+        page: pageNumber,
+        per_page: perpage,
+        total_pages: totalPages,
+        total_records: Number(data.total.count),
+      },
+    })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
 export async function deleteCommunityTask(req: SessionRequest, res: Response) {
   try {
     const { id } = req.params
@@ -389,12 +430,14 @@ export async function listCommunityEvents(req: SessionRequest, res: Response) {
   try {
     const { query } = await zParse(Schema.ListCommunityEvents, req)
     const { id } = req.params
+    const { userid } = req.session
 
     const perpage = Number(query.perpage)
     const pageNumber = Number(query.page) || 1
     const offset = (pageNumber - 1) * perpage
     const searchKey = String(query.search)
     const type = query.type
+    const filter = query.filter
 
     const data = await Interactor.listCommunityEvents({
       farmid: id,
@@ -402,6 +445,8 @@ export async function listCommunityEvents(req: SessionRequest, res: Response) {
       perpage,
       searchKey,
       type,
+      filter,
+      userid,
     })
 
     const totalPages = Math.ceil(Number(data.total.count) / perpage)
@@ -414,6 +459,44 @@ export async function listCommunityEvents(req: SessionRequest, res: Response) {
         total_records: Number(data.total.count),
       },
     })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateCommunityEvent(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { body } = await zParse(Schema.UpdateCommunityEvent, req)
+    const banner = req.file
+
+    await Interactor.updateCommunityEvent(id, { body }, banner)
+    res.status(200).json({ message: 'Updated Successfuly' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function viewCommunityEvent(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    const data = await Interactor.viewCommunityEvent(userid, id)
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function eventAction(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+    const { body } = await zParse(Schema.EventAction, req)
+
+    await Interactor.eventAction(id, userid, body.action)
+    res.status(200).json({ mesage: 'Success' })
   } catch (error) {
     errorHandler(res, error)
   }

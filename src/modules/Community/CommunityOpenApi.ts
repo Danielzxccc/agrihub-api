@@ -1685,6 +1685,13 @@
  *           enum:
  *             - private
  *             - public
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - upcoming
+ *             - previous
  *         description: Filter by event type (optional)
  *     responses:
  *       "200":
@@ -1693,6 +1700,130 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/CommunityEventsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/event/list:
+ *   get:
+ *     summary: Get list of public community events
+ *     tags:
+ *       - CommunityFarmEvents
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the community
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term (optional)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Page number (optional)
+ *       - in: query
+ *         name: perpage
+ *         schema:
+ *           type: string
+ *         description: Number of events per page (optional)
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - private
+ *             - public
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - upcoming
+ *             - previous
+ *         description: Filter by event type (optional)
+ *     responses:
+ *       "200":
+ *         description: List of community events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommunityEventsResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/event/view/{id}:
+ *   get:
+ *     summary: Get list of community events
+ *     tags:
+ *       - CommunityFarmEvents
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the community
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: List of community events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CommunityEvent"
  *       "401":
  *         description: Unauthorized
  *         content:
@@ -1771,6 +1902,19 @@
  *         updatedat:
  *           type: string
  *           format: date-time
+ *         farm_name:
+ *           type: string
+ *         tags:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/EventTag"
+ *         action:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *             type:
+ *               type: string
  *
  *     CommunityEventsResponse:
  *       type: object
@@ -1828,4 +1972,73 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * /api/community-farm/event/action/{id}:
+ *   post:
+ *     summary: Perform an action on a community event
+ *     tags:
+ *       - CommunityFarmEvents
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the event to perform action on
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/EventAction"
+ *           example:
+ *             action: "going"
+ *     responses:
+ *       "200":
+ *         description: Action performed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     EventAction:
+ *       type: object
+ *       properties:
+ *         action:
+ *           type: string
+ *           enum:
+ *             - going
+ *             - interested
  */

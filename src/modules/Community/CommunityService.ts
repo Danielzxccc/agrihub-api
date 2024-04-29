@@ -20,7 +20,8 @@ import {
   ListFarmerRequests,
   listPlantedCropReportsT,
 } from './CommunityInteractor'
-import { jsonArrayFrom } from 'kysely/helpers/postgres'
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres'
+import { EventEngagement } from 'kysely-codegen'
 
 export async function createNewFarmQuestion(question: NewFarmQuestion) {
   return await db
@@ -403,6 +404,7 @@ export async function updateCommunityTask(
 
 export async function listCommunityTasks({
   farmid,
+  userid,
   filter,
   type,
   offset,
@@ -412,7 +414,7 @@ export async function listCommunityTasks({
   let query = db
     .selectFrom('community_tasks as ct')
     .leftJoin('users as u', 'u.id', 'ct.assigned_to')
-    .select([
+    .select(({ eb }) => [
       'ct.id',
       'ct.farmid',
       'ct.assigned_to',
@@ -429,6 +431,10 @@ export async function listCommunityTasks({
       'u.role',
     ])
     .where('farmid', '=', farmid)
+
+  if (userid) {
+    query = query.where('ct.assigned_to', '=', userid)
+  }
 
   if (filter) {
     query = query.where('ct.status', '=', filter)
@@ -456,6 +462,7 @@ export async function listCommunityTasks({
 
 export async function getTotalCommunityTasks({
   farmid,
+  userid,
   filter,
   searchKey,
   type,
@@ -465,6 +472,10 @@ export async function getTotalCommunityTasks({
     .leftJoin('users as u', 'u.id', 'ct.assigned_to')
     .select(({ fn }) => [fn.count<number>('ct.id').as('count')])
     .where('farm_id', '=', farmid)
+
+  if (userid) {
+    query = query.where('ct.assigned_to', '=', userid)
+  }
 
   if (filter) {
     query = query.where('ct.status', '=', filter)
@@ -511,25 +522,28 @@ export async function createCommunityEvent(
     let tagRecords
     if (Array.isArray(tagsId) && tagsId.length > 0) {
       tagRecords = tagsId.map((tagName) => ({
-        event_id: insertedEvent.id,
-        tag_id: tagName,
+        eventid: insertedEvent.id,
+        tagid: tagName,
       }))
     } else if (typeof tagsId === 'string') {
       tagRecords = {
-        event_id: insertedEvent.id,
-        tag_id: tagsId,
+        eventid: insertedEvent.id,
+        tagid: tagsId,
       }
     }
 
+    let tags:
+      | { id: string; eventid: string; tagid: string }
+      | { id: string; eventid: string; tagid: string }[] = []
     if (tagRecords?.length || tagRecords) {
-      await trx
-        .insertInto('event_tags')
+      tags = await trx
+        .insertInto('community_events_tags')
         .values(tagRecords)
         .returningAll()
         .executeTakeFirst()
     }
 
-    return insertedEvent
+    return { insertedEvent: event, tags }
   })
 
   return communityEvent
@@ -541,11 +555,58 @@ export async function listCommunityEventsByFarm({
   offset,
   perpage,
   type,
+  filter,
+  userid,
 }: ListCommunityEventsT) {
   let query = db
     .selectFrom('community_events as ce')
-    .selectAll()
-    .where('farmid', '=', farmid)
+    .leftJoin('community_farms as cf', 'cf.id', 'ce.farmid')
+    .select(({ eb, fn, val }) => [
+      'ce.id',
+      'ce.farmid',
+      'ce.title',
+      'ce.about',
+      fn<string>('concat', [val(returnObjectUrl()), 'ce.banner']).as('banner'),
+      'ce.start_date',
+      'ce.end_date',
+      'ce.type',
+      'ce.createdat',
+      'ce.updatedat',
+      'cf.farm_name',
+      jsonArrayFrom(
+        eb
+          .selectFrom('community_events_tags as cet')
+          .leftJoin('tags', 'cet.tagid', 'tags.id')
+          .select([
+            'tags.tag_name as tag',
+            sql<string>`CAST(tags.id AS TEXT)`.as('id'),
+          ])
+          .whereRef('cet.eventid', '=', 'ce.id')
+          .groupBy(['ce.id', 'tags.id', 'cet.eventid', 'tags.tag_name'])
+          .orderBy('ce.id')
+      ).as('tags'),
+      jsonObjectFrom(
+        eb
+          .selectFrom('user_event_engagement as ue')
+          .select([sql<string>`CAST(ue.id AS TEXT)`.as('id'), 'type'])
+          .where('ue.userid', '=', userid)
+          .whereRef('ce.id', '=', 'ue.eventid')
+      ).as('action'),
+    ])
+
+  if (farmid) {
+    query = query.where('ce.farmid', '=', farmid)
+  } else {
+    query = query.where('ce.type', '=', 'public')
+  }
+
+  if (filter === 'upcoming') {
+    query = query.where('ce.start_date', '>', new Date())
+    query = query.orderBy('ce.end_date')
+  } else if (filter === 'previous') {
+    query = query.where('ce.start_date', '<', new Date())
+    query = query.orderBy('ce.end_date')
+  }
 
   if (searchKey.length) {
     query = query.where((eb) =>
@@ -567,11 +628,23 @@ export async function getTotalCommunityEventsByFarm({
   farmid,
   searchKey,
   type,
+  filter,
 }: ListCommunityEventsT) {
   let query = db
     .selectFrom('community_events as ce')
     .select(({ fn }) => [fn.count<number>('ce.id').as('count')])
-    .where('farmid', '=', farmid)
+
+  if (farmid) {
+    query = query.where('ce.farmid', '=', farmid)
+  } else {
+    query = query.where('ce.type', '=', 'public')
+  }
+
+  if (filter === 'upcoming') {
+    query = query.where('ce.start_date', '>', new Date())
+  } else if (filter === 'previous') {
+    query = query.where('ce.start_date', '<', new Date())
+  }
 
   if (searchKey.length) {
     query = query.where((eb) =>
@@ -589,10 +662,19 @@ export async function getTotalCommunityEventsByFarm({
   return await query.executeTakeFirst()
 }
 
+export async function findCommunityEventTags(id: string) {
+  return await db
+    .selectFrom('community_events_tags')
+    .selectAll()
+    .where('eventid', '=', id)
+    .execute()
+}
+
 export async function updateCommunityEvent(
   id: string,
   event: UpdateCommunityEvent,
-  tagsId: string[] | string
+  tagsId: string[] | string,
+  deletedTags: string[] | string
 ) {
   const updateCommunityEvent = await db.transaction().execute(async (trx) => {
     const updatedEvent = await trx
@@ -605,21 +687,29 @@ export async function updateCommunityEvent(
     let tagRecords
     if (Array.isArray(tagsId) && tagsId.length > 0) {
       tagRecords = tagsId.map((tagName) => ({
-        event_id: updatedEvent.id,
-        tag_id: tagName,
+        eventid: updatedEvent.id,
+        tagid: tagName,
       }))
     } else if (typeof tagsId === 'string') {
       tagRecords = {
-        event_id: updatedEvent.id,
-        tag_id: tagsId,
+        eventid: updatedEvent.id,
+        tagid: tagsId,
       }
+    }
+
+    if (deletedTags.length) {
+      await db
+        .deleteFrom('community_events_tags')
+        .where('eventid', '=', id)
+        .where('tagid', 'in', deletedTags)
+        .execute()
     }
 
     if (tagRecords?.length || tagRecords) {
       await trx
-        .insertInto('event_tags')
+        .insertInto('community_events_tags')
         .values(tagRecords)
-        .onConflict((oc) => oc.column('tag_id').column('event_id').doNothing())
+        .onConflict((oc) => oc.column('tagid').column('eventid').doNothing())
         .returningAll()
         .executeTakeFirst()
     }
@@ -642,6 +732,79 @@ export async function deleteCommunityEvent(id: string) {
   return await db
     .deleteFrom('community_events')
     .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function viewCommunityEvent(id: string, userid: string) {
+  return await db
+    .selectFrom('community_events as ce')
+    .leftJoin('community_farms as cf', 'cf.id', 'ce.farmid')
+    .select(({ eb, fn, val }) => [
+      'ce.id',
+      'ce.farmid',
+      'ce.title',
+      'ce.about',
+      fn<string>('concat', [val(returnObjectUrl()), 'ce.banner']).as('banner'),
+      'ce.start_date',
+      'ce.end_date',
+      'ce.type',
+      'ce.createdat',
+      'ce.updatedat',
+      'cf.farm_name',
+      jsonArrayFrom(
+        eb
+          .selectFrom('community_events_tags as cet')
+          .leftJoin('tags', 'cet.tagid', 'tags.id')
+          .select([
+            'tags.tag_name as tag',
+            sql<string>`CAST(tags.id AS TEXT)`.as('id'),
+          ])
+          .whereRef('cet.eventid', '=', 'ce.id')
+          .groupBy(['ce.id', 'tags.id', 'cet.eventid', 'tags.tag_name'])
+          .orderBy('ce.id')
+      ).as('tags'),
+      jsonObjectFrom(
+        eb
+          .selectFrom('user_event_engagement as ue')
+          .select([sql<string>`CAST(ue.id AS TEXT)`.as('id'), 'type'])
+          .where('ue.userid', '=', userid)
+          .whereRef('ce.id', '=', 'ue.eventid')
+      ).as('action'),
+    ])
+    .where('ce.id', '=', id)
+    .executeTakeFirst()
+}
+
+export async function findUsersWithTags(tagid: string[]) {
+  return await db
+    .selectFrom('user_tags')
+    .selectAll()
+    .where('tagid', 'in', tagid)
+    .execute()
+}
+
+export async function eventAction(
+  eventid: string,
+  userid: string,
+  action: EventEngagement
+) {
+  return await db
+    .insertInto('user_event_engagement')
+    .values({
+      eventid,
+      userid,
+      type: action,
+    })
+    .onConflict((oc) =>
+      oc
+        .column('eventid')
+        .column('userid')
+        .doUpdateSet({
+          type: action,
+          updatedat: sql`CURRENT_TIMESTAMP`,
+        })
+    )
     .returningAll()
     .executeTakeFirst()
 }

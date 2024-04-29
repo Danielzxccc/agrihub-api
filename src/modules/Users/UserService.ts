@@ -475,3 +475,11 @@ export async function findUserByPhoneNumber(number: string) {
     .where('contact_number', '=', number)
     .executeTakeFirst()
 }
+
+export async function findFarmMembersByFarmId(farmid: string, userid: string) {
+  return await db
+    .selectFrom('users')
+    .selectAll()
+    .where('farm_id', '=', farmid)
+    .execute()
+}

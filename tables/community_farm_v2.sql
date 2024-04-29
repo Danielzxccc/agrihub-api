@@ -81,4 +81,17 @@ CREATE TABLE community_events_tags(
     UNIQUE (eventid, tagid)
 );
 
+CREATE TYPE IF NOT EXISTS event_engagement AS ENUM ('going', 'interested');
+
+CREATE TABLE user_event_engagement(
+    id SERIAL PRIMARY KEY,
+    eventid INT NOT NULL,
+    userid INT NOT NULL,
+    type event_engagement NOT NULL,
+    createdat timestamp DEFAULT CURRENT_TIMESTAMP,
+    updatedat timestamp DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (eventid) REFERENCES community_events(id) ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (eventid, userid)
+);
 
