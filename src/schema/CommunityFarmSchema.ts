@@ -69,7 +69,7 @@ export const HarvestedCropReport = z.object({
     date_harvested: z.string(),
     notes: z.string().optional(),
     kilogram: z.string(),
-    task_id: z.string(),
+    task_id: z.string().optional(),
   }),
 })
 
@@ -134,6 +134,9 @@ export const ListCommunityEvents = z.object({
     page: z.string().optional(),
     perpage: z.string().optional().default('20'),
     type: z.union([z.literal('private'), z.literal('public')]).optional(),
+    filter: z
+      .union([z.literal('upcoming'), z.literal('previous')])
+      .default('upcoming'),
   }),
 })
 
@@ -151,7 +154,6 @@ export const CreateCommunityEvent = z.object({
 
 export const UpdateCommunityEvent = z.object({
   body: z.object({
-    farmid: z.string().optional(),
     title: z.string().optional(),
     about: z.string().optional(),
     start_date: z.string().optional(),
