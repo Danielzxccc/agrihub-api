@@ -1123,7 +1123,8 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
 export async function getCropHarvestDistributionPerFarm(
   month: number,
   limit: number,
-  farmid: string
+  farmid: string,
+  year = new Date().getFullYear()
 ) {
   return db.executeQuery(
     sql`
@@ -1141,6 +1142,8 @@ export async function getCropHarvestDistributionPerFarm(
             crops c ON cc.crop_id = c.id
         WHERE 
             EXTRACT(MONTH FROM cr.date_harvested) = ${month}
+            AND
+            EXTRACT(YEAR FROM cr.date_harvested) = ${year}
         GROUP BY 
             cr.farmid, cc.crop_id, c.name
     )
