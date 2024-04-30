@@ -349,6 +349,7 @@ export async function getTotalPlantedReports({
   month,
   searchKey,
   status,
+  previous_id,
 }: listPlantedCropReportsT) {
   let query = db
     .selectFrom('community_crop_reports as ccr')
@@ -372,6 +373,10 @@ export async function getTotalPlantedReports({
         eb.or(filterKey.map((item) => eb('c.name', 'ilike', `${item}%`)))
       )
     }
+  }
+
+  if (previous_id) {
+    query = query.where('last_harvest_id', '=', previous_id)
   }
 
   if (month.length) {
