@@ -256,8 +256,10 @@ export async function listDraftEvents(
   ])
 
   for (const date of data) {
-    date.event_start = await formatUTC(date.event_start)
-    date.event_end = await formatUTC(date.event_end)
+    if (date.event_start && date.event_start) {
+      date.event_start = await formatUTC(date.event_start)
+      date.event_end = await formatUTC(date.event_end)
+    }
   }
 
   return { data, total }
