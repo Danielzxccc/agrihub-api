@@ -1,7 +1,7 @@
 /**
  * @openapi
  * /api/analytics/latest/harvest-rate/{id}:
- *   post:
+ *   get:
  *     summary: Calculate latest harvest rate analytics
  *     tags:
  *       - Analytics
