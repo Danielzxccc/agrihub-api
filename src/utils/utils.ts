@@ -109,5 +109,5 @@ export async function deleteLocalFiles(files: Express.Multer.File[]) {
 }
 
 export function formatTimestamp(inputDate: string) {
-  return moment(inputDate).format('YYYY-MM-DDTHH:mm')
+  return moment(inputDate).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
 }
