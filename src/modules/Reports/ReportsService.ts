@@ -310,7 +310,7 @@ export async function getTotalHarvestEachMonth(
                 community_crop_reports
             WHERE
                 date_harvested IS NOT NULL
-            WHERE
+            AND
                 EXTRACT(YEAR FROM date_harvested) = ${year}
             AND
                 farmid = ${farmid}
