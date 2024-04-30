@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { formatTimestamp } from '../utils/utils'
 
 export const FarmQuestion = z.object({
   body: z.array(
@@ -145,8 +146,8 @@ export const CreateCommunityEvent = z.object({
     farmid: z.string(),
     title: z.string(),
     about: z.string(),
-    start_date: z.string(),
-    end_date: z.string(),
+    start_date: z.string().transform((arg) => formatTimestamp(arg)),
+    end_date: z.string().transform((arg) => formatTimestamp(arg)),
     type: z.union([z.literal('private'), z.literal('public')]),
     tags: z.union([z.array(z.string()), z.string()]).optional(),
   }),
@@ -156,8 +157,8 @@ export const UpdateCommunityEvent = z.object({
   body: z.object({
     title: z.string().optional(),
     about: z.string().optional(),
-    start_date: z.string().optional(),
-    end_date: z.string().optional(),
+    start_date: z.string().transform((arg) => formatTimestamp(arg)),
+    end_date: z.string().transform((arg) => formatTimestamp(arg)),
     type: z.union([z.literal('private'), z.literal('public')]).optional(),
     tags: z.union([z.array(z.string()), z.string()]).optional(),
   }),

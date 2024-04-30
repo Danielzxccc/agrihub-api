@@ -4,6 +4,7 @@ import { Request } from 'express'
 import { ToolRequestStatus } from 'kysely-codegen'
 import { UpdateToolRequest } from '../types/DBTypes'
 import { deleteFile } from './file'
+import moment from 'moment'
 const log = logger({
   transport: {
     target: 'pino-pretty',
@@ -105,4 +106,8 @@ export async function deleteLocalFiles(files: Express.Multer.File[]) {
   for (const file of files) {
     deleteFile(file.filename)
   }
+}
+
+export function formatTimestamp(inputDate: string) {
+  return moment(inputDate).format('YYYY-MM-DDTHH:mm')
 }
