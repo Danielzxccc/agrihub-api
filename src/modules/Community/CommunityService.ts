@@ -577,8 +577,8 @@ export async function listCommunityEventsByFarm({
 }: ListCommunityEventsT) {
   let query = db
     .selectFrom('community_events as ce')
-    .leftJoin('community_farms as cf', 'cf.id', 'ce.farmid')
-    .leftJoin('user_event_engagement as uee', 'uee.eventid', 'ce.id')
+    .rightJoin('community_farms as cf', 'cf.id', 'ce.farmid')
+    .rightJoin('user_event_engagement as uee', 'uee.eventid', 'ce.id')
     .select(({ eb, fn, val }) => [
       'ce.id',
       'ce.farmid',
@@ -621,6 +621,7 @@ export async function listCommunityEventsByFarm({
           .whereRef('ce.id', '=', 'ue.eventid')
       ).as('action'),
     ])
+    .distinct()
 
   if (farmid) {
     query = query.where('ce.farmid', '=', farmid)
@@ -648,7 +649,22 @@ export async function listCommunityEventsByFarm({
   if (type) {
     query = query.where('ce.type', '=', type)
   }
-  query = query.groupBy(['ce.id', 'uee.id', 'cf.farm_name'])
+  query = query.groupBy([
+    'ce.id',
+    'ce.id',
+    'ce.farmid',
+    'ce.title',
+    'ce.about',
+    'ce.banner',
+    'ce.start_date',
+    'ce.end_date',
+    'ce.type',
+    'ce.createdat',
+    'ce.updatedat',
+    'cf.farm_name',
+    'cf.id',
+    'uee.id',
+  ])
 
   return await query.limit(perpage).offset(offset).execute()
 }
