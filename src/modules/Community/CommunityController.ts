@@ -218,6 +218,7 @@ export async function listPlantedCropReports(
     const month = query.month
     const status = query.status
     const order = query.order
+    const previous_id = query.previous_id
 
     const data = await Interactor.listPlantedCropReports({
       farmid: id,
@@ -228,6 +229,7 @@ export async function listPlantedCropReports(
       month,
       status,
       order,
+      previous_id,
     })
 
     const totalPages = Math.ceil(Number(data.total.count) / perpage)

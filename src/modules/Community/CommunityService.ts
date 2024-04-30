@@ -256,6 +256,7 @@ export async function listPlantedCropReports({
   month,
   status,
   order,
+  previous_id,
 }: listPlantedCropReportsT) {
   let query = db
     .selectFrom('community_crop_reports as ccr')
@@ -275,6 +276,7 @@ export async function listPlantedCropReports({
         .whereRef('ccrp.id', '=', 'ccr.last_harvest_id')
         .as('previous_planted_qty'),
       'ccr.harvested_qty',
+      'ccr.last_harvest_id',
       'ccr.withered_crops',
       'ccr.planted_qty',
       'ccr.harvested_by',
@@ -314,6 +316,10 @@ export async function listPlantedCropReports({
   } else {
     query = query.where('ccr.date_harvested', 'is not', null)
     query = query.orderBy('ccr.createdat', order)
+  }
+
+  if (previous_id) {
+    query = query.where('last_harvest_id', '=', previous_id)
   }
 
   if (month.length) {

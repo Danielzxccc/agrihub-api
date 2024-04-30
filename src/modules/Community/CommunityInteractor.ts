@@ -482,6 +482,7 @@ export type listPlantedCropReportsT = {
   filterKey: string[] | string
   status: 'harvested' | 'planted'
   order: 'asc' | 'desc'
+  previous_id: string
 }
 
 export async function listPlantedCropReports(payload: listPlantedCropReportsT) {

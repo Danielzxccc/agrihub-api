@@ -967,6 +967,11 @@
  *           enum:
  *             - asc
  *             - desc
+ *       - in: query
+ *         name: previous_id
+ *         schema:
+ *           type: string
+ *         description: Page number
  *     responses:
  *       "200":
  *         description: Successful response
@@ -1024,6 +1029,8 @@
  *           type: string
  *           nullable: true
  *         harvested_qty:
+ *           type: string
+ *         last_harvest_id:
  *           type: string
  *         withered_crops:
  *           type: string
