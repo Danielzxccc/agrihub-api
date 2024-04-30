@@ -606,7 +606,7 @@ export async function getTotalWitheredHarvestEachMonth(
             SELECT
                 EXTRACT(MONTH FROM date_harvested) AS month,
                 EXTRACT(YEAR FROM date_harvested) AS year,
-                SUM(harvested_qty) AS total_harvested_qty,
+                SUM(kilogram) AS total_harvested_qty,
                 SUM(withered_crops) AS total_withered_qty
             FROM
                 community_crop_reports
