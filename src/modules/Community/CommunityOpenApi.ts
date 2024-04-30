@@ -960,6 +960,13 @@
  *           enum:
  *             - planted
  *             - harvested
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - asc
+ *             - desc
  *     responses:
  *       "200":
  *         description: Successful response
@@ -1010,6 +1017,12 @@
  *           type: string
  *         date_harvested:
  *           type: string
+ *         batch:
+ *           type: string
+ *           nullable: true
+ *         previous_planted_qty:
+ *           type: string
+ *           nullable: true
  *         harvested_qty:
  *           type: string
  *         withered_crops:

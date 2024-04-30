@@ -481,6 +481,7 @@ export type listPlantedCropReportsT = {
   month: string
   filterKey: string[] | string
   status: 'harvested' | 'planted'
+  order: 'asc' | 'desc'
 }
 
 export async function listPlantedCropReports(payload: listPlantedCropReportsT) {
@@ -569,7 +570,7 @@ export async function createHarvestedReport({
       harvested_by: userid,
     }
 
-    await Service.updateCropReport(id, reportObject)
+    const updatedReportData = await Service.updateCropReport(id, reportObject)
 
     // update task
     if (task_id) {
@@ -579,6 +580,7 @@ export async function createHarvestedReport({
       })
     }
 
+    let insertedImages
     if (images?.length) {
       const reportImages = images.map((item) => {
         return {
@@ -588,10 +590,39 @@ export async function createHarvestedReport({
         }
       })
 
-      await insertCropReportImage(reportImages)
+      insertedImages = await insertCropReportImage(reportImages)
       await uploadFiles(images)
 
       deleteLocalFiles(images)
+    }
+
+    if (reportData.isyield) {
+      // CREATE NEW COPY OBJECT
+      const newBatch: NewCommunityFarmReport = {
+        batch: updatedReportData.date_harvested,
+        last_harvest_id: updatedReportData.last_harvest_id
+          ? updatedReportData.last_harvest_id
+          : updatedReportData.id,
+        planted_qty: 0,
+        date_planted: updatedReportData.date_planted,
+        crop_id: updatedReportData.crop_id,
+        farmid: updatedReportData.farmid,
+        userid,
+      }
+
+      const insertedNewBatch = await Service.createPlantedReport(newBatch)
+      // INSERT NEW BATCH
+
+      // COPY IMAGES
+      if (images?.length) {
+        const newImages = insertedImages.map((item) => ({
+          ...item,
+          id: undefined,
+          report_id: insertedNewBatch.id,
+        }))
+
+        await insertCropReportImage(newImages)
+      }
     }
   } catch (error) {
     deleteLocalFiles(images)

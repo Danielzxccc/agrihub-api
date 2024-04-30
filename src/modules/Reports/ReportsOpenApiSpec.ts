@@ -890,6 +890,8 @@
  *           type: string
  *         kilogram:
  *           type: string
+ *         previous_planted_qty:
+ *           type: string
  *         image:
  *           type: string
  *           format: uri

@@ -48,6 +48,11 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
       'ccr.farmid',
       'ccr.planted_qty',
       'ccr.kilogram',
+      eb
+        .selectFrom('community_crop_reports as ccrp')
+        .select(['planted_qty'])
+        .whereRef('ccrp.id', '=', 'ccr.last_harvest_id')
+        .as('previous_planted_qty'),
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
       jsonArrayFrom(
         eb
@@ -81,6 +86,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
       'ccr.date_harvested',
       'ccr.harvested_qty',
       'ccr.withered_crops',
+      'ccr.last_harvest_id',
       'c.isyield',
     ])
     .where('ccr.id', '=', id)
@@ -146,7 +152,7 @@ export async function findCommunityReports(
   }
 
   if (isExisting) {
-    query = query.where('is_first_report', '=', true)
+    // query = query.where('is_first_report', '=', true)
     query = query.where('ccr.planted_qty', '>', '0')
   }
 
@@ -189,7 +195,7 @@ export async function getTotalReportCount(
   }
 
   if (isExisting) {
-    query = query.where('ccr.is_first_report', '=', true)
+    // query = query.where('ccr.is_first_report', '=', true)
   }
 
   return await query.executeTakeFirst()
@@ -206,7 +212,7 @@ export async function insertCropReportImage(image: NewCropReportImage) {
 export async function markReportAsInactive(id: string) {
   return await db
     .updateTable('community_crop_reports as ccr')
-    .set({ is_first_report: false })
+    .set({ is_archived: false })
     .where('ccr.id', '=', id)
     .returningAll()
     .executeTakeFirst()

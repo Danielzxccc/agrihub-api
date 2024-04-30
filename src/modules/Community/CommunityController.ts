@@ -217,6 +217,7 @@ export async function listPlantedCropReports(
     const filterKey = query.filter
     const month = query.month
     const status = query.status
+    const order = query.order
 
     const data = await Interactor.listPlantedCropReports({
       farmid: id,
@@ -226,6 +227,7 @@ export async function listPlantedCropReports(
       searchKey,
       month,
       status,
+      order,
     })
 
     const totalPages = Math.ceil(Number(data.total.count) / perpage)

@@ -98,6 +98,7 @@ export const CommunityCropReports = z.object({
     status: z
       .union([z.literal('harvested'), z.literal('planted')])
       .default('planted'),
+    order: z.union([z.literal('asc'), z.literal('desc')]).default('asc'),
   }),
 })
 

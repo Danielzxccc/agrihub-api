@@ -255,18 +255,25 @@ export async function listPlantedCropReports({
   searchKey,
   month,
   status,
+  order,
 }: listPlantedCropReportsT) {
   let query = db
     .selectFrom('community_crop_reports as ccr')
     .leftJoin('community_farms_crops as cfc', 'ccr.crop_id', 'cfc.id')
     .leftJoin('crops as c', 'cfc.crop_id', 'c.id')
     .leftJoin('users as u', 'u.id', 'ccr.harvested_by')
-    .select(({ fn, val }) => [
+    .select(({ eb, fn, val }) => [
       'ccr.id as report_id',
       'cfc.id as cfc_id',
       'c.name as crop_name',
       'ccr.date_planted',
       'ccr.date_harvested',
+      'ccr.batch',
+      eb
+        .selectFrom('community_crop_reports as ccrp')
+        .select(['planted_qty'])
+        .whereRef('ccrp.id', '=', 'ccr.last_harvest_id')
+        .as('previous_planted_qty'),
       'ccr.harvested_qty',
       'ccr.withered_crops',
       'ccr.planted_qty',
@@ -289,6 +296,7 @@ export async function listPlantedCropReports({
       'ccr.date_harvested',
       'ccr.harvested_qty',
       'ccr.withered_crops',
+      'ccr.last_harvest_id',
       'ccr.planted_qty',
       'ccr.harvested_by',
       'u.firstname',
@@ -299,8 +307,10 @@ export async function listPlantedCropReports({
 
   if (status === 'planted') {
     query = query.where('ccr.date_harvested', 'is', null)
+    query = query.orderBy('ccr.date_planted', order)
   } else {
     query = query.where('ccr.date_harvested', 'is not', null)
+    query = query.orderBy('ccr.date_harvested', order)
   }
 
   if (month.length) {
