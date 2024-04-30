@@ -282,7 +282,10 @@ export async function getTotalPlantedQuantity(farmid: string) {
     .execute()
 }
 
-export async function getTotalHarvestEachMonth(farmid: string) {
+export async function getTotalHarvestEachMonth(
+  farmid: string,
+  year = new Date().getFullYear()
+) {
   return await db.executeQuery(
     sql`
       SELECT
@@ -307,6 +310,8 @@ export async function getTotalHarvestEachMonth(farmid: string) {
                 community_crop_reports
             WHERE
                 date_harvested IS NOT NULL
+            WHERE
+                EXTRACT(YEAR FROM date_harvested) = ${year}
             AND
                 farmid = ${farmid}
             GROUP BY
