@@ -1132,7 +1132,7 @@ export async function getCropHarvestDistributionPerFarm(
             cc.crop_id,
             cr.farmid,
             c.name AS crop_name,
-            SUM(cr.harvested_qty) AS total_harvested_qty
+            SUM(cr.kilogram) AS total_harvested_qty
         FROM 
             community_crop_reports cr
         JOIN 
