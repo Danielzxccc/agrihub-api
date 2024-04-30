@@ -1921,6 +1921,10 @@
  *           format: date-time
  *         farm_name:
  *           type: string
+ *         going:
+ *           type: string
+ *         interested:
+ *           type: string
  *         tags:
  *           type: array
  *           items:

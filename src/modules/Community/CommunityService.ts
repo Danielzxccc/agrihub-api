@@ -313,7 +313,7 @@ export async function listPlantedCropReports({
     query = query.orderBy('ccr.date_planted', order)
   } else {
     query = query.where('ccr.date_harvested', 'is not', null)
-    query = query.orderBy('ccr.date_harvested', order)
+    query = query.orderBy('ccr.createdat', order)
   }
 
   if (month.length) {
@@ -578,6 +578,7 @@ export async function listCommunityEventsByFarm({
   let query = db
     .selectFrom('community_events as ce')
     .leftJoin('community_farms as cf', 'cf.id', 'ce.farmid')
+    .leftJoin('user_event_engagement as uee', 'uee.eventid', 'ce.id')
     .select(({ eb, fn, val }) => [
       'ce.id',
       'ce.farmid',
@@ -590,6 +591,16 @@ export async function listCommunityEventsByFarm({
       'ce.createdat',
       'ce.updatedat',
       'cf.farm_name',
+      fn
+        .count<number>('uee.id')
+        .distinct()
+        .filterWhere('uee.type', '=', 'going')
+        .as('going'),
+      fn
+        .count<number>('uee.id')
+        .distinct()
+        .filterWhere('uee.type', '=', 'interested')
+        .as('interested'),
       jsonArrayFrom(
         eb
           .selectFrom('community_events_tags as cet')
@@ -637,6 +648,7 @@ export async function listCommunityEventsByFarm({
   if (type) {
     query = query.where('ce.type', '=', type)
   }
+  query = query.groupBy(['ce.id', 'uee.id', 'cf.farm_name'])
 
   return await query.limit(perpage).offset(offset).execute()
 }
@@ -757,6 +769,7 @@ export async function viewCommunityEvent(id: string, userid: string) {
   return await db
     .selectFrom('community_events as ce')
     .leftJoin('community_farms as cf', 'cf.id', 'ce.farmid')
+    .leftJoin('user_event_engagement as uee', 'uee.eventid', 'ce.id')
     .select(({ eb, fn, val }) => [
       'ce.id',
       'ce.farmid',
@@ -769,6 +782,16 @@ export async function viewCommunityEvent(id: string, userid: string) {
       'ce.createdat',
       'ce.updatedat',
       'cf.farm_name',
+      fn
+        .count<number>('uee.id')
+        .distinct()
+        .filterWhere('uee.type', '=', 'going')
+        .as('going'),
+      fn
+        .count<number>('uee.id')
+        .distinct()
+        .filterWhere('uee.type', '=', 'interested')
+        .as('interested'),
       jsonArrayFrom(
         eb
           .selectFrom('community_events_tags as cet')
@@ -790,6 +813,7 @@ export async function viewCommunityEvent(id: string, userid: string) {
       ).as('action'),
     ])
     .where('ce.id', '=', id)
+    .groupBy(['ce.id', 'uee.id', 'cf.farm_name'])
     .executeTakeFirst()
 }
 
