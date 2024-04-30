@@ -569,8 +569,6 @@ export async function createHarvestedReport({
     const reportObject: UpdateCommunityFarmReport = {
       ...reportPayload,
       harvested_by: userid,
-      last_harvest_id: reportData.isyield ? id : undefined,
-      batch: reportData.isyield ? reportPayload.date_harvested : undefined,
     }
 
     const updatedReportData = await Service.updateCropReport(id, reportObject)

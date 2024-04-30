@@ -319,7 +319,12 @@ export async function listPlantedCropReports({
   }
 
   if (previous_id) {
-    query = query.where('last_harvest_id', '=', previous_id)
+    query = query.where((eb) =>
+      eb.or([
+        eb('ccr.last_harvest_id', '=', previous_id),
+        eb('ccr.id', '=', previous_id),
+      ])
+    )
   }
 
   if (month.length) {
