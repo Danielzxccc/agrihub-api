@@ -111,3 +111,14 @@ export async function deleteLocalFiles(files: Express.Multer.File[]) {
 export function formatTimestamp(inputDate: string) {
   return moment(inputDate).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
 }
+
+// export function formatUTC(date: Date) {}
+
+export function formatUTC(date: Date) {
+  return new Promise<Date>((resolve) => {
+    const formattedDate = new Date(
+      formatTimestamp(new Date(date).toUTCString())
+    ) // Just an example, replace with your implementation
+    resolve(formattedDate)
+  })
+}

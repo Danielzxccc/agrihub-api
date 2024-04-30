@@ -30,7 +30,7 @@ import {
 } from '../../types/DBTypes'
 import { deleteFile } from '../../utils/file'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
-import { deleteLocalFiles } from '../../utils/utils'
+import { deleteLocalFiles, formatTimestamp, formatUTC } from '../../utils/utils'
 import {
   CommunityEventsType,
   CommunityTasksStatus,
@@ -897,6 +897,11 @@ export async function listCommunityEvents(payload: ListCommunityEventsT) {
     Service.getTotalCommunityEventsByFarm(payload),
   ])
 
+  for (const date of data) {
+    date.start_date = await formatUTC(date.start_date)
+    date.end_date = await formatUTC(date.end_date)
+  }
+
   return { data, total }
 }
 
@@ -978,6 +983,9 @@ export async function viewCommunityEvent(userid: string, id: string) {
   if (!event) {
     throw new HttpError('Event Not Found', 404)
   }
+
+  event.start_date = await formatUTC(event.start_date)
+  event.end_date = await formatUTC(event.end_date)
 
   if (event.type === 'private') {
     const user = await getUserOrThrow(userid)

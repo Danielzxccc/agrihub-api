@@ -16,6 +16,7 @@ import * as Service from './EventsService'
 import { ZodError, z } from 'zod'
 import zParse from '../../utils/zParse'
 import { sql } from 'kysely'
+import { formatUTC } from '../../utils/utils'
 
 export async function createDraftEvent(event: NewEvent) {
   const newEvent = await Service.insertNewEvent(event)
@@ -238,6 +239,9 @@ export async function viewUnpublishedEvent(id: string) {
     throw new HttpError('Event Not Found', 404)
   }
 
+  event.event_start = await formatUTC(event.event_start)
+  event.event_end = await formatUTC(event.event_end)
+
   return event
 }
 
@@ -251,6 +255,11 @@ export async function listDraftEvents(
     Service.getTotalDraftEvents(searchKey),
   ])
 
+  for (const date of data) {
+    date.event_start = await formatUTC(date.event_start)
+    date.event_end = await formatUTC(date.event_end)
+  }
+
   return { data, total }
 }
 
@@ -263,6 +272,11 @@ export async function listArchivedEvents(
     Service.findArchivedEvents(offset, searchKey, perpage),
     Service.getTotalArchiveEvents(searchKey),
   ])
+
+  for (const date of data) {
+    date.event_start = await formatUTC(date.event_start)
+    date.event_end = await formatUTC(date.event_end)
+  }
 
   return { data, total }
 }
@@ -359,6 +373,9 @@ export async function viewPublishedEvent(id: string) {
     throw new HttpError('Event Not Found', 404)
   }
 
+  event.event_start = await formatUTC(event.event_start)
+  event.event_end = await formatUTC(event.event_end)
+
   return event
 }
 
@@ -372,6 +389,11 @@ export async function listPublishedEvents(
     Service.findPublishedEvents(offset, searchKey, perpage, filter),
     Service.getTotalPublishedEvents(searchKey, filter),
   ])
+
+  for (const date of data) {
+    date.event_start = await formatUTC(date.event_start)
+    date.event_end = await formatUTC(date.event_end)
+  }
 
   return { data, total }
 }
