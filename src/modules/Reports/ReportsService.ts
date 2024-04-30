@@ -830,7 +830,7 @@ export async function getTotalHarvestPerDistrict() {
     SELECT
         all_districts.district_name,
         COALESCE(cf.total_farms, 0) AS total_farms,
-        COALESCE(SUM(ccr.harvested_qty), 0) AS total_harvest
+        COALESCE(SUM(ccr.kilogram), 0) AS total_harvest
     FROM
         (
             SELECT 'District 1' AS district_name
