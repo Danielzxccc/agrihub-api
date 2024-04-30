@@ -270,3 +270,5 @@ UserRouter.post(
 )
 
 UserRouter.delete('/delete/avatar', UserController.deleteUserProfilePicture)
+UserRouter.put('/update/tags', UserController.updateUserTags)
+UserRouter.get('/tags', UserController.findUserPreferredTags)

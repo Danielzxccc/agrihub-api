@@ -10,6 +10,7 @@ import {
   uploadFiles,
 } from '../AWS-Bucket/UploadService'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
+import { getUserOrThrow } from '../../utils/findUser'
 
 export async function listUsers(
   offset: number,
@@ -244,4 +245,37 @@ export async function deleteUserProfilePicture(userid: string) {
   await deleteFileCloud(user.avatar ?? 'avatar')
 
   await Service.updateUser(user.id, { avatar: null })
+}
+
+export async function updateUserTags(userid: string, tags: string | string[]) {
+  try {
+    const user = await getUserOrThrow(userid)
+
+    const findExistingTags = await Service.findUserTagsById(user.id)
+
+    let deletedTags: string[] = []
+    if (findExistingTags.length) {
+      const existingTags = findExistingTags.map((item) => item.tagid)
+
+      const tagsToCompare = tags?.length ? tags : []
+
+      deletedTags = existingTags.filter(
+        (element) => !tagsToCompare.includes(element)
+      )
+    }
+
+    const newTags = await Service.updateUserTags(user.id, tags, deletedTags)
+
+    return newTags
+  } catch (error) {
+    dbErrorHandler(error)
+  }
+}
+
+export async function findUserPreferredTags(userid: string) {
+  const user = await getUserOrThrow(userid)
+
+  const data = await Service.findUserPreferredTags(userid)
+
+  return data
 }

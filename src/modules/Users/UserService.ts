@@ -483,3 +483,61 @@ export async function findFarmMembersByFarmId(farmid: string, userid: string) {
     .where('farm_id', '=', farmid)
     .execute()
 }
+
+export async function findUserTagsById(userid: string) {
+  return await db
+    .selectFrom('user_tags')
+    .selectAll()
+    .where('userid', '=', userid)
+    .execute()
+}
+
+export async function updateUserTags(
+  userid: string,
+  tagsId: string[] | string,
+  deletedTags: string[]
+) {
+  const userTags = await db.transaction().execute(async (trx) => {
+    let tagRecords
+    if (Array.isArray(tagsId) && tagsId.length > 0) {
+      tagRecords = tagsId.map((tagName) => ({
+        userid,
+        tagid: tagName,
+      }))
+    } else if (typeof tagsId === 'string') {
+      tagRecords = {
+        userid,
+        tagid: tagsId,
+      }
+    }
+
+    if (deletedTags.length) {
+      await db
+        .deleteFrom('user_tags')
+        .where('user_tags.userid', '=', userid)
+        .where('tagid', 'in', deletedTags)
+        .execute()
+    }
+
+    if (tagRecords?.length || tagRecords) {
+      await trx
+        .insertInto('user_tags')
+        .values(tagRecords)
+        .onConflict((oc) => oc.column('tagid').column('userid').doNothing())
+        .returningAll()
+        .executeTakeFirst()
+    }
+
+    return tagRecords
+  })
+
+  return userTags
+}
+
+export async function findUserPreferredTags(userid: string) {
+  return await db
+    .selectFrom('user_tags')
+    .selectAll()
+    .where('userid', '=', userid)
+    .execute()
+}

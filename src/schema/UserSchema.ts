@@ -164,3 +164,9 @@ export const NewReportedUser = z.object({
  *         - username
  *         - email
  */
+
+export const UserTagsUpdate = z.object({
+  body: z.object({
+    tags: z.union([z.array(z.string()), z.string()]).optional(),
+  }),
+})
