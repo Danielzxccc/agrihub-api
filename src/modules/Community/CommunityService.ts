@@ -577,8 +577,7 @@ export async function listCommunityEventsByFarm({
 }: ListCommunityEventsT) {
   let query = db
     .selectFrom('community_events as ce')
-    .rightJoin('community_farms as cf', 'cf.id', 'ce.farmid')
-    .rightJoin('user_event_engagement as uee', 'uee.eventid', 'ce.id')
+    .leftJoin('community_farms as cf', 'cf.id', 'ce.farmid')
     .select(({ eb, fn, val }) => [
       'ce.id',
       'ce.farmid',
@@ -591,15 +590,27 @@ export async function listCommunityEventsByFarm({
       'ce.createdat',
       'ce.updatedat',
       'cf.farm_name',
-      fn
-        .count<number>('uee.id')
-        .distinct()
-        .filterWhere('uee.type', '=', 'going')
+      eb
+        .selectFrom('user_event_engagement as ue')
+        .select(({ fn }) =>
+          fn
+            .count<number>('id')
+            .distinct()
+            .filterWhere('ue.type', '=', 'going')
+            .as('going')
+        )
+        .whereRef('ue.eventid', '=', 'ce.id')
         .as('going'),
-      fn
-        .count<number>('uee.id')
-        .distinct()
-        .filterWhere('uee.type', '=', 'interested')
+      eb
+        .selectFrom('user_event_engagement as ue')
+        .select(({ fn }) =>
+          fn
+            .count<number>('id')
+            .distinct()
+            .filterWhere('ue.type', '=', 'interested')
+            .as('interested')
+        )
+        .whereRef('ue.eventid', '=', 'ce.id')
         .as('interested'),
       jsonArrayFrom(
         eb
@@ -649,22 +660,6 @@ export async function listCommunityEventsByFarm({
   if (type) {
     query = query.where('ce.type', '=', type)
   }
-  query = query.groupBy([
-    'ce.id',
-    'ce.id',
-    'ce.farmid',
-    'ce.title',
-    'ce.about',
-    'ce.banner',
-    'ce.start_date',
-    'ce.end_date',
-    'ce.type',
-    'ce.createdat',
-    'ce.updatedat',
-    'cf.farm_name',
-    'cf.id',
-    'uee.id',
-  ])
 
   return await query.limit(perpage).offset(offset).execute()
 }
@@ -785,7 +780,6 @@ export async function viewCommunityEvent(id: string, userid: string) {
   return await db
     .selectFrom('community_events as ce')
     .leftJoin('community_farms as cf', 'cf.id', 'ce.farmid')
-    .leftJoin('user_event_engagement as uee', 'uee.eventid', 'ce.id')
     .select(({ eb, fn, val }) => [
       'ce.id',
       'ce.farmid',
@@ -798,15 +792,27 @@ export async function viewCommunityEvent(id: string, userid: string) {
       'ce.createdat',
       'ce.updatedat',
       'cf.farm_name',
-      fn
-        .count<number>('uee.id')
-        .distinct()
-        .filterWhere('uee.type', '=', 'going')
+      eb
+        .selectFrom('user_event_engagement as ue')
+        .select(({ fn }) =>
+          fn
+            .count<number>('id')
+            .distinct()
+            .filterWhere('ue.type', '=', 'going')
+            .as('going')
+        )
+        .whereRef('ue.eventid', '=', 'ce.id')
         .as('going'),
-      fn
-        .count<number>('uee.id')
-        .distinct()
-        .filterWhere('uee.type', '=', 'interested')
+      eb
+        .selectFrom('user_event_engagement as ue')
+        .select(({ fn }) =>
+          fn
+            .count<number>('id')
+            .distinct()
+            .filterWhere('ue.type', '=', 'interested')
+            .as('interested')
+        )
+        .whereRef('ue.eventid', '=', 'ce.id')
         .as('interested'),
       jsonArrayFrom(
         eb
@@ -829,7 +835,6 @@ export async function viewCommunityEvent(id: string, userid: string) {
       ).as('action'),
     ])
     .where('ce.id', '=', id)
-    .groupBy(['ce.id', 'uee.id', 'cf.farm_name'])
     .executeTakeFirst()
 }
 
