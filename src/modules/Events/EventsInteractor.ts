@@ -239,8 +239,10 @@ export async function viewUnpublishedEvent(id: string) {
     throw new HttpError('Event Not Found', 404)
   }
 
-  event.event_start = await formatUTC(event.event_start)
-  event.event_end = await formatUTC(event.event_end)
+  if (event.event_start && event.event_end) {
+    event.event_start = await formatUTC(event.event_start)
+    event.event_end = await formatUTC(event.event_end)
+  }
 
   return event
 }
@@ -276,8 +278,10 @@ export async function listArchivedEvents(
   ])
 
   for (const date of data) {
-    date.event_start = await formatUTC(date.event_start)
-    date.event_end = await formatUTC(date.event_end)
+    if (date.event_start && date.event_end) {
+      date.event_start = await formatUTC(date.event_start)
+      date.event_end = await formatUTC(date.event_end)
+    }
   }
 
   return { data, total }
@@ -375,8 +379,10 @@ export async function viewPublishedEvent(id: string) {
     throw new HttpError('Event Not Found', 404)
   }
 
-  event.event_start = await formatUTC(event.event_start)
-  event.event_end = await formatUTC(event.event_end)
+  if (event.event_start && event.event_end) {
+    event.event_start = await formatUTC(event.event_start)
+    event.event_end = await formatUTC(event.event_end)
+  }
 
   return event
 }
@@ -393,8 +399,10 @@ export async function listPublishedEvents(
   ])
 
   for (const date of data) {
-    date.event_start = await formatUTC(date.event_start)
-    date.event_end = await formatUTC(date.event_end)
+    if (date.event_start && date.event_end) {
+      date.event_start = await formatUTC(date.event_start)
+      date.event_end = await formatUTC(date.event_end)
+    }
   }
 
   return { data, total }
