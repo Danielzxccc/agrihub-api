@@ -143,7 +143,6 @@ export async function joinCommunityFarm({
     deleteLocalFiles(applicationImages)
 
     // emit push notification to farm head
-    // TODO: add redirect path
     await emitPushNotification(
       communityFarm.farm_head,
       `Heads up! ${communityFarm.farm_name} has a new applicant!`,
@@ -647,11 +646,11 @@ export async function createPlantedCommunityTask({
 
   const newTask = await Service.createCommunityTask(taskObject)
 
-  //TODO: Add redirect path for frontend
   await emitPushNotification(
     assigned_to,
     'New Task Alert:',
-    `The Farm Head has assigned you a planting report to submit. Please review and take action. Message: (${message})`
+    `The Farm Head has assigned you a planting report to submit. Please review and take action. Message: (${message})`,
+    `/community/task/${farmid}?sortBy=pending&type=plant`
   )
 
   return newTask
@@ -733,7 +732,8 @@ export async function createHarvestTask({
   await emitPushNotification(
     assigned_to,
     'New Task Alert:',
-    `The Farm Head has assigned you a harvesting report to submit. Please review and take action. Message: (${message})`
+    `The Farm Head has assigned you a harvesting report to submit. Please review and take action. Message: (${message})`,
+    `/community/task/936975470650327041?sortBy=pending&type=harvest`
   )
 
   return newHarvestTask
