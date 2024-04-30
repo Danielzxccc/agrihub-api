@@ -242,7 +242,7 @@ export async function getHarvestedAndWitheredCrops(
       'cfc.farm_id',
       'cfc.crop_id',
       'c.name as crop_name',
-      sql`COALESCE(SUM(ccr.harvested_qty), 0)`.as('total_harvested'),
+      sql`COALESCE(SUM(ccr.kilogram), 0)`.as('total_harvested'),
       sql`COALESCE(SUM(ccr.withered_crops), 0)`.as('total_withered'),
     ])
     .where('cfc.farm_id', '=', id)
