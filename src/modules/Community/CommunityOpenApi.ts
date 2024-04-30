@@ -1018,6 +1018,8 @@
  *           type: string
  *         harvested_by:
  *           type: string
+ *         kilogram:
+ *           type: string
  *         firstname:
  *           type: string
  *         lastname:

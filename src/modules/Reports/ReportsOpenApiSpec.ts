@@ -888,6 +888,8 @@
  *           type: string
  *         planted_qty:
  *           type: string
+ *         kilogram:
+ *           type: string
  *         image:
  *           type: string
  *           format: uri

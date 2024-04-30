@@ -271,6 +271,7 @@ export async function listPlantedCropReports({
       'ccr.withered_crops',
       'ccr.planted_qty',
       'ccr.harvested_by',
+      'ccr.kilogram',
       'u.firstname',
       'u.lastname',
       'c.growth_span',

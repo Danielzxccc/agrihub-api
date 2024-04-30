@@ -47,6 +47,7 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
       'c.isyield',
       'ccr.farmid',
       'ccr.planted_qty',
+      'ccr.kilogram',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
       jsonArrayFrom(
         eb
