@@ -282,9 +282,12 @@ export async function listPlantedCropReports({
       'u.firstname',
       'u.lastname',
       'c.growth_span',
-      sql`ccr.date_planted + (c.growth_span || ' month')::INTERVAL`.as(
-        'expected_harvest_date'
-      ),
+      sql`
+        CASE 
+          WHEN ccr.batch IS NOT NULL THEN ccr.batch + (c.growth_span || ' month')::INTERVAL 
+          ELSE ccr.date_planted + (c.growth_span || ' month')::INTERVAL 
+        END
+      `.as('expected_harvest_date'),
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
     ])
     .groupBy([
