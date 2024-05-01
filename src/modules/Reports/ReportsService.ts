@@ -1174,7 +1174,7 @@ export async function getGrowthRateDistribution(month: number, limit: number) {
         SELECT 
             cc.crop_id,
             c.name AS crop_name,
-            SUM(cr.harvested_qty) AS total_harvested_qty,
+            SUM(cr.kilogram) AS total_harvested_qty,
             SUM(cr.withered_crops) AS total_withered_crops,
             SUM(cr.planted_qty) AS total_planted_qty
         FROM 
