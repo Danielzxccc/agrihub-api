@@ -536,8 +536,9 @@ export async function updateUserTags(
 
 export async function findUserPreferredTags(userid: string) {
   return await db
-    .selectFrom('user_tags')
-    .selectAll()
+    .selectFrom('user_tags as ut')
+    .leftJoin('tags as t', 't.id', 'ut.tagid')
+    .select(['ut.id', 'ut.userid', 'ut.tagid', 't.tag_name'])
     .where('userid', '=', userid)
     .execute()
 }

@@ -777,4 +777,6 @@
  *           type: string
  *         tagid:
  *           type: string
+ *         tag_name:
+ *           type: string
  */
