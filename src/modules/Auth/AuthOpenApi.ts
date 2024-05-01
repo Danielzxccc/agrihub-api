@@ -488,3 +488,76 @@
  *           type: string
  *           description: Confirm the new password
  */
+
+/**
+ * @openapi
+ * /api/auth/find/forgotten/account:
+ *   post:
+ *     summary: Find forgotten account
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/ForgottenAccountJSON"
+ *     responses:
+ *       "200":
+ *         description: Account found successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ForgottenAccountResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ForgottenAccountJSON:
+ *       type: object
+ *       properties:
+ *         account:
+ *           type: string
+ *
+ *     ForgottenAccountResponse:
+ *       type: object
+ *       properties:
+ *         avatar:
+ *           type: string
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         email:
+ *           type: string
+ *         username:
+ *           type: string
+ *         contact_number:
+ *           type: string
+ */

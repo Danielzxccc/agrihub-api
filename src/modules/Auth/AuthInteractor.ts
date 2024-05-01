@@ -52,6 +52,22 @@ export async function authenticateUser(credentials: string, password: string) {
   return user
 }
 
+export async function findForgottenAccount(account: string) {
+  const user = await Service.findByEmailOrUsername(account)
+
+  if (!user) {
+    throw new HttpError('Invalid email or contact', 401)
+  }
+
+  if (user.isbanned) {
+    throw new HttpError('Your account has been banned.', 401)
+  }
+
+  const { avatar, firstname, lastname, email, username, contact_number } = user
+
+  return { avatar, firstname, lastname, email, username, contact_number }
+}
+
 export async function registerUser(credentials: RegisterUser) {
   const { phone_number, email, password, confirmPassword } = credentials.body
 

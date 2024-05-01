@@ -288,3 +288,16 @@ export async function updatePassword(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function findForgottenAccount(req: SessionRequest, res: Response) {
+  try {
+    const { body } = await zParse(Schema.ForgottenAccount, req)
+
+    const data = await Interactor.findForgottenAccount(body.account)
+    // await Interactor.updatePassword({ userid, newPassword, oldPassword })
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
