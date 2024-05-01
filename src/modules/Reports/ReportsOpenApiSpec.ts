@@ -276,6 +276,24 @@
  *         schema:
  *           type: string
  *         description: ID of the farm
+ *       - in: query
+ *         name: start
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: start month of the query
+ *       - in: query
+ *         name: end
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: end month of the query
+ *       - in: query
+ *         name: year
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: start year of the query
  *     responses:
  *       "200":
  *         description: Successful response
