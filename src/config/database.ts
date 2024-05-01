@@ -12,10 +12,10 @@ export const db = new Kysely<DB>({
     }),
   }),
   // plugins: [new ParseJSONResultsPlugin()],
-  log(event) {
-    if (event.level === 'query') {
-      log.info(event.query.sql)
-      log.info(event.query.parameters)
-    }
-  },
+  // log(event) {
+  //   if (event.level === 'query') {
+  //     log.info(event.query.sql)
+  //     log.info(event.query.parameters)
+  //   }
+  // },
 })

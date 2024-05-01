@@ -52,6 +52,12 @@
  *     HarvestRateResponse:
  *       type: object
  *       properties:
+ *         difference:
+ *           type: string
+ *         prescriptionMessages:
+ *           type: array
+ *           items:
+ *             type: string
  *         plant:
  *           type: string
  *         message:

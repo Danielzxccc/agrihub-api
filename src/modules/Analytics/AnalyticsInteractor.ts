@@ -1,3 +1,4 @@
+import axios from 'axios'
 import HttpError from '../../utils/HttpError'
 import { getUserOrThrow } from '../../utils/findUser'
 import * as Service from './AnalyticsService'
@@ -63,7 +64,22 @@ export async function getLatestHarvestRate(farmid: string, userid: string) {
     descriptiveMessage = `You are ${difference}% in harvest rate compared to your previous harvest`
   }
 
+  const results = await axios.post(
+    `${process.env.PYTHON_API}/predict-prescription`,
+    [
+      {
+        crop_yield: latestHarvestRate,
+        withered_crops: Number(latestReport.withered_crops),
+      },
+    ]
+  )
+
+  const prescriptionMessages = results.data[0]
+    .predicted_prescription as string[]
+
   return {
+    difference,
+    prescriptionMessages,
     plant: latestReport.name,
     message: descriptiveMessage,
     latestHarvestRate: latestHarvestRate.toFixed(2),

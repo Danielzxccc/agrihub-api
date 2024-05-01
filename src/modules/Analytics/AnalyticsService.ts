@@ -10,6 +10,7 @@ export async function getLatestReport(farmid: string) {
       'ccr.planted_qty',
       'c.name',
       'ccr.crop_id',
+      'ccr.withered_crops',
       eb
         .selectFrom('community_crop_reports as ccrp')
         .select(['planted_qty'])
