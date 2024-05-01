@@ -866,7 +866,8 @@ export async function createCommunityEvent(
         emitPushNotification(
           item.userid,
           'Alert! New Community Farm Event',
-          `Hey there! We've got something special just for you: an exciting new event from ${communityFarm.farm_name}. Get ready to dive into ${event.body.title}`
+          `Hey there! We've got something special just for you: an exciting new event from ${communityFarm.farm_name}. Get ready to dive into ${event.body.title}`,
+          `/community/my-community/${farmid}/event/${data.insertedEvent.id}`
         )
       )
 
@@ -879,7 +880,8 @@ export async function createCommunityEvent(
         emitPushNotification(
           item.id,
           'Alert! New Community Farm Event',
-          `Hey! Quick heads up: There's a new event going on at the community farm. Take a look when you get a chance! ${payload.title}`
+          `Hey! Quick heads up: There's a new event going on at the community farm. Take a look when you get a chance! ${payload.title}`,
+          `/community/my-community/${farmid}/event/${data.insertedEvent.id}`
         )
       )
 
@@ -895,7 +897,8 @@ export async function createCommunityEvent(
         emitPushNotification(
           item.id,
           'Alert! New Community Farm Event',
-          `Hey! Quick heads up: There's a new event going on at the community farm. Take a look when you get a chance! ${payload.title}`
+          `Hey! Quick heads up: There's a new event going on at the community farm. Take a look when you get a chance! ${payload.title}`,
+          `/community/my-community/${farmid}/event/${data.insertedEvent.id}`
         )
       )
 
