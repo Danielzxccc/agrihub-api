@@ -135,3 +135,9 @@ CommunityRouter.delete(
 CommunityRouter.get('/event/view/:id', CommunityController.viewCommunityEvent)
 
 CommunityRouter.post('/event/action/:id', CommunityController.eventAction)
+
+CommunityRouter.delete(
+  '/remove/existing/report/:id',
+  UserGuard(['farm_head']),
+  CommunityController.removeExistingCropReport
+)

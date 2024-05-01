@@ -891,3 +891,10 @@ export async function eventAction(
     .returningAll()
     .executeTakeFirst()
 }
+
+export async function deleteCommunityCropReport(id: string) {
+  return await db
+    .deleteFrom('community_crop_reports')
+    .where('id', '=', id)
+    .execute()
+}

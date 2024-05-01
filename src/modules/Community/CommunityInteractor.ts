@@ -1053,3 +1053,22 @@ export async function eventAction(
   //   `${user.firstname} ${user.lastname} is ${action} to your event (${event.title}).`
   // )
 }
+
+export async function removeExistingCropReport(id: string, userid: string) {
+  const user = await getUserOrThrow(userid)
+  const cropReport = await findCommunityReportById(id, user.farm_id)
+
+  if (!cropReport) {
+    throw new HttpError('Report not found', 404)
+  }
+
+  if (cropReport.farmid !== user.farm_id) {
+    throw new HttpError('Unauthorized', 404)
+  }
+
+  if (cropReport.date_harvested) {
+    throw new HttpError('This crop is already harvested', 400)
+  }
+
+  await Service.deleteCommunityCropReport(id)
+}

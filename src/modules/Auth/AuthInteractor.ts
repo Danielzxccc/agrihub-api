@@ -56,11 +56,11 @@ export async function findForgottenAccount(account: string) {
   const user = await Service.findByEmailOrUsername(account)
 
   if (!user) {
-    throw new HttpError('Invalid email or contact', 401)
+    throw new HttpError('Invalid email or contact', 400)
   }
 
   if (user.isbanned) {
-    throw new HttpError('Your account has been banned.', 401)
+    throw new HttpError('Your account has been banned.', 400)
   }
 
   const { avatar, firstname, lastname, email, username, contact_number } = user
