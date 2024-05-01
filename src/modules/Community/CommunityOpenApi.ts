@@ -2077,7 +2077,7 @@
  *   delete:
  *     summary: Remove existing report
  *     tags:
- *       - Auth
+ *       - CommunityFarmReports
  *     parameters:
  *       - in: path
  *         name: id
