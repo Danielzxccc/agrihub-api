@@ -661,12 +661,12 @@ export async function getLowestGrowthRates(order: 'desc' | 'asc') {
           SELECT 
               cf.id AS farm_id,
               AVG(
-                  CASE 
-                      WHEN crops.isyield THEN 
-                          (cr.harvested_qty::numeric / NULLIF(cr.harvested_qty + cr.withered_crops, 0)) * 100
-                      ELSE 
-                          (cr.harvested_qty::numeric / NULLIF(cr.planted_qty, 0)) * 100
-                  END
+                CASE 
+                    WHEN cr.planted_qty = '0' THEN 
+                        LEAST((cr.kilogram::numeric / NULLIF((select "planted_qty" from "community_crop_reports" as "ccrp" where "ccrp"."id" = "cr"."last_harvest_id"), 0)) * 100, 100)
+                    ELSE 
+                        LEAST((cr.kilogram::numeric / NULLIF(cr.planted_qty, 0)) * 100, 100)
+                END 
               ) AS avg_growth_rate
           FROM 
               community_farms cf
