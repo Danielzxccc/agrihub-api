@@ -890,6 +890,10 @@
  *           type: string
  *         kilogram:
  *           type: string
+ *         batch:
+ *           type: string
+ *         growth_span:
+ *           type: string
  *         previous_planted_qty:
  *           type: string
  *         image:

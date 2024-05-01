@@ -48,6 +48,8 @@ export async function findCommunityReportById(id: string, farm_id?: string) {
       'ccr.farmid',
       'ccr.planted_qty',
       'ccr.kilogram',
+      'ccr.batch',
+      'c.growth_span',
       eb
         .selectFrom('community_crop_reports as ccrp')
         .select(['planted_qty'])
