@@ -1081,3 +1081,12 @@ export async function removeExistingCropReport(id: string, userid: string) {
 
   await Service.deleteCommunityCropReport(id)
 }
+
+export async function deleteUserEngagement(id: string, userid: string) {
+  await getUserOrThrow(userid)
+
+  const deletedData = await Service.deleteUserEngagement(id)
+  if (!deletedData) {
+    throw new HttpError('Engagement not found', 404)
+  }
+}

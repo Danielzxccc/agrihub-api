@@ -520,3 +520,15 @@ export async function removeExistingCropReport(
     errorHandler(res, error)
   }
 }
+
+export async function deleteUserEngagement(req: SessionRequest, res: Response) {
+  try {
+    const { id } = req.params
+    const { userid } = req.session
+
+    await Interactor.deleteUserEngagement(id, userid)
+    res.status(200).json({ mesage: 'Success' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

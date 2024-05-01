@@ -906,3 +906,11 @@ export async function deleteCommunityCropReport(id: string) {
     .where('id', '=', id)
     .execute()
 }
+
+export async function deleteUserEngagement(id: string) {
+  return await db
+    .deleteFrom('user_event_engagement')
+    .where('id', '=', id)
+    .returningAll()
+    .executeTakeFirst()
+}

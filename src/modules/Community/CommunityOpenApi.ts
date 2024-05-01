@@ -2117,3 +2117,50 @@
  *             schema:
  *               $ref: "#/components/schemas/ServerError"
  */
+
+/**
+ * @openapi
+ * /api/community-farm/remove/engagement/{id}:
+ *   delete:
+ *     summary: Remove existing engagement
+ *     tags:
+ *       - CommunityFarmEvents
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the engagement to remove
+ *         schema:
+ *           type: string
+ *     responses:
+ *       "200":
+ *         description: Report removed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/MessageResponse"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */

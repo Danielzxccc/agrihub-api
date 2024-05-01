@@ -141,3 +141,8 @@ CommunityRouter.delete(
   UserGuard(['farm_head']),
   CommunityController.removeExistingCropReport
 )
+
+CommunityRouter.delete(
+  '/remove/engagement/:id',
+  CommunityController.deleteUserEngagement
+)
