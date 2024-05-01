@@ -264,11 +264,18 @@
 
 /**
  * @openapi
- * /api/reports/farmer/graph/total-harvest:
+ * /api/reports/farmer/graph/total-harvest/{id}:
  *   get:
  *     summary: Get farmer graph total harvest data
  *     tags:
  *       - Reports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the farm
  *     responses:
  *       "200":
  *         description: Successful response
@@ -2099,12 +2106,18 @@
 
 /**
  * @openapi
- * /api/reports/analytics/crop/distribution/community:
+ * /api/reports/analytics/crop/distribution/community/{id}:
  *   get:
  *     summary: Get Crop Distribution Analytics
  *     tags:
  *       - Reports
  *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the crop report
  *       - in: query
  *         name: month
  *         schema:

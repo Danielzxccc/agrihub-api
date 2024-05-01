@@ -98,6 +98,17 @@ export const FilterWitheredHarvested = z.object({
   }),
 })
 
+export const FilterCommon = z.object({
+  query: z.object({
+    year: z
+      .string()
+      .transform((arg) => Number(arg))
+      .default(new Date().getFullYear().toString()),
+    start: z.string().transform((arg) => Number(arg)),
+    end: z.string().transform((arg) => Number(arg)),
+  }),
+})
+
 export const GetHarvestRanking = z.object({
   query: z.object({
     order: z.union([z.literal('asc'), z.literal('desc')]).optional(),

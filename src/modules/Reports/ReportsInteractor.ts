@@ -19,6 +19,21 @@ import {
   NewCommunityCropReportT,
 } from '../../schema/ReportsSchema'
 
+type MonthlyData = {
+  january?: number | string
+  february?: number | string
+  march?: number | string
+  april?: number | string
+  may?: number | string
+  june?: number | string
+  july?: number | string
+  august?: number | string
+  september?: number | string
+  october?: number | string
+  november?: number | string
+  december?: number | string
+}
+
 export async function createCommunityCropReport(
   userid: string,
   reportRequest: NewCommunityCropReportT,
@@ -229,16 +244,81 @@ export async function listTotalPlantedCrops(userid: string) {
   return data
 }
 
-export async function listTotalHarvestEachMonth(userid: string) {
+export type ListTotalHarvestEachMonthT = {
+  userid: string
+  id: string
+  start: number
+  end: number
+  year: number
+}
+export async function listTotalHarvestEachMonth({
+  start,
+  end,
+  year,
+  userid,
+  id,
+}: ListTotalHarvestEachMonthT) {
   const user = await findUser(userid)
   if (!user) throw new HttpError('Unauthorized', 401)
 
-  const farm = await findCommunityFarmById(user.farm_id)
+  const isDataOwner = user.farm_id === id
+  const isAdmin = user.role === 'admin' || user.role === 'asst_admin'
+
+  if (!isAdmin && !isDataOwner) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const farm = await findCommunityFarmById(id)
   if (!farm) throw new HttpError("Can't find farm", 404)
 
-  const data = await Service.getTotalHarvestEachMonth(farm.id)
+  const monthlyData = await Service.getTotalHarvestEachMonth({
+    id: farm.id,
+    start,
+    end,
+    year,
+    userid,
+  })
 
-  return data.rows[0]
+  const data = monthlyData.rows[0] as MonthlyData
+
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+
+  if ((start !== 1 && end !== 12) || start === 1 || end === 12) {
+    const startIndex = start - 1
+    const endIndex = end - 1
+
+    months.splice(endIndex + 1)
+
+    if (startIndex > 0) {
+      months.splice(0, startIndex)
+    }
+  }
+
+  const dataKeys = Object.keys(data ?? {})
+  console.log(monthlyData)
+
+  const formattedData: MonthlyData = {}
+
+  months.map((month: keyof MonthlyData) => {
+    const monthIndex = dataKeys.findIndex((e) => e === month.toLowerCase())
+
+    formattedData[month] = Object.values(data ?? {})[monthIndex] ?? '0'
+  })
+
+  return formattedData
 }
 
 export async function viewCropStatistics(id: string, userid: string) {
@@ -503,21 +583,6 @@ export async function getLowestGrowthRates(order: 'desc' | 'asc') {
   return data.rows
 }
 
-type MonthlyData = {
-  january?: number | string
-  february?: number | string
-  march?: number | string
-  april?: number | string
-  may?: number | string
-  june?: number | string
-  july?: number | string
-  august?: number | string
-  september?: number | string
-  october?: number | string
-  november?: number | string
-  december?: number | string
-}
-
 export async function getGrowthRatePerMonth(
   year = new Date().getFullYear(),
   start = 1,
@@ -659,7 +724,8 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
 export async function getCropHarvestDistributionPerFarm(
   month: number,
   limit: number,
-  userid: string
+  userid: string,
+  id: string
 ) {
   const user = await findUser(userid)
 
@@ -667,11 +733,14 @@ export async function getCropHarvestDistributionPerFarm(
     throw new HttpError('Unauthorized', 401)
   }
 
-  const data = await Service.getCropHarvestDistributionPerFarm(
-    month,
-    limit,
-    user.farm_id
-  )
+  const isDataOwner = user.farm_id === id
+  const isAdmin = user.role === 'admin' || user.role === 'asst_admin'
+
+  if (!isAdmin && !isDataOwner) {
+    throw new HttpError('Unauthorized', 401)
+  }
+
+  const data = await Service.getCropHarvestDistributionPerFarm(month, limit, id)
 
   return data.rows
 }

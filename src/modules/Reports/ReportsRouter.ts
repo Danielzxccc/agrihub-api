@@ -25,8 +25,8 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
-  '/farmer/graph/total-harvest',
-  UserGuard(['farm_head', 'farmer']),
+  '/farmer/graph/total-harvest/:id',
+  UserGuard(['farm_head', 'farmer', 'asst_admin', 'admin']),
   ReportsController.listTotalHarvestEachMonth
 )
 
@@ -187,8 +187,8 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
-  '/analytics/crop/distribution/community',
-  UserGuard(['farm_head', 'farmer']),
+  '/analytics/crop/distribution/community/:id',
+  UserGuard(['farm_head', 'farmer', 'admin', 'asst_admin']),
   ReportsController.getCropHarvestDistributionPerFarm
 )
 

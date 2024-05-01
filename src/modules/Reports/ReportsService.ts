@@ -8,6 +8,7 @@ import {
 import { returnObjectUrl } from '../AWS-Bucket/UploadService'
 import { jsonArrayFrom } from 'kysely/helpers/postgres'
 import { DistrictType } from '../../schema/ReportsSchema'
+import { ListTotalHarvestEachMonthT } from './ReportsInteractor'
 
 export async function insertCommunityCropReport(
   report: NewCommunityFarmReport
@@ -291,10 +292,13 @@ export async function getTotalPlantedQuantity(farmid: string) {
     .execute()
 }
 
-export async function getTotalHarvestEachMonth(
-  farmid: string,
-  year = new Date().getFullYear()
-) {
+export async function getTotalHarvestEachMonth({
+  year,
+  id: farmid,
+  start,
+  end,
+  userid,
+}: ListTotalHarvestEachMonthT) {
   return await db.executeQuery(
     sql`
       SELECT
