@@ -27,7 +27,8 @@ export async function findQuestions(
   perpage: number,
   userid: string,
   profile?: string,
-  tag?: string
+  tag?: string,
+  privateForum?: boolean
 ) {
   let query = db
     .selectFrom('forums')
@@ -38,14 +39,17 @@ export async function findQuestions(
       'forums.id',
       jsonObjectFrom(
         eb
-          .selectFrom('users')
+          .selectFrom('users as u')
+          .leftJoin('community_farms as cf', 'cf.id', 'u.farm_id')
           .select([
-            'avatar',
-            'username',
-            'role',
-            sql<string>`CAST(id AS TEXT)`.as('id'),
+            'u.avatar',
+            'u.username',
+            'u.role',
+            'u.district',
+            'cf.farm_name',
+            sql<string>`CAST(u.id AS TEXT)`.as('id'),
           ])
-          .whereRef('forums.userid', '=', 'users.id')
+          .whereRef('forums.userid', '=', 'u.id')
       ).as('user'),
       jsonArrayFrom(
         eb
@@ -63,11 +67,6 @@ export async function findQuestions(
       'forums.updatedat',
       'forums.views',
       sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
-      // fn
-      //   .count<number>('forums_ratings.id')
-      //   .filterWhere('type', '=', 'upvote')
-      //   .distinct()
-      //   .as('vote_count'),
       fn.count<number>('forums_ratings.id').distinct().as('vote_count'),
       fn
         .count<number>('forums_ratings.id')
@@ -79,8 +78,6 @@ export async function findQuestions(
         .distinct()
         .filterWhere('type', '=', 'upvote')
         .as('upvote'),
-      // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
-      // fn.count<number>('forums_ratings.id').as('vote_count'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
@@ -98,6 +95,12 @@ export async function findQuestions(
   if (filterKey === 'active')
     query = query.orderBy('latest_answer_createdat', 'desc')
   if (filterKey === 'trending') query = query.orderBy('upvote', 'desc')
+
+  if (privateForum) {
+    query = query.where('forums.private', '=', true)
+  } else {
+    query = query.where('forums.private', '=', false)
+  }
 
   if (searchQuery.length) {
     query = query.where((eb) =>
@@ -369,7 +372,8 @@ export async function getTotalAnswers(id: string) {
 export async function getTotalCount(
   id: string,
   searchKey: string,
-  tag?: string
+  tag?: string,
+  privateForum?: boolean
 ) {
   let query = db
     .selectFrom('forums')
@@ -385,6 +389,10 @@ export async function getTotalCount(
         eb('forums.question', 'ilike', `%${searchKey}%`),
       ])
     )
+  }
+
+  if (privateForum) {
+    query = query.where('forums.private', '=', true)
   }
 
   if (tag.length) {

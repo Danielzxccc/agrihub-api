@@ -19,6 +19,7 @@ import { deleteFile } from '../../utils/file'
 import { viewsLimitter } from '../../middleware/ViewsLimitter'
 import { findUser } from '../Users/UserService'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
+import { emitNotificationToFarmHeads } from '../Socket/SocketController'
 
 export async function viewQuestion(
   id: string,
@@ -66,7 +67,8 @@ export async function listQuestions(
   perpage: number,
   userid: string,
   profile?: string,
-  tag?: string
+  tag?: string,
+  privateForum?: boolean
 ) {
   const [data, total] = await Promise.all([
     Service.findQuestions(
@@ -76,9 +78,10 @@ export async function listQuestions(
       perpage,
       userid,
       profile,
-      tag
+      tag,
+      privateForum
     ),
-    Service.getTotalCount(profile, searchKey, tag),
+    Service.getTotalCount(profile, searchKey, tag, privateForum),
   ])
 
   for (let question of data) {
@@ -131,9 +134,13 @@ export async function createNewQuestion(
     if (!userid) {
       throw new HttpError('Session Expired', 401)
     }
-    const { title, question, tags } = questions.body
-    const content = { userid, title, question, imagesrc }
+    const { title, question, tags, privateForum } = questions.body
+    const content = { userid, title, question, imagesrc, private: privateForum }
     const newQuestion = await Service.createQuestion(content, tags)
+
+    if (newQuestion.private) {
+      emitNotificationToFarmHeads()
+    }
 
     await uploadFiles(uploadedFiles)
     for (const image of uploadedFiles) {

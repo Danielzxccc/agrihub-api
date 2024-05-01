@@ -196,6 +196,7 @@ CREATE TABLE forums(
     question TEXT NOT NULL,
     views INT DEFAULT 0,
     imagesrc TEXT[],
+    private BOOLEAN default false,
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
