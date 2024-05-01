@@ -9,7 +9,11 @@ import {
 } from '../../schema/CommunityFarmSchema'
 import { getUserOrThrow } from '../../utils/findUser'
 import { findCommunityFarmById, findCrop } from '../Farm/FarmService'
-import { findFarmMembersByFarmId, updateUser } from '../Users/UserService'
+import {
+  findFarmMembersByFarmId,
+  findUser,
+  updateUser,
+} from '../Users/UserService'
 import HttpError from '../../utils/HttpError'
 import * as Service from './CommunityService'
 import { z } from 'zod'
@@ -916,17 +920,22 @@ export type ListCommunityEventsT = {
 }
 
 export async function listCommunityEvents(payload: ListCommunityEventsT) {
+  let isDataOwner = false
   if (payload?.farmid) {
     const communityFarm = await findCommunityFarmById(payload.farmid)
-
     if (!communityFarm) {
       throw new HttpError('Community Farm Not Found', 404)
+    }
+
+    if (payload?.userid) {
+      const user = await getUserOrThrow(payload.userid)
+      isDataOwner = user.farm_id === communityFarm.id
     }
   }
 
   const [data, total] = await Promise.all([
-    Service.listCommunityEventsByFarm(payload),
-    Service.getTotalCommunityEventsByFarm(payload),
+    Service.listCommunityEventsByFarm(payload, isDataOwner),
+    Service.getTotalCommunityEventsByFarm(payload, isDataOwner),
   ])
 
   for (const date of data) {

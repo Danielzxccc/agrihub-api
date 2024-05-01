@@ -120,7 +120,7 @@ CommunityRouter.put(
 
 CommunityRouter.get(
   '/event/list/:id',
-  UserGuard(['farm_head', 'farmer']),
+  UserGuard(['farm_head', 'farmer', 'admin', 'member', 'asst_admin']),
   CommunityController.listCommunityEvents
 )
 

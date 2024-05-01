@@ -588,15 +588,18 @@ export async function createCommunityEvent(
   return communityEvent
 }
 
-export async function listCommunityEventsByFarm({
-  farmid,
-  searchKey,
-  offset,
-  perpage,
-  type,
-  filter,
-  userid,
-}: ListCommunityEventsT) {
+export async function listCommunityEventsByFarm(
+  {
+    farmid,
+    searchKey,
+    offset,
+    perpage,
+    type,
+    filter,
+    userid,
+  }: ListCommunityEventsT,
+  isDataOwner: boolean
+) {
   let query = db
     .selectFrom('community_events as ce')
     .leftJoin('community_farms as cf', 'cf.id', 'ce.farmid')
@@ -658,6 +661,9 @@ export async function listCommunityEventsByFarm({
 
   if (farmid) {
     query = query.where('ce.farmid', '=', farmid)
+    if (!isDataOwner) {
+      query = query.where('ce.type', '=', 'public')
+    }
   } else {
     query = query.where('ce.type', '=', 'public')
   }
@@ -686,18 +692,19 @@ export async function listCommunityEventsByFarm({
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalCommunityEventsByFarm({
-  farmid,
-  searchKey,
-  type,
-  filter,
-}: ListCommunityEventsT) {
+export async function getTotalCommunityEventsByFarm(
+  { farmid, searchKey, type, filter }: ListCommunityEventsT,
+  isDataOwner: boolean
+) {
   let query = db
     .selectFrom('community_events as ce')
     .select(({ fn }) => [fn.count<number>('ce.id').as('count')])
 
   if (farmid) {
     query = query.where('ce.farmid', '=', farmid)
+    if (!isDataOwner) {
+      query = query.where('ce.type', '=', 'public')
+    }
   } else {
     query = query.where('ce.type', '=', 'public')
   }
