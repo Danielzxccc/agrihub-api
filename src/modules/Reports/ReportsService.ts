@@ -469,9 +469,12 @@ export async function getGrowthHarvestStats(
     .select([
       'c.name as crop_name',
       sql`ROUND(AVG(ccr.harvested_qty), 2)`.as('avg_harvest_qty'),
-      sql`ROUND(AVG(ccr.date_harvested - ccr.date_planted), 2)`.as(
-        'avg_growth_span'
-      ),
+      sql`ROUND(AVG(EXTRACT(DAY FROM 
+        CASE 
+            WHEN batch IS NOT NULL THEN batch::timestamp - date_planted::timestamp
+            ELSE date_harvested::timestamp - date_planted::timestamp
+        END
+      )), 2)`.as('avg_growth_span'),
     ])
     .leftJoin('community_farms_crops as cfc', 'c.id', 'cfc.crop_id')
     .leftJoin('community_crop_reports as ccr', 'cfc.id', 'ccr.crop_id')
