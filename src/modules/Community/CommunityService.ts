@@ -469,6 +469,7 @@ export async function listCommunityTasks({
       'u.role',
     ])
     .where('farmid', '=', farmid)
+    .where('u.farm_id', '=', farmid)
 
   if (userid) {
     query = query.where('ct.assigned_to', '=', userid)
