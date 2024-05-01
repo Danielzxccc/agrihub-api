@@ -1064,7 +1064,7 @@ export async function getFarmHarvestDistribution(month: number, limit: number) {
     sql`
     WITH monthly_harvest AS (
     SELECT 
-        SUM(harvested_qty) AS total_harvest,
+        SUM(kilogram) AS total_harvest,
         EXTRACT(MONTH FROM date_harvested) AS harvest_month
     FROM community_crop_reports
     WHERE EXTRACT(MONTH FROM date_harvested) = ${month}
@@ -1073,7 +1073,7 @@ export async function getFarmHarvestDistribution(month: number, limit: number) {
     farm_harvest AS (
         SELECT 
             farmid,
-            SUM(harvested_qty) AS farm_harvest_qty
+            SUM(kilogram) AS farm_harvest_qty
         FROM community_crop_reports
         WHERE EXTRACT(MONTH FROM date_harvested) = ${month}
         GROUP BY farmid
@@ -1099,7 +1099,7 @@ export async function getCropHarvestDistribution(month: number, limit: number) {
         SELECT 
             cc.crop_id,
             c.name AS crop_name,
-            SUM(cr.harvested_qty) AS total_harvested_qty
+            SUM(cr.kilogram) AS total_harvested_qty
         FROM 
             community_crop_reports cr
         JOIN 
