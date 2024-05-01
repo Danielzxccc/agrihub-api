@@ -19,6 +19,8 @@ export async function getLatestHarvestRate(farmid: string, userid: string) {
     farmid
   )
 
+  console.log(latestReport, '!!')
+  console.log(lastTwoReports, '22')
   const { kilogram, planted_qty, previous_planted_qty } = latestReport
 
   if (lastTwoReports.length !== 2) {
@@ -64,14 +66,24 @@ export async function getLatestHarvestRate(farmid: string, userid: string) {
     descriptiveMessage = `You are ${difference}% in harvest rate compared to your previous harvest`
   }
 
+  const cropYield =
+    parseFloat(kilogram) /
+    parseFloat(planted_qty === '0' ? previous_planted_qty : planted_qty)
+
   const results = await axios.post(
     `${process.env.PYTHON_API}/predict-prescription`,
     [
       {
-        crop_yield: latestHarvestRate,
+        crop_yield: cropYield,
         withered_crops: Number(latestReport.withered_crops),
       },
     ]
+  )
+
+  console.log(
+    latestHarvestRate,
+    Number(latestReport.withered_crops),
+    'PRESCRIPTIOn'
   )
 
   const prescriptionMessages = results.data[0]
