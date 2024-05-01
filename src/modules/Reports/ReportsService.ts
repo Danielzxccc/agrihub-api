@@ -726,12 +726,12 @@ export async function getGrowthRatePerMonth(
             Months.month_number,
             EXTRACT(MONTH FROM cr.date_harvested) AS month,
             EXTRACT(YEAR FROM cr.date_harvested) AS year,
-            CASE 
-                WHEN c.isyield THEN 
-                    LEAST((cr.harvested_qty::numeric / NULLIF(cr.harvested_qty + cr.withered_crops, 0)) * 100, 100)
-                ELSE 
-                    LEAST((cr.harvested_qty::numeric / NULLIF(cr.planted_qty, 0)) * 100, 100)
-            END AS growth_rate
+              CASE 
+                  WHEN cr.planted_qty = '0' THEN 
+                      LEAST((cr.kilogram::numeric / NULLIF((select "planted_qty" from "community_crop_reports" as "ccrp" where "ccrp"."id" = "cr"."last_harvest_id"), 0)) * 100, 100)
+                  ELSE 
+                      LEAST((cr.kilogram::numeric / NULLIF(cr.planted_qty, 0)) * 100, 100)
+              END AS growth_rate 
         FROM
             (
                 SELECT generate_series(1, 12) AS month_number
