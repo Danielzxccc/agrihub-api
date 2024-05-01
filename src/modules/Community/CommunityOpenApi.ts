@@ -1760,7 +1760,6 @@
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         description: ID of the community
  *         schema:
  *           type: string

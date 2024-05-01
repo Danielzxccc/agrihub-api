@@ -98,6 +98,7 @@ export async function findQuestions(
 
   if (privateForum) {
     query = query.where('forums.private', '=', true)
+    query = query.orderBy('forums.createdat', 'asc')
   } else {
     query = query.where('forums.private', '=', false)
   }
