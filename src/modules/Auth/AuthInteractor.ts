@@ -168,10 +168,7 @@ export async function sendOTP(session: string) {
   await sendSMS(
     OTPCode,
     user.contact_number,
-    `
-  Did you request to verify your account in Agrihub? Here is the code {otp}. DO NOT SHARE YOUR OTP TO ANYONE.
-  If you didn't request for a code. Kindly ignore this message.
-  `
+    `Did you request to verify your account in Agrihub? Here is the code {otp}. DO NOT SHARE YOUR OTP TO ANYONE. If you didn't request for a code. Kindly ignore this message.`
   )
 }
 
@@ -191,9 +188,7 @@ export async function sendResetOTP(session: string) {
   await sendSMS(
     OTPCode,
     user.contact_number,
-    `Did you request an OTP to reset your password? Here is the code {otp}.
-
-     If you didn't request for a code. Kindly ignore this message.`
+    `Did you request an OTP to reset your password? Here is the code {otp} If you didn't request for a code. Kindly ignore this message.`
   )
 }
 
