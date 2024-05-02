@@ -483,7 +483,11 @@ export async function updateUserNumber(userid: string, number: string) {
 
   await createChangeNumberRequest({ number, otp: OTPCode, userid })
 
-  const data = await sendSMS(OTPCode, number, `OTP CODE: {otp}`)
+  const data = await sendSMS(
+    OTPCode,
+    number,
+    `{otp} is your authentication code for your change number request in AgriHub. For your protection, do not share this to anyone.`
+  )
   console.log(data, 'BIG DATA NUMBER')
 }
 
