@@ -24,6 +24,9 @@ export function emitNotificationToAdmin(payload: string) {
   io.emit('admin', payload)
 }
 
-export function emitNotificationToFarmHeads() {
-  io.emit('farm_head', 'CHAT_EVENT_TRIGGER')
+export function emitNotificationToFarmHeads(userid: string) {
+  io.emit('farm_head', {
+    userid,
+    event: 'CHAT_EVENT_TRIGGER',
+  })
 }

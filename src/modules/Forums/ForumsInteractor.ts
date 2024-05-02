@@ -139,7 +139,7 @@ export async function createNewQuestion(
     const newQuestion = await Service.createQuestion(content, tags)
 
     if (newQuestion.private) {
-      emitNotificationToFarmHeads()
+      emitNotificationToFarmHeads(userid)
     }
 
     await uploadFiles(uploadedFiles)
