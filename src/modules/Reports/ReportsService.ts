@@ -647,7 +647,7 @@ export async function getFavouriteCrops() {
       'c.name as crop_name',
       fn<string>('concat', [val(returnObjectUrl()), 'c.image']).as('image'),
       sql`SUM(ccr.planted_qty)`.as('total_planted'),
-      sql`SUM(ccr.harvested_qty)`.as('total_harvested'),
+      sql`SUM(ccr.kilogram)`.as('total_harvested'),
       sql`SUM(ccr.withered_crops)`.as('total_withered'),
     ])
     .groupBy(['crop_name', 'c.image'])
