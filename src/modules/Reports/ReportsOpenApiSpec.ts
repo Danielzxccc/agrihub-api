@@ -80,6 +80,9 @@
  *         kilogram:
  *           type: string
  *           optional: true
+ *         report_id:
+ *           type: string
+ *           optional: true
  *         image:
  *           type: array
  *           items:
@@ -140,6 +143,11 @@
  *         schema:
  *           type: string
  *         description: Month for which to retrieve growth rate distribution
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *         description: Year for which to retrieve growth rate distribution
  *     responses:
  *       "200":
  *         description: Successful response
@@ -256,11 +264,36 @@
 
 /**
  * @openapi
- * /api/reports/farmer/graph/total-harvest:
+ * /api/reports/farmer/graph/total-harvest/{id}:
  *   get:
  *     summary: Get farmer graph total harvest data
  *     tags:
  *       - Reports
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the farm
+ *       - in: query
+ *         name: start
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: start month of the query
+ *       - in: query
+ *         name: end
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: end month of the query
+ *       - in: query
+ *         name: year
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: start year of the query
  *     responses:
  *       "200":
  *         description: Successful response
@@ -337,6 +370,11 @@
  *     parameters:
  *       - in: query
  *         name: month
+ *         schema:
+ *           type: string
+ *         description: Month for which to retrieve growth rate distribution
+ *       - in: query
+ *         name: year
  *         schema:
  *           type: string
  *         description: Month for which to retrieve growth rate distribution
@@ -869,9 +907,19 @@
  *           type: string
  *         withered_crops:
  *           type: string
+ *         isyield:
+ *           type: boolean
  *         farmid:
  *           type: string
  *         planted_qty:
+ *           type: string
+ *         kilogram:
+ *           type: string
+ *         batch:
+ *           type: string
+ *         growth_span:
+ *           type: string
+ *         previous_planted_qty:
  *           type: string
  *         image:
  *           type: string
@@ -2076,12 +2124,18 @@
 
 /**
  * @openapi
- * /api/reports/analytics/crop/distribution/community:
+ * /api/reports/analytics/crop/distribution/community/{id}:
  *   get:
  *     summary: Get Crop Distribution Analytics
  *     tags:
  *       - Reports
  *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the crop report
  *       - in: query
  *         name: month
  *         schema:
@@ -2449,4 +2503,68 @@
  *         size:
  *           type: string
  *           description: The land size of the farm
+ */
+
+/**
+ * @openapi
+ * /api/reports/analytics/pre-defined:
+ *   get:
+ *     summary: Get Pre-defined Messages
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       "200":
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/PreDefinedMessages"
+ *       "401":
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "400":
+ *         description: Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "404":
+ *         description: Not Found Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ErrorResponse"
+ *       "500":
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ServerError"
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PreDefinedMessages:
+ *       type: object
+ *       properties:
+ *         crop_yield:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Pre-defined messages for crop yield
+ *         net_yield:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Pre-defined messages for net yield
+ *         withered_reports:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Pre-defined messages for withered reports
  */

@@ -268,3 +268,7 @@ UserRouter.post(
   UserGuard(['admin', 'asst_admin']),
   UserController.sendingWarningToUser
 )
+
+UserRouter.delete('/delete/avatar', UserController.deleteUserProfilePicture)
+UserRouter.put('/update/tags', UserController.updateUserTags)
+UserRouter.get('/tags', UserController.findUserPreferredTags)

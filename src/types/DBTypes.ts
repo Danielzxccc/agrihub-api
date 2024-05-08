@@ -55,6 +55,11 @@ import {
   ToolRequest,
   ChangeEmailRequest,
   ChangeNumberRequest,
+  FarmQuestions,
+  FarmMemberApplication,
+  ApplicationAnswers,
+  CommunityTasks,
+  CommunityEvents,
 } from 'kysely-codegen'
 
 export type User = Selectable<Users>
@@ -116,6 +121,7 @@ export type NewCommunityFarmImage = Insertable<CommunityFarmsGallery>
 
 export type CommunityCropReport = Selectable<CommunityCropReports>
 export type NewCommunityFarmReport = Insertable<CommunityCropReports>
+export type UpdateCommunityFarmReport = Updateable<CommunityCropReports>
 export type NewCropReportImage = Insertable<CommunityCropReportsImages>
 // farms
 export type Farm = Selectable<Farms>
@@ -232,3 +238,14 @@ export type UpdateToolRequest = Updateable<ToolRequest>
 // auth
 export type NewChangeEmailRequest = Insertable<ChangeEmailRequest>
 export type NewChangeNumberRequest = Insertable<ChangeNumberRequest>
+
+export type NewFarmQuestion = Insertable<FarmQuestions>
+export type NewFarmMemberApplication = Insertable<FarmMemberApplication>
+export type UpdateFarmMemberApplication = Updateable<FarmMemberApplication>
+export type NewApplicationAnswers = Insertable<ApplicationAnswers>
+
+export type NewCommunityTask = Insertable<CommunityTasks>
+export type UpdateCommunityTask = Updateable<CommunityTasks>
+
+export type NewCommunityEvent = Insertable<CommunityEvents>
+export type UpdateCommunityEvent = Updateable<CommunityEvents>

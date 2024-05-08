@@ -46,7 +46,8 @@ export async function listWitheredHarvestedCrops(
 
     const data = await Interactor.listWitheredHarvestedCrops(
       userid,
-      query.month
+      query.month,
+      query.year
     )
     res.status(200).json(data)
   } catch (error) {
@@ -106,7 +107,17 @@ export async function listTotalHarvestEachMonth(
 ) {
   try {
     const { userid } = req.session
-    const data = await Interactor.listTotalHarvestEachMonth(userid)
+    const { query } = await zParse(Schema.FilterCommon, req)
+    const { start, end, year } = query
+    const { id } = req.params
+    console.log(year, 'DEFAULT VALUE')
+    const data = await Interactor.listTotalHarvestEachMonth({
+      id,
+      userid,
+      start,
+      end,
+      year,
+    })
 
     res.status(200).json(data)
   } catch (error) {
@@ -269,7 +280,11 @@ export async function listGrowthHarvestStats(
   try {
     const { userid } = req.session
     const { query } = await zParse(Schema.AnalyticsMonthQuery, req)
-    const data = await Interactor.listGrowthHarvestStats(userid, query.month)
+    const data = await Interactor.listGrowthHarvestStats(
+      userid,
+      query.month,
+      query.year
+    )
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)
@@ -477,11 +492,13 @@ export async function getCropHarvestDistributionPerFarm(
   try {
     const { query } = await zParse(Schema.GetHarvestDistribution, req)
     const { userid } = req.session
+    const { id } = req.params
 
     const data = await Interactor.getCropHarvestDistributionPerFarm(
       query.month,
       query.limit,
-      userid
+      userid,
+      id
     )
     res.status(200).json(data)
   } catch (error) {
@@ -555,6 +572,20 @@ export async function getLandSizeAnalyticsPerDistrict(
       query.district,
       query.limit
     )
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function getPreDefinedMessages(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+
+    const data = await Interactor.getPreDefinedMessages(userid)
     res.status(200).json(data)
   } catch (error) {
     errorHandler(res, error)

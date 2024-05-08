@@ -19,6 +19,7 @@ import { deleteFile } from '../../utils/file'
 import { viewsLimitter } from '../../middleware/ViewsLimitter'
 import { findUser } from '../Users/UserService'
 import { emitPushNotification } from '../Notifications/NotificationInteractor'
+import { emitNotificationToFarmHeads } from '../Socket/SocketController'
 
 export async function viewQuestion(
   id: string,
@@ -52,6 +53,7 @@ export async function viewQuestion(
 
   const formattedQuestion = await replaceAvatarsWithUrls({
     ...data,
+    vote_count: data.upvote - data.downvote,
     imagesrc: dataWithImageSrc,
   })
 
@@ -65,7 +67,8 @@ export async function listQuestions(
   perpage: number,
   userid: string,
   profile?: string,
-  tag?: string
+  tag?: string,
+  privateForum?: boolean
 ) {
   const [data, total] = await Promise.all([
     Service.findQuestions(
@@ -75,12 +78,14 @@ export async function listQuestions(
       perpage,
       userid,
       profile,
-      tag
+      tag,
+      privateForum
     ),
-    Service.getTotalCount(profile, searchKey),
+    Service.getTotalCount(profile, searchKey, tag, privateForum),
   ])
 
   for (let question of data) {
+    question.vote_count = question.vote_count - question.downvote
     question.user.avatar = question.user.avatar
       ? getObjectUrl(question.user.avatar)
       : question.user.avatar
@@ -129,9 +134,13 @@ export async function createNewQuestion(
     if (!userid) {
       throw new HttpError('Session Expired', 401)
     }
-    const { title, question, tags } = questions.body
-    const content = { userid, title, question, imagesrc }
+    const { title, question, tags, privateForum } = questions.body
+    const content = { userid, title, question, imagesrc, private: privateForum }
     const newQuestion = await Service.createQuestion(content, tags)
+
+    if (newQuestion.private) {
+      emitNotificationToFarmHeads(userid)
+    }
 
     await uploadFiles(uploadedFiles)
     for (const image of uploadedFiles) {

@@ -25,6 +25,10 @@ import { z } from 'zod'
  *                     type: string
  *                   role:
  *                     type: string
+ *                   district:
+ *                     type: string
+ *                   farm_name:
+ *                     type: string
  *               tags:
  *                 type: array
  *                 items:
@@ -79,13 +83,15 @@ import { z } from 'zod'
  *       required:
  *         - title
  *         - question
- *         - imagesrc
  *       properties:
  *         title:
  *           type: string
  *           description: The title of the forum entry
  *         question:
  *           type: string
+ *           description: The question in the forum entry
+ *         privateForum:
+ *           type: boolean
  *           description: The question in the forum entry
  *         imagesrc:
  *           type: array
@@ -292,6 +298,11 @@ export const SearchForums = z.object({
     filter: z.string().optional().default('newest'),
     profile: z.string().optional().default(''),
     tag: z.string().optional().default(''),
+    privateForum: z
+      .string()
+      .transform((arg) => Boolean(arg))
+      .optional()
+      .default(''),
   }),
 })
 /**
@@ -346,6 +357,10 @@ export const ForumsSchema = z.object({
     question: z
       .string({ required_error: 'Question is required' })
       .min(1, 'Question must not be empty'),
+    privateForum: z
+      .string()
+      .transform((arg) => Boolean(arg))
+      .optional(),
     tags: z.union([z.array(z.string()), z.string()]).optional(),
   }),
 })

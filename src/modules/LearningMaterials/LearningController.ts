@@ -352,7 +352,7 @@ export async function listPublishedLearningMaterials(
       data: learningMaterials.data,
       pagination: {
         page: pageNumber,
-        per_page: 20,
+        per_page: perPage,
         total_pages: totalPages,
         total_records: Number(learningMaterials.total.count),
       },

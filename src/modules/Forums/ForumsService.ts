@@ -27,7 +27,8 @@ export async function findQuestions(
   perpage: number,
   userid: string,
   profile?: string,
-  tag?: string
+  tag?: string,
+  privateForum?: boolean
 ) {
   let query = db
     .selectFrom('forums')
@@ -38,14 +39,17 @@ export async function findQuestions(
       'forums.id',
       jsonObjectFrom(
         eb
-          .selectFrom('users')
+          .selectFrom('users as u')
+          .leftJoin('community_farms as cf', 'cf.id', 'u.farm_id')
           .select([
-            'avatar',
-            'username',
-            'role',
-            sql<string>`CAST(id AS TEXT)`.as('id'),
+            'u.avatar',
+            'u.username',
+            'u.role',
+            'u.district',
+            'cf.farm_name',
+            sql<string>`CAST(u.id AS TEXT)`.as('id'),
           ])
-          .whereRef('forums.userid', '=', 'users.id')
+          .whereRef('forums.userid', '=', 'u.id')
       ).as('user'),
       jsonArrayFrom(
         eb
@@ -63,13 +67,17 @@ export async function findQuestions(
       'forums.updatedat',
       'forums.views',
       sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
+      fn.count<number>('forums_ratings.id').distinct().as('vote_count'),
       fn
         .count<number>('forums_ratings.id')
-        .filterWhere('type', '=', 'upvote')
         .distinct()
-        .as('vote_count'),
-      // fn.count<number>('DISTINCT forums_answers.id').as('answer_count'),
-      // fn.count<number>('forums_ratings.id').as('vote_count'),
+        .filterWhere('type', '=', 'downvote')
+        .as('downvote'),
+      fn
+        .count<number>('forums_ratings.id')
+        .distinct()
+        .filterWhere('type', '=', 'upvote')
+        .as('upvote'),
       fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
@@ -86,7 +94,14 @@ export async function findQuestions(
   if (filterKey === 'newest') query = query.orderBy('forums.createdat', 'desc')
   if (filterKey === 'active')
     query = query.orderBy('latest_answer_createdat', 'desc')
-  if (filterKey === 'trending') query = query.orderBy('vote_count', 'desc')
+  if (filterKey === 'trending') query = query.orderBy('upvote', 'desc')
+
+  if (privateForum) {
+    query = query.where('forums.private', '=', true)
+    query = query.orderBy('forums.createdat', 'asc')
+  } else {
+    query = query.where('forums.private', '=', false)
+  }
 
   if (searchQuery.length) {
     query = query.where((eb) =>
@@ -323,12 +338,15 @@ export async function viewQuestion(
       'forums.views',
       sql<string>`COUNT(DISTINCT forums_answers.id)`.as('answer_count'),
       // sql<string>`COUNT(DISTINCT forums_ratings.id)`.as('vote_count'),
+      fn.count<number>('forums_ratings.id').distinct().as('upvote'),
       fn
         .count<number>('forums_ratings.id')
         .distinct()
-        .filterWhere('type', '=', 'upvote')
-        .as('vote_count'),
-
+        .filterWhere('type', '=', 'downvote')
+        .as('downvote'),
+      // sql`(count(distinct "forums_ratings"."id") filter(where "type" = 'upvote')) - (count(distinct "forums_ratings"."id") filter(where "type" = 'downvote'))`.as(
+      //   'vote_count'
+      // ),
       // fn.max('forums_answers.createdat').as('latest_answer_createdat'),
       jsonObjectFrom(
         eb
@@ -352,7 +370,12 @@ export async function getTotalAnswers(id: string) {
     .executeTakeFirst()
 }
 
-export async function getTotalCount(id: string, searchKey: string) {
+export async function getTotalCount(
+  id: string,
+  searchKey: string,
+  tag?: string,
+  privateForum?: boolean
+) {
   let query = db
     .selectFrom('forums')
     .leftJoin('users as u', 'forums.userid', 'u.id')
@@ -366,6 +389,22 @@ export async function getTotalCount(id: string, searchKey: string) {
         eb('forums.title', 'ilike', `%${searchKey}%`),
         eb('forums.question', 'ilike', `%${searchKey}%`),
       ])
+    )
+  }
+
+  if (privateForum) {
+    query = query.where('forums.private', '=', true)
+  }
+
+  if (tag.length) {
+    query = query.where(({ selectFrom, exists }) =>
+      exists(
+        selectFrom('forums_tags')
+          .leftJoin('tags as t', 't.id', 'forums_tags.tagid')
+          .select('forums_tags.id')
+          .where('t.tag_name', '=', tag)
+          .whereRef('forums_tags.forumid', '=', 'forums.id')
+      )
     )
   }
 

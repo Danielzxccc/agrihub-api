@@ -76,8 +76,10 @@ CREATE TABLE community_crop_reports(
     createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
     updatedAt timestamp DEFAULT CURRENT_TIMESTAMP,
     is_archived BOOLEAN DEFAULT false,
-    is_first_report BOOLEAN default TRUE,
-    kilogram INT default 0,
+    batch TIMESTAMP,
+    last_harvest_id INT REFERENCES community_crop_reports(id) ON DELETE CASCADE,
+    kilogram NUMERIC default 0,
+    harvested_by INT REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (crop_id) REFERENCES community_farms_crops(id) ON DELETE CASCADE, 
     FOREIGN KEY (farmid) REFERENCES community_farms(id) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE

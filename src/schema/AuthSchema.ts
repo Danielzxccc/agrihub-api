@@ -371,3 +371,9 @@ export const UpdatePassword = z.object({
       path: ['confirmPassword'], // path of error
     }),
 })
+
+export const ForgottenAccount = z.object({
+  body: z.object({
+    account: z.string(),
+  }),
+})

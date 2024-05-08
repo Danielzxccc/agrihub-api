@@ -505,6 +505,8 @@ export async function getTotalCommunityFarms(search: string, filter: string) {
     )
   }
 
+  if (filter.length) query = query.where('district', '=', filter)
+
   return await query.where('is_archived', '=', false).executeTakeFirst()
 }
 

@@ -23,3 +23,10 @@ export function emitNotification(id: string, payload: string) {
 export function emitNotificationToAdmin(payload: string) {
   io.emit('admin', payload)
 }
+
+export function emitNotificationToFarmHeads(userid: string) {
+  io.emit('farm_head', {
+    userid,
+    event: 'CHAT_EVENT_TRIGGER',
+  })
+}

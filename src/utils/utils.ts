@@ -3,6 +3,8 @@ import crypto from 'crypto'
 import { Request } from 'express'
 import { ToolRequestStatus } from 'kysely-codegen'
 import { UpdateToolRequest } from '../types/DBTypes'
+import { deleteFile } from './file'
+import moment from 'moment'
 const log = logger({
   transport: {
     target: 'pino-pretty',
@@ -98,4 +100,25 @@ export function getToolRequestNotification(
     default:
       break
   }
+}
+
+export async function deleteLocalFiles(files: Express.Multer.File[]) {
+  for (const file of files) {
+    deleteFile(file.filename)
+  }
+}
+
+export function formatTimestamp(inputDate: string) {
+  return moment(inputDate).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+}
+
+// export function formatUTC(date: Date) {}
+
+export function formatUTC(date: Date) {
+  return new Promise<Date>((resolve) => {
+    const formattedDate = new Date(
+      formatTimestamp(new Date(date).toUTCString())
+    ) // Just an example, replace with your implementation
+    resolve(formattedDate)
+  })
 }

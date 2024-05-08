@@ -285,3 +285,44 @@ export async function sendingWarningToUser(req: SessionRequest, res: Response) {
     errorHandler(res, error)
   }
 }
+
+export async function deleteUserProfilePicture(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+    await Interactor.deleteUserProfilePicture(userid)
+
+    res.status(200).json({ message: 'Deleted Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function updateUserTags(req: SessionRequest, res: Response) {
+  try {
+    const { userid } = req.session
+    const { body } = await zParse(Schema.UserTagsUpdate, req)
+    await Interactor.updateUserTags(userid, body.tags)
+
+    res.status(200).json({ message: 'Updated Successfully' })
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}
+
+export async function findUserPreferredTags(
+  req: SessionRequest,
+  res: Response
+) {
+  try {
+    const { userid } = req.session
+
+    const data = await Interactor.findUserPreferredTags(userid)
+
+    res.status(200).json(data)
+  } catch (error) {
+    errorHandler(res, error)
+  }
+}

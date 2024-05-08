@@ -25,8 +25,8 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
-  '/farmer/graph/total-harvest',
-  UserGuard(['farm_head', 'farmer']),
+  '/farmer/graph/total-harvest/:id',
+  UserGuard(['farm_head', 'farmer', 'asst_admin', 'admin']),
   ReportsController.listTotalHarvestEachMonth
 )
 
@@ -68,7 +68,7 @@ ReportsRouter.get(
 
 ReportsRouter.get(
   '/crop/report/view/:id',
-  UserGuard(['farm_head']),
+  UserGuard(['farm_head', 'farmer']),
   ReportsController.viewCommunityCropReport
 )
 
@@ -187,8 +187,8 @@ ReportsRouter.get(
 )
 
 ReportsRouter.get(
-  '/analytics/crop/distribution/community',
-  UserGuard(['farm_head']),
+  '/analytics/crop/distribution/community/:id',
+  UserGuard(['farm_head', 'farmer', 'admin', 'asst_admin']),
   ReportsController.getCropHarvestDistributionPerFarm
 )
 
@@ -215,4 +215,10 @@ ReportsRouter.get(
   '/farm/land-size/analytics/district',
   UserGuard(['admin', 'asst_admin']),
   ReportsController.getLandSizeAnalyticsPerDistrict
+)
+
+ReportsRouter.get(
+  '/analytics/pre-defined',
+  UserGuard(['farm_head', 'farmer']),
+  ReportsController.getPreDefinedMessages
 )

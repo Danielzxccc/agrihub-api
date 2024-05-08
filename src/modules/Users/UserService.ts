@@ -348,7 +348,10 @@ export async function findReportedUsers(
   return await query.limit(perpage).offset(offset).execute()
 }
 
-export async function getTotalReportedUsers(searchKey: string) {
+export async function getTotalReportedUsers(
+  searchKey: string,
+  filterKey?: 'pending' | 'warned'
+) {
   let query = db
     .selectFrom('reported_users as ru')
     .leftJoin('users as u', 'u.id', 'ru.reported')
@@ -364,6 +367,10 @@ export async function getTotalReportedUsers(searchKey: string) {
         eb('ru.reason', 'ilike', `%${searchKey}%`),
       ])
     )
+  }
+
+  if (filterKey.length > 1) {
+    query = query.where('ru.status', '=', filterKey)
   }
 
   return await query.executeTakeFirst()
@@ -467,4 +474,71 @@ export async function findUserByPhoneNumber(number: string) {
     .selectAll()
     .where('contact_number', '=', number)
     .executeTakeFirst()
+}
+
+export async function findFarmMembersByFarmId(farmid: string, userid: string) {
+  return await db
+    .selectFrom('users')
+    .selectAll()
+    .where('farm_id', '=', farmid)
+    .execute()
+}
+
+export async function findUserTagsById(userid: string) {
+  return await db
+    .selectFrom('user_tags')
+    .selectAll()
+    .where('userid', '=', userid)
+    .execute()
+}
+
+export async function updateUserTags(
+  userid: string,
+  tagsId: string[] | string,
+  deletedTags: string[]
+) {
+  const userTags = await db.transaction().execute(async (trx) => {
+    let tagRecords
+    if (Array.isArray(tagsId) && tagsId.length > 0) {
+      tagRecords = tagsId.map((tagName) => ({
+        userid,
+        tagid: tagName,
+      }))
+    } else if (typeof tagsId === 'string') {
+      tagRecords = {
+        userid,
+        tagid: tagsId,
+      }
+    }
+
+    if (deletedTags.length) {
+      await db
+        .deleteFrom('user_tags')
+        .where('user_tags.userid', '=', userid)
+        .where('tagid', 'in', deletedTags)
+        .execute()
+    }
+
+    if (tagRecords?.length || tagRecords) {
+      await trx
+        .insertInto('user_tags')
+        .values(tagRecords)
+        .onConflict((oc) => oc.column('tagid').column('userid').doNothing())
+        .returningAll()
+        .executeTakeFirst()
+    }
+
+    return tagRecords
+  })
+
+  return userTags
+}
+
+export async function findUserPreferredTags(userid: string) {
+  return await db
+    .selectFrom('user_tags as ut')
+    .leftJoin('tags as t', 't.id', 'ut.tagid')
+    .select(['ut.id', 'ut.userid', 'ut.tagid', 't.tag_name'])
+    .where('userid', '=', userid)
+    .execute()
 }

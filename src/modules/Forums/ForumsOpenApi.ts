@@ -40,6 +40,11 @@
  *         schema:
  *           type: string
  *         description: tag query
+ *       - in: query
+ *         name: privateForum
+ *         schema:
+ *           type: boolean
+ *         description: tag query
  *     responses:
  *       "200":
  *         description: Success

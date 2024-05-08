@@ -275,7 +275,7 @@ export async function findToolRequests(
       'cf.is_archived',
     ])
 
-  if (searchKey.length) {
+  if (searchKey?.length) {
     query = query.where((eb) =>
       eb.or([
         eb('tool_requested', 'ilike', `%${searchKey}%`),
@@ -286,7 +286,7 @@ export async function findToolRequests(
     )
   }
 
-  if (filter.length) {
+  if (filter?.length) {
     query = query.where('tr.status', '=', filter)
   }
 
@@ -307,7 +307,7 @@ export async function getTotalToolRequest(
     .innerJoin('community_farms as cf', 'tr.farm_id', 'cf.id')
     .select(({ fn }) => [fn.count<number>('tr.id').as('count')])
 
-  if (searchKey.length) {
+  if (searchKey?.length) {
     query = query.where((eb) =>
       eb.or([
         eb('tool_requested', 'ilike', `%${searchKey}%`),
@@ -318,7 +318,7 @@ export async function getTotalToolRequest(
     )
   }
 
-  if (filter.length) {
+  if (filter?.length) {
     query = query.where('tr.status', '=', filter)
   }
 

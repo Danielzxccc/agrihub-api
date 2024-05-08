@@ -52,6 +52,22 @@ export async function authenticateUser(credentials: string, password: string) {
   return user
 }
 
+export async function findForgottenAccount(account: string) {
+  const user = await Service.findByEmailOrUsername(account)
+
+  if (!user) {
+    throw new HttpError('Invalid email or contact', 400)
+  }
+
+  if (user.isbanned) {
+    throw new HttpError('Your account has been banned.', 400)
+  }
+
+  const { avatar, firstname, lastname, email, username, contact_number } = user
+
+  return { avatar, firstname, lastname, email, username, contact_number }
+}
+
 export async function registerUser(credentials: RegisterUser) {
   const { phone_number, email, password, confirmPassword } = credentials.body
 
@@ -149,7 +165,11 @@ export async function sendOTP(session: string) {
 
   await generateOTPcode(session, OTPCode, user.contact_number)
   // sms gateway logic here later
-  await sendSMS(OTPCode, user.contact_number, `OTP CODE: {otp}`)
+  await sendSMS(
+    OTPCode,
+    user.contact_number,
+    `Did you request to verify your account in Agrihub? Here is the code {otp}. DO NOT SHARE YOUR OTP TO ANYONE. If you didn't request for a code. Kindly ignore this message.`
+  )
 }
 
 export async function sendResetOTP(session: string) {
@@ -165,7 +185,11 @@ export async function sendResetOTP(session: string) {
 
   await generateOTPcode(session, OTPCode, user.contact_number)
   // sms gateway logic here later
-  await sendSMS(OTPCode, user.contact_number, `OTP CODE: {otp}`)
+  await sendSMS(
+    OTPCode,
+    user.contact_number,
+    `Did you request an OTP to reset your password? Here is the code {otp} If you didn't request for a code. Kindly ignore this message.`
+  )
 }
 
 export async function verifyOTP(session: string, code: number) {
@@ -342,7 +366,7 @@ export async function sendResetTokenViaOTP(contact_number: string) {
   const user = await Service.findUserByNumber(contact_number)
 
   if (!user) {
-    throw new HttpError('Invalid Contact Number', 404)
+    throw new HttpError('No account is tied to the provided number.', 404)
   }
 
   //generate new reset token
@@ -459,7 +483,11 @@ export async function updateUserNumber(userid: string, number: string) {
 
   await createChangeNumberRequest({ number, otp: OTPCode, userid })
 
-  const data = await sendSMS(OTPCode, number, `OTP CODE: {otp}`)
+  const data = await sendSMS(
+    OTPCode,
+    number,
+    `{otp} is your authentication code for your change number request in AgriHub. For your protection, do not share this to anyone.`
+  )
   console.log(data, 'BIG DATA NUMBER')
 }
 

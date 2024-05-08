@@ -21,6 +21,8 @@ import { CmsRouter } from './modules/CMS/CmsRouter'
 import { PrivacyPolicyRouter } from './modules/PrivacyPolicy/PrivacyPolicyRoute'
 import { TermsConditionsRouter } from './modules/Terms&Conditions/TermsConditionsRoute'
 import { AuditLogsRouter } from './modules/AuditLogs/AuditLogsRouter'
+import { CommunityRouter } from './modules/Community/CommunityRouter'
+import { AnalyticsRouter } from './modules/Analytics/AnalyticsRouter'
 
 function routes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => {
@@ -30,9 +32,11 @@ function routes(app: Express) {
   app.use('/api/auth', AuthRouter)
   app.use('/api/farm', FarmRouter)
   app.use('/api/farm/problems', FarmProblemRouter)
+  app.use('/api/community-farm', CommunityRouter)
   app.use('/api/reports', ReportsRouter)
   app.use('/api/account', AccountRouter)
   app.use('/api/user', UserRouter)
+  app.use('/api/analytics', AnalyticsRouter)
   app.use('/api/forums', ForumsRouter)
   app.use('/api/tags', TagsRouter)
   app.use('/api/articles', ArticlesRouter)

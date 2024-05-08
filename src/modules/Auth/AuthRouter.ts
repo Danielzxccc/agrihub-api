@@ -309,3 +309,5 @@ AuthRouter.post(
 )
 
 AuthRouter.post('/update/password', AuthController.updatePassword)
+
+AuthRouter.post('/find/forgotten/account', AuthController.findForgottenAccount)

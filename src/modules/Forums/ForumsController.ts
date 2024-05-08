@@ -49,6 +49,7 @@ export async function listQuestions(req: SessionRequest, res: Response) {
     const searchKey = String(query.search)
     const filterKey = query.filter
     const tagKey = query.tag
+    const privateForum = query.privateForum
 
     const questions = await Interactor.listQuestions(
       offset,
@@ -57,7 +58,8 @@ export async function listQuestions(req: SessionRequest, res: Response) {
       perPage,
       req.session.userid || '00',
       query.profile,
-      tagKey
+      tagKey,
+      privateForum
     )
     const totalPages = Math.ceil(Number(questions.total.count) / perPage)
     res.status(200).json({

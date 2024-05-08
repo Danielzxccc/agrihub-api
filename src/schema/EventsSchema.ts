@@ -93,6 +93,6 @@ export const ListPublishedEvents = z.object({
     perpage: z.string().optional().default('20'),
     filter: z
       .union([z.literal('upcoming'), z.literal('previous'), z.literal('')])
-      .default(''),
+      .default('upcoming'),
   }),
 })
