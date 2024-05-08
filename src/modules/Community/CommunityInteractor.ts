@@ -677,7 +677,6 @@ export async function createPlantedCommunityTask({
     farmid,
     message,
     task_type: 'plant',
-    action_message: `${user.firstname} ${user.lastname} has submitted a planting report.`,
   }
 
   const newTask = await Service.createCommunityTask(taskObject)
@@ -761,6 +760,7 @@ export async function createHarvestTask({
     task_type: 'harvest',
     status: 'pending',
     message,
+    action_message: `${user.firstname} ${user.lastname} has submitted a planting report.`,
   }
 
   const newHarvestTask = await Service.createCommunityTask(taskObject)
