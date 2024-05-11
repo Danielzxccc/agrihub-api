@@ -168,7 +168,7 @@ export async function sendOTP(session: string) {
   await sendSMS(
     OTPCode,
     user.contact_number,
-    `Did you request to verify your account in Agrihub? Here is the code {otp}. DO NOT SHARE YOUR OTP TO ANYONE. If you didn't request for a code. Kindly ignore this message.`
+    `Your Agrihub OTP code is {otp}. DO NOT SHARE YOUR OTP TO ANYONE. If you didn't request for a code. Kindly ignore this message.`
   )
 }
 
