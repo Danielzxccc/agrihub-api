@@ -1,6 +1,7 @@
 import axios from 'axios'
 import HttpError from './HttpError'
 import * as dotenv from 'dotenv'
+import log from './utils'
 dotenv.config()
 
 function swapCode(
@@ -24,10 +25,12 @@ export default async function sendSMS(
     await axios.post(process.env.SMS_API_URI, {
       apikey: process.env.SMS_API_KEY,
       number,
-      message: swapCode(message, '{otp}', String(code)),
+      message,
       code,
     })
   } catch (error) {
+    log.info('ERROR SENDING MESSAGE', error)
+    console.log(error, 'ERROR OBJECT SEND MESSAGE')
     throw new HttpError(
       'OTP sending failed. Please contact the website administrator.',
       500
