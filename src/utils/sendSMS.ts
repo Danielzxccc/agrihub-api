@@ -3,6 +3,18 @@ import HttpError from './HttpError'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
+function swapCode(
+  originalString: string,
+  wordToReplace: string,
+  replacementWord: string
+) {
+  const modifiedString = originalString.replace(
+    new RegExp('\\b' + wordToReplace + '\\b', 'g'),
+    replacementWord
+  )
+  return modifiedString
+}
+
 export default async function sendSMS(
   code: number,
   number: string,
@@ -12,7 +24,7 @@ export default async function sendSMS(
     await axios.post(process.env.SMS_API_URI, {
       apikey: process.env.SMS_API_KEY,
       number,
-      message,
+      message: swapCode(message, '{otp}', String(code)),
       code,
     })
   } catch (error) {

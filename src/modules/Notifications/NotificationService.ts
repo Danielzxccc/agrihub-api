@@ -90,3 +90,11 @@ export async function markAllAsRead(userid: string) {
     .returningAll()
     .executeTakeFirst()
 }
+
+export async function getAllUsersWithPendingTasks() {
+  return await db
+    .selectFrom('community_tasks')
+    .selectAll()
+    .where('due_date', '=', sql`CURRENT_DATE + INTERVAL '2 day'`)
+    .execute()
+}
